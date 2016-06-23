@@ -1,6 +1,8 @@
 # Link Binder
 [![Apache License](http://img.shields.io/badge/license-Apache-blue.svg?style=flat)](LICENSE)
 
+![Link Binder](logo.png)
+---
 必要な情報コンテンツはすぐに見つけられますか？十分に活用できていますか？
 文書の回覧・承認・再利用のサイクルは回っていますか？
 重要な文書があちこちに散在し、企業の情報資産が個人管理任せになっていませんか？
@@ -23,12 +25,13 @@ Link Binderは、基本機能だけでも次の機能を実現しています。
 
 * Java8
 * Oracle 11g
+  * Express Edition(無償版)で動作確認済です
 * [Redis](http://redis.io/)
 * [Elasticsearch](https://www.elastic.co/jp/) (全文検索機能を利用する場合は必須)
 
-## Usage
+## 使い方
 
-Link Binderは、全文検索インデックス操作やメール通知を行うためのSubscriberアプリと、Webブラウザ上でユーザーインターフェイスを提供するWebアプリとで構成されています。
+Link Binderは、全文検索インデックス操作やメール通知を行うための`Subscriber`と、Webブラウザ上でユーザーインターフェイスを提供する`Web`の2つのアプリケーションで構成されています。
 
 デモ的な動作であれば、後述するインストール手順を実施後に以下コマンドを実行すると、Link Binderを起動することができます。
 
@@ -43,6 +46,12 @@ Link Binderは、全文検索インデックス操作やメール通知を行う
 ```
 ./run_web.sh
 ```
+
+起動後、ブラウザで http://localhost:8080/ を表示し次のID/パスワードでログインしてください。
+
+* 00000 / password
+
+また、 http://localhost:8080/setup.jsf から、初期データのインポートを行うことができます。
 
 ## インストール
 
@@ -68,7 +77,7 @@ root@xxxx:/# exit
 ./build.sh
 ```
 
-## Licence
+## License
 
 [Apache License](https://github.com/otsecbsol/linkbinder/blob/master/LICENSE)
 

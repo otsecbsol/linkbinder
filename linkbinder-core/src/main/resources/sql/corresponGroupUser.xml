@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="corresponGroupUser">
+
+  <resultMap id="user" class="jp.co.opentone.bsol.linkbinder.dto.CorresponGroupUser">
+    <result property="id"                       column="id" />
+    <result property="corresponGroup.projectId" column="project_id" />
+    <result property="corresponGroup.id"        column="correspon_group_id" />
+    <result property="corresponGroup.name"      column="correspon_group_name" />
+    <result property="user.empNo"               column="emp_no" />
+    <result property="user.lastName"            column="emp_last_name" />
+    <result property="user.nameE"               column="emp_name_e" />
+    <result property="user.role"                column="role" />
+    <result property="securityLevel"            column="security_level" />
+    <result property="createdBy.empNo"          column="created_by" />
+    <result property="createdAt"                column="created_at" />
+    <result property="updatedBy.empNo"          column="updated_by" />
+    <result property="updatedAt"                column="updated_at" />
+    <result property="deleteNo"                 column="delete_no" />
+  </resultMap>
+
+  <resultMap id="mapping" class="jp.co.opentone.bsol.linkbinder.dto.CorresponGroupUserMapping"
+             groupBy="corresponGroupId">
+    <result property="corresponGroupId" column="correspon_group_id" />
+    <result property="users"            resultMap="corresponGroupUser.empNo" />
+  </resultMap>
+
+  <resultMap id="mappingResult" class="jp.co.opentone.bsol.linkbinder.dto.CorresponGroupUserMapping"
+             groupBy="corresponGroupId">
+    <result property="corresponGroupId"     column="correspon_group_id" />
+    <result property="users"                resultMap="corresponGroupUser.mappingEmpNo" />
+  </resultMap>
+
+  <resultMap id="empNo" class="jp.co.opentone.bsol.linkbinder.dto.User">
+    <result property="empNo" column="emp_no" />
+  </resultMap>
+
+  <resultMap id="mappingEmpNo" class="jp.co.opentone.bsol.linkbinder.dto.UserWithGroup">
+    <result property="empNo"                column="emp_no" />
+    <result property="realCorresponGroupId" column="real_correspon_group_id" />
+  </resultMap>
+
+  <!-- findByCorresponGroupId,findEmpNoで共通的に使用するSELECT,FROM句 -->
+  <sql id="findSelectFrom">
+    SELECT
+      id,
+      project_id,
+      correspon_group_id,
+      correspon_group_name,
+      emp_no,
+      emp_last_name,
+      emp_name_e,
+      role,
+      security_level,
+      created_by,
+      created_at,
+      updated_by,
+      updated_at,
+      delete_no
+    FROM
+      v_correspon_group_user
+  </sql>
+
+  <select id="findByCorresponGroupId" resultMap="user">
+    <include refid="findSelectFrom"/>
+    WHERE
+      correspon_group_id = #value#
+    ORDER BY
+      emp_last_name
+  </select>
+
+  <select id="findByProjectId" resultMap="user">
+    <include refid="findSelectFrom"/>
+    WHERE
+      project_id = #value#
+    ORDER BY
+      emp_last_name
+  </select>
+
+  <select id="findProjectUserWithGroupByProjectId" resultMap="user">
+    SELECT
+      gu.id,
+      pu.project_id,
+      gu.correspon_group_id,
+      gu.correspon_group_name,
+      pu.emp_no,
+      pu.emp_last_name,
+      pu.emp_name_e,
+      pu.role,
+      pu.security_level,
+      gu.created_by,
+      gu.created_at,
+      gu.updated_by,
+      gu.updated_at,
+      gu.delete_no
+    FROM
+      v_project_user pu
+    LEFT JOIN v_correspon_group_user gu
+      ON
+        gu.emp_no = pu.emp_no
+      AND
+        gu.project_id = pu.project_id
+    WHERE
+      pu.project_id = #value#
+    ORDER BY
+      pu.emp_last_name
+  </select>
+
+  <select id="findByEmpNo" resultMap="user">
+    <include refid="findSelectFrom"/>
+    WHERE
+      correspon_group_id = #corresponGroupId#
+    AND
+      emp_no            = #empNo#
+    ORDER BY
+      correspon_group_id
+  </select>
+
+  <select id="findCorresponGroupUserMapping" resultMap="mapping">
+    SELECT
+      correspon_group_id,
+      correspon_group_id AS real_correspon_group_id,
+      project_id,
+      emp_no,
+      emp_last_name
+    FROM
+      v_correspon_group_user gu
+    INNER JOIN
+      correspon_group g
+      ON gu.correspon_group_id = g.id
+     AND g.delete_no = 0
+    WHERE
+          gu.project_id = #projectId1#
+      AND gu.delete_no = 0
+    UNION
+    SELECT
+      0 AS correspon_group_id,
+      0 AS real_correspon_group_id,
+      project_id,
+      emp_no,
+      emp_last_name
+    FROM
+      v_project_user
+    WHERE project_id = #projectId2#
+    ORDER BY
+      correspon_group_id,
+      emp_last_name
+  </select>
+
+  <select id="findCorresponGroupIdUserMapping" resultMap="mappingResult">
+    SELECT
+      gu.correspon_group_id,
+      gu.correspon_group_id AS real_correspon_group_id,
+      s.project_id,
+      gu.emp_no,
+      (SELECT emp_last_nm FROM v_sys_users u
+        WHERE u.emp_no = gu.emp_no) AS emp_last_name
+    FROM correspon_group_user gu
+        INNER JOIN correspon_group g
+           ON gu.correspon_group_id = g.id
+          AND g.delete_no = 0
+        INNER JOIN site s
+           ON g.site_id = s.id
+          AND s.delete_no = 0
+    WHERE
+      s.project_id = #projectId1#
+      AND gu.delete_no = 0
+    UNION
+    SELECT
+      0 AS correspon_group_id,
+      gu.correspon_group_id AS real_correspon_group_id,
+      pu.project_id,
+      pu.emp_no,
+      pu.emp_last_name
+    FROM
+      v_project_user pu
+      LEFT OUTER JOIN (
+        SELECT gu.*, s.project_id
+          FROM correspon_group_user gu
+            INNER JOIN correspon_group g
+              ON gu.correspon_group_id = g.id
+             AND g.delete_no = 0
+            INNER JOIN site s
+              ON g.site_id = s.id
+             AND s.delete_no = 0
+          WHERE gu.delete_no = 0) gu
+        ON pu.emp_no = gu.emp_no
+       AND pu.project_id = gu.project_id
+    WHERE
+      pu.project_id = #projectId2#
+    ORDER BY
+      correspon_group_id,
+      emp_last_name
+  </select>
+
+  <update id="deleteByCorresponGroupId">
+    UPDATE correspon_group_user
+      SET
+        updated_by = #empNo#,
+        updated_at = SYSTIMESTAMP,
+        delete_no  = s_correspon_group_user_dno.NEXTVAL
+      WHERE
+        correspon_group_id = #corresponGroupId#
+      AND
+        delete_no = 0
+  </update>
+
+  <insert id="create">
+    <selectKey resultClass="long" keyProperty="id">
+      SELECT s_correspon_group_user_id.NEXTVAL AS id FROM dual
+    </selectKey>
+    INSERT INTO correspon_group_user(
+      id,
+      correspon_group_id,
+      emp_no,
+      security_level,
+      created_by,
+      updated_by
+      ) VALUES (
+        #id#,
+        #corresponGroup.id#,
+        #user.empNo#,
+        #securityLevel#,
+        #createdBy.empNo#,
+        #updatedBy.empNo#
+      )
+  </insert>
+
+</sqlMap>

@@ -1,0 +1,387 @@
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/include/template.xhtml">
+  <ui:define name="title">#{corresponConfirmationPage.title}</ui:define>
+  <ui:define name="link">
+    <table>
+      <tr>
+        <td width="55" align="center" style="font-weight: bold;">Step :</td>
+        <td class="step">編集</td>
+        <td><h:graphicImage url="/images/arrow.png" /></td>
+        <td class="step-current">確認</td>
+        <td><h:graphicImage url="/images/arrow.png" /></td>
+        <td class="step">完了</td>
+      </tr>
+    </table>
+  </ui:define>
+  <ui:define name="jsOuter">
+    <script type="text/javascript" src="${contextPath}/resource/${v}/javascript/addressInput.js"></script>
+    <link type="text/css" href="#{contextPath}/resource/#{v}/stylesheet/custom/correspon.css" rel="stylesheet" />
+  </ui:define>
+  <ui:define name="jsInner">
+    history.forward();
+    function setFileId(val, no) {
+      var fileId = document.getElementById('form:fileId');
+      var fileNo = document.getElementById('form:fileNo');
+      fileId.value = val;
+      fileNo.value = no;
+    }
+  </ui:define>
+  <ui:define name="body">
+    <f:view>
+      <h:form id="form" onsubmit="return disableSubmit();">
+        <h:inputHidden id="actionName" value="#{corresponConfirmationPage.actionName}" />
+        <h:inputHidden id="newEdit" value="#{corresponConfirmationPage.newEdit}" />
+        <h:inputHidden id="backPage" value="#{corresponConfirmationPage.backPage}" />
+        <div id="main">
+          <div class="row subject">
+            <div class="twelve columns">
+              <h:graphicImage alt="" url="#{corresponConfirmationPage.iconPathName}" />
+              <h:outputText id="subject" value="#{corresponConfirmationPage.correspon.subject}" />
+            </div>
+          </div>
+          <div class="row correspon-header-info">
+            <div class="four columns">
+              <label>発信元</label>
+              <h:outputText id="from" value="#{corresponConfirmationPage.correspon.fromCorresponGroup.name}" />
+            </div>
+            <div class="four columns">
+              <label>文書番号</label>
+              <h:outputText id="corresponNo" value="#{corresponConfirmationPage.formatter.corresponNo}" />
+            </div>
+            <div class="four columns">
+              <label>発行</label>
+              <h:outputText id="issuedBy" value="#{corresponConfirmationPage.correspon.issuedBy.label}"
+                                          rendered="#{corresponConfirmationPage.correspon.issuedBy != null}" />
+              <h:outputText id="issuedAt" value="#{corresponConfirmationPage.correspon.issuedAt}">
+                <f:convertDateTime pattern="yyyy-MM-dd HH:mm:ss" />
+              </h:outputText>
+            </div>
+          </div>
+          <div class="row correspon-header-info">
+            <div class="four columns">
+              <label>ID</label>
+              <h:outputText id="id" value="#{corresponConfirmationPage.correspon.id}" />
+            </div>
+            <div class="four columns">
+              <label>ワークフロー</label>
+              <h:outputText id="workflowStatus"
+                            value="#{corresponConfirmationPage.correspon.workflowStatus.label}" />
+
+            </div>
+            <div class="four columns">
+              <label>最終更新</label>
+              <h:outputText id="updatedBy"
+                            value="#{corresponConfirmationPage.correspon.updatedBy.label}"
+                            rendered="#{corresponConfirmationPage.correspon.updatedBy != null}" />
+              <h:outputText id="updatedAt"
+                            value="#{corresponConfirmationPage.correspon.updatedAt}">
+              <f:convertDateTime pattern="yyyy-MM-dd HH:mm:ss" />
+              </h:outputText>
+            </div>
+          </div>
+
+          <hr/>
+
+          <div class="row">
+            <div class="six columns">
+              <label>文書種類</label>
+              <h:outputText id="corresponType"
+                            value="#{corresponConfirmationPage.correspon.corresponType.label}" />
+            </div>
+            <div class="six columns">
+              <label>状態</label>
+              <h:outputText id="corresponStatus"
+                            rendered="#{corresponConfirmationPage.displayCorresponStatus}"
+                            value="#{corresponConfirmationPage.correspon.corresponStatus.label}" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="six columns">
+              <label>返信</label>
+              <h:outputText id="parentCorrespon"
+                            value="#{corresponConfirmationPage.correspon.parentCorresponNo}" />
+            </div>
+            <div class="six columns">
+              <label>改訂元</label>
+              <h:outputText id="previousRevision"
+                            value="#{corresponConfirmationPage.correspon.previousRevCorresponNo}" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="twelve columns">
+              <label>宛先</label>
+            </div>
+          </div>
+
+          <h:inputHidden id="toAddressValues"
+                         value="#{corresponConfirmationPage.toAddressValues}" />
+
+          <div id="tos" class="detail">
+            <div class="row">
+              <div class="twelve columns">
+                <label>To</label>
+                <div id="toGroup">
+                  <div id="toAddress">
+                    <h:dataTable id="toAddressTable"
+                                 var="group"
+                                 value="#{corresponConfirmationPage.toAddressCorresponGroups}"
+                                 width="100%" styleClass="list" rowClasses="odd,even">
+                      <h:column headerClass="confirm-toAddr-group">
+                        <f:facet name="header">
+                        <h:outputText value="グループ" />
+                        </f:facet>
+                        <h:outputText id="toGroupName" value="#{group.corresponGroup.name}" />
+                      </h:column>
+                      <h:column headerClass="confirm-toAddr-attention">
+                        <f:facet name="header">
+                          <h:outputText value="To" />
+                        </f:facet>
+                        <ui:repeat id="attention" value="#{group.users}" var="attention">
+                          <h:outputText value="#{attention.user.labelWithRole}" rendered="#{attention.attention}" />
+                          <h:outputText value="&lt;br /&gt;" escape="false"/>
+                        </ui:repeat>
+                      </h:column>
+                    </h:dataTable>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="twelve columns">
+                  <label>Cc</label>
+                  <div id="ccGroup">
+                    <div id="ccAddress">
+                      <h:dataTable id="ccAddressTable"
+                                   var="group"
+                                   value="#{corresponConfirmationPage.ccAddressCorresponGroups}"
+                                   width="100%" styleClass="list" rowClasses="odd,even">
+                        <h:column headerClass="confirm-coAddr-group">
+                          <f:facet name="header">
+                            <h:outputText value="グループ" />
+                          </f:facet>
+                          <h:outputText id="ccGroupName"
+                                        value="#{group.corresponGroup.name}" />
+                        </h:column>
+                        <h:column headerClass="confirm-coAddr-cc">
+                          <f:facet name="header">
+                            <h:outputText value="Cc" />
+                          </f:facet>
+                          <ui:repeat id="cc" value="#{group.users}" var="cc">
+                            <h:outputText value="#{cc.user.labelWithRole}"
+                                          rendered="#{cc.cc}" />
+                            <h:outputText value="&lt;br /&gt;" escape="false"/>
+                          </ui:repeat>
+                        </h:column>
+                      </h:dataTable>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="six columns">
+              <label>返信要否</label>
+              <h:outputText id="replyRequired"
+                            value="#{corresponConfirmationPage.correspon.replyRequired.label}" />
+              <h:outputText id="deadlineForReply"
+                            value="#{corresponConfirmationPage.correspon.deadlineForReply}">
+                <f:convertDateTime pattern="yyyy-MM-dd" />
+              </h:outputText>
+            </div>
+          </div>
+          <hr/>
+          <div class="row">
+            <div class="twelve columns">
+              <label>本文</label>
+            </div>
+          </div>
+          <div id="body" class="detail">
+            <div class="row">
+              <div class="twelve columns">
+                <h:outputText id="body" escape="false" value="#{corresponConfirmationPage.displayBody}" />
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="twelve columns">
+              <label>添付ファイル</label>
+              <h:inputHidden id="fileId" value="#{corresponConfirmationPage.fileId}" />
+              <h:inputHidden id="fileNo" value="#{corresponConfirmationPage.fileNo}" />
+            </div>
+          </div>
+          <div id="attachments" class="detail">
+            <ui:repeat var="attachment" value="#{corresponConfirmationPage.attachments}" varStatus="i">
+              <div id="attachment#{i.index + 1}Display" class="row">
+                <div columns="twelve columns">
+                  <h:commandLink id="attachmentName"
+                                 value="#{attachment.fileName}"
+                                 action="#{corresponConfirmationPage.download}"
+                                 onclick="setFileId('#{attachment.fileId}', #{i.index + 1}); setSkipDisable(true);" />
+                </div>
+              </div>
+            </ui:repeat>
+          </div>
+          <div class="row">
+            <div class="twelve columns">
+              <label>その他項目</label>
+            </div>
+          </div>
+          <div id="customFields" class="detail">
+            <div class="row customField">
+              <div class="twelve columns">
+                <h:outputLabel
+                   value="#{corresponConfirmationPage.correspon.customField1Label}"
+                   rendered="#{corresponConfirmationPage.correspon.customField1Id != null}"
+                   styleClass="label" />
+                <h:outputText id="customField1Value"
+                              value="#{corresponConfirmationPage.correspon.customField1Value}"
+                              rendered="#{corresponConfirmationPage.correspon.customField1Value != null}" />
+              </div>
+            </div>
+            <div class="row customField">
+              <div class="twelve columns">
+                <h:outputLabel
+                   value="#{corresponConfirmationPage.correspon.customField2Label}"
+                   rendered="#{corresponConfirmationPage.correspon.customField2Id != null}"
+                   styleClass="label" />
+                <h:outputText id="customField2Value"
+                              value="#{corresponConfirmationPage.correspon.customField2Value}"
+                              rendered="#{corresponConfirmationPage.correspon.customField2Value != null}" />
+
+              </div>
+            </div>
+            <div class="row customField">
+              <div class="twelve columns">
+                <h:outputLabel
+                   value="#{corresponConfirmationPage.correspon.customField3Label}"
+                   rendered="#{corresponConfirmationPage.correspon.customField3Id != null}"
+                   styleClass="label" />
+                <h:outputText id="customField3Value"
+                              value="#{corresponConfirmationPage.correspon.customField3Value}"
+                              rendered="#{corresponConfirmationPage.correspon.customField3Value != null}" />
+
+              </div>
+            </div>
+            <div class="row customField">
+              <div class="twelve columns">
+                <h:outputLabel
+                   value="#{corresponConfirmationPage.correspon.customField4Label}"
+                   rendered="#{corresponConfirmationPage.correspon.customField4Id != null}"
+                   styleClass="label" />
+                <h:outputText id="customField4Value"
+                              value="#{corresponConfirmationPage.correspon.customField4Value}"
+                              rendered="#{corresponConfirmationPage.correspon.customField4Value != null}" />
+
+              </div>
+            </div>
+            <div class="row customField">
+              <div class="twelve columns">
+                <h:outputLabel
+                   value="#{corresponConfirmationPage.correspon.customField5Label}"
+                   rendered="#{corresponConfirmationPage.correspon.customField5Id != null}"
+                   styleClass="label" />
+                <h:outputText id="customField5Value"
+                              value="#{corresponConfirmationPage.correspon.customField5Value}"
+                              rendered="#{corresponConfirmationPage.correspon.customField5Value != null}" />
+
+              </div>
+            </div>
+            <div class="row customField">
+              <div class="twelve columns">
+                <h:outputLabel
+                   value="#{corresponConfirmationPage.correspon.customField6Label}"
+                   rendered="#{corresponConfirmationPage.correspon.customField6Id != null}"
+                   styleClass="label" />
+                <h:outputText id="customField6Value"
+                              value="#{corresponConfirmationPage.correspon.customField6Value}"
+                              rendered="#{corresponConfirmationPage.correspon.customField6Value != null}" />
+
+              </div>
+            </div>
+            <div class="row customField">
+              <div class="twelve columns">
+                <h:outputLabel
+                   value="#{corresponConfirmationPage.correspon.customField7Label}"
+                   rendered="#{corresponConfirmationPage.correspon.customField7Id != null}"
+                   styleClass="label" />
+                <h:outputText id="customField7Value"
+                              value="#{corresponConfirmationPage.correspon.customField7Value}"
+                              rendered="#{corresponConfirmationPage.correspon.customField7Value != null}" />
+
+              </div>
+            </div>
+            <div class="row customField">
+              <div class="twelve columns">
+                <h:outputLabel
+                   value="#{corresponConfirmationPage.correspon.customField8Label}"
+                   rendered="#{corresponConfirmationPage.correspon.customField8Id != null}"
+                   styleClass="label" />
+                <h:outputText id="customField8Value"
+                              value="#{corresponConfirmationPage.correspon.customField8Value}"
+                              rendered="#{corresponConfirmationPage.correspon.customField8Value != null}" />
+
+              </div>
+            </div>
+            <div class="row customField">
+              <div class="twelve columns">
+                <h:outputLabel
+                   value="#{corresponConfirmationPage.correspon.customField9Label}"
+                   rendered="#{corresponConfirmationPage.correspon.customField9Id != null}"
+                   styleClass="label" />
+                <h:outputText id="customField9Value"
+                              value="#{corresponConfirmationPage.correspon.customField9Value}"
+                              rendered="#{corresponConfirmationPage.correspon.customField9Value != null}" />
+
+              </div>
+            </div>
+            <div class="row customField">
+              <div class="twelve columns">
+                <h:outputLabel
+                   value="#{corresponConfirmationPage.correspon.customField10Label}"
+                   rendered="#{corresponConfirmationPage.correspon.customField10Id != null}"
+                   styleClass="label" />
+                <h:outputText id="customField10Value"
+                              value="#{corresponConfirmationPage.correspon.customField10Value}"
+                              rendered="#{corresponConfirmationPage.correspon.customField10Value != null}" />
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-edit">
+          <h:commandButton id="Save"
+                           value="保存"
+                           styleClass="button-primary"
+                           onclick="setActionName(event);"
+                           action="#{corresponConfirmationPage.save}" />
+          <h:commandLink id="back"
+                         value="戻る"
+                         styleClass="button"
+                         onclick="setActionName(event);"
+                         action="#{corresponConfirmationPage.back}" />
+        </div>
+      </h:form>
+    </f:view>
+  </ui:define>
+</ui:composition>
+</html>

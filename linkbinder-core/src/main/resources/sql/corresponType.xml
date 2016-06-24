@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="corresponType">
+
+  <resultMap id="result" class="jp.co.opentone.bsol.linkbinder.dto.CorresponType">
+    <result property="id"                          column="id" />
+    <result property="projectCorresponTypeId"      column="project_correspon_type_id" />
+    <result property="projectId"                   column="project_id" />
+    <result property="projectNameE"                column="project_name_e" />
+    <result property="corresponType"               column="correspon_type" />
+    <result property="name"                        column="name" />
+    <result property="workflowPattern.id"          column="workflow_pattern_id" />
+    <result property="workflowPattern.workflowCd"  column="workflow_cd" />
+    <result property="workflowPattern.name"        column="workflow_pattern_name" />
+    <result property="allowApproverToBrowse"       column="allow_approver_to_browse" />
+    <result property="forceToUseWorkflow"          column="force_to_use_workflow" />
+    <result property="useWhole"                    column="use_whole" />
+    <result property="createdBy.empNo"             column="created_by" />
+    <result property="createdBy.nameE"             column="created_by_name" />
+    <result property="createdAt"                   column="created_at" />
+    <result property="updatedBy.empNo"             column="updated_by" />
+    <result property="updatedBy.nameE"             column="updated_by_name" />
+    <result property="updatedAt"                   column="updated_at" />
+    <result property="versionNo"                   column="version_no" />
+    <result property="deleteNo"                    column="delete_no" />
+    <result property="corresponAccessControlFlags" column="correspon_access_control_flags" />
+  </resultMap>
+
+  <resultMap id="resultForUpdate" class="jp.co.opentone.bsol.linkbinder.dto.CorresponType">
+    <result property="versionNo"             column="version_no" />
+  </resultMap>
+
+  <!--  find, countで共通的に利用するFROM, WHERE句 -->
+  <sql id="findFromWhere">
+    FROM
+      v_project_correspon_type
+    WHERE
+    <dynamic>
+      <isNotNull property="projectId">
+        project_id                   = #projectId#
+      </isNotNull>
+      <isNotNull property="useWhole">
+        use_whole                    = #useWhole#
+      </isNotNull>
+      <isNotNull prepend="AND" property="corresponType">
+        correspon_type            like #corresponType# || '%' {escape #escapeChar#}
+      </isNotNull>
+      <isNotNull prepend="AND" property="name">
+        name                      like #name# || '%' {escape #escapeChar#}
+      </isNotNull>
+    </dynamic>
+    ORDER BY id
+  </sql>
+
+  <select id="findByProjectCorresponTypeId" resultMap="result">
+    SELECT
+      id,
+      project_correspon_type_id,
+      project_id,
+      project_name_e,
+      correspon_type,
+      name,
+      workflow_pattern_id,
+      workflow_cd,
+      workflow_pattern_name,
+      allow_approver_to_browse,
+      force_to_use_workflow,
+      use_whole,
+      created_by,
+      created_by_name,
+      created_at,
+      updated_by,
+      updated_by_name,
+      updated_at,
+      version_no,
+      delete_no,
+      correspon_access_control_flags
+    FROM
+      v_project_correspon_type
+    WHERE
+      project_correspon_type_id = #projectCorresponTypeId#
+  </select>
+
+  <select id="find" resultMap="result">
+    SELECT
+    <dynamic>
+      <isNotNull property="useWhole">
+        DISTINCT
+      </isNotNull>
+    </dynamic>
+      id,
+      <dynamic>
+        <isNotNull property="projectId">
+          project_correspon_type_id,
+          project_id,
+          project_name_e,
+        </isNotNull>
+        <isNotNull property="useWhole">
+          '' AS project_correspon_type_id,
+          '' AS project_id,
+          '' AS project_name_e,
+        </isNotNull>
+      </dynamic>
+      correspon_type,
+      name,
+      workflow_pattern_id,
+      workflow_cd,
+      workflow_pattern_name,
+      allow_approver_to_browse,
+      force_to_use_workflow,
+      use_whole,
+      created_by,
+      created_by_name,
+      created_at,
+      updated_by,
+      updated_by_name,
+      updated_at,
+      version_no,
+      delete_no,
+      <dynamic>
+        <isNotNull property="projectId">
+          correspon_access_control_flags
+        </isNotNull>
+        <isNotNull property="useWhole">
+          '' AS correspon_access_control_flags
+        </isNotNull>
+      </dynamic>
+    <include refid="findFromWhere"/>
+  </select>
+
+  <select id="count" resultClass="int">
+    SELECT
+    <dynamic>
+      count(
+      <isNotNull property="useWhole">
+        DISTINCT
+      </isNotNull>
+      id) as cnt
+    </dynamic>
+    <include refid="findFromWhere"/>
+  </select>
+
+  <select id="findNotExist" resultMap="result">
+    SELECT DISTINCT
+      id,
+      '' AS project_correspon_type_id,
+      '' AS project_id,
+      '' AS project_name_e,
+      correspon_type,
+      name,
+      workflow_pattern_id,
+      workflow_cd,
+      workflow_pattern_name,
+      allow_approver_to_browse,
+      force_to_use_workflow,
+      use_whole,
+      created_by,
+      created_by_name,
+      created_at,
+      updated_by,
+      updated_by_name,
+      updated_at,
+      version_no,
+      delete_no,
+      '' AS correspon_access_control_flags
+    FROM
+      v_project_correspon_type
+    WHERE
+      id not in (SELECT
+                   id
+                 FROM
+                   v_project_correspon_type
+                 WHERE
+                   project_id = #value#)
+    AND
+      use_whole = 0
+    ORDER BY
+      id
+  </select>
+
+  <select id="countCheck" resultClass="int">
+    SELECT count(id) as cnt
+    FROM
+      v_project_correspon_type
+    <dynamic prepend="WHERE">
+      <isNotNull prepend="AND" property="corresponType">
+        correspon_type = #corresponType#
+      </isNotNull>
+      <isNotNull prepend="AND" property="id">
+        <![CDATA[id <> #id#]]>
+      </isNotNull>
+      <isNotNull prepend="AND" property="projectId">
+        project_id     = #projectId#
+      </isNotNull>
+      <isNull prepend="AND" property="projectId">
+        use_whole    = 0
+      </isNull>
+    </dynamic>
+  </select>
+
+  <insert id="create">
+    <selectKey resultClass="long" keyProperty="id">
+      SELECT s_correspon_type_id.NEXTVAL AS id FROM dual
+    </selectKey>
+    INSERT INTO correspon_type (
+      id,
+      correspon_type,
+      name,
+      workflow_pattern_id,
+      allow_approver_to_browse,
+      force_to_use_workflow,
+      use_whole,
+      created_by,
+      updated_by
+    ) VALUES (
+      #id#,
+      #corresponType#,
+      #name#,
+      #workflowPattern.id#,
+      #allowApproverToBrowse#,
+      #forceToUseWorkflow#,
+      #useWhole#,
+      #createdBy.empNo#,
+      #updatedBy.empNo#
+    )
+  </insert>
+
+  <update id="update">
+    UPDATE correspon_type
+    SET
+      updated_by = #updatedBy.empNo#,
+      updated_at = SYSTIMESTAMP,
+      version_no = (version_no + 1)
+      <dynamic>
+        <isNotNull prepend="," property="corresponType">
+          correspon_type = #corresponType#
+        </isNotNull>
+        <isNotNull prepend="," property="name">
+          name           = #name#
+        </isNotNull>
+        <isNotNull prepend="," property="workflowPattern.id">
+          workflow_pattern_id = #workflowPattern.id#
+        </isNotNull>
+        <isNotNull prepend="," property="allowApproverToBrowse">
+          allow_approver_to_browse = #allowApproverToBrowse#
+        </isNotNull>
+        <isNotNull prepend="," property="forceToUseWorkflow">
+          force_to_use_workflow = #forceToUseWorkflow#
+        </isNotNull>
+      </dynamic>
+    WHERE
+      id = #id#
+  </update>
+
+  <select id="findByIdForUpdate" resultMap="resultForUpdate">
+    SELECT
+      version_no
+    FROM
+      correspon_type
+    WHERE
+      id = #id#
+    FOR UPDATE
+  </select>
+
+  <select id="findById" resultMap="result">
+    SELECT
+      id,
+      '' AS project_correspon_type_id,
+      '' AS project_id,
+      '' AS project_name_e,
+      correspon_type,
+      name,
+      workflow_pattern_id,
+      workflow_cd,
+      workflow_pattern_name,
+      allow_approver_to_browse,
+      force_to_use_workflow,
+      use_whole,
+      created_by,
+      created_by_name,
+      created_at,
+      updated_by,
+      updated_by_name,
+      updated_at,
+      version_no,
+      delete_no,
+      '' AS correspon_access_control_flags
+    FROM
+      v_correspon_type
+    WHERE
+      id = #value#
+  </select>
+
+  <select id="findByIdProjectId" resultMap="result">
+    SELECT
+      id,
+      project_correspon_type_id,
+      project_id,
+      project_name_e,
+      correspon_type,
+      name,
+      workflow_pattern_id,
+      workflow_cd,
+      workflow_pattern_name,
+      allow_approver_to_browse,
+      force_to_use_workflow,
+      use_whole,
+      created_by,
+      created_by_name,
+      created_at,
+      updated_by,
+      updated_by_name,
+      updated_at,
+      version_no,
+      delete_no,
+      correspon_access_control_flags
+    FROM
+      v_project_correspon_type
+    WHERE
+      id         = #id#
+    AND
+      project_id = #projectId#
+  </select>
+
+  <update id="delete">
+    UPDATE
+      correspon_type
+    SET
+      updated_by = #updatedBy.empNo#,
+      updated_at = SYSTIMESTAMP,
+      version_no = (version_no + 1),
+      delete_no  = s_correspon_type_dno.NEXTVAL
+    WHERE
+      id         = #id#
+  </update>
+
+</sqlMap>

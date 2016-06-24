@@ -21,3 +21,5 @@ docker-compose.yml
 docker-compose.yml-e
 /logback.xml
 /logback.groovy
+db/main.xml
+db/changelog

@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html [
+<!ENTITY nbsp "&#160;">
+<!ENTITY yen "&#165;">
+<!ENTITY plusmn "&#177;">
+<!ENTITY minus "&#8722;">
+<!ENTITY darr "&#2193;">
+<!ENTITY uarr "&#2191;">
+]>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/include/template.xhtml">
+  <ui:define name="title">全文検索</ui:define>
+  <ui:define name="jsOuter">
+    <link type="text/css" href="#{contextPath}/resource/#{v}/stylesheet/custom/correspon.css" rel="stylesheet" />
+  </ui:define>
+  <ui:define name="jsInner"></ui:define>
+  <ui:define name="body">
+<script type="text/javascript">
+  function setAttachmentId(val) {
+    var attachmentId = document.getElementById('form:attachmentId');
+    attachmentId.value = val;
+  }
+  function setId(val) {
+    var id = document.getElementById('form:id');
+    id.value = val;
+  }
+  function initSelect() {
+    var view = document.getElementById('form:viewRender');
+    if (view.value == null || view.value == '0') {
+      document.getElementById('viewArea').style.display = "none";
+    }
+  }
+  window.onload = initSelect;
+</script>
+  <f:view>
+    <h:form id="form" onsubmit="return disableSubmit();">
+      <h:inputHidden id="actionName" value="#{corresponSearchPage.actionName}" />
+      <div id="condition">
+        <div class="group">
+          <span class="condition-group-caption">検索条件</span>
+          <div class="row">
+            <div class="seven columns">
+              <h:outputLabel for="keyword" value="キーワード"/>
+              <h:inputText id="keyword"
+                          styleClass="u-full-width allow_submit"
+                          value="#{corresponSearchPage.keyword}"/>
+              <h:message infoClass="info"
+                         errorClass="error"
+                         warnClass="warn"
+                         fatalClass="fatal"
+                         for="keyword" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="four columns">
+              <h:outputLabel for="fullTextSearchMode" value="検索対象"/>
+              <h:selectOneMenu id="fullTextSearchMode"
+                            value="#{corresponSearchPage.fullTextSearchMode}"
+                            styleClass="u-full-width"
+                            rendered="#{corresponSearchPage.fullTextSearchModeSelectList != null}">
+                <f:selectItems value="#{corresponSearchPage.fullTextSearchModeSelectList}" />
+              </h:selectOneMenu>
+            </div>
+          </div>
+          <div class="row">
+            <div class="four columns">
+              <h:commandButton id="search"
+                           styleClass="button-primary"
+                           value="検索" action="#{corresponSearchPage.search}"
+                           onclick="setActionName(event)" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr/>
+
+      <div id="viewArea">
+        <h:inputHidden id="viewRender" value="#{corresponSearchPage.dataCount}" />
+
+        <div id="paging" class="row">
+            <div class="one column list-count">
+              <h:outputText id="dataCount" value="#{corresponSearchPage.dataCount}"  />
+            </div>
+            <div class="one column list-range">
+              <h:outputText id="pageDisplayNo"
+                              value="#{corresponSearchPage.pageDisplayNo}"/>
+            </div>
+            <div class="three columns list-nav">
+              <h:commandLink id="previous"
+                        rendered="#{corresponSearchPage.previous}"
+                        value="#{corresponSearchPage.previousLabel}"
+                        action="#{corresponSearchPage.movePrevious}"
+                         onclick="setActionName(event)" />
+              <h:outputText rendered="#{!corresponSearchPage.previous}" value="#{corresponSearchPage.previousLabel}" />
+              <ui:repeat id="pagingNo" value="#{corresponSearchPage.pagingNo}" var="value" >
+                <h:commandLink
+                          rendered="#{value != corresponSearchPage.pageNo and corresponSearchPage.pageNo != 0}"
+                          value=" #{value} " action="#{corresponSearchPage.changePage}"
+                          onclick="setActionName(event);setPageNo('#{value}');" />
+                <h:outputText rendered="#{value == corresponSearchPage.pageNo and corresponSearchPage.pageNo != 0}" value=" #{value} " />
+              </ui:repeat>
+              <h:inputHidden id="pageNo" value="#{corresponSearchPage.pageNo}" />
+              <h:commandLink id="next"
+                          rendered="#{corresponSearchPage.next}"
+                          value="#{corresponSearchPage.nextLabel}"
+                          action="#{corresponSearchPage.moveNext}"
+                          onclick="setActionName(event)" />
+              <h:outputText rendered="#{!corresponSearchPage.next}" value="#{corresponSearchPage.nextLabel}" />
+            </div>
+        </div>
+
+        <h:inputHidden id="attachmentId" value="#{corresponSearchPage.attachmentId}" />
+        <h:inputHidden id="id" value="#{corresponSearchPage.id}" />
+
+        <h:dataTable id="searchResult" var="row" value="#{corresponSearchPage.fullTextSearchCorresponsResultList}">
+          <h:column>
+            <h:panelGrid columns="1" rendered="#{row.attachmentId == null}">
+              <h:commandLink id="corresponTitle"
+                          rendered="#{row.summaryViewFlag}"
+                          action="#{corresponSearchPage.show}"
+                          style="font-size: 16px;text-decoration: underline;"
+                          onclick="setFixedActionName('Show'); setId('#{row.id}');">
+                <h:outputText id="corresponTitleLabel" value="#{row.title}" escape="false" />
+              </h:commandLink>
+              <h:outputText id="corresponTitleLabelForView" rendered="#{!row.summaryViewFlag}" value="#{row.title}" escape="false" />
+
+              <h:outputText value="最終更新日:  #{row.mdate}" class="search-summary" />
+              <h:panelGrid columns="2">
+                <h:outputText value="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" escape="false" />
+                <ui:fragment rendered="#{row.summaryViewFlag}">
+                  <span class="search-summary">
+                  <ui:repeat id="summary" value="#{row.summaryList}" var="data" >
+                    <h:outputText value="#{data.value}" escape="#{data.escape}" />
+                  </ui:repeat>
+                  </span>
+                </ui:fragment>
+              </h:panelGrid>
+            </h:panelGrid>
+
+            <h:panelGrid columns="1" rendered="#{row.attachmentId != null}" headerClass="left_justify">
+              <f:facet name="header">
+                <h:panelGroup style="text-align:left;">
+                  <h:commandLink id="attachmentFileName"
+                            rendered="#{row.summaryViewFlag}"
+                            action="#{corresponSearchPage.download}"
+                            style="font-size: 16px;text-decoration: underline;"
+                            onclick="setFixedActionName('Download'); setAttachmentId('#{row.attachmentId}'); setId('#{row.id}'); setSkipDisable(true);">
+                    <h:outputText id="attachmentFileNameLabel" value="#{row.title}" escape="false" />
+                  </h:commandLink>
+                  <h:outputText id="attachmentFileNameLabelForView" rendered="#{!row.summaryViewFlag}" value="#{row.title}" escape="false" />
+                  <h:outputText value="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" escape="false" />
+                  <h:outputText value="添付先文書 " style="font-size: 12px; color: #999999;" />
+                  <h:commandLink id="attachedTo"
+                              action="#{corresponSearchPage.show}"
+                              style="font-size: 12px;text-decoration: underline;"
+                              onclick="setFixedActionName('Show'); setId('#{row.id}');">
+                    <h:outputText value="#{row.id}" />
+                  </h:commandLink>
+                </h:panelGroup>
+              </f:facet>
+              <h:panelGrid columns="1" style="text-align:left;">
+                <h:outputText value="最終更新日:  #{row.mdate}" class="search-summary" />
+                <h:panelGrid columns="2">
+                  <h:outputText value="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" escape="false" />
+                  <ui:fragment rendered="#{row.summaryViewFlag}">
+                    <span class="search-summary">
+                    <ui:repeat id="summaryFile" var="data" value="#{row.summaryList}" >
+                      <h:outputText value="#{data.value}" escape="#{data.escape}" />
+                    </ui:repeat>
+                    </span>
+                  </ui:fragment>
+                </h:panelGrid>
+              </h:panelGrid>
+            </h:panelGrid>
+          </h:column>
+        </h:dataTable>
+
+        <input type="text" name="dummy" style="display: none;" />
+      </div>
+      </h:form>
+    </f:view>
+  </ui:define>
+</ui:composition>
+</html>

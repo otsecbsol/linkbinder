@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="workflow">
+
+  <resultMap id="result" class="jp.co.opentone.bsol.linkbinder.dto.Workflow">
+    <result property="id"                    column="id" />
+    <result property="corresponId"           column="correspon_id" />
+    <result property="user.empNo"            column="emp_no" />
+    <result property="user.nameE"            column="emp_name_e" />
+    <result property="user.role"             column="role" />
+    <result property="workflowType"          column="workflow_type" />
+    <result property="workflowNo"            column="workflow_no" />
+    <result property="workflowProcessStatus" column="workflow_process_status" />
+    <result property="commentOn"             column="comment_on" />
+    <result property="finishedBy.empNo"      column="finished_by" />
+    <result property="finishedBy.nameE"      column="finished_by_name" />
+    <result property="finishedAt"            column="finished_at" />
+    <result property="createdBy.empNo"       column="created_by" />
+    <result property="createdBy.nameE"       column="created_by_name" />
+    <result property="createdAt"             column="created_at" />
+    <result property="updatedBy.empNo"       column="updated_by" />
+    <result property="updatedBy.nameE"       column="updated_by_name" />
+    <result property="updatedAt"             column="updated_at" />
+    <result property="versionNo"             column="version_no" />
+    <result property="deleteNo"              column="delete_no" />
+  </resultMap>
+  <resultMap id="resultForUpdate" class="jp.co.opentone.bsol.linkbinder.dto.Workflow">
+    <result property="versionNo"             column="version_no" />
+  </resultMap>
+
+<!-- findByid,findByCorresponIdで共通的に使用するSELECT,FROM句 -->
+  <sql id="selectFrom">
+    SELECT
+      id,
+      correspon_id,
+      emp_no,
+      emp_name_e,
+      role,
+      workflow_type,
+      workflow_no,
+      workflow_process_status,
+      comment_on,
+      finished_by,
+      finished_by_name,
+      finished_at,
+      created_by,
+      created_by_name,
+      created_at,
+      updated_by,
+      updated_by_name,
+      updated_at,
+      version_no,
+      delete_no
+    FROM
+      v_workflow
+  </sql>
+
+  <insert id="create">
+    <selectKey resultClass="long" keyProperty="id">
+        SELECT s_workflow_id.NEXTVAL AS id FROM dual
+    </selectKey>
+    INSERT INTO workflow (
+      id,
+      correspon_id,
+      emp_no,
+      workflow_type,
+      workflow_no,
+      workflow_process_status,
+      comment_on,
+      created_by,
+      updated_by
+    ) VALUES (
+      #id#,
+      #corresponId#,
+      #user.empNo#,
+      #workflowType#,
+      #workflowNo#,
+      #workflowProcessStatus#,
+      #commentOn#,
+      #createdBy.empNo#,
+      #updatedBy.empNo#
+    )
+  </insert>
+
+  <update id="deleteByCorresponId">
+    UPDATE workflow
+    SET
+      updated_by = #updatedBy.empNo#,
+      updated_at = SYSTIMESTAMP,
+      version_no = (version_no + 1),
+      delete_no  = s_workflow_dno.NEXTVAL
+    WHERE
+      correspon_id = #corresponId#
+    AND
+      delete_no = 0
+  </update>
+
+  <update id="deleteByCorresponIdWorkflowNo">
+    UPDATE workflow
+    SET
+      updated_by = #updatedBy.empNo#,
+      updated_at = SYSTIMESTAMP,
+      version_no = (version_no + 1),
+      delete_no  = s_workflow_dno.NEXTVAL
+    WHERE
+      correspon_id = #corresponId#
+    AND
+      workflow_no > #workflowNo#
+    AND
+      delete_no = 0
+  </update>
+
+  <select id="findById" resultMap="result">
+    <include refid="selectFrom"/>
+    WHERE
+      id = #value#
+  </select>
+
+  <select id="findByCorresponId" resultMap="result">
+    <include refid="selectFrom"/>
+    WHERE
+      correspon_id = #value#
+    ORDER BY
+      workflow_no
+  </select>
+
+  <!-- Workfow 1.Checker、Approver -->
+  <select id="findSendApplyUser" resultMap="result">
+    SELECT
+      w.id,
+      w.correspon_id,
+      w.emp_no,
+      w.emp_name_e,
+      w.role,
+      w.workflow_type,
+      w.workflow_no,
+      w.workflow_process_status,
+      w.comment_on,
+      w.finished_by,
+      w.finished_by_name,
+      w.finished_at,
+      w.created_by,
+      w.created_by_name,
+      w.created_at,
+      w.updated_by,
+      w.updated_by_name,
+      w.updated_at,
+      w.version_no,
+      w.delete_no
+    FROM
+      v_workflow w
+    WHERE
+      w.correspon_id = #correspon.id#
+    AND
+      w.workflow_type = #workflowType#
+    <isEqual property="workflowType.value" compareValue="1" prepend="AND">
+      w.workflow_process_status IN (#requestForCheck#, #requestForApproval#, #underConsideration#)
+    </isEqual>
+    <isEqual property="workflowType.value" compareValue="2">
+      <isEqual property="correspon.corresponType.allowApproverToBrowse.value" compareValue="0" prepend="AND">
+        w.workflow_process_status IN (#requestForCheck#, #requestForApproval#, #underConsideration#)
+      </isEqual>
+    </isEqual>
+    AND
+      NOT EXISTS(
+        SELECT
+          1
+        FROM
+          v_email_notice_recv_setting enrs
+        WHERE
+          enrs.project_id = #correspon.projectId#
+        AND
+          enrs.emp_no = w.emp_no
+        AND
+          enrs.receive_workflow = #emailNoticeReceivableNo#
+      )
+    AND
+      EXISTS(
+        SELECT
+          1
+        FROM
+          v_project_user pu
+        WHERE
+          pu.project_id = #correspon.projectId#
+        AND
+          pu.emp_no = w.emp_no
+      )
+  </select>
+
+  <update id="update">
+    UPDATE workflow
+    SET
+      updated_by        =         #updatedBy.empNo#,
+      updated_at        =         SYSTIMESTAMP,
+      version_no        =         (version_no + 1)
+    <dynamic>
+      <isNotNull prepend="," property="corresponId" >
+        correspon_id    =         #corresponId#
+      </isNotNull>
+      <isNotNull prepend="," property="user.empNo">
+        emp_no          =         #user.empNo#
+      </isNotNull>
+      <isNotNull prepend="," property="workflowType">
+        workflow_type   =         #workflowType#
+      </isNotNull>
+      <isNotNull prepend="," property="workflowNo">
+        workflow_no     =         #workflowNo#
+      </isNotNull>
+      <isNotNull prepend="," property="workflowProcessStatus">
+        workflow_process_status = #workflowProcessStatus#
+      </isNotNull>
+      <isNotNull prepend="," property="commentOn">
+        comment_on      =         #commentOn#
+      </isNotNull>
+      <isNotNull prepend="," property="finishedBy.empNo">
+        finished_by     =         #finishedBy.empNo#
+      </isNotNull>
+      <isNotNull prepend="," property="finishedAt">
+        finished_at     =         #finishedAt#
+      </isNotNull>
+      <isNotNull prepend="," property="createdBy.empNo">
+        created_by      =         #createdBy.empNo#
+      </isNotNull>
+      <isNotNull prepend="," property="createdAt">
+        created_at      =         #createdAt#
+      </isNotNull>
+    </dynamic>
+    WHERE
+      id = #id#
+  </update>
+
+  <select id="findByIdForUpdate" resultMap="resultForUpdate">
+    SELECT
+      version_no
+    FROM
+      workflow
+    WHERE
+      id = #id#
+    FOR UPDATE
+  </select>
+
+  <update id="updateByCorresponId">
+    UPDATE workflow
+    SET
+      workflow_process_status = #workflowProcessStatus#,
+      finished_by             = #finishedBy.empNo#,
+      finished_at             = #finishedAt#,
+      updated_by              = #updatedBy.empNo#,
+      updated_at              = SYSTIMESTAMP,
+      version_no              = (version_no + 1)
+    WHERE
+      correspon_id = #corresponId#
+    AND
+      delete_no = 0
+  </update>
+
+  <update id="updateWorkflowProcessStatusesByCorresponIdAndWorkflowType">
+    UPDATE workflow
+    SET
+      workflow_process_status = #workflowProcessStatus#,
+      updated_by              = #updatedBy.empNo#,
+      updated_at              = SYSTIMESTAMP,
+      version_no              = (version_no + 1)
+    WHERE
+      correspon_id = #corresponId#
+    AND
+      workflow_type = #workflowType#
+    AND
+      workflow_process_status = #currentWorkflowProcessStatus#
+    AND
+      delete_no = 0
+  </update>
+
+  <update id="updateWorkflowProcessStatusById">
+    UPDATE workflow
+    SET
+      workflow_process_status = #workflowProcessStatus#,
+      updated_by              = #updatedBy.empNo#,
+      updated_at              = SYSTIMESTAMP,
+      version_no              = (version_no + 1)
+    WHERE
+      id = #id#
+    AND
+      workflow_process_status = #currentWorkflowProcessStatus#
+  </update>
+
+</sqlMap>
+

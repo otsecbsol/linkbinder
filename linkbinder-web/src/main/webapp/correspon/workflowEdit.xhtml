@@ -1,0 +1,226 @@
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+  <body>
+    <script type="text/javascript">
+      function oncompleteSave(data){
+        Spinner.onStatusChange(data);
+        if (data.status == 'success') {
+          postProcess(event);
+          cancelWorkflowWhenNoError();
+          scrollWindowByScrollPosition();
+        }
+      }
+    </script>
+    <div id="workflowEdit" style="display: none;" class="workflow-dialog">
+      <div class="workflow-dialog-top">
+        <span class="title">ワークフロー編集</span>
+      </div>
+      <h:panelGroup id="dialogMessagePanel">
+        <h:messages globalOnly="true" showDetail="true" showSummary="false"
+          infoClass="info" errorClass="error" warnClass="warn"
+          fatalClass="fatal" rendered="#{corresponPage.workflowEditDisplay}" />
+      </h:panelGroup>
+
+      <div class="row">
+        <div class="twelve columns">
+          <span class="inner-title">検証者/承認者の追加</span>
+        </div>
+      </div>
+      <div class="row">
+        <div class="twelve columns">
+          <h:outputLabel for="template" value="テンプレート"/>
+          <f:validateBean validationGroups="#{corresponPage.templateValidationGroups}">
+            <h:selectOneMenu
+                  id="template" value="#{corresponPage.template}"
+                  styleClass="u-full-width"
+                  rendered="#{corresponPage.selectTemplate != null and corresponPage.initialDisplaySuccess}">
+              <f:selectItems value="#{corresponPage.selectTemplate}" />
+            </h:selectOneMenu>
+              <h:message for="template" infoClass="info"
+                errorClass="error" warnClass="warn" fatalClass="fatal" />
+          </f:validateBean>
+        </div>
+      </div>
+      <div class="action-edit">
+        <h:commandButton id="apply"
+              styleClass="button button-normal"
+              action="#{corresponPage.module.apply}" value="反映"
+              onclick="setScrollPosition();setActionName(event)"
+              rendered="#{corresponPage.initialDisplaySuccess}" />
+        <h:commandButton
+              id="deleteTemplate" action="#{corresponPage.module.deleteTemplate}"
+              styleClass="button button-normal"
+              value="削除"
+              onclick="setScrollPosition();setActionName(event); return confirmButton();"
+              rendered="#{corresponPage.initialDisplaySuccess}" />
+      </div>
+
+      <div class="row">
+        <div class="two columns">
+          <h:outputLabel for="workflow" value="No." styleClass="required"/>
+          <h:selectOneMenu id="workflow"
+                  value="#{corresponPage.workflowNo}"
+                  styleClass="u-full-width"
+                  rendered="#{corresponPage.selectWorkflowNo != null and corresponPage.initialDisplaySuccess}">
+            <f:selectItems value="#{corresponPage.selectWorkflowNo}" />
+          </h:selectOneMenu>
+          <h:message for="workflow" infoClass="info"
+              errorClass="error" warnClass="warn" fatalClass="fatal" />
+        </div>
+        <div class="two columns">
+          <h:outputLabel for="role" value="役割" styleClass="required"/>
+          <h:selectOneMenu id="role" value="#{corresponPage.role}"
+                          styleClass="u-full-width"
+                          rendered="#{corresponPage.selectWorkflowType != null and corresponPage.initialDisplaySuccess}">
+            <f:selectItems value="#{corresponPage.selectWorkflowType}" />
+          </h:selectOneMenu>
+          <h:message for="role" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+        </div>
+        <div class="three columns">
+          <h:outputLabel for="group" value="グループ"/>
+          <h:selectOneMenu id="group" value="#{corresponPage.groupId}"
+                        onchange="document.getElementById('form:changeGroup').click();"
+                        styleClass="u-full-width"
+                        rendered="#{corresponPage.selectGroup != null and corresponPage.initialDisplaySuccess}">
+            <f:selectItems value="#{corresponPage.selectGroup}" />
+          </h:selectOneMenu>
+          <h:message for="group" infoClass="info" errorClass="error"
+                warnClass="warn" fatalClass="fatal" />
+          <h:commandButton id="changeGroup"
+            action="#{corresponPage.module.changeGroup}" value="Change"
+            style="display:none;" />
+        </div>
+        <div class="five columns">
+          <h:outputLabel for="user" value="ユーザー" styleClass="required"/>
+          <f:validateBean validationGroups="#{corresponPage.userIdValidationGroups}">
+            <h:selectOneMenu id="user" value="#{corresponPage.userId}"
+                          styleClass="u-full-width"
+                          rendered="#{corresponPage.selectUser != null and corresponPage.initialDisplaySuccess}">
+              <f:selectItems value="#{corresponPage.selectUser}" />
+            </h:selectOneMenu>
+            <h:message for="user" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+          </f:validateBean>
+        </div>
+      </div>
+      <div class="action-edit">
+        <h:commandButton id="add" onclick="setScrollPosition();setActionName(event)"
+                        styleClass="button button-normal"
+                        action="#{corresponPage.module.addWorkflow}" value="検証者/承認者を追加"
+                        rendered="#{corresponPage.initialDisplaySuccess}" />
+      </div>
+
+      <div class="row">
+        <div class="twelve columns">
+          <span class="inner-title">ワークフロー</span>
+        </div>
+      </div>
+
+      <h:panelGroup id="dialogWorkflowPanel">
+        <h:dataTable id="workflows" var="w"
+          value="#{corresponPage.workflowModel}"
+          styleClass="list" columnClasses="number,text,text,text,center"
+          rowClasses="odd,even" rendered="#{corresponPage.workflowEditDisplay}">
+          <h:column headerClass="workflow-no">
+            <f:facet name="header">
+              <h:outputText value="No." />
+            </f:facet>
+            <h:outputText value="#{w.workflowNo}" />
+          </h:column>
+          <h:column headerClass="workflow-role">
+            <f:facet name="header">
+              <h:outputText value="役割" />
+            </f:facet>
+            <h:outputText value="#{w.workflowType.label}"
+              rendered="#{w.workflowType != null}" />
+            <h:outputText value="作成者" rendered="#{w.workflowType == null}" />
+          </h:column>
+          <h:column headerClass="workflow-group">
+            <f:facet name="header">
+              <h:outputText value="グループ" />
+            </f:facet>
+            <h:outputText value="#{w.corresponGroup.name}" />
+          </h:column>
+          <h:column headerClass="workflow-user2">
+            <f:facet name="header">
+              <h:outputText value="ユーザー" />
+            </f:facet>
+            <h:outputText value="#{w.user.labelWithRole}"
+              rendered="#{w.user.empNo != null}" />
+          </h:column>
+          <h:column headerClass="text-center">
+            <f:facet name="header">
+              <h:commandLink onclick="setScrollPosition();setActionName(event)"
+                styleClass="button header-button"
+                action="#{corresponPage.module.allDelete}"
+                rendered="#{corresponPage.allDeletable}">
+                <h:outputText value="すべて削除" />
+              </h:commandLink>
+            </f:facet>
+            <h:commandLink onclick="setScrollPosition();setActionName(event)"
+                styleClass="button"
+                action="#{corresponPage.module.delete}"
+                rendered="#{corresponPage.deletable}">
+              <h:outputText value="削除" />
+            </h:commandLink>
+          </h:column>
+        </h:dataTable>
+      </h:panelGroup>
+      <div class="row">
+        <div class="twelve columns">
+          <h:outputLabel for="templateName" value="テンプレート名"/>
+          <f:validateBean validationGroups="#{corresponPage.templateNameValidationGroups}">
+            <h:inputText
+              id="templateName" value="#{corresponPage.templateName}"
+              style="width: 500px;" maxlength="100"/>
+            <h:message for="templateName"
+              infoClass="info" errorClass="error" warnClass="warn"
+              fatalClass="fatal" />
+          </f:validateBean>
+          <h:commandButton id="saveTemplate"
+                          action="#{corresponPage.module.saveTemplate}" value="テンプレートとして保存"
+                          styleClass="button button-normal"
+                          onclick="setScrollPosition(); setActionName(event)"
+                          rendered="#{corresponPage.initialDisplaySuccess}" />
+        </div>
+      </div>
+      <div class="action-edit">
+        <h:commandButton
+          value="保存"
+          styleClass="button-primary"
+          rendered="#{corresponPage.initialDisplaySuccess}"
+          action="#{corresponPage.module.save}"
+          onclick="preProcess(event, true);">
+          <f:ajax render=":form:action-panel-btn :form:workflowDisplayPanel :messagePanel :form:updateByPanel :form:updateAtPanel :form:workflowListPanel :form:workflowActionPanel :form:dialogMessagePanel :form:dialogWorkflowPanel" execute="@all" onevent="oncompleteSave" />
+        </h:commandButton>
+        <h:commandLink
+          value="キャンセル"
+          styleClass="button cancel"
+          action="#{corresponPage.module.cancel}"
+          onclick="preProcess(event, true);">
+          <f:ajax render=":form:action-panel-btn :form:workflowDisplayPanel :form:workflowListPanel" execute="@all" onevent="oncompleteCancel" />
+        </h:commandLink>
+      </div>
+    </div>
+  </body>
+</html>

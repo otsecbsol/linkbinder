@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="user">
+
+  <parameterMap id="authenticationParameter"
+                class="jp.co.opentone.bsol.framework.core.auth.AuthenticationParameter">
+    <parameter property="userId"            jdbcType="VARCHAR" javaType="String" mode="IN"/>
+    <parameter property="password"          jdbcType="VARCHAR" javaType="String" mode="IN"/>
+    <parameter property="nameE"             jdbcType="VARCHAR" javaType="String" mode="OUT"/>
+    <parameter property="sysAdminFlg"       jdbcType="VARCHAR" javaType="String" mode="OUT"/>
+    <parameter property="passwordNullFlg"   jdbcType="VARCHAR" javaType="String" mode="OUT"/>
+    <parameter property="passwordUpdatedAt" jdbcType="INTEGER" javaType="Long"   mode="OUT"/>
+    <parameter property="lastAccessGroupId" jdbcType="VARCHAR" javaType="String" mode="OUT"/>
+  </parameterMap>
+
+  <resultMap id="user" class="jp.co.opentone.bsol.linkbinder.dto.User">
+    <result property="empNo"                column="emp_no" />
+    <result property="lastName"             column="last_name" />
+    <result property="nameE"                column="name_e" />
+    <result property="nameJ"                column="name_j" />
+    <result property="emailAddress"         column="email_address" />
+    <result property="sysAdminFlg"          column="sys_admin_flg" />
+    <result property="userProfileId"        column="user_profile_id" />
+    <result property="defaultProjectId"     column="default_project_id" />
+    <result property="defaultProjectNameE"  column="default_project_name_e" />
+    <result property="lastLoggedInAt"       column="last_logged_in_at" />
+    <result property="userProfileVersionNo" column="user_profile_version_no" />
+    <result property="remarks"              column="remarks" />
+    <result property="empCreatedAt"         column="emp_created_at" />
+  </resultMap>
+  <resultMap id="projectUser" class="jp.co.opentone.bsol.linkbinder.dto.ProjectUser">
+    <result property="projectId"                                   column="project_id" />
+    <result property="user.empNo"                                  column="emp_no" />
+    <result property="user.lastName"                               column="emp_last_name" />
+    <result property="user.nameE"                                  column="emp_name_e" />
+    <result property="securityLevel"                               column="security_level" />
+    <result property="projectCompany.projectCompanyId"             column="project_company_id" />
+    <result property="projectCompany.companyCd"                    column="company_cd" />
+    <result property="projectCompany.name"                         column="company_name" />
+    <result property="projectUserProfile.id"                       column="project_user_profile_id" />
+    <result property="projectUserProfile.defaultCorresponGroup.id" column="default_correspon_group_id" />
+    <result property="user.role"                                   column="role" />
+    <result property="defaultCorresponGroup.id"                    column="default_correspon_group_id" />
+    <result property="defaultCorresponGroup.name"                  column="default_correspon_group_name" />
+    <result property="projectAdminFlg"                             column="project_admin_flg" />
+  </resultMap>
+
+  <resultMap id="authenticateUser"
+                class="jp.co.opentone.bsol.framework.core.auth.AuthenticationParameter">
+    <result property="userId"            column="emp_no" />
+    <result property="password"          column="emp_passwd" />
+    <result property="nameE"             column="emp_nm_e" />
+    <result property="sysAdminFlg"       column="sys_adm_flg" />
+    <result property="passwordNullFlg"   column="emp_passwd_null_flg" />
+    <result property="passwordUpdatedAt" column="emp_passwd_upd" />
+    <result property="createdAt"        column="id_created_dt" />
+  </resultMap>
+
+  <resultMap id="systemUser"
+                class="jp.co.opentone.bsol.linkbinder.dto.SysUsers">
+    <result property="empNo"             column="emp_no" />
+    <result property="lastName"          column="last_name" />
+    <result property="nameE"             column="name_e" />
+    <result property="nameJ"             column="name_j" />
+    <result property="password"          column="emp_passwd" />
+    <result property="passwordUpdatedAt" column="emp_passwd_upd" />
+    <result property="sysAdmFlg"         column="sys_adm_flg" />
+    <result property="userRegistAprvFlg" column="user_regist_aprv_flg" />
+    <result property="pjId"              column="pj_id" />
+    <result property="pjAdmFlg"          column="pj_adm_flg" />
+    <result property="mailAddress"       column="mail_address" />
+    <result property="userIdAt"            column="user_id_valid_dt" />
+    <result property="createdAt"         column="id_created_dt" />
+  </resultMap>
+
+  <resultMap id="personInChargeResult" class="jp.co.opentone.bsol.linkbinder.dto.User">
+    <result property="empNo" column="emp_no" />
+  </resultMap>
+
+  <sql id="findFromWhere">
+    FROM
+      v_project_user
+    WHERE
+      project_id = #projectId#
+    <dynamic>
+      <isNotEmpty property="empNo" prepend="AND">
+      emp_no like #empNo# || '%' {escape #escapeChar#}
+      </isNotEmpty>
+      <isNotEmpty property="nameE" prepend="AND">
+      emp_name_e like #nameE#  || '%' {escape #escapeChar#}
+      </isNotEmpty>
+      <isNotEmpty property="sysAdminFlg" prepend="AND">
+      emp_no
+        <isNotEmpty property="securityLevel">
+          not
+        </isNotEmpty>
+        in (SELECT emp_no FROM v_user WHERE sys_admin_flg = #sysAdminFlg#)
+      </isNotEmpty>
+      <isNotEmpty property="projectAdmin" prepend="AND">
+      emp_no
+        <isNotEmpty property="securityLevel">
+          not
+        </isNotEmpty>
+        in (SELECT emp_no FROM v_project_user WHERE project_admin_flg = #projectAdmin#
+                                                AND project_id = #projectId#)
+      </isNotEmpty>
+      <isNotEmpty property="groupAdmin" prepend="AND">
+      emp_no
+        <isNotEmpty property="securityLevel">
+          not
+        </isNotEmpty>
+        in (SELECT emp_no FROM v_correspon_group_user WHERE security_level = #groupAdmin#
+                                                        AND project_id = #projectId#)
+      </isNotEmpty>
+      <isNotEmpty property="companyId" prepend="AND">
+      project_company_id = #companyId#
+      </isNotEmpty>
+      <isNotEmpty property="corresponGroupId" prepend="AND">
+      emp_no in (SELECT emp_no FROM v_correspon_group_user WHERE correspon_group_id = #corresponGroupId#)
+      </isNotEmpty>
+      <isNotEmpty property="nullColumn" prepend="AND">
+      $nullColumn$ IS NULL
+      </isNotEmpty>
+    </dynamic>
+  </sql>
+
+  <select id="findByEmpNo" resultMap="user">
+    SELECT
+     emp_no,
+     last_name,
+     name_e,
+     name_j,
+     email_address,
+     sys_admin_flg,
+     user_profile_id,
+     default_project_id,
+     default_project_name_e,
+     last_logged_in_at,
+     user_profile_version_no,
+     '' AS remarks,
+     TO_CHAR(emp_created_at, 'YYYY-MM-DD HH24:MI:SS') as emp_created_at
+    FROM
+      v_user
+    WHERE
+      emp_no = #value#
+  </select>
+
+  <select id="findProjectUser" resultMap="projectUser">
+    SELECT
+      project_id,
+      emp_no,
+      emp_last_name,
+      emp_name_e,
+      security_level,
+      project_company_id,
+      company_cd,
+      company_name,
+      project_user_profile_id,
+      role,
+      default_correspon_group_id,
+      default_correspon_group_name,
+      project_admin_flg
+    <include refid="findFromWhere"/>
+    ORDER BY
+      emp_last_name,
+      emp_name_e,
+      emp_no
+  </select>
+
+  <select id="findEmpNo" resultClass="java.lang.String">
+    SELECT
+      emp_no
+    FROM
+      v_user
+    ORDER BY
+      emp_no
+  </select>
+
+  <select id="authenticate" resultMap="authenticateUser">
+      SELECT
+       a.emp_no,
+        a.emp_passwd,
+        a.emp_nm_e,
+        a.sys_adm_flg,
+        1 AS emp_passwd_null_flg,
+        TO_NUMBER(TRUNC(SYSDATE) - TRUNC(emp_passwd_upd_dt)) AS emp_passwd_upd,
+        TO_CHAR(id_created_dt, 'YYYY-MM-DD HH24:MI:SS') AS id_created_dt
+    FROM sys_users a
+    WHERE a.emp_no = #userId#
+       <isNotEmpty property="password" prepend="AND">
+       NVL(a.emp_passwd, 'null') = NVL(#password#,'null')
+      </isNotEmpty>
+      AND a.user_regist_aprv_flg = 'X'
+  </select>
+
+  <select id="count" resultClass="int">
+    SELECT
+      count(emp_no)
+    <include refid="findFromWhere"/>
+  </select>
+
+  <select id="countCheck" resultClass="int">
+    SELECT
+      count(emp_no) cnt
+    FROM
+      v_project_user
+    <dynamic prepend="WHERE">
+      <isNotNull prepend="AND" property="projectId">
+        project_id = #projectId#
+      </isNotNull>
+      <isNotNull prepend="AND" property="empNo">
+        emp_no     = #empNo#
+      </isNotNull>
+    </dynamic>
+  </select>
+
+  <!-- Workfow 2.Preparer、Person in Chargeの送付先取得 -->
+  <select id="findSendApplyUser" resultMap="personInChargeResult">
+  SELECT
+      emp_no
+  FROM
+      v_project_user pu
+    WHERE
+      pu.project_id = #projectId#
+    AND
+      pu.emp_no = #empNo#
+    AND
+      NOT EXISTS (
+        SELECT
+          1
+        FROM
+          v_email_notice_recv_setting
+        WHERE
+          project_id = #projectId#
+        AND
+          emp_no = pu.emp_no
+        AND
+          receive_workflow = #emailNoticeReceivableNo#
+      )
+  </select>
+
+  <select id="findBySysUserId" resultClass="String">
+    SELECT
+      us.emp_no
+    FROM sys_users us
+    LEFT JOIN sys_pj_users pus
+      ON us.emp_no = pus.emp_no
+    WHERE
+       us.emp_no = #empNo#
+  </select>
+
+  <select id="findBySysUserAll" resultMap="systemUser">
+   SELECT
+      us.emp_no as emp_no,
+      us.emp_last_nm as last_name,
+      us.emp_nm_e as name_e,
+      us.emp_nm_j as name_j,
+      '' as emp_passwd,
+      us.emp_passwd_upd_dt as emp_passwd_upd,
+      us.emp_email_addr as mail_address,
+      CASE us.sys_adm_flg
+        WHEN 'X' THEN '○'
+        ELSE  us.sys_adm_flg
+         END as sys_adm_flg,
+      CASE  us.user_regist_aprv_flg
+        WHEN 'X' THEN '○'
+        ELSE  us.user_regist_aprv_flg
+        END as user_regist_aprv_flg,
+      us.security_lvl as security_level,
+      pus.pj_id as pj_id,
+      CASE pus.pj_adm_flg
+      WHEN 'X' THEN '○'
+        ELSE pus.pj_adm_flg
+      END as pj_adm_flg,
+      TO_CHAR(user_id_valid_dt, 'YYYY-MM-DD') as user_id_valid_dt,
+      TO_CHAR(id_created_dt, 'YYYY-MM-DD') as id_created_dt
+    FROM sys_users us
+    LEFT JOIN sys_pj_users pus
+      ON us.emp_no = pus.emp_no
+  </select>
+
+  <insert id="createUsers">
+    INSERT ALL
+     INTO SYS_USERS (
+        emp_no,
+        emp_last_nm,
+        emp_nm_e,
+        emp_nm_j,
+        emp_passwd,
+        emp_passwd_upd_dt,
+        emp_email_addr,
+        sys_adm_flg,
+        user_regist_aprv_flg,
+        security_lvl,
+        user_id_valid_dt
+        <dynamic>
+            <isNotNull prepend="," property="createdAt">
+                id_created_dt
+            </isNotNull>
+        </dynamic>
+     ) VALUES (
+        #empNo#,
+        #lastName#,
+        #nameE#,
+        #nameJ#,
+        #password#,
+        CASE WHEN #password# IS NULL
+         THEN NULL
+         ELSE SYSDATE
+        END,
+        #mailAddress#,
+        #sysAdmFlg#,
+        #userRegistAprvFlg#,
+        NULL,
+        #userIdAt#
+        <dynamic>
+            <isNotNull prepend="," property="createdAt">
+                TO_DATE(#createdAt# , 'yyyy-mm-dd hh24:mi:ss')
+            </isNotNull>
+        </dynamic>
+     )
+
+     INTO sys_pj_users (
+        pj_id,
+        emp_no,
+        pj_adm_flg
+     ) VALUES (
+        #pjId#,
+        #empNo#,
+        #pjAdmFlg#
+     )
+     SELECT * FROM dual
+   </insert>
+
+   <update id="updateUsers">
+    UPDATE sys_users
+    SET
+        emp_last_nm = #lastName#,
+        emp_nm_e = #nameE#,
+        emp_nm_j = #nameJ#,
+        sys_adm_flg = #sysAdmFlg#,
+        user_regist_aprv_flg = #userRegistAprvFlg#,
+        user_id_valid_dt = #userIdAt#,
+        security_lvl = NULL
+        <dynamic>
+            <isNotNull prepend="," property="password">
+            emp_passwd = #password#,
+            emp_passwd_upd_dt =  SYSDATE
+            </isNotNull>
+        </dynamic>
+        <dynamic>
+            <isNotNull prepend="," property="mailAddress">
+            emp_email_addr = #mailAddress#
+            </isNotNull>
+        </dynamic>
+    WHERE emp_no = #empNo#
+  </update>
+
+  <update id="updatePjUsers">
+    UPDATE sys_pj_users
+    SET
+        pj_adm_flg = #pjAdmFlg#
+    WHERE
+        pj_id = #pjId#
+        AND emp_no = #empNo#
+  </update>
+
+  <delete id="deleteUsers">
+    DELETE sys_users
+    WHERE emp_no = #empNo#
+  </delete>
+  <delete id="deletePjUsers">
+    DELETE sys_pj_users
+    WHERE pj_id = #pjId#
+      AND emp_no = #empNo#
+  </delete>
+
+  <update id="updateUsersSetting">
+   UPDATE sys_users
+   SET
+      emp_email_addr = #mailAddress#
+      <dynamic>
+        <isNotNull prepend="," property="password">
+          emp_passwd = #password#,
+          emp_passwd_upd_dt =  SYSDATE
+        </isNotNull>
+      </dynamic>
+   WHERE emp_no = #empNo#
+  </update>
+
+  <select id="findSysUserCount" resultClass="int">
+    SELECT COUNT(emp_no)
+    FROM sys_users
+    WHERE sys_adm_flg = 'X'
+  </select>
+
+  <select id="countEmail" resultClass="int">
+  <![CDATA[
+    SELECT COUNT(emp_email_addr)
+    FROM sys_users
+    WHERE emp_no <> #empNo#
+     AND emp_email_addr = #mailAddress#
+  ]]>
+  </select>
+
+  <insert id="createSysUser">
+    INSERT
+    INTO SYS_USERS (
+      emp_no,
+      emp_last_nm,
+      emp_nm_e,
+      emp_nm_j,
+      emp_passwd,
+      emp_passwd_upd_dt,
+      sys_adm_flg,
+      user_regist_aprv_flg,
+      security_lvl,
+      user_id_valid_dt,
+      emp_email_addr
+
+      <dynamic>
+         <isNotNull prepend="," property="createdAt">
+            id_created_dt
+         </isNotNull>
+      </dynamic>
+    ) VALUES (
+      #empNo#,
+      #lastName#,
+      #nameE#,
+      #nameJ#,
+      #password#,
+      CASE WHEN #password# IS NULL
+       THEN NULL
+       ELSE SYSDATE
+      END,
+      #sysAdmFlg#,
+      #userRegistAprvFlg#,
+      NULL,
+      #userIdAt#,
+      #mailAddress#
+
+      <dynamic>
+         <isNotNull prepend="," property="createdAt">
+            TO_DATE(#createdAt# , 'yyyy-mm-dd hh24:mi:ss')
+         </isNotNull>
+      </dynamic>
+    )
+
+
+  </insert>
+
+</sqlMap>

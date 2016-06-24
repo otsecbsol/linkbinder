@@ -1,0 +1,151 @@
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+  <body>
+    <script type="text/javascript">
+      function changeComment(no) {
+        document.getElementById("form:workflowModel:" + no + ":comment").value = document.getElementById("form:workflowModel:" + no + ":inputComment").value;
+        return false;
+      }
+
+      function oncompleteCancel(data){
+        Spinner.onStatusChange(data);
+        if (data.status == 'success') {
+          postProcess();
+          cancelWorkflow();
+          scrollWindowByScrollPosition();
+        }
+      }
+    </script>
+    <div id="workflowVerification" style="display: none;" class="workflow-dialog">
+      <div class="workflow-dialog-top">
+        <span class="title">文書承認/否認</span>
+      </div>
+      <h:messages globalOnly="true" showDetail="true" showSummary="false"
+        infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal"
+        rendered="#{corresponPage.verificationDisplay}" />
+
+      <h:dataTable
+        id="workflowModel" var="w" value="#{corresponPage.dataModel}"
+        style="width:100%;"
+        styleClass="list"
+        columnClasses="number,text,check,check,check,text,text,check"
+        rowClasses="#{corresponPage.trClassId}"
+        rendered="#{corresponPage.verificationDisplay}">
+        <h:column headerClass="workflow-no">
+          <f:facet name="header">
+            <h:outputText value="No." />
+          </f:facet>
+          <h:outputText value="#{w.workflow.workflowNo}" />
+        </h:column>
+        <h:column headerClass="workflow-user">
+          <f:facet name="header">
+            <h:outputText value="役割&lt;br&gt;ユーザー" escape="false"/>
+          </f:facet>
+          <h:outputText value="#{w.workflow.workflowType.label}"
+            rendered="#{w.workflow.workflowType != null}" />
+          <h:outputText value="作成者"
+            rendered="#{w.workflow.workflowType == null}" />
+          <h:outputText value="&lt;br&gt;" escape="false"/>
+          <h:outputText
+              value="#{w.workflow.user.labelWithRole}"
+              rendered="#{w.workflow.user.empNo != null}" />
+        </h:column>
+        <h:column headerClass="workflow-mark">
+          <f:facet name="header">
+            <h:outputText value="閲覧" />
+          </f:facet>
+          <h:outputText id="viewOk" value="o" rendered="#{w.view}" />
+          <h:outputText id="viewNg" value="x" rendered="#{!w.view}" />
+        </h:column>
+        <h:column headerClass="workflow-mark">
+          <f:facet name="header">
+            <h:outputText value="更新" />
+          </f:facet>
+          <h:outputText id="updateOk" value="o" rendered="#{w.update}" />
+          <h:outputText id="updateNg" value="x" rendered="#{!w.update}" />
+        </h:column>
+        <h:column headerClass="workflow-mark">
+          <f:facet name="header">
+            <h:outputText value="承認" escape="false"/>
+          </f:facet>
+          <h:outputText id="chkAppOk" value="o" rendered="#{w.checkApprove}" />
+          <h:outputText id="chkAppNg" value="x" rendered="#{!w.checkApprove}" />
+        </h:column>
+        <h:column headerClass="workflow-status">
+          <f:facet name="header">
+            <h:outputText value="状態&lt;br&gt;最終更新" escape="false"/>
+          </f:facet>
+          <h:outputText value="#{w.workflow.workflowProcessStatus.label}" />
+          <h:outputText value="&lt;br&gt;" escape="false"/> <h:outputText
+              value="#{w.workflow.updatedAt}">
+              <f:convertDateTime pattern="yyyy-MM-dd HH:mm:ss" />
+            </h:outputText>
+        </h:column>
+        <h:column headerClass="workflow-comment">
+          <f:facet name="header">
+            <h:outputText value="コメント" />
+          </f:facet>
+                    <f:validateBean validationGroups="#{corresponPage.commentValidationGroups}">
+              <h:inputTextarea id="inputComment" value="#{w.workflow.commentOn}"
+                styleClass="workflow-input-comment"
+                onchange="changeComment(#{w.workflow.workflowNo - 1})"
+                rendered="#{w.verification and (corresponPage.check || corresponPage.approve)}" />
+              <h:inputTextarea value="#{w.workflow.commentOn}" styleClass="comment"
+                readonly="true" rendered="#{!w.verification}" />
+                  <h:inputHidden id="comment" value="#{corresponPage.comment}" />
+              <h:message for="comment" infoClass="info" errorClass="error"
+                warnClass="warn" fatalClass="fatal" />
+                    </f:validateBean>
+        </h:column>
+        <h:column headerClass="width-150">
+          <h:commandButton id="check" action="#{corresponPage.check}"
+                            styleClass="button-primary"
+                            value="承認"
+                            rendered="#{w.workflow.workflowType.value != 2 and corresponPage.check and w.verification}"
+                            onclick="setActionName(event); return confirmButton()" />
+          <h:commandButton id="approve" action="#{corresponPage.approve}"
+                            styleClass="button-primary"
+                            value="承認"
+                            rendered="#{w.workflow.workflowType.value != 1 and corresponPage.approve and w.verification}"
+                            onclick="setActionName(event); return confirmButton()" />
+          <h:outputText value="&lt;br /&gt;" escape="false"/>
+          <h:commandButton id="deny"
+                            styleClass="button-primary"
+                            action="#{corresponPage.deny}" value="否認"
+                            rendered="#{corresponPage.deny and w.verification}"
+                            onclick="setActionName(event); return confirmButton()" />
+        </h:column>
+      </h:dataTable>
+      <div class="action-edit">
+        <h:commandLink
+              value="キャンセル"
+              styleClass="button cancel"
+              action="#{corresponPage.module.cancel}"
+              onclick="preProcess(event, true);">
+              <f:ajax render=":form:action-panel-btn :form:workflowDisplayPanel :form:workflowListPanel" execute="@all" onevent="oncompleteCancel" />
+        </h:commandLink>
+      </div>
+    </div>
+  </body>
+</html>

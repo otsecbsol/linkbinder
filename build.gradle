@@ -1,0 +1,128 @@
+/*
+ * Copyright 2016 OPEN TONE Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+buildscript {
+    repositories {
+        maven { url "./repo" }
+    }
+    dependencies {
+        classpath 'com.oracle:ojdbc6:11.2.0.1.0'
+    }
+}
+
+plugins {
+    id 'org.liquibase.gradle' version '1.2.1'
+}
+
+apply plugin: 'java'
+
+project.ext {
+    springframeworkVersion = '4.2.6.RELEASE'
+}
+
+repositories {
+    maven { url "repo" }
+}
+dependencies {
+    compile group: 'com.oracle', name: 'ojdbc6', version:'11.2.0.1.0'
+}
+
+allprojects  {
+    group = 'jp.co.opentone.bsol'
+    version = '2.0.0'
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: "idea"
+    apply plugin: "eclipse"
+    apply plugin: "eclipse-wtp"
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    repositories {
+        maven { url "../repo" }
+        mavenLocal()
+        mavenCentral()
+
+        maven { url "http://dist.codehaus.org/mule/dependencies/maven2" }
+        maven { url "http://static.appfuse.org/repository" }
+        maven { url "http://repo1.maven.org/maven2" }
+        maven { url "http://maven.ow2.org/maven2/" }
+        maven { url "http://repository.prime.com.tr" }
+        maven { url "https://repository.jboss.org/nexus/content/groups/public/" }
+    }
+
+    configurations {
+        all*.exclude group: "commons-logging", module: "commons-logging"
+        all*.exclude group: "log4j", module: "log4j"
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+    
+    sourceSets {
+        //  Mavenのprofileに相当
+        def profileName
+        if (project.hasProperty("profileName")) {
+            profileName = "${profileName}"
+        } else {
+            profileName = "test"
+        }
+    }
+}
+
+// ./gradlew update -PrunList=main -PmainUrl=xxx -PmainUsername=xxx -PmainPassword=xxx
+liquibase {
+  activities {
+    main {
+      changeLogFile 'db/main.xml'
+      // url project.ext.mainUrl
+      // username project.ext.mainUsername
+      // password project.ext.mainPassword
+      changeLogParameters idx_tablespace : 'linkbinder_ix'
+      url 'jdbc:oracle:thin:@192.168.99.100:1521'
+      username 'linkbinder'
+      password 'linkbinder'
+    }
+    test {
+      changeLogFile 'db/main.xml'
+      // url project.ext.mainUrl
+      // username project.ext.mainUsername
+      // password project.ext.mainPassword
+      changeLogParameters idx_tablespace : 'linkbinder_test_ix'
+      url 'jdbc:oracle:thin:@192.168.99.100:1521'
+      username 'linkbinder_test'
+      password 'linkbinder_test'
+    }
+    production {
+      changeLogFile 'db/production.xml'
+      // url project.ext.mainUrl
+      // username project.ext.mainUsername
+      // password project.ext.mainPassword
+      changeLogParameters idx_tablespace : 'linkbinder_ix'
+      url 'jdbc:oracle:thin:@192.168.99.100:1521'
+      username 'linkbinder'
+      password 'linkbinder'
+    }
+  }
+  runList = 'main'
+  if (project.hasProperty('runList')) {
+    runList = project.ext.runList; 
+  }
+}

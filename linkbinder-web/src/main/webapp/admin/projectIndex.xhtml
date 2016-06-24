@@ -1,0 +1,149 @@
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/include/template.xhtml">
+  <ui:define name="title">プロジェクト一覧</ui:define>
+  <ui:define name="cssOuter">
+    <link type="text/css" href="#{contextPath}/resource/#{v}/stylesheet/custom/normalList.css" rel="stylesheet" />
+  </ui:define>
+  <ui:define name="jsOuter"></ui:define>
+  <ui:define name="jsInner">
+    <!--
+    function clearCondition() {
+      document.getElementById('form:searchProjectId').value = "";
+      document.getElementById('form:searchName').value = "";
+
+      return false;
+    }
+
+    $(document).ready(function() {
+      $('#form\\:projectIndex').highlightRows();
+    });
+    -->
+  </ui:define>
+
+  <ui:define name="body">
+    <f:view>
+      <h:form id="form" onsubmit="return disableSubmit();">
+        <h:inputHidden id="actionName" value="#{projectIndexPage.actionName}" />
+
+        <h:inputHidden id="scProjectId" value="#{projectIndexPage.scProjectId}" />
+        <h:inputHidden id="scName" value="#{projectIndexPage.scName}" />
+
+        <h:inputHidden id="pageNo" value="#{projectIndexPage.pageNo}" />
+        <h:commandLink style="display: none;" id="previous"  action="#{projectIndexPage.movePrevious}" onclick="deleteAllLink('paging');setActionName(event)" />
+        <h:commandLink style="display: none;" id="pagerPageNo" action="#{projectIndexPage.changePage}" onclick="deleteAllLink('paging');setActionName(event);" />
+        <h:commandLink style="display: none;" id="next"  action="#{projectIndexPage.moveNext}" onclick="deleteAllLink('paging');setActionName(event)" />
+
+        <h:commandLink style="display: none;" id="downloadExcel" value="Excel" action="#{projectIndexPage.downloadExcel}" onclick="setActionName(event);" />
+        <div id="condition">
+          <div class="group">
+            <span class="condition-group-caption">検索条件</span>
+            <f:validateBean validationGroups="#{projectIndexPage.validationGroups}">
+            <div class="row">
+              <div class="four columns">
+                <h:outputLabel for="searchProjectId" value="プロジェクトID"/>
+                <h:inputText id="searchProjectId" value="#{projectIndexPage.projectId}" maxlength="11" styleClass="u-full-width"/>
+                <h:message for="searchProjectId" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+              </div>
+              <div class="eight columns">
+                <h:outputLabel for="searchName" value="プロジェクト名"/>
+                <h:inputText id="searchName" value="#{projectIndexPage.name}" maxlength="40" styleClass="u-full-width" />
+                <h:message for="searchName" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" styleClass="u-full-width"/>
+              </div>
+            </div>
+            <div class="action">
+              <h:commandButton id="search" value="検索"
+                  styleClass="button-primary"
+                  action="#{projectIndexPage.search}" onclick="setActionName(event)" />
+              <h:outputLink id="clear"
+                  value="javascript:void(0)"
+                  onclick="clearCondition();window.scroll(0,0);"
+                  styleClass="button">
+                <h:outputText value="検索条件クリア"/>
+              </h:outputLink>
+            </div>
+            </f:validateBean>
+          </div>
+        </div>
+
+        <h:inputHidden id="viewRender" value="#{projectIndexPage.dataCount}" />
+
+        <ui:fragment rendered="#{!empty projectIndexPage.dataCount and projectIndexPage.dataCount != '0'}">
+        <div id="paging" class="row">
+          <div class="one column list-count">
+            <h:outputText id="dataCount" value="#{projectIndexPage.dataCount}"  />
+          </div>
+          <div class="one column list-range">
+            <h:outputText id="pageDisplayNo" value="#{projectIndexPage.pageDisplayNo}"  />
+          </div>
+          <div class="three columns list-nav">
+            <ui:fragment rendered="#{projectIndexPage.previous}">
+              <a id="prePrevious" href="#" onclick="clickComponent('previous');">
+                <h:outputText value="#{projectIndexPage.previousLabel}"/>
+              </a>
+            </ui:fragment>
+            <h:outputText rendered="#{!projectIndexPage.previous}" value="#{projectIndexPage.previousLabel}" />
+            <ui:repeat id="pagingNo" var="value" value="#{projectIndexPage.pagingNo}">
+              <ui:fragment rendered="#{value != projectIndexPage.pageNo}">
+                <a id="prePagerPageNo" href="#" onclick="setPageNo('#{value}');clickComponent('pagerPageNo');">
+                  <h:outputText value="#{value}"/>
+                </a>
+              </ui:fragment>
+              <h:outputText rendered="#{value == projectIndexPage.pageNo}" value=" #{value} " />
+            </ui:repeat>
+            <ui:fragment rendered="#{projectIndexPage.next}">
+              <a id="preNext" href="#" onclick="clickComponent('next');">
+                <h:outputText value="#{projectIndexPage.nextLabel}"/>
+              </a>
+            </ui:fragment>
+            <h:outputText rendered="#{!projectIndexPage.next}" value="#{projectIndexPage.nextLabel}" />
+          </div>
+          <div class="four columns list-action">
+            出力形式:
+            <a id="preDownloadExcel" href="#" onclick="clickComponent('downloadExcel');">Excel</a>
+          </div>
+        </div>
+
+        <div class="result-area">
+          <h:dataTable id="projectIndex" var="item"
+              value="#{projectIndexPage.projectList}"
+              columnClasses="text id-width,text" rowClasses="odd,even"
+              styleClass="list"
+              preserveDataModel="true" footerClass="footer">
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="プロジェクトID" />
+              </f:facet>
+              <h:outputText id="projectId" value="#{item.projectId}" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="プロジェクト名" />
+              </f:facet>
+              <h:outputText id="name" value="#{item.nameE}" />
+            </h:column>
+          </h:dataTable>
+        </div>
+        </ui:fragment>
+      </h:form>
+    </f:view>
+  </ui:define>
+</ui:composition>
+</html>

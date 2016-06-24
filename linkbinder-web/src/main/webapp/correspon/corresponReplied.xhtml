@@ -1,0 +1,897 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html [
+<!ENTITY nbsp "&#160;">
+<!ENTITY yen "&#165;">
+<!ENTITY plusmn "&#177;">
+<!ENTITY minus "&#8722;">
+<!ENTITY darr "&#2193;">
+<!ENTITY uarr "&#2191;">
+]>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/include/template.xhtml">
+  <ui:define name="title">文書</ui:define>
+  <ui:define name="jsOuter">
+    <link type="text/css" href="#{contextPath}/resource/#{v}/stylesheet/custom/correspon.css" rel="stylesheet" />
+    <link type="text/css" href="#{contextPath}/resource/#{v}/stylesheet/custom/calendar_linkbinder.css" rel="stylesheet" />
+    <script type="text/javascript" src="#{contextPath}/resource/#{v}/javascript/dateformat.js"></script>
+    <script type="text/javascript" src="${contextPath}/resource/${v}/javascript/personInChargeInput.js"></script>
+    <script type="text/javascript" src="${contextPath}/resource/${v}/javascript/spinner.js"></script>
+  </ui:define>
+  <ui:define name="jsInner">
+    var formated_today = (new Date()).format("yyyy-MM-dd");
+    var idx1;
+    var idx2;
+    <ui:include src="/include/calendarFunc.xhtml">
+      <ui:param name="styleKey" value="form:deadlineForReply" />
+    </ui:include>
+    <!--
+
+    function setIdx(i1,i2){
+      idx1 = i1;
+      idx2 = i2;
+    }
+
+    function closeWindow() {
+        (window.open('', '_self').opener = window).close();
+    }
+
+    function replyWithPreviousCorrespon() {
+        if (!window.opener) {
+            return false;
+        }
+        try {
+            var action = window.opener.document.forms[0]['form:dummyReplyWithPreviousCorrespon'];
+            action.click();
+        } catch(e) {
+            // no owner window
+        }
+        closeWindow();
+    }
+
+    function switchDisplay(id, action, val) {
+        var area = document.getElementById(id);
+        var hidden = document.getElementById(val);
+
+        if (area.style.display == 'none') {
+            area.style.display = 'block';
+            action.innerHTML = '詳細を隠す';
+        } else {
+            area.style.display = 'none';
+            action.innerHTML = '詳細を表示';
+        }
+        hidden.value = area.style.display;
+    }
+
+    function setDisplay(name, disp) {
+        var displayElement = document.getElementById('form:' + name);
+        displayElement.value = disp;
+    }
+
+    var EDITABLE_REPLY_REQUIRED = new Array(#{corresponRepliedPage.editableReplyRequiredValues});
+    function changeReplyRequired() {
+
+        var replyRequired           = document.getElementById('form:replyRequired');
+        var deadlineForReply        = document.getElementById('form:deadlineForReply');
+        var deadlineForReplyCurrent = document.getElementById('form:deadlineForReplyCurrent');
+
+        if (deadlineForReply != null){
+            var popupButton             = deadlineForReply.nextSibling;
+            if (!EDITABLE_REPLY_REQUIRED.include(replyRequired.value)) {
+                deadlineForReplyCurrent.value = deadlineForReply.value;
+                deadlineForReply.value = '';
+                deadlineForReply.readOnly = true;
+                popupButton.disabled = true;
+            } else if (deadlineForReply.readOnly) {
+                deadlineForReply.value = deadlineForReplyCurrent.value;
+                deadlineForReply.readOnly = false;
+                popupButton.disabled = false;
+            }
+        }
+    }
+
+    window.onload = function() {
+        if (#{corresponRepliedPage.displayReplied}) {
+            document.getElementById('header').style.display = 'none';
+            document.getElementById('action-panel').style.display = 'none';
+        }
+        changeReplyRequired();
+
+        if (document.getElementById('form:workflowEditDisplay').value == 'true') {
+            editWorkflow();
+        } else if (document.getElementById('form:verificationDisplay').value == 'true') {
+            verifyWorkflow();
+        } else {
+            scrollWindowByScrollPosition();
+        }
+    };
+
+    function processSubmit() {
+        var deadlineForReply        = document.getElementById('form:deadlineForReply');
+        if (deadlineForReply) {
+            var deadlineForReplyCurrent = document.getElementById('form:deadlineForReplyCurrent');
+            deadlineForReplyCurrent.value = deadlineForReply.value;
+        }
+        var result = disableSubmit();
+        return result;
+    }
+
+    function setScrollPosition() {
+        var position = document.getElementById('form:scrollPosition');
+        if (window.pageYOffset) {
+            position.value = window.pageYOffset;
+        } else if (document.documentElement && document.documentElement.scrollTop) {
+            position.value = document.documentElement.scrollTop;
+        } else if (document.body.scrollTop) {
+            position.value = document.body.scrollTop;
+        }
+    }
+
+    function scrollWindowByScrollPosition() {
+        var position = document.getElementById('form:scrollPosition');
+        if (position.value != 0) {
+            window.scrollTo(0, position.value);
+            position.value = 0;
+        }
+    }
+
+    function showWorkflows(def, edit, verification) {
+        var workflowDefault = document.getElementById('workflowDefault');
+        var workflowEdit = document.getElementById('workflowEdit');
+        var workflowVerification = document.getElementById('workflowVerification');
+
+        workflowDefault.style.display = def;
+        workflowEdit.style.display = edit;
+        workflowVerification.style.display = verification;
+
+        if (workflowEdit.style.display != 'none') {
+            var position = document.getElementById('form:scrollPosition');
+            Dialog.show('workflowEdit');
+            workflowEdit.style.zIndex = '1000';
+            window.scrollTo(0, position.value);
+        } else if (workflowVerification.style.display != 'none') {
+            var position = document.getElementById('form:scrollPosition');
+            Dialog.show('workflowVerification');
+            workflowVerification.style.zIndex = '1000';
+            window.scrollTo(0, position.value);
+        }
+    }
+    function editWorkflow() {
+        showWorkflows('none', 'block', 'none');
+    }
+    function verifyWorkflow() {
+        showWorkflows('none', 'none', 'block');
+    }
+    -->
+  </ui:define>
+  <ui:define name="body">
+    <f:view>
+    <style type="text/css">
+    div#tos {
+      display:<h:outputText value="#{corresponRepliedPage.tosDisplay}"/>;
+    }
+    div#body{
+      display:<h:outputText value="#{corresponRepliedPage.bodyDisplay}"/>;
+    }
+    div#attachments{
+      display:<h:outputText value="#{corresponRepliedPage.attachmentsDisplay}"/>
+    }
+    div#customFields{
+      display:<h:outputText value="#{corresponRepliedPage.customFieldsDisplay}"/>
+    }
+    div#responseHistory{
+      display:<h:outputText value="#{corresponRepliedPage.responseHistoryDisplay}"/>
+    }
+    div#workflow{
+      display:<h:outputText value="#{corresponRepliedPage.workflowDisplay}"/>
+    }
+    </style>
+  <h:form id="form" onsubmit="return processSubmit();">
+  <h:inputHidden id="actionName" value="#{corresponRepliedPage.actionName}"/>
+  <h:inputHidden id="corresponId" value="#{corresponRepliedPage.corresponId}"/>
+  <h:inputHidden id="id" value="#{corresponRepliedPage.id}"/>
+  <h:panelGroup id="jsonValues">
+  <h:inputHidden id="groupJSONString" value="#{corresponRepliedPage.groupJSONString}" rendered="#{corresponRepliedPage.jsonValuesLoaded}"/>
+  <h:inputHidden id="groupUserMappingsJSONString" value="#{corresponRepliedPage.groupUserMappingsJSONString}" rendered="#{corresponRepliedPage.jsonValuesLoaded}"/>
+  <h:inputHidden id="userJSONString" value="#{corresponRepliedPage.userJSONString}" rendered="#{corresponRepliedPage.jsonValuesLoaded}"/>
+  <h:inputHidden id="jsonValuesLoaded" value="#{corresponRepliedPage.jsonValuesLoaded}"/>
+  </h:panelGroup>
+  <h:inputHidden id="backPage" value="#{corresponRepliedPage.backPage}"/>
+  <h:panelGroup id="workflowDisplayPanel">
+  <h:inputHidden id="workflowEditDisplay" value="#{corresponRepliedPage.workflowEditDisplay}"/>
+  <h:inputHidden id="verificationDisplay" value="#{corresponRepliedPage.verificationDisplay}"/>
+  <h:inputHidden id="scrollPosition" value="#{corresponRepliedPage.scrollPosition}"/>
+  </h:panelGroup>
+  <h:inputHidden id="targetAddressType" value="#{corresponRepliedPage.targetAddressType}"/>
+  <div>
+    <h:inputHidden id="displayIndex" value="#{corresponRepliedPage.displayIndex}"/>
+  </div>
+
+  <div class="correspon-paging-panel row">
+    <div class="four columns">
+      <div>
+
+      </div>
+    </div>
+    <div class="eight columns correspon-command-panel">
+      <ul>
+        <li>
+          <h:outputLink id="replyWithPreviousCorrespon" value="javascript:void(0);"
+                        rendered="#{corresponRepliedPage.elemControl.replyWithPreviousCorresponLink}"
+                        onclick="replyWithPreviousCorrespon();">
+            <h:outputText id="replyWithPreviousCorresponLabel" value="この文書をコピーして返信"/>
+          </h:outputLink>
+        </li>
+        <li>
+          <h:outputLink id="closeWindow" value="javascript:void(0);"
+                        onclick="closeWindow();">
+            <h:outputText id="closeWindowLabel" value="閉じる"/>
+          </h:outputLink>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="main">
+    <div class="row subject">
+      <div class="twelve columns">
+        <h:graphicImage alt="" url="#{corresponRepliedPage.iconPathName}"/>
+        <h:outputText id="subject" value="#{corresponRepliedPage.correspon.subject}"/>
+      </div>
+    </div>
+    <div class="row correspon-header-info">
+      <div class="four columns">
+        <label>発信元</label>
+        <h:outputText id="from" value="#{corresponRepliedPage.correspon.fromCorresponGroup.name}"/>
+
+      </div>
+      <div class="four columns">
+        <label>文書番号</label>
+        <h:outputText id="corresponNo" value="#{corresponRepliedPage.formatter.corresponNo}"/>
+      </div>
+      <div class="four columns">
+        <label>発行</label>
+        <h:outputText id="issuedBy"
+                      value="#{corresponRepliedPage.correspon.issuedBy.label}"
+                      rendered="#{corresponRepliedPage.correspon.issuedBy != null}"/>
+        <h:outputText id="issuedAt" value="#{corresponRepliedPage.correspon.issuedAt}">
+          <f:convertDateTime pattern="yyyy-MM-dd HH:mm:ss"/>
+        </h:outputText>
+      </div>
+    </div>
+
+    <div class="row correspon-header-info">
+      <div class="four columns">
+        <label>ID</label>
+        <h:outputText id="sequenceNo" value="#{corresponRepliedPage.correspon.id}"/>
+      </div>
+      <div class="four columns">
+        <label>ワークフロー</label>
+        <h:outputText id="workflowStatus" value="#{corresponRepliedPage.correspon.workflowStatus.label}"/>
+      </div>
+      <div class="four columns">
+        <label>最終更新</label>
+        <h:panelGroup id="updateByPanel">
+          <h:outputText id="updatedBy"
+                        value="#{corresponRepliedPage.correspon.updatedBy.label}"
+                        rendered="#{corresponRepliedPage.correspon.updatedBy != null}"/>
+        </h:panelGroup>
+        <h:panelGroup id="updateAtPanel">
+          <h:outputText id="updatedAt" value="#{corresponRepliedPage.correspon.updatedAt}">
+            <f:convertDateTime pattern="yyyy-MM-dd HH:mm:ss"/>
+          </h:outputText>
+        </h:panelGroup>
+      </div>
+    </div>
+
+    <hr/>
+
+    <div class="row">
+      <div class="six columns">
+        <label>文書種類</label>
+        <h:outputText id="corresponType" value="#{corresponRepliedPage.correspon.corresponType.label}"/>
+      </div>
+      <div class="six columns">
+        <label>状態</label>
+        <h:outputText id="corresponStatus" value="#{corresponRepliedPage.correspon.corresponStatus.label}"/>
+      </div>
+    </div>
+    <div class="row">
+      <div class="six columns">
+        <label>返信</label>
+        <h:outputText id="repliedParentCorrespon" value="#{corresponRepliedPage.correspon.parentCorresponNo}"/>
+      </div>
+      <div class="six columns">
+        <label>改訂元</label>
+        <h:outputText id="repliedPreviousRevision" value="#{corresponRepliedPage.correspon.previousRevCorresponNo}"/>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="twelve columns">
+        <label>宛先</label>
+        <a href="javascript:void(0);" onclick="switchDisplay('tos', this, 'form:tosDisplay')">
+          <h:outputText value="#{corresponRepliedPage.tosDetail}"/>
+        </a>
+        <h:inputHidden id="detectedAddressUserId" value="#{corresponRepliedPage.detectedAddressUserId}"/>
+        <h:inputHidden id="tosDisplay" value="#{corresponRepliedPage.tosDisplay}"/>
+      </div>
+    </div>
+    <div id="tos" class="detail">
+      <div class="row">
+        <div class="twelve columns">
+          <label>To</label>
+          <div id="toGroup">
+            <!-- Address (To) -->
+            <h:panelGroup id="toAddress">
+            </h:panelGroup>
+            <!-- Replied correspon address (To) -->
+            <h:dataTable id="repliedToGroup" var="address" value="#{corresponRepliedPage.toAddresses}"
+                         width="100%"
+                         style="table-layout:fixed;"
+                         styleClass="list"
+                         columnClasses="address-group,address-text,address-text,address-reply-status"
+                         rowClasses="odd,even">
+              <h:column headerClass="width-120">
+                <f:facet name="header">
+                  <h:outputText value="グループ"/>
+                </f:facet>
+                  <h:outputText id="toGroupName" value="#{address.corresponGroup.name}"
+                      rendered="#{address.to}" />
+              </h:column>
+              <h:column headerClass="text-center">
+                <f:facet name="header">
+                  <h:outputText value="To"/>
+                </f:facet>
+                <h:panelGrid id="attention" class="inner" style="width:100%;padding:0;">
+                  <ui:repeat var="attention" value="#{address.users}" varStatus="j">
+                    <tr>
+                      <td class="address-blank">
+                        <div style='height:16px;'>
+                          <h:outputText id="attentionName" value="#{attention.user.labelWithRole}" rendered="#{attention.attention}"/>
+                        </div>
+                      </td>
+                    </tr>
+                  </ui:repeat>
+                </h:panelGrid>
+              </h:column>
+              <h:column rendered="#{corresponRepliedPage.usePersonInCharge}">
+                <f:facet name="header">
+                  <h:outputText value="担当"/>
+                </f:facet>
+                <h:panelGrid id="addressUser" class="inner" style="width:100%;padding:0;">
+                  <ui:repeat var="addressUser" value="#{address.users}" varStatus="j">
+                    <tr>
+                      <ui:fragment rendered="#{corresponRepliedPage.usePersonInCharge}">
+                        <td class="address-blank">
+                          <div style='height:16px;'>
+                            <h:dataTable id="pic" var="pic" value="#{addressUser.personInCharges}"
+                                         border="0"
+                                         cellspacing="0"
+                                         cellpadding="0"
+                                         styleClass="inner"
+                                         columnClasses="address-pic"
+                                         rendered="#{addressUser.personInCharges.rowCount != 0}"
+                                         >
+                              <h:column>
+                                <h:outputText id="picName" value="#{pic.user.label}" rendered="#{pic.user.label != ''}"/>
+                              </h:column>
+                            </h:dataTable>
+                            <h:outputText value="&nbsp;" escape="false" rendered="#{addressUser.personInCharges.rowCount == 0}"/>
+                          </div>
+                        </td>
+                      </ui:fragment>
+                      <ui:fragment rendered="#{!corresponRepliedPage.usePersonInCharge}">
+                        <td class="address-blank">
+                          <div style="height:16px;">
+                            <h:outputText id="notUsePersonInCharge" value="(The function is not available)" rendered="#{addressUser.editPersonInCharge}" />
+                          </div>
+                        </td>
+                      </ui:fragment>
+                    </tr>
+                  </ui:repeat>
+                </h:panelGrid>
+              </h:column>
+              <h:column headerClass="width-140">
+                <h:outputText id="ccReplyStatusLabel" value="Reply Status: #{address.replyCount}"/>
+              </h:column>
+            </h:dataTable>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="twelve columns">
+          <label>Cc</label>
+          <div id="ccGroup">
+            <!-- Replied correspondence address (Cc) -->
+            <h:dataTable id="repliedCcGroup" var="address" value="#{corresponRepliedPage.ccAddresses}"
+                         style="table-layout:fixed;"
+                         styleClass="list"
+                         columnClasses="address-group,address-text,address-reply-status"
+                         rowClasses="odd,even">
+              <h:column headerClass="width-120">
+                <f:facet name="header">
+                  <h:outputText value="グループ"/>
+                </f:facet>
+                  <h:outputText id="ccGroupName" value="#{address.corresponGroup.name}"
+                      rendered="#{address.cc}" />
+              </h:column>
+              <h:column headerClass="text-center">
+                <f:facet name="header">
+                  <h:outputText value="Cc" escape="false"/>
+                </f:facet>
+                <h:dataTable id="cc" var="cc" value="#{address.users}"
+                             border="0"
+                             columnClasses="address-cc,address-blank,address-edit,address-delete,address-assign-to"
+                             styleClass="inner"
+                             style="width:100%;">
+                  <h:column>
+                    <h:outputText value="#{cc.user.labelWithRole}" rendered="#{cc.cc}"/>
+                  </h:column>
+                  <h:column>
+                  </h:column>
+                  <h:column>
+                  </h:column>
+                  <h:column>
+                  </h:column>
+                  <h:column>
+                  </h:column>
+                </h:dataTable>
+              </h:column>
+              <h:column headerClass="width-140">
+                <h:outputText id="ccReplyStatusLabel" value="Reply Status: #{address.replyCount}"/>
+              </h:column>
+            </h:dataTable>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="six columns">
+        <h:outputLabel value="返信要否"/>
+        <f:validateBean validationGroups="#{corresponRepliedPage.deadlineForReplyValidationGroups}">
+        <h:inputHidden id="deadlineForReplyCurrent" value="#{corresponRepliedPage.deadlineForReply}"
+                       rendered="#{corresponRepliedPage.elemControl.replyRequiredEditable}"/>
+        <h:message infoClass="info"
+                 errorClass="error"
+                 warnClass="warn"
+                 fatalClass="fatal"
+                 for="deadlineForReply" />
+        <h:outputText id="repliedReplyRequiredLabel" value="#{corresponRepliedPage.correspon.replyRequired.label}"/>
+        <h:outputText id="repliedDeadlineForReplyLabel"
+            style="margin-left: 5px;"
+            value="#{corresponRepliedPage.correspon.deadlineForReply}">
+          <f:convertDateTime pattern="yyyy-MM-dd"/>
+        </h:outputText>
+        </f:validateBean>
+      </div>
+    </div>
+    <hr/>
+    <div class="row">
+      <div class="twelve columns">
+        <label>本文</label>
+        <a href="javascript:void(0);" onclick="switchDisplay('body', this, 'form:bodyDisplay')">
+          <h:outputText value="#{corresponRepliedPage.bodyDetail}"/>
+        </a>
+      </div>
+    </div>
+    <div id="body" class="detail">
+      <div class="row">
+        <div class="twelve columns">
+          <h:inputHidden id="bodyDisplay" value="#{corresponRepliedPage.bodyDisplay}"/>
+          <h:outputText id="repliedBody" escape="false" value="#{corresponRepliedPage.displayBody}"/>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="twelve columns">
+        <label>添付ファイル</label>
+        <a href="javascript:void(0);" onclick="switchDisplay('attachments', this, 'form:attachmentsDisplay')">
+          <h:outputText value="#{corresponRepliedPage.attachmentsDetail}"/>
+        </a>
+        <h:inputHidden id="attachmentsDisplay" value="#{corresponRepliedPage.attachmentsDisplay}"/>
+      </div>
+    </div>
+    <div id="attachments" class="detail">
+      <div id="attachment1Display" class="row">
+        <div columns="twelve columns">
+          <h:outputText id="repliedAttachment1Label" value="#{corresponRepliedPage.correspon.file1FileName}"/>
+        </div>
+      </div>
+      <div id="attachment2Display" class="row">
+        <div columns="twelve columns">
+          <h:outputText id="repliedAttachment2Label" value="#{corresponRepliedPage.correspon.file2FileName}"/>
+        </div>
+      </div>
+      <div id="attachment3Display" class="row">
+        <div columns="twelve columns">
+          <h:outputText id="repliedAttachment3Label" value="#{corresponRepliedPage.correspon.file3FileName}"/>
+        </div>
+      </div>
+      <div id="attachment4Display" class="row">
+        <div columns="twelve columns">
+          <h:outputText id="repliedAttachment4Label" value="#{corresponRepliedPage.correspon.file4FileName}"/>
+        </div>
+      </div>
+      <div id="attachment5Display" class="row">
+        <div columns="twelve columns">
+          <h:outputText id="repliedAttachment5Label" value="#{corresponRepliedPage.correspon.file5FileName}"/>
+        </div>
+      </div>
+      <h:inputHidden id="fileId" value="#{corresponPage.fileId}"/>
+    </div>
+    <div class="row">
+      <div class="twelve columns">
+        <label>その他項目</label>
+        <a href="javascript:void(0);" onclick="switchDisplay('customFields', this, 'form:customFieldsDisplay')">
+          <h:outputText value="#{corresponRepliedPage.customFieldsDetail}"/>
+        </a>
+        <h:inputHidden id="customFieldsDisplay" value="#{corresponRepliedPage.customFieldsDisplay}"/>
+      </div>
+    </div>
+    <div id="customFields" class="detail">
+      <div class="row customField">
+        <div class="twelve columns">
+          <h:outputLabel value="#{corresponRepliedPage.correspon.customField1Label}"
+                         rendered="#{corresponRepliedPage.correspon.customField1Label != null}"
+                         styleClass="label"/>
+          <h:outputText value="#{corresponRepliedPage.correspon.customField1Value}"/>
+        </div>
+      </div>
+      <div class="row customField">
+        <div class="twelve columns">
+          <h:outputLabel value="#{corresponRepliedPage.correspon.customField2Label}"
+                         rendered="#{corresponRepliedPage.correspon.customField2Label != null}"
+                         styleClass="label"/>
+          <h:outputText value="#{corresponRepliedPage.correspon.customField2Value}"/>
+        </div>
+      </div>
+      <div class="row customField">
+        <div class="twelve columns">
+          <h:outputLabel value="#{corresponRepliedPage.correspon.customField3Label}"
+                         rendered="#{corresponRepliedPage.correspon.customField3Label != null}"
+                         styleClass="label"/>
+          <h:outputText value="#{corresponRepliedPage.correspon.customField3Value}"/>
+        </div>
+      </div>
+      <div class="row customField">
+        <div class="twelve columns">
+          <h:outputLabel value="#{corresponRepliedPage.correspon.customField4Label}"
+                         rendered="#{corresponRepliedPage.correspon.customField4Label != null}"
+                         styleClass="label"/>
+          <h:outputText value="#{corresponRepliedPage.correspon.customField4Value}"/>
+        </div>
+      </div>
+      <div class="row customField">
+        <div class="twelve columns">
+          <h:outputLabel value="#{corresponRepliedPage.correspon.customField5Label}"
+                         rendered="#{corresponRepliedPage.correspon.customField5Label != null}"
+                         styleClass="label"/>
+          <h:outputText value="#{corresponRepliedPage.correspon.customField5Value}"/>
+        </div>
+      </div>
+      <div class="row customField">
+        <div class="twelve columns">
+          <h:outputLabel value="#{corresponRepliedPage.correspon.customField6Label}"
+                         rendered="#{corresponRepliedPage.correspon.customField6Label != null}"
+                         styleClass="label"/>
+          <h:outputText value="#{corresponRepliedPage.correspon.customField6Value}"/>
+        </div>
+      </div>
+      <div class="row customField">
+        <div class="twelve columns">
+              <h:outputLabel value="#{corresponRepliedPage.correspon.customField7Label}"
+                             rendered="#{corresponRepliedPage.correspon.customField7Label != null}"
+                             styleClass="label"/>
+              <h:outputText value="#{corresponRepliedPage.correspon.customField7Value}"/>
+        </div>
+      </div>
+      <div class="row customField">
+        <div class="twelve columns">
+              <h:outputLabel value="#{corresponRepliedPage.correspon.customField8Label}"
+                             rendered="#{corresponRepliedPage.correspon.customField8Label != null}"
+                             styleClass="label"/>
+              <h:outputText value="#{corresponRepliedPage.correspon.customField8Value}"/>
+        </div>
+      </div>
+      <div class="row customField">
+        <div class="twelve columns">
+              <h:outputLabel value="#{corresponRepliedPage.correspon.customField9Label}"
+                             rendered="#{corresponRepliedPage.correspon.customField9Label != null}"
+                             styleClass="label"/>
+              <h:outputText value="#{corresponRepliedPage.correspon.customField9Value}"/>
+        </div>
+      </div>
+      <div class="row customField">
+        <div class="twelve columns">
+              <h:outputLabel value="#{corresponRepliedPage.correspon.customField10Label}"
+                             rendered="#{corresponRepliedPage.correspon.customField10Label != null}"
+                             styleClass="label"/>
+              <h:outputText value="#{corresponRepliedPage.correspon.customField10Value}"/>
+        </div>
+      </div>
+    </div>
+
+    <hr/>
+
+    <div class="row">
+      <div class="twelve columns">
+        <label>返信履歴</label>
+        <h:commandLink id="showResponseHistory" value="#{corresponRepliedPage.responseHistoryDetail}"
+                       rendered="#{corresponRepliedPage.correspon != null and corresponRepliedPage.corresponResponseHistory == null}"
+                       onclick="setScrollPosition();setDisplay('responseHistoryDisplay', 'block');setActionName(event);"
+                       action="#{corresponRepliedPage.showResponseHistory}"/>
+        <h:outputLink id="responseHistoryToggler"
+                      value="javascript:void(0);"
+                      onclick="javascript:switchDisplay('responseHistory', this, 'form:responseHistoryDisplay');"
+                      rendered="#{corresponRepliedPage.correspon == null || corresponRepliedPage.corresponResponseHistory != null}">
+          <h:outputText value="#{corresponRepliedPage.responseHistoryDetail}"/>
+        </h:outputLink>
+        <h:inputHidden id="responseHistoryDisplay" value="#{corresponRepliedPage.responseHistoryDisplay}"/>
+      </div>
+    </div>
+    <div id="responseHistory" class="detail" >
+      <div id="historyContents">
+        <div id="historyCount" class="row">
+          <div class="twelve columns">
+            <h:outputText id="dataCount"
+                          value="#{corresponRepliedPage.corresponResponseHistories.rowCount}"
+                          rendered="#{corresponRepliedPage.corresponResponseHistories.rowCount != -1}"/>
+          </div>
+        </div>
+        <div class="row">
+          <div class="twelve columns">
+            <h:dataTable id="corresponResponseHistory"
+                var="history"
+                styleClass="list"
+                value="#{corresponRepliedPage.corresponResponseHistories}"
+                rendered="#{corresponRepliedPage.correspon != null and corresponRepliedPage.corresponResponseHistories.rowCount != 0}"
+                columnClasses="history-corresponNo,history-issuedOn,history-from,history-to,history-subject"
+                footerClass="footer"
+                cellpadding="5"
+                cellspacing="0"
+                rowClasses="#{corresponRepliedPage.rowClasses}">
+                <h:column>
+                  <f:facet name="header">
+                    <h:outputText value="文書番号" />
+                  </f:facet>
+                  <h:outputText value="#{history.correspon.corresponNo}"/>
+                </h:column>
+                <h:column>
+                  <f:facet name="header">
+                    <h:outputText value="発行日" />
+                  </f:facet>
+                  <h:outputText value="#{history.correspon.issuedAt}">
+                    <f:convertDateTime pattern="yyyy-MM-dd"/>
+                  </h:outputText>
+                </h:column>
+                <h:column>
+                  <f:facet name="header">
+                    <h:outputText value="発信元" />
+                  </f:facet>
+                  <h:outputText value="#{history.correspon.fromCorresponGroup.name}" />
+                </h:column>
+                <h:column>
+                  <f:facet name="header">
+                    <h:outputText value="宛先" />
+                  </f:facet>
+                  <h:outputText value="#{history.correspon.addressCorresponGroups[0].corresponGroup.name}..."
+                        rendered="#{history.toCount > 1}" />
+                  <h:outputText value="#{history.correspon.addressCorresponGroups[0].corresponGroup.name}"
+                        rendered="#{history.toCount == 1}" />
+                </h:column>
+                <h:column>
+                  <f:facet name="header">
+                    <h:outputText value="件名" />
+                  </f:facet>
+                  <h:outputText value="#{history.indent}" escape="false" />
+                  <h:outputText value="#{history.subject}"/>
+                </h:column>
+            </h:dataTable>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr/>
+
+    <div class="row">
+      <div class="twelve columns">
+        <h:outputLabel id="workflowLabel" value="ワークフロー" styleClass="label"/>
+        <a href="javascript:void(0);" onclick="switchDisplay('workflow', this, 'form:workflowDisplay')">
+          <h:outputText value="#{corresponRepliedPage.workflowDetail}"/>
+        </a>
+        <h:inputHidden id="workflowDisplay" value="#{corresponRepliedPage.workflowDisplay}"/>
+      </div>
+    </div>
+    <div id="workflow" class="detail" >
+      <div id="workflowDefault">
+        <div id="workflowAction" class="row bottom workflow-action-panel">
+          <div class="twelve columns">
+            <ul>
+              <li>
+                <h:outputLabel id="editWorkflowLabel" value="編集"
+                               rendered="#{!corresponRepliedPage.elemControl.workFlowLink}"/>
+              </li>
+              <li>
+                <h:commandLink id="verify" value="承認/否認"
+                               onclick="setScrollPosition();setActionName(event);"
+                               action="#{corresponRepliedPage.verify}"
+                               rendered="#{corresponRepliedPage.elemControl.verificationButton}"/>
+                <h:outputLabel id="verifyLabel" value="承認/否認"
+                               rendered="#{!corresponRepliedPage.elemControl.verificationButton}"/>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <h:dataTable id="repliedWorkflow" var="w" value="#{corresponRepliedPage.workflowList}"
+                     styleClass="list"
+                     columnClasses="number,text,text,text,text,text"
+                     rowClasses="odd,even"
+                     >
+          <h:column headerClass="workflow-no">
+            <f:facet name="header">
+              <h:outputText value="No."/>
+            </f:facet>
+            <h:outputText value="#{w.workflowNo}" />
+          </h:column>
+          <h:column headerClass="workflow-role">
+            <f:facet name="header">
+              <h:outputText value="役割"/>
+            </f:facet>
+            <h:outputText value="#{w.workflowType.label}" />
+            <h:outputText value="作成者" rendered="#{w.workflowType == null}"/>
+          </h:column>
+          <h:column headerClass="workflow-user">
+            <f:facet name="header">
+              <h:outputText value="ユーザー"/>
+            </f:facet>
+            <h:outputText value="#{w.corresponGroup.name}"
+                          rendered="#{w.corresponGroup != null}" />
+            <h:outputText value="&lt;br/&gt;"
+                          escape="false"
+                          rendered="#{w.corresponGroup != null}" />
+            <h:outputText value="#{w.user.labelWithRole}"
+                          rendered="#{w.user.empNo != null}" />
+          </h:column>
+          <h:column headerClass="workflow-status">
+            <f:facet name="header">
+              <h:outputText value="状態"/>
+            </f:facet>
+            <h:outputText value="#{w.workflowProcessStatus.label}" />
+          </h:column>
+          <h:column headerClass="workflow-user">
+            <f:facet name="header">
+              <h:outputText value="最終更新"/>
+            </f:facet>
+            <h:outputText
+                          value="#{w.updatedBy.label} "
+                          rendered="#{w.updatedBy != null}" />
+            <h:outputText value="&lt;br&gt;" escape="false" rendered="#{w.updatedBy != null}"/>
+            <h:outputText value="#{w.updatedAt}">
+              <f:convertDateTime pattern="yyyy-MM-dd HH:mm:ss"/>
+            </h:outputText>
+            <h:outputText value="&nbsp;" escape="false" />
+          </h:column>
+          <h:column headerClass="workflow-comment">
+            <f:facet name="header">
+              <h:outputText value="コメント"/>
+            </f:facet>
+            <h:inputTextarea styleClass="comment" readonly="true" value="#{w.commentOn}"
+                             rendered="#{w.commentOn != null}" style="font-size: 12px;color: #484848;"/>
+            <h:outputText value="&nbsp;" escape="false"/>
+          </h:column>
+        </h:dataTable>
+      </div>
+    </div>
+
+    <h:panelGroup id="action-panel-btn">
+    <div id="action-panel" class="action-panel">
+      <div id="actions" class="row">
+        <div class="three columns correspon-action">
+          <label>ワークフロー操作</label>
+          <h:panelGroup id="workflowActionPanel">
+            <h:commandButton id="issue" value="発行"
+                             style="margin-right:3px"
+                             action="#{corresponRepliedPage.issue}"
+                             onclick="setActionName(event); return confirmButton();"
+                             disabled="#{!corresponRepliedPage.elemControl.issueButton}"/>
+            <h:commandButton id="requestForApproval" value="承認依頼"
+                             action="#{corresponRepliedPage.requestForApproval}"
+                             onclick="setActionName(event); return confirmButton();"
+                             disabled="#{!corresponRepliedPage.elemControl.requestForApprovalButton}"/>
+          </h:panelGroup>
+        </div>
+        <div class="three columns correspon-action">
+          <label>既読状態操作</label>
+          <div class="correspon-action-button">
+          <h:commandButton id="Read" value="既読"
+                           style="margin-right:3px"
+                           action="#{corresponRepliedPage.read}"
+                           onclick="setActionName(event); return confirmButton();"
+                           disabled="#{!corresponRepliedPage.elemControl.readButton}"/>
+          <h:commandButton id="Unread" value="未読"
+                           action="#{corresponRepliedPage.unread}"
+                           onclick="setActionName(event); return confirmButton();"
+                           disabled="#{!corresponRepliedPage.elemControl.unreadButton}"/>
+          </div>
+        </div>
+        <div class="four columns correspon-action">
+          <label>状態操作</label>
+          <div class="correspon-action-button">
+          <h:commandButton id="open" value="オープン"
+                           style="margin-right:3px"
+                           action="#{corresponRepliedPage.open}"
+                           onclick="setActionName(event); return confirmButton();"
+                           disabled="#{!corresponRepliedPage.elemControl.openButton}"/>
+          <h:commandButton id="close" value="クローズ"
+                           style="margin-right:3px"
+                           action="#{corresponRepliedPage.close}"
+                           onclick="setActionName(event); return confirmButton();"
+                           disabled="#{!corresponRepliedPage.elemControl.closeButton}"/>
+          <h:commandButton id="cancel" value="キャンセル"
+                           action="#{corresponRepliedPage.cancel}"
+                           onclick="setActionName(event);return confirmButton();"
+                           disabled="#{!corresponRepliedPage.elemControl.cancelButton}"/>
+          </div>
+        </div>
+        <div class="two columns correspon-action">
+          <label>文書の削除</label>
+          <div class="correspon-action-button">
+            <h:commandButton id="delete" value="削除"
+                             action="#{corresponRepliedPage.delete}"
+                             onclick="setActionName(event); return confirmButton();"
+                             disabled="#{!corresponRepliedPage.elemControl.deleteButton}"/>
+          </div>
+        </div>
+      </div>
+    </div>
+    </h:panelGroup>
+  </div>
+
+  <div class="correspon-paging-panel row">
+    <div class="four columns">
+      <div>
+      </div>
+    </div>
+    <div class="eight columns correspon-command-panel">
+      <ul>
+        <li>
+          <h:outputLink id="replyWithPreviousCorrespon-bottom" value="javascript:void(0);"
+                        rendered="#{corresponRepliedPage.elemControl.replyWithPreviousCorresponLink}"
+                        onclick="replyWithPreviousCorrespon();">
+            <h:outputText id="replyWithPreviousCorresponLabel-bottom" value="この文書をコピーして返信"/>
+          </h:outputLink>
+        </li>
+        <li>
+          <h:outputLink id="closeWindow-bottom" value="javascript:void(0);"
+                        onclick="closeWindow();">
+            <h:outputText id="closeWindowLabel-bottom" value="閉じる"/>
+          </h:outputLink>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <h:graphicImage id="spinner"  url="/images/ajax-loader.gif" styleClass="ajax-loader"/>
+  </h:form>
+</f:view>
+</ui:define>
+</ui:composition>
+</html>

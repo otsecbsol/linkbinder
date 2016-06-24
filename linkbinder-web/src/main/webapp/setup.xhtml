@@ -1,0 +1,276 @@
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<!DOCTYPE html
+   PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/include/loginTemplate.xhtml">
+  <ui:define name="title">Link Binderへようこそ</ui:define>
+  <ui:define name="jsOuter">
+    <script type="text/javascript" src="#{contextPath}/resource/#{v}/javascript/fileUpload.js"></script>
+  </ui:define>
+  <ui:define name="jsInner">
+  <!--
+
+  $(document).ready(function() {
+    $('#form\\:Setup').highlightRows();
+  });
+
+  function getUserId() {
+    return document.getElementById("formStep2:userId");
+  }
+  window.onload = function() {
+    observe(getUserId(), "keyup", convertToUpperCase);
+  };
+
+  -->
+  </ui:define>
+
+
+  <ui:define name="body">
+  <f:view>
+       <div class="top">
+        <h:outputLabel id="title"><h:outputText id="txtTitle" value="#{setupPage.title}" /></h:outputLabel>
+      </div>
+      <h:panelGroup id="Step1" rendered="#{setupPage.visibleStep1}">
+        <h:form id="formStep1" onsubmit="return disableSubmit();">
+        <h:inputHidden id="actionName" value="#{setupPage.actionName}" />
+        <div class="row">
+          <div class="twelve columns">
+            <p>Link Binderへようこそ。ご利用にあたりいくつかの設定が必要になります。以下の手順に沿って進めてください。</p>
+            <ul>
+              <li>
+                <span>
+                  管理者ユーザー作成
+                  <ui:fragment  rendered="#{setupPage.existsSysUser}">
+                    <i class="fa fa-check-circle setup-ok" aria-hidden="true"></i>
+                  </ui:fragment>
+                </span>
+              </li>
+              <li>
+                <span>
+                  プロジェクト・利用ユーザー作成
+                  <ui:fragment  rendered="#{setupPage.existsProject}">
+                    <i class="fa fa-check-circle setup-ok" aria-hidden="true"></i>
+                  </ui:fragment>
+                </span>
+              </li>
+            </ul>
+            <p>各種情報は管理者ユーザーでログイン後、修正することができます。</p>
+          </div>
+        </div>
+        <div class="action-edit">
+          <h:commandButton id="settingStart"
+                          value="設定をはじめる"
+                          styleClass="button-primary"
+                          action="#{setupPage.step1}"/>
+          <h:commandButton id="settingEnd"
+                           value="あとで設定する"
+                           styleClass="button"
+                           action="#{setupPage.step3}"
+                           rendered="#{setupPage.existsSysUser}"/>
+        </div>
+        </h:form>
+      </h:panelGroup>
+      <h:panelGroup id="Step2" rendered="#{setupPage.visibleStep2}">
+        <h:form id="formStep2" onsubmit="toUpper(getUserId()); return disableSubmit();">
+          <h:inputHidden id="actionName" value="#{setupPage.actionName}" />
+          <f:validateBean validationGroups="#{setupPage.userValidationGroups}">
+          <div class="row">
+            <div class="twelve columns">
+              <p>このシステムの管理者ユーザーを作成します。次の情報を入力してください。</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="twelve columns">
+              <h:outputLabel for="userId" value="ユーザーID" styleClass="required"/>
+              <h:inputText id="userId" value="#{setupPage.userId}"/>
+              <h:message for="userId" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="twelve columns">
+              <h:outputLabel for="password" value="パスワード" styleClass="required"/>
+              <h:inputSecret id="password" value="#{setupPage.password}" maxlength="31"/>
+              <h:message for="password" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="twelve columns">
+              <h:outputLabel for="passwordConf" value="パスワード(確認)" styleClass="required"/>
+              <h:inputSecret id="passwordConf" value="#{setupPage.passwordConf}"
+                 maxlength="31" />
+              <h:message for="passwordConf" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="twelve columns">
+              <h:outputLabel for="email_address" value="メールアドレス" styleClass="required"/>
+              <h:inputText id="email_address"
+                value="#{setupPage.defaultEmailAddress}"/>
+              <h:message for="email_address" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="twelve columns">
+              <h:outputLabel for="lastName" value="姓" styleClass="required"/>
+              <h:inputText id="lastName" value="#{setupPage.lastName}"/>
+              <h:message for="lastName" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="twelve columns">
+              <h:outputLabel for="firstName" value="名" styleClass="required"/>
+              <h:inputText id="firstName" value="#{setupPage.firstName}"/>
+              <h:message for="firstName" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+            </div>
+          </div>
+          </f:validateBean>
+          <div class="action-edit">
+            <h:commandButton id="insertUser" value="登録"
+                             styleClass="button-primary"
+                             action="#{setupPage.step2}"/>
+            <h:commandButton id="back" value="戻る"
+                             styleClass="button"
+                             action="#{setupPage.back}"/>
+          </div>
+        </h:form>
+      </h:panelGroup>
+      <h:panelGroup id="Step3" rendered="#{setupPage.visibleStep3}" >
+        <h:form id="form" onsubmit="return disableSubmit();">
+          <h:inputHidden id="actionName" value="#{setupPage.actionName}" />
+          <div class="row">
+            <div class="twelve columns">
+              <p>このシステムを利用するプロジェクト及びユーザーを作成します。
+              この情報は、管理者ユーザーでシステムへログインした後に設定することもできます。</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="twelve columns">
+              <ol>
+                <li>次のCSVファイルをダウンロードし、登録内容を追記してください。
+                  <ul class="disc">
+                    <li>
+                      <span>
+                        プロジェクト情報CSVテンプレートをダウンロード
+                      </span>
+                    </li>
+                    <li>
+                      ユーザー情報CSVテンプレートをダウンロード
+                    </li>
+                  </ul>
+                </li>
+                <li>次のCSVファイルをアップロードしてください。
+                  <ol class="disc">
+                    <li>
+                      <span>
+                        プロジェクト情報CSVファイル
+                        <ui:fragment  rendered="#{setupPage.existsProject}">
+                          <i class="fa fa-check-circle setup-ok" aria-hidden="true"></i>
+                        </ui:fragment>
+                      </span>
+                    </li>
+                    <li>
+                      <span>
+                      ユーザー情報CSVファイル
+                        <ui:fragment  rendered="#{setupPage.existsUsers}">
+                          <i class="fa fa-check-circle setup-ok" aria-hidden="true"></i>
+                        </ui:fragment>
+                      </span>
+                    </li>
+                  </ol>
+                </li>
+              </ol>
+            </div>
+          </div>
+          <div class="row">
+            <div class="six columns">
+              <f:validateBean validationGroups="#{setupPage.validationGroups}">
+                <h:outputLabel for="selectData" value="登録データ" styleClass="required"/>
+                <h:selectOneMenu id="selectData" value="#{setupPage.selectDataID}" styleClass="u-full-width">
+                  <f:selectItems value="#{setupPage.selectImportDataType}" />
+                </h:selectOneMenu>
+                <input id="form:importFile" name="importFile" type="file" class="u-full-width"/>
+                <h:inputHidden id="importFileKey" value="#{setupPage.importFile.key}" validator="#{setupPage.validateAttachment}" />
+                <h:inputHidden id="importFileName" value="#{setupPage.importFile.filename}" />
+                <h:inputHidden id="importFileSize" value="#{setupPage.importFile.fileSize}" />
+              </f:validateBean>
+            </div>
+          </div>
+          <div class="action-edit">
+            <h:commandButton id="insertDummy"
+                             type="button"
+                             value="登録"
+                             styleClass="button-primary"
+                             action="#{setupPage.insert}"
+                             onclick="fileUpdateProcess('insert', 'createError', this, '${request.contextPath}/upload');"/>
+            <h:commandLink id="csv"
+                             value="出力"
+                             styleClass="button"
+                             action="#{setupPage.exportCsv}"
+                             onclick="setActionName(event)" />
+
+            <ui:remove>
+            <!-- ファイルアップロード用隠しボタン -->
+            </ui:remove>
+            <h:commandButton style="display: none;" id="insert"
+                             action="#{setupPage.insert}"
+                             onclick="setActionName(event);" />
+            <h:commandButton style="display: none;" id="createError"
+                             action="#{setupPage.uploadingException}"
+                             onclick="setActionName(event);" />
+          </div>
+          <ui:fragment rendered="#{not empty setupPage.errorMessageList}">
+          <ul>
+            <ui:repeat id="errorMessages" value="#{setupPage.errorMessageList}" var="m">
+              <li><span class="error">#{m}</span></li>
+            </ui:repeat>
+          </ul>
+          </ui:fragment>
+          <div class="action-edit">
+            <h:commandButton id="nextStep3" value="後で設定する"
+                             styleClass="button-primary"
+                             action="#{setupPage.step3}"/>
+            <h:commandButton id="backStep3" value="最初に戻る"
+                             styleClass="button"
+                             action="#{setupPage.step0}"/>
+          </div>
+        </h:form>
+      </h:panelGroup>
+      <h:panelGroup id="Step4"  rendered="#{setupPage.visibleStep4}">
+        <h:form id="formStep4" onsubmit="return disableSubmit();">
+          <h:inputHidden id="actionName" value="#{setupPage.actionName}" />
+          <div class="row">
+            <div class="twelve columns">
+              <p>利用の準備が整いました。</p>
+              <p>システムにログイン後、「システム管理」メニューからシステム全体のマスタ情報を設定してください。
+              プロジェクト固有の情報は、プロジェクト選択後の「プロジェクト管理」メニューから設定することができます。</p>
+            </div>
+          </div>
+          <div class="action-edit">
+            <h:commandButton id="login" value="ログイン"
+                          styleClass="button-primary"
+                          action="#{setupPage.step4}"/>
+          </div>
+        </h:form>
+      </h:panelGroup>
+  </f:view>
+  </ui:define>
+</ui:composition>
+</html>

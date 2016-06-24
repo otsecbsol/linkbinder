@@ -1,0 +1,114 @@
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+  <head>
+    <title>ignore</title>
+  </head>
+  <body>
+<ui:component>
+  <div class="row header-top">
+    <div id="system-name" class="two columns">
+      Link Binder
+      <ui:fragment rendered="#{login != 'off'}">
+        <div id="toggle-config"><a href="#"><i class="fa fa-bars" aria-hidden="true"></i>設定</a></div>
+        <div id="toggle-menu"><a href="#"><i class="fa fa-bars" aria-hidden="true"></i>メニュー</a></div>
+      </ui:fragment>
+    </div>
+    <ui:fragment rendered="#{login != 'off'}">
+      <div class="nine columns u-pull-right header-config">
+          <div id="config">
+          <ui:fragment rendered="#{menuPage.systemAdminAccessible}">
+            <a href="#{contextPath}/admin/adminHome.jsf"><i class="fa fa-cogs" aria-hidden="true"></i>システム管理</a>
+          </ui:fragment>
+          <ui:fragment rendered="#{!empty flash.projectId and menuPage.projectAdminAccessible}">
+            <a id="projectAdmin" href="#{contextPath}/admin/projectAdminHome.jsf?projectId=#{flash.projectId}"><i class="fa fa-cog" aria-hidden="true"></i>プロジェクト管理</a>
+          </ui:fragment>
+          <ui:fragment rendered="#{!empty flash.projectId}">
+            <a href="#{contextPath}/userSettings.jsf?id=#{flash.userId}&amp;projectId=#{flash.projectId}"><i class="fa fa-user" aria-hidden="true"></i>設定</a>
+          </ui:fragment>
+          <ui:fragment rendered="#{empty flash.projectId}">
+            <a href="#{contextPath}/userSettings.jsf?id=#{flash.userId}"><i class="fa fa-user" aria-hidden="true"></i>設定</a>
+          </ui:fragment>
+          <a class="logout" href="#{contextPath}/login.jsf?logout=1"><i class="fa fa-sign-out" aria-hidden="true"></i>ログアウト</a>
+          </div>
+      </div>
+    </ui:fragment>
+  </div>
+  <div class="row">
+    <div id="project" class="seven columns">
+      <ui:fragment rendered="#{!empty flash.projectId}">
+        <h:outputText value="#{flash.projectId}" />
+        <h:outputText value=" : " />
+        <h:outputText value="#{flash.projectNameE}" />
+      </ui:fragment>
+    </div>
+    <div id="login" class="four columns u-pull-right">
+      <ui:fragment rendered="#{login != 'off'}">
+        <h:outputText value="#{flash.userLabel}" />
+      </ui:fragment>
+    </div>
+  </div>
+  <div id="main-menu" class="row">
+    <ui:fragment rendered="#{login != 'off'}">
+      <ul>
+        <li><a id="home" href="${contextPath}/home.jsf">ホーム</a></li>
+        <ui:fragment rendered="#{!empty flash.projectId}">
+          <li><a id="projectHome" href="#{contextPath}/projectHome.jsf?projectId=#{flash.projectId}">プロジェクトホーム</a></li>
+          <li><a id="correspon" href="#{contextPath}/correspon/corresponIndex.jsf?sessionSort=1&amp;sessionPageNo=1&amp;projectId=#{flash.projectId}">文書</a></li>
+          <li><a id="newCorrespon" href="#{contextPath}/correspon/corresponEdit.jsf?newEdit=1&amp;projectId=#{flash.projectId}">新規文書</a></li>
+          <li><a id="fullText" href="#{contextPath}/correspon/corresponSearch.jsf?sessionPageNo=1&amp;projectId=#{flash.projectId}">全文検索</a></li>
+        </ui:fragment>
+      </ul>
+    </ui:fragment>
+  </div>
+
+  <script type="text/javascript">
+  <!--
+  window.name = 'base';
+
+  var url = document.URL;
+  var view = null;
+  if (url.indexOf("${contextPath}/home.jsf") > 0) {
+      view = document.getElementById("home");
+  } else if (url.indexOf("${contextPath}/projectHome.jsf") > 0) {
+      view = document.getElementById("projectHome");
+  } else if (url.indexOf("${contextPath}/correspon/corresponSearch.jsf") > 0) {
+      view = document.getElementById("fullText");
+  } else if (url.indexOf("${contextPath}/correspon/") > 0) {
+     if (#{menuPage.newCorresponEdit}) {
+         view = document.getElementById("newCorrespon");
+     } else {
+         view = document.getElementById("correspon");
+     }
+  }
+  if (view) {
+      view.style.background = '#ffffff';
+      view.style.color = '#000000';
+  }
+
+  function logout(){
+      return true;
+  }
+  //-->
+  </script>
+
+</ui:component>
+  </body>
+</html>

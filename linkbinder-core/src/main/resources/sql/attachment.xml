@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="attachment">
+
+  <resultMap id="result" class="jp.co.opentone.bsol.linkbinder.dto.Attachment">
+    <result property="id"              column="id" />
+    <result property="no"              column="no" />
+    <result property="corresponId"     column="correspon_id" />
+    <result property="fileId"          column="file_id" />
+    <result property="fileName"        column="file_name" />
+    <result property="createdBy.empNo" column="created_by" />
+    <result property="createdAt"       column="created_at" />
+    <result property="updatedBy.empNo" column="updated_by" />
+    <result property="updatedAt"       column="updated_at" />
+    <result property="deleteNo"        column="delete_no" />
+  </resultMap>
+
+  <select id="findById" resultMap="result">
+    SELECT
+      id,
+      no,
+      correspon_id,
+      file_id,
+      file_name,
+      created_by,
+      created_at,
+      updated_by,
+      updated_at,
+      delete_no
+    FROM
+      v_attachment
+    WHERE
+      id = #value#
+  </select>
+
+  <insert id="create">
+    <selectKey resultClass="long" keyProperty="id">
+        SELECT s_attachment_id.NEXTVAL AS id FROM dual
+    </selectKey>
+    INSERT INTO attachment (
+      id,
+      correspon_id,
+      file_id,
+      file_name,
+      created_by,
+      updated_by
+    ) VALUES (
+      #id#,
+      #corresponId#,
+      #fileId#,
+      #fileName#,
+      #createdBy.empNo#,
+      #updatedBy.empNo#
+    )
+  </insert>
+
+  <update id="delete">
+    UPDATE attachment
+    SET
+      updated_by = #updatedBy.empNo#,
+      updated_at = SYSTIMESTAMP,
+      delete_no  = s_attachment_dno.NEXTVAL
+    WHERE
+      id = #id#
+  </update>
+
+  <select id="findByCorresponId" resultMap="result">
+    SELECT
+      id,
+      no,
+      correspon_id,
+      file_id,
+      file_name,
+      created_by,
+      created_at,
+      updated_by,
+      updated_at,
+      delete_no
+    FROM
+      v_attachment
+    WHERE
+      correspon_id = #value#
+    ORDER BY
+      file_id
+  </select>
+</sqlMap>

@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="project">
+
+  <resultMap id="project" class="jp.co.opentone.bsol.linkbinder.dto.Project">
+    <result property="projectId"        column="project_id" />
+    <result property="clientNameE"      column="client_name_e" />
+    <result property="clientNameJ"      column="client_name_j" />
+    <result property="nameE"            column="name_e" />
+    <result property="nameJ"            column="name_j" />
+  </resultMap>
+  <resultMap id="projectSummary" class="jp.co.opentone.bsol.linkbinder.dto.ProjectSummary">
+    <result property="project.projectId"        column="project_id" />
+    <result property="project.clientNameE"      column="client_name_e" />
+    <result property="project.clientNameJ"      column="client_name_j" />
+    <result property="project.nameE"            column="name_e" />
+    <result property="project.nameJ"            column="name_j" />
+    <result property="attentionCount"           column="attention_count" />
+    <result property="personInChargeCount"      column="person_in_charge_count" />
+    <result property="ccCount"                  column="cc_count" />
+    <result property="usePersonInCharge"        column="use_person_in_charge" />
+  </resultMap>
+
+<resultMap id="sysProject" class="jp.co.opentone.bsol.linkbinder.dto.Project">
+    <result property="projectId"        column="project_id" />
+    <result property="clientNameE"      column="client_name_e" />
+    <result property="clientNameJ"      column="client_name_j" />
+    <result property="nameE"            column="name_e" />
+    <result property="nameJ"            column="name_j" />
+    <result property="useApprovedFlg"   column="use_approved_flg" />
+  </resultMap>
+
+  <!-- find,countで共通的に利用するFROM, WHERE句 -->
+  <sql id="findFromWhere">
+    FROM
+      v_system_project
+    <dynamic prepend="WHERE">
+      <isNotEmpty property="projectId" prepend="AND">
+      project_id like #projectId# || '%' {escape #escapeChar#}
+      </isNotEmpty>
+      <isNotEmpty property="nameE" prepend="AND">
+      name_e like #nameE#  || '%' {escape #escapeChar#}
+      </isNotEmpty>
+    </dynamic>
+  </sql>
+
+  <select id="findByEmpNo" resultMap="project">
+    SELECT
+      p.project_id,
+      p.client_name_e,
+      p.client_name_j,
+      p.name_e,
+      p.name_j
+    FROM
+      v_system_project p
+      LEFT OUTER JOIN v_project_user u ON
+        p.project_id = u.project_id
+    WHERE
+      u.emp_no = #value#
+    ORDER BY p.project_id
+  </select>
+
+  <select id="find" resultMap="project">
+    SELECT
+      project_id,
+      client_name_e,
+      client_name_j,
+      name_e,
+      name_j
+    <include refid="findFromWhere"/>
+    ORDER BY
+    <isEmpty property="sanitizedOrderBy">
+      project_id
+    </isEmpty>
+    <isNotEmpty property="sanitizedOrderBy">
+      $sanitizedOrderBy$
+    </isNotEmpty>
+  </select>
+
+  <select id="count" resultClass="int">
+    SELECT
+      count(project_id) as data_count
+    <include refid="findFromWhere"/>
+  </select>
+
+  <select id="findProjectSummary" resultMap="projectSummary">
+    SELECT
+      project_id,
+      client_name_e,
+      client_name_j,
+      name_e,
+      name_j,
+      count(DISTINCT attention) as attention_count,
+      count(DISTINCT person_in_charge) as person_in_charge_count,
+      count(DISTINCT cc) as cc_count,
+      use_person_in_charge
+    FROM
+      (SELECT
+         p.*,
+         (CASE WHEN c.workflow_status = #issued#
+                  AND
+                    au.emp_no = #empNo#
+                  AND
+                    au.address_user_type = #attentionValue#
+                  AND
+                    acg.address_type = #toValue#
+                  AND
+                    nvl(r.read_status, #unreadValue#) = #unreadValue#
+               THEN c.id END) as attention,
+         (CASE WHEN c.workflow_status = #issued#
+                  AND
+                    nvl(r.read_status, #unreadValue#) = #unreadValue#
+                  AND
+                    pic.id is not null
+               THEN c.id END) as person_in_charge,
+         (CASE WHEN c.workflow_status = #issued#
+                  AND
+                    au.emp_no = #empNo#
+                  AND
+                    au.address_user_type = #normalUserValue#
+                  AND
+                    acg.address_type = #ccValue#
+                  AND
+                    nvl(r.read_status, #unreadValue#) = #unreadValue#
+               THEN c.id END) as cc,
+         nvl(pcs.use_person_in_charge, 1) as use_person_in_charge
+       FROM
+           v_system_project p
+     <dynamic>
+       <isEqual property="systemAdmin" compareValue="false">
+         INNER JOIN
+           v_project_user u
+           ON p.project_id = u.project_id
+             AND
+              u.emp_no = #empNo#
+       </isEqual>
+     </dynamic>
+         LEFT OUTER JOIN
+           (SELECT
+             c.id,
+             c.project_id,
+             c.workflow_status
+            FROM correspon c
+            WHERE
+              c.delete_no = 0
+              AND c.workflow_status = #issued#
+           ) c
+           ON c.project_id = p.project_id
+         LEFT OUTER JOIN
+           correspon_read_status r
+           ON r.correspon_id = c.id
+             AND
+              r.emp_no = #empNo#
+             AND
+              r.delete_no = 0
+         LEFT OUTER JOIN
+           address_correspon_group acg
+           ON c.id = acg.correspon_id
+             AND
+              acg.delete_no = 0
+         LEFT OUTER JOIN
+           address_user au
+           ON au.address_correspon_group_id = acg.id
+             AND
+              au.delete_no = 0
+         LEFT OUTER JOIN
+           person_in_charge pic
+           ON pic.address_user_id = au.id
+             AND
+              pic.delete_no = 0
+             AND
+              pic.emp_no = #empNo#
+         LEFT OUTER JOIN project_custom_setting pcs
+            ON pcs.project_id = p.project_id
+            AND pcs.delete_no = 0
+        )
+    GROUP BY
+      project_id,
+      client_name_e,
+      client_name_j,
+      name_e,
+      name_j,
+      use_person_in_charge
+    ORDER BY
+      project_id ASC
+  </select>
+
+  <select id="findById" resultMap="project">
+   SELECT
+      project_id,
+      client_name_e,
+      client_name_j,
+      name_e,
+      name_j
+   FROM
+      v_system_project
+   WHERE
+     project_id = #value#
+  </select>
+
+   <select id="findBySysPJId" resultClass="String">
+   SELECT
+      project_id
+   FROM
+      v_project
+   WHERE
+     project_id = #value#
+  </select>
+
+  <select id="findAllSysPJ" resultMap="sysProject">
+  SELECT
+    pj.pj_id as project_id,
+    pj.cl_nm_e as client_name_e,
+    pj.cl_nm_j as client_name_j,
+    pj.pj_nm_e as name_e,
+    pj.pj_nm_j as name_j,
+    CASE au.apl_sys_aprv_flg
+    WHEN 'X' THEN '○'
+    ELSE apl_sys_aprv_flg
+    END as use_approved_flg
+  FROM sys_pj pj
+    INNER JOIN sys_pj_auth au
+      ON pj.pj_id = au.pj_id
+  </select>
+
+  <insert id="createProject">
+    INSERT ALL
+     INTO sys_pj (
+        pj_id,
+        cl_nm_e,
+        cl_nm_j,
+        pj_nm_e,
+        pj_nm_j
+      ) VALUES (
+        #projectId#,
+        #clientNameE#,
+        #clientNameJ#,
+        #nameE#,
+        #nameJ#
+        )
+    INTO sys_pj_auth (
+         pj_id,
+         apl_sys_aprv_flg
+    ) VALUES (
+        #projectId#,
+        #useApprovedFlg#
+    )
+    SELECT * FROM dual
+  </insert>
+
+  <update id="updateProject">
+    UPDATE sys_pj
+    SET
+        cl_nm_e = #clientNameE#,
+        cl_nm_j = #clientNameJ#,
+        pj_nm_e = #nameE#,
+        pj_nm_j = #nameJ#
+    WHERE
+        pj_id = #projectId#
+  </update>
+  <update id="updateProjectAuth">
+    UPDATE sys_pj_auth
+    SET
+        apl_sys_aprv_flg = #useApprovedFlg#
+    WHERE
+        pj_id = #projectId#
+  </update>
+
+  <delete id="deleteProject">
+     DELETE sys_pj
+    WHERE
+        pj_id = #projectId#
+        AND (0 =
+          ( (SELECT COUNT(project_id)         AS c_count FROM company_user WHERE project_id = #projectId#)
+          + (SELECT COUNT(project_id)         AS c_count FROM correspon WHERE project_id = #projectId#)
+          + (SELECT COUNT(project_id)         AS c_count FROM discipline WHERE project_id = #projectId#)
+          + (SELECT COUNT(project_id)         AS c_count FROM dist_template_header WHERE project_id = #projectId#)
+          + (SELECT COUNT(project_id)         AS c_count FROM email_notice WHERE project_id = #projectId#)
+          + (SELECT COUNT(project_id)         AS c_count FROM email_notice_recv_setting WHERE project_id = #projectId#)
+          + (SELECT COUNT(project_id)         AS c_count FROM favorite_filter WHERE project_id = #projectId#)
+          + (SELECT COUNT(project_id)         AS c_count FROM project_company WHERE project_id = #projectId#)
+          + (SELECT COUNT(project_id)         AS c_count FROM project_correspon_type WHERE project_id = #projectId#)
+          + (SELECT COUNT(project_id)         AS c_count FROM project_custom_field WHERE project_id = #projectId#)
+          + (SELECT COUNT(project_id)         AS c_count FROM project_custom_setting WHERE project_id = #projectId#)
+          + (SELECT COUNT(project_id)         AS c_count FROM project_user_profile WHERE project_id = #projectId#)
+          + (SELECT COUNT(project_id)         AS c_count FROM rep_v_correspon WHERE project_id = #projectId#)
+          + (SELECT COUNT(project_id)         AS c_count FROM site WHERE project_id = #projectId#)
+          + (SELECT COUNT(pj_id)              AS c_count FROM sys_pj_users WHERE pj_id = #projectId#)
+          + (SELECT COUNT(default_project_id) AS c_count FROM user_profile WHERE default_project_id = #projectId#)
+          + (SELECT COUNT(project_id)         AS c_count FROM workflow_template_user WHERE project_id = #projectId#)
+          ))
+  </delete>
+
+  <delete id="deleteProjectAuth">
+    DELETE sys_pj_auth
+    WHERE
+        pj_id = #projectId#
+  </delete>
+
+  <select id="findProjectCount" resultClass="int">
+    SELECT COUNT(pj_id)
+    FROM sys_pj
+  </select>
+
+
+</sqlMap>

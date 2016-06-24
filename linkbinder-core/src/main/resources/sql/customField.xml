@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="customField">
+
+  <resultMap id="CustomFieldAdmin" class="jp.co.opentone.bsol.linkbinder.dto.CustomField">
+    <result property="id"                        column="id" />
+    <result property="label"                     column="label" />
+    <result property="no"                        column="no" />
+    <result property="orderNo"                   column="order_no" />
+    <result property="useWhole"                  column="use_whole" />
+    <result property="createdBy.empNo"           column="created_by" />
+    <result property="createdBy.nameE"           column="created_by_name" />
+    <result property="createdAt"                 column="created_at" />
+    <result property="updatedBy.empNo"           column="updated_by" />
+    <result property="updatedBy.nameE"           column="updated_by_name" />
+    <result property="updatedAt"                 column="updated_at" />
+    <result property="versionNo"                 column="version_no" />
+    <result property="deleteNo"                  column="delete_no" />
+  </resultMap>
+
+  <resultMap id="customFieldProject" class="jp.co.opentone.bsol.linkbinder.dto.CustomField">
+    <result property="id"                        column="id" />
+    <result property="no"                        column="no" />
+    <result property="projectCustomFieldId"      column="project_custom_field_id" />
+    <result property="projectId"                 column="project_id" />
+    <result property="projectNameE"              column="project_name_e" />
+    <result property="label"                     column="label" />
+    <result property="orderNo"                   column="order_no" />
+    <result property="useWhole"                  column="use_whole" />
+    <result property="createdBy.empNo"           column="pc_created_by" />
+    <result property="createdBy.nameE"           column="pc_created_by_name" />
+    <result property="createdAt"                 column="pc_created_at" />
+    <result property="updatedBy.empNo"           column="pc_updated_by" />
+    <result property="updatedBy.nameE"           column="pc_updated_by_name" />
+    <result property="updatedAt"                 column="pc_updated_at" />
+    <result property="versionNo"                 column="version_no" />
+    <result property="deleteNo"                  column="delete_no" />
+  </resultMap>
+
+  <resultMap id="resultNotProject" class="jp.co.opentone.bsol.linkbinder.dto.CustomField">
+    <result property="id"                        column="id" />
+    <result property="label"                     column="label" />
+    <result property="orderNo"                   column="order_no" />
+  </resultMap>
+
+  <resultMap id="resultForUpdate" class="jp.co.opentone.bsol.linkbinder.dto.CustomField">
+    <result property="versionNo"             column="version_no" />
+  </resultMap>
+
+  <!-- findById,findCustomFieldで共通的に利用するSELECT,FROM句 -->
+  <sql id="selectFromAdmin">
+    SELECT
+      id,
+      no,
+      label,
+      order_no,
+      use_whole,
+      created_by,
+      created_by_name,
+      created_at,
+      updated_by,
+      updated_by_name,
+      updated_at,
+      version_no,
+      delete_no
+    FROM
+      v_custom_field
+  </sql>
+
+  <!--  findByIdProjectId,findByProjectId,findProjectCustomField,で共通的に利用するSELECT,FROM句 -->
+  <sql id="selectFrom">
+    SELECT
+      id,
+      no,
+      project_custom_field_id,
+      project_id,
+      project_name_e,
+      label,
+      order_no,
+      use_whole,
+      pc_created_by,
+      pc_created_by_name,
+      pc_created_at,
+      pc_updated_by,
+      pc_updated_by_name,
+      pc_updated_at,
+      version_no,
+      delete_no
+    FROM
+      v_project_custom_field
+  </sql>
+
+  <select id="findByIdProjectId" resultMap="customFieldProject">
+    <include refid="selectFrom"/>
+	WHERE
+      id = #id#
+    AND
+      project_id = #projectId#
+  </select>
+
+  <select id="findByProjectId" resultMap="customFieldProject">
+    <include refid="selectFrom"/>
+    WHERE
+      project_id = #projectId#
+  </select>
+
+  <select id="findCustomField" resultMap="CustomFieldAdmin">
+    <include refid="selectFromAdmin"/>
+    WHERE
+      use_whole = 0
+    <dynamic>
+      <isNotNull prepend="AND" property="label">
+        label      like  #label# || '%' {escape #escapeChar#}
+      </isNotNull>
+    </dynamic>
+    ORDER BY
+      order_no,
+      id
+  </select>
+
+  <select id="findProjectCustomField" resultMap="customFieldProject">
+    <include refid="selectFrom"/>
+    WHERE
+      project_id = #projectId#
+    <dynamic>
+      <isNotNull prepend="AND" property="label">
+        label      like  #label# || '%' {escape #escapeChar#}
+      </isNotNull>
+    </dynamic>
+    ORDER BY
+      order_no
+  </select>
+
+  <select id="count" resultClass="int">
+    SELECT
+      COUNT
+        (
+        DISTINCT
+          id)
+    FROM
+      v_project_custom_field
+      <dynamic prepend="WHERE">
+        <isNotNull prepend="AND" property="projectId">
+          project_id = #projectId#
+        </isNotNull >
+        <isNotNull prepend="AND" property="label">
+          label      like  #label# || '%' {escape #escapeChar#}
+        </isNotNull>
+        <isEqual prepend="AND" property="adminHome" compareValue="true">
+          project_id is not null
+        </isEqual>
+        <isNotNull prepend="AND" property="id">
+          id         = #id#
+        </isNotNull>
+        <isNotNull prepend="AND" property="useWhole">
+          use_whole = #useWhole#
+        </isNotNull>
+      </dynamic>
+  </select>
+
+  <select id="findNotAssignTo" resultMap="resultNotProject">
+    SELECT DISTINCT
+      id,
+      label,
+      order_no
+    FROM
+      custom_field
+    WHERE
+      id not in
+         (
+         SELECT
+           custom_field_id
+         FROM
+           project_custom_field
+         WHERE
+           project_id = #value#
+         AND
+           delete_no = 0
+         )
+    AND
+      use_whole = 0
+    AND
+      delete_no = 0
+    ORDER BY
+      order_no
+  </select>
+
+  <select id="findById" resultMap="CustomFieldAdmin">
+    <include refid="selectFromAdmin"/>
+    WHERE
+      id         =   #value#
+  </select>
+
+  <insert id="create">
+    <selectKey resultClass="long" keyProperty="id">
+        SELECT s_custom_field_id.NEXTVAL AS id FROM dual
+    </selectKey>
+    INSERT INTO custom_field (
+      id,
+      label,
+      order_no,
+      use_whole,
+      created_by,
+      updated_by
+    ) VALUES (
+      #id#,
+      #label#,
+      #orderNo#,
+      #useWhole#,
+      #createdBy.empNo#,
+      #updatedBy.empNo#
+    )
+  </insert>
+
+  <update id="update">
+    UPDATE custom_field
+    SET
+      updated_by = #updatedBy.empNo#,
+      updated_at = SYSTIMESTAMP,
+      version_no = (version_no + 1)
+      <dynamic>
+        <isNotNull prepend="," property="label">
+          label = #label#
+        </isNotNull>
+        <isNotNull prepend="," property="orderNo">
+          order_no       = #orderNo#
+        </isNotNull>
+      </dynamic>
+    WHERE
+      id = #id#
+  </update>
+
+  <select id="findByIdForUpdate" resultMap="resultForUpdate">
+    SELECT
+      version_no
+    FROM
+      custom_field
+    WHERE
+      id = #id#
+    FOR UPDATE
+  </select>
+
+  <update id="delete">
+    UPDATE
+      custom_field
+    SET
+      updated_by = #updatedBy.empNo#,
+      updated_at = SYSTIMESTAMP,
+      version_no = (version_no + 1),
+      delete_no  = s_custom_field_dno.NEXTVAL
+    WHERE
+      id         = #id#
+  </update>
+
+  <select id="countCheck" resultClass="int">
+    SELECT
+      count(id) cnt
+    FROM
+      v_project_custom_field
+    <dynamic prepend="WHERE">
+      <isNotNull prepend="AND" property="label">
+        label                   = #label#
+      </isNotNull>
+      <isNotNull prepend="AND" property="id">
+        id                      <![CDATA[<>]]> #id#
+      </isNotNull>
+      <isNotNull prepend="AND" property="projectId">
+        project_id              = #projectId#
+      </isNotNull>
+      <isNull prepend="AND" property="projectId">
+        project_id              is null
+      </isNull>
+    </dynamic>
+  </select>
+
+</sqlMap>

@@ -1,0 +1,2158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html [
+<!ENTITY nbsp "&#160;">
+<!ENTITY yen "&#165;">
+<!ENTITY plusmn "&#177;">
+<!ENTITY minus "&#8722;">
+<!ENTITY darr "&#2193;">
+<!ENTITY uarr "&#2191;">
+]>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/include/template.xhtml">
+  <ui:define name="title">文書一覧</ui:define>
+  <ui:define name="cssOuter">
+    <link type="text/css" href="#{contextPath}/resource/#{v}/stylesheet/custom/correspon.css" rel="stylesheet" />
+  </ui:define>
+  <ui:define name="jsOuter">
+    <script type="text/javascript" src="#{contextPath}/resource/#{v}/javascript/dateformat.js"></script>
+  </ui:define>
+  <ui:define name="jsInner">
+    /*@cc_on _d=document;eval('var document=_d')@*/
+    <!--
+    function showHelp() {
+        var action = document.getElementById('help');
+        var help = document.getElementById('searchHelp');
+        if (action.innerText == 'ヘルプを表示') {
+            help.style.display = 'block';
+            action.innerText = 'ヘルプを隠す';
+        } else {
+          if(action.innerHTML == 'ヘルプを表示'){
+            help.style.display = 'block';
+            action.innerHTML = 'ヘルプを隠す';
+          } else if (action.innerHTML != 'ヘルプを表示'){
+            help.style.display = 'none';
+            action.innerHTML = 'ヘルプを表示';
+          } else {
+            help.style.display = 'none';
+            action.innerText = 'ヘルプを表示';
+          }
+        }
+    }
+
+    function setSearchValue(id, val) {
+        document.getElementById(id).value = val;
+    }
+
+    function changePageRowNum(num) {
+      var cookie = "CORRESPONINDEXPAGEROW=" + num + "; expires=Tue, 1-Jan-2030 00:00:00 GMT";
+      document.cookie = cookie;
+    }
+
+    function checkAll() {
+      var on = false;
+      var elem = document.form.elements;
+      var len = elem.length;
+
+      for(var i=0; i<len; i++){
+        if(elem[i].type == "checkbox" && elem[i].id.indexOf('check') > 0){
+          if (!elem[i].checked) {
+            on = true;
+            break;
+          }
+        }
+      }
+
+      for(var i=0; i < len; i++){
+        if(elem[i].type == "checkbox" && elem[i].id.indexOf('check') > 0){
+          elem[i].checked = on;
+        }
+      }
+    }
+
+    function changeSelect(id, num) {
+      var box = document.getElementById('form:' + id);
+      var table = document.getElementById('form:corresponIndex');
+      var head = table.tHead.rows[0].cells[num]; // '*' column
+      if (box.checked) {
+        head.style.display= "";
+      } else {
+        head.style.display= "none";
+      }
+      for (var i = 0; i < table.tBodies[0].rows.length; i++) {
+        var row = table.tBodies[0].rows[i];
+        var cell = row.cells[num]; // '*' column
+        if (box.checked) {
+          cell.style.display= "";
+        } else {
+          cell.style.display= "none";
+        }
+      }
+      var cookie = num + '=' + box.checked + "; expires=Tue, 1-Jan-2030 00:00:00 GMT";
+      document.cookie = cookie;
+    }
+
+    function changeSearchView(simple) {
+      if (simple) {
+        document.getElementById('simpleSearch').style.display = "";
+        document.getElementById('advancedSearch').style.display = "none";
+      } else {
+        document.getElementById('simpleSearch').style.display = "none";
+        document.getElementById('advancedSearch').style.display = "";
+      }
+      document.getElementById('form:simpleSearchView').value = simple;
+    }
+
+    function clearCondition() {
+      document.getElementById('form:sequenceNo').value = "";
+      document.getElementById('form:corresponNo').value = "";
+      document.getElementById('form:includingRevision').checked = false;
+      for (i = 0; i < document.getElementById('form:type').options.length; i++) {
+        document.getElementById('form:type').options[i].selected = false;
+      }
+      for (i = 0; i < document.getElementById('form:workflowStatus').options.length; i++) {
+        document.getElementById('form:workflowStatus').options[i].selected = false;
+      }
+      for (i = 0; i < document.getElementById('form:readStatus').options.length; i++) {
+        document.getElementById('form:readStatus').options[i].selected = false;
+      }
+      for (i = 0; i < document.getElementById('form:status').options.length; i++) {
+        document.getElementById('form:status').options[i].selected = false;
+      }
+
+      // Full-Text Search
+      document.getElementById('form:keyword').value = "";
+      document.getElementById('form:fullTextSearchMode').options[0].selected = true;
+
+      // From:Group
+      for (i = 0; i < document.getElementById('form:fromGroups').options.length; i++) {
+        document.getElementById('form:fromGroups').options[i].selected = false;
+      }
+
+      // To/Cc:Group
+      for (i = 0; i < document.getElementById('form:toGroups').options.length; i++) {
+        document.getElementById('form:toGroups').options[i].selected = false;
+      }
+      document.getElementById('form:groupTo').checked = false;
+      document.getElementById('form:groupCc').checked = false;
+      document.getElementById('form:groupUnreplied').checked = false;
+
+      // From:User
+      for (i = 0; i < document.getElementById('form:fromUsers').options.length; i++) {
+        document.getElementById('form:fromUsers').options[i].selected = false;
+      }
+      document.getElementById('form:userPreparer').checked = false;
+      document.getElementById('form:userChecker').checked = false;
+      document.getElementById('form:userApprover').checked = false;
+      for (i = 0; i < document.getElementById('form:workflowProcess').options.length; i++) {
+        document.getElementById('form:workflowProcess').options[i].selected = false;
+      }
+
+      // To/Cc:User
+      for (i = 0; i < document.getElementById('form:toUsers').options.length; i++) {
+        document.getElementById('form:toUsers').options[i].selected = false;
+      }
+      document.getElementById('form:userAttention').checked = false;
+      document.getElementById('form:userCc').checked = false;
+      if(document.getElementById('form:userPic')){
+        document.getElementById('form:userPic').checked = false;
+      }
+      document.getElementById('form:userUnreplied').checked = false;
+
+      // date
+      document.getElementById('form:fromCreated').value = "";
+      document.getElementById('form:toCreated').value = "";
+      document.getElementById('form:fromIssued').value = "";
+      document.getElementById('form:toIssued').value = "";
+      document.getElementById('form:fromReply').value = "";
+      document.getElementById('form:toReply').value = "";
+
+      // custom fields
+      document.getElementById('form:customFieldList').options[0].selected = true;
+      document.getElementById('form:customFieldValue').value = "";
+    }
+
+    function resetBlankRows() {
+      var type = document.getElementById('form:type');
+      if (type) { // Advanced Search
+        document.getElementById('form:type').options[0].selected = false;
+        document.getElementById('form:workflowStatus').options[0].selected = false;
+        document.getElementById('form:readStatus').options[0].selected = false;
+        document.getElementById('form:status').options[0].selected = false;
+        document.getElementById('form:fromUsers').options[0].selected = false;
+        document.getElementById('form:toUsers').options[0].selected = false;
+        document.getElementById('form:fromGroups').options[0].selected = false;
+        document.getElementById('form:toGroups').options[0].selected = false;
+        document.getElementById('form:workflowProcess').options[0].selected = false;
+      }
+    }
+
+    function switchPageView() {
+      var view = document.getElementById('form:viewRender');
+      if (view.value == null || view.value == '0') {
+        if (Dialog) {
+          Dialog.close('dialog');
+        }
+        document.getElementById('form:viewArea').style.display = "none";
+      } else {
+        document.getElementById('form:viewArea').style.display = "block";
+      }
+    }
+
+    function initSelect() {
+      reloadPage();
+      var search = document.getElementById('form:simpleSearchView');
+      if (search.value == null || search.value == 'true') {
+        changeSearchView(true);
+      } else {
+        changeSearchView(false);
+      }
+      switchPageView();
+      listItemDisable();
+      setupSubmitButton('advancedSearch', 'form:search');
+    }
+
+    function switchLink(id1, id2) {
+      var link1 = document.getElementById(id1);
+      var link2 = document.getElementById(id2);
+      link1.style.display = 'none';
+      link2.style.display = 'inline';
+    }
+
+    function callAdvancedSearch() {
+      document.getElementById('form:advancedSearchRequested').value = true;
+    }
+
+    function clearAdvancedSearchRequested() {
+      document.getElementById('form:advancedSearchRequested').value = false;
+    }
+
+    function reloadPage() {
+      var ajaxPanel = document.getElementById('form:advancedSearchPanel');
+      if (ajaxPanel.childNodes.length == 0) {
+        var ajaxReq = document.getElementById('form:advancedSearchRequested');
+        if (ajaxReq.value == 'true') {
+          location.href = "${contextPath}/correspon/corresponIndex.jsf?sessionSort=1&sessionPageNo=1?${timestamp}";
+        }
+      }
+    }
+
+    function setupSubmitButton(conditionId, buttonId) {
+      var conditions = document.getElementById(conditionId);
+      if (!conditions) return;
+
+      conditions.onkeypress = function(e) {
+        e = e ? e : event;
+        var keyCode = e.charCode ? e.charCode : ((e.which) ? e.which : e.keyCode);
+        var element = e.target ? e.target : e.srcElement;
+        if (Number(keyCode) == 13) {
+          if (!isIgnoreEnter(element)) {
+            var submit = document.getElementById(buttonId);
+            if (submit) submit.click();
+            return false;
+          }
+          return isInput(element);
+        }
+      }
+    }
+    function isIgnoreEnter(elem) {
+      var tag = elem.tagName.toLowerCase();
+      if (tag == 'textarea') return true;
+
+      switch (elem.type) {
+        case 'button':
+        case 'submit':
+        case 'reset':
+        case 'image':
+        case 'file':
+        case 'select-one':
+        case 'select-multiple':
+        case undefined:
+          return true;
+      }
+      return false;
+    }
+    function isInput(elem) {
+      switch (elem.type) {
+        case 'text':
+        case 'radio':
+        case 'checkbox':
+        case 'password':
+          return true;
+      }
+      return false;
+    }
+    function sortHeader(sortKey) {
+      var currentSortKey = document.getElementById('form:sort').value ;
+      var asc = document.getElementById('form:ascending').value ;
+      var arrow = 'true' ;
+      if (currentSortKey == sortKey) {
+        if (arrow == asc) {
+          arrow = false ;
+        }
+      }
+      document.getElementById('form:sort').value = sortKey ;
+      document.getElementById('form:ascending').value = arrow ;
+    }
+    function listItemDisable() {
+      var cookies = document.cookie;
+      var table = document.getElementById('form:corresponIndex');
+      if (cookies != null && table != null) {
+        var array = cookies.split(';');
+        for (var i = 0; i < array.length; i++) {
+          var array2 = array[i].split('=');
+          if (array2[1] == 'false') {
+            var num = array2[0] - 0; // String to number
+            var head = table.tHead.rows[0].cells[num]; // '*' column
+            head.style.display= "none";
+            for (var j = 0; j <= (table.tBodies[0].rows.length - 1); j++) {
+              var row = table.tBodies[0].rows[j];
+              var cell = row.cells[num]; // '*' column
+              if (cell) {
+                cell.style.display= "none";
+              }
+            }
+          }
+        }
+      }
+    }
+
+    function preProcess(e) {
+      setActionName(e);
+      setAjaxRequest(true);
+    }
+
+    function postProcess(isListItemDisable, isSwitchPageView) {
+      enableAction();
+      if (isListItemDisable) {
+        listItemDisable();
+      }
+      if (isSwitchPageView) {
+        switchPageView();
+      }
+    }
+
+    function confirmAction(e) {
+      if (confirmButton()) {
+        preProcess(e);
+        return true;
+      }
+      return false;
+    }
+
+    window.onload = initSelect;
+
+    function advancedSearch2(data) {
+      Spinner.onStatusChange(data);
+      if (data.status == "complete"){
+        switchLink('form:advancedSearch2', 'form:advancedSearch');
+      } else  if (data.status == 'success') {
+        changeSearchView(false);
+        callAdvancedSearch();
+        postProcess(false, false);
+      }
+    }
+
+    function oncompletePostProcess(data) {
+      Spinner.onStatusChange(data);
+      if (data.status == 'success') {
+        postProcess(true, true);
+      }
+    }
+
+    $(document).ready(function() {
+      $('#form\\:corresponIndex').highlightRows();
+    });
+
+    function showFavoriteDialog (event) {
+        Spinner.onStatusChange(event);
+        if (event.status != 'success') {
+            return null;
+        }
+        enableAction();
+        var isDisplay = document.getElementById('form:favoriteFilterDisplay').value;
+        if (isDisplay == 'true') {
+            Dialog.show('input-dialog');
+        }
+    }
+
+    function closeFavoriteDialog (event) {
+      Spinner.onStatusChange(event);
+      if (event.status != 'success') {
+        return null;
+      }
+      enableAction();
+      var isDisplay = document.getElementById('form:favoriteFilterDisplay').value;
+      if (isDisplay == 'false') {
+        Dialog.close('input-dialog');
+      }
+    }
+    -->
+  </ui:define>
+
+  <ui:define name="body">
+    <f:view>
+      <h:form id="form" onsubmit="resetBlankRows();clearAdvancedSearchRequested(); return disableSubmit();">
+        <h:inputHidden id="actionName" value="#{corresponIndexPage.actionName}" />
+        <h:inputHidden id="advancedSearchRequested" value="#{corresponIndexPage.advancedSearchRequested}" />
+        <div id="advancedSearchText" class="row">
+          <div class="twelve columns search-condition">
+            <h:panelGroup id="conditionPanel">
+              <h:outputText value="プロジェクトID=" styleClass="label"
+                            rendered="#{corresponIndexPage.condition.projectId != null}" />
+              <h:outputText value="#{corresponIndexPage.condition.projectId}"
+                            rendered="#{!corresponIndexPage.condition.projectId != null}" />
+
+              <h:outputText value=","
+                            rendered="#{corresponIndexPage.condition.sequenceNo != null}" />
+              <h:outputText value="ID=" styleClass="label"
+                            rendered="#{corresponIndexPage.condition.sequenceNo != null}" />
+              <h:outputText
+                      value="#{corresponIndexPage.condition.sequenceNo}"
+                      rendered="#{corresponIndexPage.condition.sequenceNo != null}" />
+
+              <h:outputText value=","
+                            rendered="#{corresponIndexPage.condition.corresponNo != null}" />
+              <h:outputText value="文書番号" styleClass="label"
+                            rendered="#{corresponIndexPage.condition.corresponNo != null}" />
+              <h:outputText value="(改訂前も含む)" styleClass="label"
+                            rendered="#{corresponIndexPage.condition.corresponNo != null
+                                        and corresponIndexPage.condition.includingRevision}" />
+              <h:outputText value="=" styleClass="label"
+                            rendered="#{corresponIndexPage.condition.corresponNo != null}" />
+              <h:outputText value="#{corresponIndexPage.condition.corresponNo}"
+                            rendered="#{corresponIndexPage.condition.corresponNo != null}" />
+
+              <h:outputText value="," rendered="#{corresponIndexPage.keyword != null}" />
+              <h:outputText value="全文検索(" styleClass="label" rendered="#{corresponIndexPage.keyword != null}" />
+              <h:outputText value="#{corresponIndexPage.fullTextSearchModeConditionText}"
+                            styleClass="label"
+                            rendered="#{corresponIndexPage.keyword != null}" />
+              <h:outputText value=")=" styleClass="label" rendered="#{corresponIndexPage.keyword != null}" />
+              <h:outputText value="#{corresponIndexPage.keyword}" rendered="#{corresponIndexPage.keyword != null}" />
+
+              <h:outputText value=","
+                            rendered="#{corresponIndexPage.typeConditionText != null}" />
+              <h:outputText value="文書種類=" styleClass="label"
+                            rendered="#{corresponIndexPage.typeConditionText != null}" />
+              <h:outputText value="#{corresponIndexPage.typeConditionText}"
+                            rendered="#{corresponIndexPage.typeConditionText != null}" />
+
+              <h:outputText value=","
+                            rendered="#{corresponIndexPage.workflowConditionText != null}" />
+              <h:outputText value="ワークフロー=" styleClass="label"
+                            rendered="#{corresponIndexPage.workflowConditionText != null}" />
+              <h:outputText value="#{corresponIndexPage.workflowConditionText}"
+                            rendered="#{corresponIndexPage.workflowConditionText != null}" />
+
+              <h:outputText value=","
+                            rendered="#{corresponIndexPage.readStatusConditionText != null}" />
+              <h:outputText value="既読状態=" styleClass="label"
+                            rendered="#{corresponIndexPage.readStatusConditionText != null}" />
+              <h:outputText
+                      value="#{corresponIndexPage.readStatusConditionText}"
+                      rendered="#{corresponIndexPage.readStatusConditionText != null}" />
+
+              <h:outputText value=","
+                            rendered="#{corresponIndexPage.statusConditionText != null}" />
+              <h:outputText value="状態=" styleClass="label"
+                            rendered="#{corresponIndexPage.statusConditionText != null}" />
+              <h:outputText value="#{corresponIndexPage.statusConditionText}"
+                            rendered="#{corresponIndexPage.statusConditionText != null}" />
+
+              <h:outputText value=","
+                            rendered="#{corresponIndexPage.fromGroupsConditionText != null}" />
+              <h:outputText value="グループ(発信元)=" styleClass="label"
+                            rendered="#{corresponIndexPage.fromGroupsConditionText != null}" />
+              <h:outputText value="#{corresponIndexPage.fromGroupsConditionText}"
+                            rendered="#{corresponIndexPage.fromGroupsConditionText != null}" />
+
+              <h:outputText value=","
+                            rendered="#{corresponIndexPage.toGroupsConditionText != null
+                                        and (corresponIndexPage.condition.groupCc
+                                            || corresponIndexPage.condition.groupTo)}" />
+              <h:outputText value="グループ(" styleClass="label"
+                            rendered="#{corresponIndexPage.toGroupsConditionText != null
+                                        and (corresponIndexPage.condition.groupCc
+                                            || corresponIndexPage.condition.groupTo)}" />
+              <h:outputText value="To" styleClass="label"
+                            rendered="#{corresponIndexPage.toGroupsConditionText != null
+                                        and corresponIndexPage.condition.groupTo}" />
+              <h:outputText value="/" styleClass="label"
+                            rendered="#{corresponIndexPage.toGroupsConditionText != null
+                                        and corresponIndexPage.condition.groupTo
+                                        and corresponIndexPage.condition.groupCc}" />
+              <h:outputText value="Cc" styleClass="label"
+                            rendered="#{corresponIndexPage.toGroupsConditionText != null
+                                        and corresponIndexPage.condition.groupCc}" />
+              <h:outputText value=": 未返信" styleClass="label"
+                            rendered="#{corresponIndexPage.toGroupsConditionText != null
+                                        and corresponIndexPage.condition.groupUnreplied
+                                        and (corresponIndexPage.condition.groupTo
+                                            || corresponIndexPage.condition.groupCc)}" />
+              <h:outputText value=")=" styleClass="label"
+                            rendered="#{corresponIndexPage.toGroupsConditionText != null
+                                        and (corresponIndexPage.condition.groupCc
+                                            || corresponIndexPage.condition.groupTo)}" />
+              <h:outputText value="#{corresponIndexPage.toGroupsConditionText}"
+                            rendered="#{corresponIndexPage.toGroupsConditionText != null
+                                        and (corresponIndexPage.condition.groupCc
+                                            || corresponIndexPage.condition.groupTo)}" />
+
+              <h:outputText value=","
+                            rendered="#{corresponIndexPage.fromUsersConditionText != null
+                                        and (corresponIndexPage.condition.userPreparer
+                                            || corresponIndexPage.condition.userChecker
+                                            || corresponIndexPage.condition.userApprover)}" />
+              <h:outputText value="ユーザー(" styleClass="label"
+                            rendered="#{corresponIndexPage.fromUsersConditionText != null
+                                        and (corresponIndexPage.condition.userPreparer
+                                            || corresponIndexPage.condition.userChecker
+                                            || corresponIndexPage.condition.userApprover)}" />
+              <h:outputText value="作成者" styleClass="label"
+                            rendered="#{corresponIndexPage.fromUsersConditionText != null
+                                        and corresponIndexPage.condition.userPreparer}" />
+              <h:outputText value="/" styleClass="label"
+                            rendered="#{corresponIndexPage.fromUsersConditionText != null
+                                        and corresponIndexPage.condition.userPreparer
+                                        and corresponIndexPage.condition.userChecker}" />
+              <h:outputText value="検証者" styleClass="label"
+                            rendered="#{corresponIndexPage.fromUsersConditionText != null
+                                        and corresponIndexPage.condition.userChecker}" />
+              <h:outputText value="/" styleClass="label"
+                            rendered="#{corresponIndexPage.fromUsersConditionText != null
+                                        and (corresponIndexPage.condition.userPreparer
+                                            || corresponIndexPage.condition.userChecker)
+                                        and corresponIndexPage.condition.userApprover}" />
+              <h:outputText value="承認者" styleClass="label"
+                            rendered="#{corresponIndexPage.fromUsersConditionText != null
+                                        and corresponIndexPage.condition.userApprover}" />
+              <h:outputText value=")=" styleClass="label"
+                            rendered="#{corresponIndexPage.fromUsersConditionText != null
+                                        and (corresponIndexPage.condition.userPreparer
+                                            || corresponIndexPage.condition.userChecker
+                                            || corresponIndexPage.condition.userApprover)}" />
+              <h:outputText value="#{corresponIndexPage.fromUsersConditionText}"
+                            rendered="#{corresponIndexPage.fromUsersConditionText != null
+                                        and (corresponIndexPage.condition.userPreparer
+                                            || corresponIndexPage.condition.userChecker
+                                            || corresponIndexPage.condition.userApprover)}" />
+
+              <h:outputText value=","
+                            rendered="#{corresponIndexPage.toUsersConditionText != null
+                                        and (corresponIndexPage.condition.userAttention
+                                            || corresponIndexPage.condition.userCc
+                                            || corresponIndexPage.condition.userPic)}" />
+              <h:outputText value="ユーザー(" styleClass="label"
+                            rendered="#{corresponIndexPage.toUsersConditionText != null
+                                        and (corresponIndexPage.condition.userAttention
+                                            || corresponIndexPage.condition.userCc
+                                            || corresponIndexPage.condition.userPic)}" />
+              <h:outputText value="To" styleClass="label"
+                            rendered="#{corresponIndexPage.toUsersConditionText != null
+                                        and corresponIndexPage.condition.userAttention}" />
+              <h:outputText value="/" styleClass="label"
+                            rendered="#{corresponIndexPage.toUsersConditionText != null
+                                        and corresponIndexPage.condition.userAttention
+                                        and corresponIndexPage.condition.userCc}" />
+              <h:outputText value="Cc" styleClass="label"
+                            rendered="#{corresponIndexPage.toUsersConditionText != null
+                                        and corresponIndexPage.condition.userCc}" />
+              <h:outputText value="/" styleClass="label"
+                            rendered="#{corresponIndexPage.toUsersConditionText != null
+                                        and (corresponIndexPage.condition.userCc
+                                            || corresponIndexPage.condition.userAttention)
+                                        and corresponIndexPage.condition.userPic}" />
+              <h:outputText value="担当" styleClass="label"
+                            rendered="#{corresponIndexPage.toUsersConditionText != null
+                                        and corresponIndexPage.condition.userPic}" />
+              <h:outputText value=": 未返信" styleClass="label"
+                            rendered="#{corresponIndexPage.toUsersConditionText != null
+                                        and corresponIndexPage.condition.userUnreplied
+                                        and (corresponIndexPage.condition.userAttention
+                                            || corresponIndexPage.condition.userCc
+                                            || corresponIndexPage.condition.userPic)}" />
+              <h:outputText value=")=" styleClass="label"
+                            rendered="#{corresponIndexPage.toUsersConditionText != null
+                                        and (corresponIndexPage.condition.userAttention
+                                            || corresponIndexPage.condition.userCc
+                                            || corresponIndexPage.condition.userPic)}" />
+              <h:outputText value="#{corresponIndexPage.toUsersConditionText}"
+                            rendered="#{corresponIndexPage.toUsersConditionText != null
+                                        and (corresponIndexPage.condition.userAttention
+                                            || corresponIndexPage.condition.userCc
+                                            || corresponIndexPage.condition.userPic)}" />
+
+              <h:outputText value=","
+                            rendered="#{corresponIndexPage.workflowProcessConditionText != null}" />
+              <h:outputText value="ワークフロー状態="
+                            styleClass="label"
+                            rendered="#{corresponIndexPage.workflowProcessConditionText != null}" />
+              <h:outputText
+                      value="#{corresponIndexPage.workflowProcessConditionText}"
+                      rendered="#{corresponIndexPage.workflowProcessConditionText != null}" />
+              <h:outputText value=","
+                            rendered="#{corresponIndexPage.fromUsersConditionText != null
+                                        and corresponIndexPage.workflowProcessConditionText != null}" />
+              <h:outputText
+                      value="#{corresponIndexPage.fromUsersConditionText}"
+                      rendered="#{corresponIndexPage.fromUsersConditionText != null
+                                        and corresponIndexPage.workflowProcessConditionText != null}" />
+
+              <h:outputText value=","
+                            rendered="#{corresponIndexPage.condition.fromCreatedOn != null
+                                        || corresponIndexPage.condition.toCreatedOn != null}" />
+              <h:outputText value="作成日=" styleClass="label"
+                            rendered="#{corresponIndexPage.condition.fromCreatedOn != null
+                                        || corresponIndexPage.condition.toCreatedOn != null}" />
+              <h:outputText
+                      value="#{corresponIndexPage.condition.fromCreatedOn}"
+                      rendered="#{corresponIndexPage.condition.fromCreatedOn != null}">
+                <f:convertDateTime pattern="yyyy-MM-dd" />
+              </h:outputText>
+              <h:outputText value="-"
+                            rendered="#{corresponIndexPage.condition.fromCreatedOn != null
+                                        || corresponIndexPage.condition.toCreatedOn != null}" />
+              <h:outputText value="#{corresponIndexPage.condition.toCreatedOn}"
+                            rendered="#{corresponIndexPage.condition.toCreatedOn != null}">
+                <f:convertDateTime pattern="yyyy-MM-dd" />
+              </h:outputText>
+
+              <h:outputText value=","
+                            rendered="#{corresponIndexPage.condition.fromIssuedOn != null
+                                        || corresponIndexPage.condition.toIssuedOn != null}" />
+              <h:outputText value="発行日=" styleClass="label"
+                            rendered="#{corresponIndexPage.condition.fromIssuedOn != null
+                                        || corresponIndexPage.condition.toIssuedOn != null}" />
+              <h:outputText
+                      value="#{corresponIndexPage.condition.fromIssuedOn}"
+                      rendered="#{corresponIndexPage.condition.fromIssuedOn != null}">
+                <f:convertDateTime pattern="yyyy-MM-dd" />
+              </h:outputText>
+              <h:outputText value="-"
+                            rendered="#{corresponIndexPage.condition.fromIssuedOn != null
+                                        || corresponIndexPage.condition.toIssuedOn != null}" />
+              <h:outputText value="#{corresponIndexPage.condition.toIssuedOn}"
+                            rendered="#{corresponIndexPage.condition.toIssuedOn != null}">
+                <f:convertDateTime pattern="yyyy-MM-dd" />
+              </h:outputText>
+
+              <h:outputText value=","
+                            rendered="#{corresponIndexPage.condition.fromDeadlineForReply != null
+                                        || corresponIndexPage.condition.toDeadlineForReply != null}" />
+              <h:outputText value="返信期限=" styleClass="label"
+                            rendered="#{corresponIndexPage.condition.fromDeadlineForReply != null
+                                        || corresponIndexPage.condition.toDeadlineForReply != null}" />
+              <h:outputText
+                      value="#{corresponIndexPage.condition.fromDeadlineForReply}"
+                      rendered="#{corresponIndexPage.condition.fromDeadlineForReply != null}">
+                <f:convertDateTime pattern="yyyy-MM-dd" />
+              </h:outputText>
+              <h:outputText value="-"
+                            rendered="#{corresponIndexPage.condition.fromDeadlineForReply != null
+                                        || corresponIndexPage.condition.toDeadlineForReply != null}" />
+              <h:outputText
+                      value="#{corresponIndexPage.condition.toDeadlineForReply}"
+                      rendered="#{corresponIndexPage.condition.toDeadlineForReply != null}">
+                <f:convertDateTime pattern="yyyy-MM-dd" />
+              </h:outputText>
+
+              <h:outputText value=","
+                            rendered="#{corresponIndexPage.customFieldText != null}" />
+              <h:outputText value="その他項目=" styleClass="label"
+                            rendered="#{corresponIndexPage.customFieldText != null}" />
+              <h:outputText value="#{corresponIndexPage.customFieldText}:"
+                            rendered="#{corresponIndexPage.customFieldText != null}" />
+              <h:outputText
+                      value="#{corresponIndexPage.condition.customFieldValue}"
+                      rendered="#{corresponIndexPage.customFieldText != null
+                                        and corresponIndexPage.condition.customFieldValue != null}" />
+            </h:panelGroup>
+          </div>
+        </div>
+
+        <div id="condition">
+          <div class="group">
+            <span class="condition-group-caption">検索条件</span>
+            <h:inputHidden id="simpleSearchView" value="#{corresponIndexPage.simpleSearch}" />
+            <h:inputHidden id="simpleSearchSelectedItem" value="#{corresponIndexPage.simpleSearchSelectedItem}" />
+            <div id="simpleSearch">
+              <h:panelGroup id="simplePanel">
+                <h:panelGroup id="advancedLinkPanel">
+                  <div class="row">
+                    <div class="four columns u-pull-right">
+                      <h:panelGrid columns="1" styleClass="u-right">
+                        <h:panelGroup styleClass="searchActionLink">
+                          <h:outputText value=" シンプルな検索 " styleClass="select" />
+                          <h:outputText value=" | " />
+                          <h:commandLink id="advancedSearch2"
+                            value=" 高度な検索 "
+                            action="#{corresponIndexPage.showAdvancedSearch}"
+                            rendered="#{!corresponIndexPage.advancedSearchDisplayed}"
+                            onclick="preProcess(event);">
+                            <f:ajax render=":form:advancedSearchPanel" execute="@all" onevent="advancedSearch2" />
+                          </h:commandLink>
+                          <h:outputLink id="advancedSearch" value="#" onclick="changeSearchView(false);" style="display:none;">
+                            <h:outputText value=" 高度な検索 "  />
+                          </h:outputLink>
+                          <h:outputLink id="advancedSearch3" value="#" onclick="changeSearchView(false);" rendered="#{corresponIndexPage.advancedSearchDisplayed}">
+                            <h:outputText value=" 高度な検索 "  />
+                          </h:outputLink>
+                        </h:panelGroup>
+                      </h:panelGrid>
+                    </div>
+                  </div>
+                </h:panelGroup>
+
+                <h:panelGrid columns="3" columnClasses="simple-type,simple-workflowstatus,">
+                  <h:panelGroup styleClass="label">
+                    <h:outputText value="文書種類" />
+                  </h:panelGroup>
+                  <h:panelGroup styleClass="label">
+                    <h:outputText value=":" />
+                  </h:panelGroup>
+
+                  <h:panelGroup>
+                    <h:commandLink value=" すべて "
+                              action="#{corresponIndexPage.search}"
+                              rendered="#{corresponIndexPage.type != corresponIndexPage.typeAll}"
+                              onclick="setSearchValue('form:typeValue', #{corresponIndexPage.typeAll});setSearchValue('form:simpleSearchSelectedItem', 1);preProcess(event);">
+                      <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
+                    </h:commandLink>
+                    <h:outputText value=" すべて " styleClass="select"
+                            rendered="#{corresponIndexPage.type == corresponIndexPage.typeAll}"/>
+                    <ui:repeat id="simpleType" var="simpleType" value="#{corresponIndexPage.typeList}">
+                      <h:outputText value=" | " />
+                      <h:commandLink value="  #{simpleType.corresponType}  "
+                                  action="#{corresponIndexPage.search}"
+                                  rendered="#{simpleType.projectCorresponTypeId != corresponIndexPage.type}"
+                                  onclick="setSearchValue('form:typeValue', '#{simpleType.projectCorresponTypeId}');setSearchValue('form:simpleSearchSelectedItem', 1);preProcess(event);">
+                        <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
+                      </h:commandLink>
+                      <h:outputText value=" #{simpleType.corresponType} " styleClass="select"
+                                rendered="#{simpleType.projectCorresponTypeId == corresponIndexPage.type}"/>
+                    </ui:repeat>
+                    <h:inputHidden id="typeValue" value="#{corresponIndexPage.type}" />
+                  </h:panelGroup>
+
+                  <h:panelGroup styleClass="label">
+                    <h:outputText value="ワークフロー" />
+                  </h:panelGroup>
+                  <h:panelGroup styleClass="label">
+                    <h:outputText value=":" />
+                  </h:panelGroup>
+
+                  <h:panelGroup>
+                    <h:commandLink value=" すべて "
+                              action="#{corresponIndexPage.search}"
+                              rendered="#{corresponIndexPage.workflow != corresponIndexPage.workflowAll}"
+                              onclick="setSearchValue('form:workflowValue', #{corresponIndexPage.workflowAll});setSearchValue('form:simpleSearchSelectedItem', 2);preProcess(event);">
+                      <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
+                    </h:commandLink>
+                    <h:outputText value=" すべて " styleClass="select"
+                              rendered="#{corresponIndexPage.workflow == corresponIndexPage.workflowAll}"/>
+                    <ui:repeat id="simpleWorkFlow" var="simpleWorkFlow" value="#{corresponIndexPage.workflowList}" >
+                      <h:outputText value=" | " />
+                      <h:commandLink value=" #{simpleWorkFlow.label} "
+                                  action="#{corresponIndexPage.search}"
+                                  rendered="#{simpleWorkFlow.value != corresponIndexPage.workflow}"
+                                  onclick="setSearchValue('form:workflowValue', '#{simpleWorkFlow.value}');setSearchValue('form:simpleSearchSelectedItem', 2);preProcess(event);">
+                        <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
+                      </h:commandLink>
+                      <h:outputText value=" #{simpleWorkFlow.label} " styleClass="select"
+                                rendered="#{simpleWorkFlow.value == corresponIndexPage.workflow}"/>
+                    </ui:repeat>
+                    <h:inputHidden id="workflowValue" value="#{corresponIndexPage.workflow}" />
+                  </h:panelGroup>
+
+                  <h:panelGroup styleClass="label">
+                    <h:outputText value="既読状態" />
+                  </h:panelGroup>
+                  <h:panelGroup styleClass="label">
+                    <h:outputText value=":" />
+                  </h:panelGroup>
+
+                  <h:panelGroup>
+                    <h:commandLink value=" すべて "
+                                action="#{corresponIndexPage.search}"
+                                rendered="#{corresponIndexPage.readStatus != corresponIndexPage.readStatusAll}"
+                                onclick="setSearchValue('form:readStatusValue', #{corresponIndexPage.readStatusAll});setSearchValue('form:simpleSearchSelectedItem', 3);preProcess(event);">
+                      <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
+                    </h:commandLink>
+                    <h:outputText value=" すべて " styleClass="select"
+                      rendered="#{corresponIndexPage.readStatus == corresponIndexPage.readStatusAll}"/>
+                    <ui:repeat id="simpleReadStatus" var="simpleReadStatus" value="#{corresponIndexPage.readStatusList}" >
+                      <h:outputText value=" | " />
+                      <h:commandLink value=" #{simpleReadStatus.label} "
+                                  action="#{corresponIndexPage.search}"
+                                  rendered="#{simpleReadStatus.value != corresponIndexPage.readStatus}"
+                                  onclick="setSearchValue('form:readStatusValue', '#{simpleReadStatus.value}');setSearchValue('form:simpleSearchSelectedItem', 3);preProcess(event);">
+                        <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
+                      </h:commandLink>
+                      <h:outputText value=" #{simpleReadStatus.label} " styleClass="select"
+                                rendered="#{simpleReadStatus.value == corresponIndexPage.readStatus}"/>
+                    </ui:repeat>
+                    <h:inputHidden id="readStatusValue"
+                      value="#{corresponIndexPage.readStatus}" />
+                  </h:panelGroup>
+                </h:panelGrid>
+              </h:panelGroup>
+            </div>
+
+            <div id="advancedSearch" >
+              <f:validateBean validationGroups="#{corresponIndexPage.validationGroups}">
+                <h:panelGroup id="advancedSearchPanel">
+                  <h:panelGroup rendered="#{corresponIndexPage.advancedSearchDisplayed}">
+                    <div class="row">
+                      <div class="four columns u-pull-right">
+                      <h:panelGrid styleClass="searchActionLink u-right">
+                        <h:panelGroup>
+                          <h:outputLink id="simpleSearch" value="#" onclick="changeSearchView(true);">
+                            <h:outputText value=" シンプルな検索 "  />
+                          </h:outputLink>
+                          <h:outputText value=" | " />
+                          <h:outputText value=" 高度な検索 " styleClass="select" />
+                        </h:panelGroup>
+                      </h:panelGrid>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="six columns">
+                        <h:outputLabel for="sequenceNo" value="ID"/>
+                        <h:inputText id="sequenceNo" value="#{corresponIndexPage.sequenceNo}" style="width: 120px;" maxlength="10"/>
+                        <h:message for="sequenceNo" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal"/>
+                      </div>
+                      <div class="six columns">
+                        <h:outputLabel for="corresponNo" value="文書番号"/>
+                        <h:inputText
+                          id="corresponNo"
+                          value="#{corresponIndexPage.corresponNo}"
+                          styleClass="u-full-width"
+                          maxlength="100"/>
+                        <label>
+                          <h:selectBooleanCheckbox id="includingRevision"
+                                                   value="#{corresponIndexPage.includingRevision}" />
+                          <span class="label-body">改訂前も含む</span>
+                          <h:message for="corresponNo" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="six columns">
+                        <h:outputLabel for="keyword" value="全文検索キーワード"/>
+                        <h:inputText id="keyword" value="#{corresponIndexPage.keyword}" styleClass="u-full-width"/>
+                      </div>
+                      <div class="six columns">
+                        <h:outputLabel for="fullTextSearchMode" value="全文検索対象"/>
+                        <h:selectOneMenu id="fullTextSearchMode"
+                                         value="#{corresponIndexPage.fullTextSearchMode}"
+                                         styleClass="u-full-width"
+                                         rendered="#{corresponIndexPage.fullTextSearchModeSelectList != null}">
+                          <f:selectItems value="#{corresponIndexPage.fullTextSearchModeSelectList}" />
+                        </h:selectOneMenu>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="three columns">
+                        <h:outputLabel for="type" value="文書種類"/>
+                        <h:selectManyListbox id="type"
+                                             value="#{corresponIndexPage.types}" size="6"
+                                             styleClass="u-full-width"
+                                             rendered="#{corresponIndexPage.typeSelectList != null}">
+                          <f:selectItem itemLabel="" itemValue="#{corresponIndexPage.defaultSelectItemValue}" />
+                          <f:selectItems value="#{corresponIndexPage.typeSelectList}" />
+                        </h:selectManyListbox>
+                      </div>
+                      <div class="three columns">
+                        <h:outputLabel for="readStatus" value="既読状態"/>
+                        <h:selectManyListbox id="readStatus"
+                                             value="#{corresponIndexPage.readStatuses}" size="6"
+                                             styleClass="u-full-width"
+                                             rendered="#{corresponIndexPage.readStatusSelectList != null}">
+                          <f:selectItem itemLabel="" itemValue="#{corresponIndexPage.defaultSelectItemValue}" />
+                          <f:selectItems
+                                  value="#{corresponIndexPage.readStatusSelectList}" />
+                        </h:selectManyListbox>
+                      </div>
+                      <div class="three columns">
+                        <h:outputLabel for="status" value="状態"/>
+                        <h:selectManyListbox id="status"
+                                             value="#{corresponIndexPage.statuses}" size="6"
+                                             styleClass="u-full-width"
+                                             rendered="#{corresponIndexPage.statusSelectList != null}">
+                          <f:selectItem itemLabel="" itemValue="#{corresponIndexPage.defaultSelectItemValue}" />
+                          <f:selectItems value="#{corresponIndexPage.statusSelectList}" />
+                        </h:selectManyListbox>
+                      </div>
+                      <div class="three columns">
+                        <h:outputLabel for="workflowStatus" value="ワークフロー"/>
+                        <h:selectManyListbox id="workflowStatus"
+                                             value="#{corresponIndexPage.workflowStatuses}" size="6"
+                                             styleClass="u-full-width"
+                                             rendered="#{corresponIndexPage.workflowStatusSelectList != null}">
+                          <f:selectItem itemLabel="" itemValue="#{corresponIndexPage.defaultSelectItemValue}" />
+                          <f:selectItems
+                            value="#{corresponIndexPage.workflowStatusSelectList}" />
+                        </h:selectManyListbox>
+                      </div>
+                    </div>
+
+                    <div class="search-block">
+                      <div class="row">
+                        <div class="twelve columns">
+                          <h:outputText styleClass="label" value="発信元" />
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="three columns">
+                          <h:outputLabel for="fromGroups" value="グループ"/>
+                          <h:selectManyListbox id="fromGroups"
+                                               value="#{corresponIndexPage.fromGroups}" size="10"
+                                               styleClass="u-full-width"
+                                               rendered="#{corresponIndexPage.groupSelectList != null}">
+                            <f:selectItem itemLabel="" itemValue="#{corresponIndexPage.defaultSelectItemValue}" />
+                            <f:selectItems value="#{corresponIndexPage.groupSelectList}" />
+                          </h:selectManyListbox>
+                        </div>
+                        <div class="four columns">
+                          <h:outputLabel for="fromUsers" value="ユーザー"/>
+                          <h:selectManyListbox id="fromUsers"
+                                               value="#{corresponIndexPage.fromUsers}" size="10"
+                                               styleClass="u-full-width"
+                                               rendered="#{corresponIndexPage.userSelectList != null}">
+                            <f:selectItem itemLabel="" itemValue="#{corresponIndexPage.defaultSelectItemValue}" />
+                            <f:selectItems value="#{corresponIndexPage.userSelectList}" />
+                          </h:selectManyListbox>
+                        </div>
+                        <div class="two columns">
+                          <h:outputLabel value="役割"/>
+                          <label>
+                            <h:selectBooleanCheckbox id="userPreparer"
+                                                   value="#{corresponIndexPage.userPreparer}" />
+                            <span class="label-body">作成者</span>
+                          </label>
+                          <label>
+                            <h:selectBooleanCheckbox id="userChecker"
+                                                   value="#{corresponIndexPage.userChecker}" />
+                            <span class="label-body">検証者</span>
+                          </label>
+                          <label>
+                            <h:selectBooleanCheckbox id="userApprover"
+                                                   value="#{corresponIndexPage.userApprover}" />
+                            <span class="label-body">承認者</span>
+                          </label>
+                        </div>
+                        <div class="three columns">
+                          <h:outputLabel for="workflowProcess" value="状態"/>
+                          <h:selectManyListbox id="workflowProcess"
+                                               value="#{corresponIndexPage.workflowProcesses}" size="5"
+                                               styleClass="u-full-width"
+                                               rendered="#{corresponIndexPage.workflowProcessSelectList != null}">
+                            <f:selectItem itemLabel="" itemValue="#{corresponIndexPage.defaultSelectItemValue}" />
+                            <f:selectItems
+                                    value="#{corresponIndexPage.workflowProcessSelectList}" />
+                          </h:selectManyListbox>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="search-block">
+                      <div class="row">
+                        <div class="twelve columns">
+                          <h:outputText styleClass="label" value="宛先" />
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="four columns">
+                          <h:outputLabel for="toGroups" value="グループ"/>
+                          <h:selectManyListbox id="toGroups"
+                                               value="#{corresponIndexPage.toGroups}" size="10"
+                                               styleClass="u-full-width"
+                                               rendered="#{corresponIndexPage.groupSelectList != null}">
+                            <f:selectItem itemLabel="" itemValue="#{corresponIndexPage.defaultSelectItemValue}" />
+                            <f:selectItems value="#{corresponIndexPage.groupSelectList}" />
+                          </h:selectManyListbox>
+                        </div>
+                        <div class="two columns">
+                          <h:outputLabel value="宛先種類"/>
+                          <div class="search-block">
+                            <label>
+                              <h:selectBooleanCheckbox id="groupTo"
+                                                       value="#{corresponIndexPage.groupTo}" />
+                              <span class="label-body">To</span>
+                            </label>
+                            <label>
+                              <h:selectBooleanCheckbox id="groupCc"
+                                                       value="#{corresponIndexPage.groupCc}" />
+                              <span class="label-body">Cc</span>
+                            </label>
+                          </div>
+                          <label>
+                            <h:selectBooleanCheckbox id="groupUnreplied"
+                                                     value="#{corresponIndexPage.groupUnreplied}" style="margin-left: 10px;" />
+                            <span class="label-body">未返信</span>
+                          </label>
+                        </div>
+
+                        <div class="four columns">
+                          <h:outputLabel for="toUsers" value="ユーザー"/>
+                          <h:selectManyListbox id="toUsers"
+                                               value="#{corresponIndexPage.toUsers}" size="9"
+                                               styleClass="u-full-width"
+                                               rendered="#{corresponIndexPage.userSelectList != null}">
+                            <f:selectItem itemLabel="" itemValue="#{corresponIndexPage.defaultSelectItemValue}" />
+                            <f:selectItems value="#{corresponIndexPage.userSelectList}" />
+                          </h:selectManyListbox>
+                        </div>
+                        <div class="two columns">
+                          <h:outputLabel value="宛先種類"/>
+                          <div class="search-block">
+                            <label>
+                              <h:selectBooleanCheckbox id="userAttention"
+                                                     value="#{corresponIndexPage.userAttention}" />
+                              <span class="label-body">To</span>
+                            </label>
+                            <label>
+                              <h:selectBooleanCheckbox id="userCc"
+                                                     value="#{corresponIndexPage.userCc}" />
+                              <span class="label-body">Cc</span>
+                            </label>
+                            <ui:fragment rendered="#{corresponIndexPage.usePersonInCharge}">
+                            <label>
+                              <h:selectBooleanCheckbox id="userPic"
+                                                       value="#{corresponIndexPage.userPic}"/>
+                              <span class="label-body">担当</span>
+                            </label>
+                            </ui:fragment>
+                          </div>
+                          <label>
+                            <h:selectBooleanCheckbox id="userUnreplied"
+                                                   value="#{corresponIndexPage.userUnreplied}" style="margin-left: 10px;" />
+                            <span class="label-body">未返信</span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <h:panelGroup id="calenderScript">
+                      <script type="text/javascript">
+                        var formated_today = (new Date()).format("YYYY-MM-DD");
+                        <ui:include src="../include/calendarFunc.xhtml">
+                          <ui:param name="styleKey" value="form:fromCreated" />
+                        </ui:include>
+                      </script>
+                      <script type="text/javascript">
+                        <ui:include src="../include/calendarFunc.xhtml">
+                          <ui:param name="styleKey" value="form:toCreated" />
+                        </ui:include>
+                      </script>
+                      <script type="text/javascript">
+                        <ui:include src="/include/calendarFunc.xhtml">
+                          <ui:param name="styleKey" value="form:fromIssued" />
+                        </ui:include>
+                      </script>
+                      <script type="text/javascript">
+                        <ui:include src="/include/calendarFunc.xhtml">
+                          <ui:param name="styleKey" value="form:toIssued" />
+                        </ui:include>
+                      </script>
+                      <script type="text/javascript">
+                        <ui:include src="/include/calendarFunc.xhtml">
+                          <ui:param name="styleKey" value="form:fromReply" />
+                        </ui:include>
+                      </script>
+                      <script type="text/javascript">
+                        <ui:include src="/include/calendarFunc.xhtml">
+                          <ui:param name="styleKey" value="form:toReply" />
+                        </ui:include>
+                      </script>
+                    </h:panelGroup>
+
+                    <div class="row">
+                      <div class="four columns">
+                        <h:outputLabel for="fromCreated" value="作成日"/>
+                        <div>
+                          <h:inputText type="text" id="fromCreated"
+                                  value="#{corresponIndexPage.fromCreated}"
+                                  maxlength="11"
+                                  styleClass="input-date"/>
+                          -
+                          <h:inputText type="text" id="toCreated"
+                                  value="#{corresponIndexPage.toCreated}"
+                                  maxlength="11"
+                                  styleClass="input-date"/>
+                        </div>
+                        <h:message for="fromCreated" infoClass="info" errorClass="error"
+                                   warnClass="warn" fatalClass="fatal" />
+                        <h:message for="toCreated" infoClass="info" errorClass="error"
+                                   warnClass="warn" fatalClass="fatal" />
+                      </div>
+                      <div class="four columns">
+                        <h:outputLabel for="fromIssued" value="発行日"/>
+                        <div>
+                          <h:inputText type="text" id="fromIssued"
+                                      value="#{corresponIndexPage.fromIssued}"
+                                      maxlength="11"
+                                      styleClass="input-date"/>
+                          -
+                          <h:inputText type="text" id="toIssued"
+                                      value="#{corresponIndexPage.toIssued}"
+                                      maxlength="11"
+                                      styleClass="input-date"/>
+                        </div>
+                        <h:message for="fromIssued" infoClass="info" errorClass="error"
+                                   warnClass="warn" fatalClass="fatal" />
+                        <h:message for="toIssued" infoClass="info" errorClass="error"
+                                   warnClass="warn" fatalClass="fatal" />
+                      </div>
+                      <div class="four columns">
+                        <h:outputLabel for="fromReply" value="返信期限"/>
+                        <div>
+                          <h:inputText type="text" id="fromReply"
+                                      value="#{corresponIndexPage.fromReply}"
+                                      maxlength="11"
+                                      styleClass="input-date"/>
+                          -
+                          <h:inputText type="text" id="toReply"
+                                      value="#{corresponIndexPage.toReply}"
+                                      maxlength="11"
+                                      styleClass="input-date"/>
+                        </div>
+                        <h:message for="fromReply" infoClass="info" errorClass="error"
+                          warnClass="warn" fatalClass="fatal" />
+                        <h:message for="toReply" infoClass="info" errorClass="error"
+                          warnClass="warn" fatalClass="fatal" />
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="ten columns">
+                        <h:outputLabel for="customFieldList" value="その他項目"/>
+                        <div>
+                          <h:selectOneMenu id="customFieldList"
+                            value="#{corresponIndexPage.customFieldNo}"
+                            rendered="#{corresponIndexPage.customFieldSelectList != null}">
+                            <f:selectItem itemValue="" itemLabel="" />
+                            <f:selectItems
+                              value="#{corresponIndexPage.customFieldSelectList}" />
+                          </h:selectOneMenu>
+                          <h:inputText id="customFieldValue"
+                            value="#{corresponIndexPage.customFieldValue}" maxlength="100"/>
+                        </div>
+                        <h:message for="customFieldValue" infoClass="info"
+                          errorClass="error" warnClass="warn" fatalClass="fatal" />
+                      </div>
+                    </div>
+
+                    <div class="action">
+                      <h:commandButton id="search"
+                              value="検索"
+                              styleClass="button-primary"
+                              action="#{corresponIndexPage.search}"
+                              onclick="resetBlankRows();preProcess(event);">
+                          <f:ajax render=":messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel :form:conditionPanel :form:simplePanel :form:advancedSearchPanel"
+                                    execute="@all" onevent="oncompletePostProcess" />
+                      </h:commandButton>
+                      <h:outputLink id="clear"
+                              value="javascript:void(0)"
+                              styleClass="button"
+                              onclick="clearCondition();window.scroll(0,0);">
+                        <h:outputText value="検索条件クリア"  />
+                      </h:outputLink>
+                    </div>
+                  </h:panelGroup>
+                </h:panelGroup>
+              </f:validateBean>
+            </div>
+          </div>
+        </div>
+
+        <div id="input-dialog" style="display:none; position: absolute;"  class="dialog favorite-filter-dialog">
+          <f:validateBean validationGroups="#{corresponIndexPage.validationFavoriteGroups}">
+            <table class="diaTbl" border="0" cellpadding="5" cellspacing="3" style="font-size: 12px; width: 380px;">
+              <tr>
+                <td id="nameInputMessage">
+                  <h:outputLabel value="お気に入り条件に名前を付けてください"/>
+                </td>
+              </tr>
+              <tr>
+                <td style="fontSize: 12px;">
+                  <h:panelGroup id="favoritePanelGroup">
+                    <h:messages globalOnly="true" showDetail="true" showSummary="false"
+                      infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal"
+                      rendered="#{corresponIndexPage.favoriteFilterDisplay}" />
+                    <div>
+                      <h:inputText id="nameInputText"
+                        value="#{corresponIndexPage.favoriteFilterName}"
+                        style="width: 360px;" maxlength="100"/>
+                    </div>
+                    <h:inputHidden id="favoriteFilterDisplay" value="#{corresponIndexPage.favoriteFilterDisplay}" />
+                    <h:message for="nameInputText"
+                      infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+                  </h:panelGroup>
+                </td>
+              </tr>
+              <tr>
+                <td id="label" align="right" style="fontSize: 12px;">
+                  <h:commandLink id="addFavoriteFilter" value="OK" style="margin-right:15px;"
+                    onclick="preProcess(event);"
+                    action="#{corresponIndexPage.addFavoriteFilter}">
+                    <f:ajax
+                      execute=":form:nameInputText"
+                      render=":form:favoritePanelGroup :messagePanel"
+                      onevent="closeFavoriteDialog"/>
+                  </h:commandLink>
+                  <h:commandLink id="closeFavoriteFilterDialog" value="閉じる"
+                    style="margin-right:15px;"
+                    action="#{corresponIndexPage.closeFavoriteDialog}"
+                    onclick="preProcess(event);">
+                    <f:ajax
+                      render=":form:favoritePanelGroup"
+                      onevent="closeFavoriteDialog"/>
+                  </h:commandLink>
+                </td>
+              </tr>
+            </table>
+          </f:validateBean>
+        </div>
+
+        <div class="row">
+          <div class="three columns u-pull-right">
+            <h:commandLink id="showFavoriteFilterDialog" value="お気に入り条件として保存"
+              action="#{corresponIndexPage.showFavoriteDialog}"
+              onclick="preProcess(event);">
+              <f:ajax
+                render=":form:favoritePanelGroup"
+                onevent="showFavoriteDialog"/>
+            </h:commandLink>
+          </div>
+        </div>
+
+        <hr/>
+
+        <h:panelGroup id="viewArea">
+          <div id="dialog" style="display: none; position: absolute;" class="dialog list-item-selection">
+            <h:outputText id="dialogTitle" styleClass="inner-title"
+                          value="表示項目選択" />
+            <div class="row">
+              <div class="six columns">
+                <label>
+                  <h:selectBooleanCheckbox id="sel_no"
+                          value="#{corresponIndexPage.header.no}"
+                          onclick="changeSelect('sel_no', #{corresponIndexPage.header.numNo});"/>
+                  <span class="label-body">ID</span>
+                </label>
+              </div>
+              <div class="six columns">
+                <label>
+                  <h:selectBooleanCheckbox id="sel_issuedOn"
+                      value="#{corresponIndexPage.header.issuedOn}"
+                      onclick="changeSelect('sel_issuedOn', #{corresponIndexPage.header.numIssuedOn});"/>
+                  <span class="label-body">発行日</span>
+                </label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="six columns">
+                <label>
+                  <h:selectBooleanCheckbox id="sel_corresponNo"
+                      value="#{corresponIndexPage.header.corresponNo}"
+                      onclick="changeSelect('sel_corresponNo', #{corresponIndexPage.header.numCorresponNo});"
+                       />
+                  <span class="label-body">文書番号</span>
+                </label>
+              </div>
+              <div class="six columns">
+                <label>
+                  <h:selectBooleanCheckbox id="sel_deadline"
+                      value="#{corresponIndexPage.header.deadline}"
+                      onclick="changeSelect('sel_deadline', #{corresponIndexPage.header.numDeadline});"
+                       />
+                  <span class="label-body">返信期限</span>
+                </label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="six columns">
+                <label>
+                  <h:selectBooleanCheckbox id="sel_previousRevision"
+                      value="#{corresponIndexPage.header.previousRevision}"
+                      onclick="changeSelect('sel_previousRevision', #{corresponIndexPage.header.numPreviousRevision});"
+                       />
+                  <span class="label-body">改訂前文書番号</span>
+                </label>
+              </div>
+              <div class="six columns">
+                <label>
+                    <h:selectBooleanCheckbox id="sel_updatedOn"
+                      value="#{corresponIndexPage.header.updatedOn}"
+                      onclick="changeSelect('sel_updatedOn', #{corresponIndexPage.header.numUpdatedOn});"
+                       />
+                  <span class="label-body">最終更新日</span>
+                </label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="six columns">
+                <label>
+                  <h:selectBooleanCheckbox id="sel_from"
+                      value="#{corresponIndexPage.header.from}"
+                      onclick="changeSelect('sel_from', #{corresponIndexPage.header.numFrom});"
+                       />
+                  <span class="label-body">発信元</span>
+                </label>
+              </div>
+              <div class="six columns">
+                <label>
+                  <h:selectBooleanCheckbox id="sel_createdBy"
+                      value="#{corresponIndexPage.header.createdBy}"
+                      onclick="changeSelect('sel_createdBy', #{corresponIndexPage.header.numCreatedBy});"
+                       />
+                  <span class="label-body">作成者</span>
+                </label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="six columns">
+                <label>
+                  <h:selectBooleanCheckbox id="sel_to"
+                      value="#{corresponIndexPage.header.to}"
+                      onclick="changeSelect('sel_to', #{corresponIndexPage.header.numTo});"
+                       />
+                  <span class="label-body">宛先</span>
+                </label>
+              </div>
+              <div class="six columns">
+                <label>
+                  <h:selectBooleanCheckbox id="sel_issuedBy"
+                      value="#{corresponIndexPage.header.issuedBy}"
+                      onclick="changeSelect('sel_issuedBy', #{corresponIndexPage.header.numIssuedBy});"
+                       />
+                  <span class="label-body">発行者</span>
+                </label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="six columns">
+                <label>
+                  <h:selectBooleanCheckbox id="sel_type"
+                      value="#{corresponIndexPage.header.type}"
+                      onclick="changeSelect('sel_type', #{corresponIndexPage.header.numType});"
+                       />
+                  <span class="label-body">種類</span>
+                </label>
+              </div>
+              <div class="six columns">
+                <label>
+                  <h:selectBooleanCheckbox id="sel_updatedBy"
+                      value="#{corresponIndexPage.header.updatedBy}"
+                      onclick="changeSelect('sel_updatedBy', #{corresponIndexPage.header.numUpdatedBy});"
+                       />
+                  <span class="label-body">最終更新者</span>
+                </label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="six columns">
+                <label>
+                  <h:selectBooleanCheckbox id="sel_subject"
+                      value="#{corresponIndexPage.header.subject}"
+                      onclick="changeSelect('sel_subject', #{corresponIndexPage.header.numSubject});"
+                       />
+                  <span class="label-body">件名</span>
+                </label>
+              </div>
+              <div class="six columns">
+                <label>
+                  <h:selectBooleanCheckbox id="sel_replyRequired"
+                      value="#{corresponIndexPage.header.replyRequired}"
+                      onclick="changeSelect('sel_replyRequired', #{corresponIndexPage.header.numReplyRequired});"
+                       />
+                  <span class="label-body">返信要否</span>
+                </label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="six columns">
+                <label>
+                  <h:selectBooleanCheckbox id="sel_workflow"
+                      value="#{corresponIndexPage.header.workflow}"
+                      onclick="changeSelect('sel_workflow', #{corresponIndexPage.header.numWorkflow});"
+                       />
+                  <span class="label-body">ワークフロー</span>
+                </label>
+              </div>
+              <div class="six columns">
+                <label>
+                  <h:selectBooleanCheckbox id="sel_status"
+                      value="#{corresponIndexPage.header.status}"
+                      onclick="changeSelect('sel_status', #{corresponIndexPage.header.numStatus});"
+                       />
+                  <span class="label-body">状態</span>
+                </label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="six columns">
+                <label>
+                  <h:selectBooleanCheckbox id="sel_createdOn"
+                      value="#{corresponIndexPage.header.createdOn}"
+                      onclick="changeSelect('sel_createdOn', #{corresponIndexPage.header.numCreatedOn});"
+                       />
+                  <span class="label-body">作成日</span>
+                </label>
+              </div>
+            </div>
+            <div class="action-edit">
+              <a href="javascript:void(0);" onclick="Dialog.close('dialog');window.scroll(0,0);" style="margin-right:15px;">閉じる</a>
+            </div>
+          </div>
+          <div class="row">
+            <div class="four columns u-pull-right">
+              出力形式:
+              <h:commandLink id="printHTML" value="Print"
+                action="#{corresponIndexPage.printHTML}"
+                onclick="setActionName(event)" target="print" />
+              <h:commandLink
+                id="downloadCsv" value="CSV"
+                action="#{corresponIndexPage.downloadCsv}"
+                onclick="setActionName(event)" />
+              <h:commandLink
+                id="downloadExcel" value="Excel"
+                action="#{corresponIndexPage.downloadExcel}"
+                onclick="setActionName(event)" />
+              <h:commandLink
+                id="downloadZip" value="ZIP"
+                action="#{corresponIndexPage.downloadZip}"
+                onclick="setActionName(event)" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="nine columns u-pull-right">
+               <a href="javascript:void(0);" id="listItemSelection" onclick="Dialog.show('dialog')">表示項目選択</a>
+               <span>
+                 既読状態操作:
+                 <h:commandLink
+                      id="read"
+                      value="既読"
+                      action="#{corresponIndexPage.read}"
+                      onclick="preProcess(event);">
+                      <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
+                 </h:commandLink>
+                 <h:commandLink
+                      id="unread"
+                      value="未読"
+                      action="#{corresponIndexPage.unread}"
+                      onclick="preProcess(event);">
+                      <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
+                 </h:commandLink>
+               </span>
+               <span>
+                 状態操作:
+                 <h:commandLink
+                      id="open"
+                      value="オープン"
+                      action="#{corresponIndexPage.open}"
+                      onclick="preProcess(event);">
+                      <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
+                  </h:commandLink>
+                  <h:commandLink
+                      id="close"
+                      value="クローズ"
+                      action="#{corresponIndexPage.close}"
+                      onclick="preProcess(event);">
+                      <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
+                  </h:commandLink>
+                </span>
+                <h:commandButton
+                      id="delete"
+                      value="選択した文書を削除"
+                      action="#{corresponIndexPage.delete}"
+                      onclick="return confirmAction(event)">
+                  <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
+                </h:commandButton>
+            </div>
+          </div>
+          <div class="row">
+            <div class="six columns">
+             <h:panelGroup id="pagePanel" styleClass="correspon-paging-panel">
+               <h:inputHidden id="viewRender" value="#{corresponIndexPage.dataCount}" />
+               <h:panelGrid columns="1">
+                 <h:panelGroup styleClass="list-count">
+                   <h:outputText id="dataCount" value="#{corresponIndexPage.dataCount}" />
+                    <h:panelGroup styleClass="list-range">
+                      <h:outputText id="pageDisplayNo" value="#{corresponIndexPage.pageDisplayNo}"/>
+                    </h:panelGroup>
+
+                    <h:panelGroup styleClass="list-nav">
+                      <h:commandLink id="previous"
+                            value="#{corresponIndexPage.previousLabel}"
+                            action="#{corresponIndexPage.movePrevious}"
+                            rendered="#{corresponIndexPage.previous}"
+                            onclick="preProcess(event);">
+                        <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
+                      </h:commandLink>
+                      <h:outputText rendered="#{!corresponIndexPage.previous}" value="#{corresponIndexPage.previousLabel}" />
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                      <h:panelGroup id="pagingNo">
+                        <ui:repeat var="value" value="#{corresponIndexPage.pagingNo}">
+                          <h:commandLink value=" #{value} "
+                                action="#{corresponIndexPage.changePage}"
+                                rendered="#{value != corresponIndexPage.pageNo}"
+                                onclick="setPageNo('#{value}');preProcess(event);">
+                            <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
+                          </h:commandLink>
+                          <h:outputText rendered="#{value == corresponIndexPage.pageNo}" value=" #{value} " style="white-space:nowrap;" />
+                        </ui:repeat>
+                      </h:panelGroup>
+                      <h:inputHidden id="pageNo" value="#{corresponIndexPage.pageNo}" />
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                      <h:commandLink id="next"
+                              value="#{corresponIndexPage.nextLabel}"
+                              action="#{corresponIndexPage.moveNext}"
+                              rendered="#{corresponIndexPage.next}"
+                              onclick="preProcess(event);">
+                        <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
+                      </h:commandLink>
+                      <h:outputText rendered="#{!corresponIndexPage.next}" value="#{corresponIndexPage.nextLabel}" />
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                      <h:outputText value=" | 表示件数: " />
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                      <h:commandLink id="perPage10"
+                            value="10"
+                            action="#{corresponIndexPage.changePageRowNum}"
+                            rendered="#{10 != corresponIndexPage.pageRowNum}"
+                            onclick="changePageRowNum(10);preProcess(event);">
+                        <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
+                      </h:commandLink>
+                      <h:outputText value="10" rendered="#{10 == corresponIndexPage.pageRowNum}" />
+                      <h:commandLink id="perPage20"
+                              value="20"
+                              action="#{corresponIndexPage.changePageRowNum}"
+                              rendered="#{20 != corresponIndexPage.pageRowNum}"
+                              onclick="changePageRowNum(20);preProcess(event);">
+                        <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
+                      </h:commandLink>
+                      <h:outputText value="20"
+                                    rendered="#{20 == corresponIndexPage.pageRowNum}" />
+                      <h:commandLink id="perPage30"
+                                value="30"
+                                action="#{corresponIndexPage.changePageRowNum}"
+                                rendered="#{30 != corresponIndexPage.pageRowNum}"
+                                onclick="changePageRowNum(30);preProcess(event);">
+                        <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
+                      </h:commandLink>
+                      <h:outputText value="30" style="white-space:nowrap;"
+                                    rendered="#{30 == corresponIndexPage.pageRowNum}" />
+                      <h:commandLink id="perPage50"
+                                    value="50"
+                                    action="#{corresponIndexPage.changePageRowNum}"
+                                    rendered="#{50 != corresponIndexPage.pageRowNum}"
+                                    onclick="changePageRowNum(50);preProcess(event);">
+                        <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
+                      </h:commandLink>
+                      <h:outputText value="50" style="white-space:nowrap;"
+                                    rendered="#{50 == corresponIndexPage.pageRowNum}" />
+                      <h:commandLink id="perPage100"
+                                value="100 "
+                                action="#{corresponIndexPage.changePageRowNum}"
+                                rendered="#{100 != corresponIndexPage.pageRowNum}"
+                                onclick="changePageRowNum(100);preProcess(event);">
+                        <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
+                      </h:commandLink>
+                      <h:outputText value="100" style="white-space:nowrap;"
+                                    rendered="#{100 == corresponIndexPage.pageRowNum}" />
+                    </h:panelGroup>
+
+                    <h:panelGroup style="white-space:nowrap;">
+                        <h:outputText value=" | " />
+                    </h:panelGroup>
+                  </h:panelGroup>
+                </h:panelGrid>
+              </h:panelGroup>
+            </div>
+          </div>
+
+          <h:panelGroup id="indexPanel">
+          <h:inputHidden id="sort" value="#{corresponIndexPage.sort}" />
+          <h:inputHidden id="ascending" value="#{corresponIndexPage.ascending}" />
+
+          <h:dataTable id="corresponIndex"
+                value="#{corresponIndexPage.indexList}" var="item"
+                preserveDataModel="true" styleClass="list correspon-list"
+                footerClass="footer"
+                columnClasses="check,number,text,text,text,text,text,text-subject,text,text,text,text,text,text,text,text,text,text,text"
+                rowClasses="#{corresponIndexPage.rowClasses}" cellpadding="5" >
+
+            <h:column headerClass="border-right-0">
+              <f:facet name="header">
+                <a id="allCheck" onclick="checkAll();"><i class="fa fa-check" aria-hidden="true"></i></a>
+              </f:facet>
+              <h:selectBooleanCheckbox id="check" value="#{item.checked}" />
+                            <h:outputText value="*"
+                              rendered="#{item.correspon.corresponReadStatus.returnedUnread}"
+                              styleClass="returned-unread" />
+                            <h:outputText value="&nbsp;&nbsp;"
+                              rendered="#{!item.correspon.corresponReadStatus.returnedUnread}"
+                              styleClass="returned-unread" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:commandLink id="id" value=""
+                  onclick="sortHeader('id');setAjaxRequest(true);"
+                  action="#{corresponIndexPage.sortIndex}">
+                  <h:outputText value="ID" />
+
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='id' and corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                  </ui:fragment>
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='id' and !corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-up" aria-hidden="true"></i>
+                  </ui:fragment>
+
+                  <f:ajax render=":form:corresponIndex" execute="@all" onevent="oncompletePostProcess" />
+                </h:commandLink>
+              </f:facet>
+              <h:outputLink
+                value="correspon.jsf?id=#{item.correspon.id}&amp;projectId=#{item.correspon.projectId}&amp;fromIndex=1">
+                <h:outputText value="#{item.correspon.id}"
+                  rendered="#{item.correspon.corresponReadStatus.readStatus == corresponIndexPage.unread}"
+                  styleClass="unread" />
+                <h:outputText value="#{item.correspon.id}"
+                  rendered="#{item.correspon.corresponReadStatus.readStatus != corresponIndexPage.unread}" />
+              </h:outputLink>
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:commandLink id="correspon_no" value=""
+                  onclick="sortHeader('correspon_no');setAjaxRequest(true);"
+                  action="#{corresponIndexPage.sortIndex}">
+                  <h:outputText value="文書番号" />
+
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='correspon_no' and corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                  </ui:fragment>
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='correspon_no' and !corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-up" aria-hidden="true"></i>
+                  </ui:fragment>
+
+                  <f:ajax render=":form:corresponIndex" execute="@all" onevent="oncompletePostProcess" />
+                </h:commandLink>
+              </f:facet>
+              <h:outputText value="#{item.correspon.corresponNo}"
+                rendered="#{item.correspon.corresponReadStatus.readStatus == corresponIndexPage.unread}"
+                styleClass="unread" />
+              <h:outputText value="#{item.correspon.corresponNo}"
+                rendered="#{item.correspon.corresponReadStatus.readStatus != corresponIndexPage.unread}" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:commandLink id="previous_rev_correspon_no" value=""
+                  onclick="sortHeader('previous_rev_correspon_no');setAjaxRequest(true);"
+                  action="#{corresponIndexPage.sortIndex}">
+                  <h:outputText value="改訂前文書番号" />
+
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='previous_rev_correspon_no' and corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                  </ui:fragment>
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='previous_rev_correspon_no' and !corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-up" aria-hidden="true"></i>
+                  </ui:fragment>
+
+                  <f:ajax render=":form:corresponIndex" execute="@all" onevent="oncompletePostProcess" />
+                </h:commandLink>
+              </f:facet>
+              <h:outputText value="#{item.correspon.previousRevCorresponNo}"
+                rendered="#{item.correspon.corresponReadStatus.readStatus == corresponIndexPage.unread}"
+                styleClass="unread" />
+              <h:outputText value="#{item.correspon.previousRevCorresponNo}"
+                rendered="#{item.correspon.corresponReadStatus.readStatus != corresponIndexPage.unread}" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:commandLink id="from_correspon_group_name" value=""
+                  onclick="sortHeader('from_correspon_group_name');setAjaxRequest(true);"
+                  action="#{corresponIndexPage.sortIndex}">
+                  <h:outputText value="発信元" />
+
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='from_correspon_group_name' and corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                  </ui:fragment>
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='from_correspon_group_name' and !corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-up" aria-hidden="true"></i>
+                  </ui:fragment>
+
+                  <f:ajax render=":form:corresponIndex" execute="@all" onevent="oncompletePostProcess" />
+                </h:commandLink>
+              </f:facet>
+              <h:outputText value="#{item.correspon.fromCorresponGroup.name}"
+                rendered="#{item.correspon.corresponReadStatus.readStatus == corresponIndexPage.unread}"
+                styleClass="unread" />
+              <h:outputText value="#{item.correspon.fromCorresponGroup.name}"
+                rendered="#{item.correspon.corresponReadStatus.readStatus != corresponIndexPage.unread}" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:commandLink id="to_group_name" value=""
+                  onclick="sortHeader('to_group_name');setAjaxRequest(true);"
+                  action="#{corresponIndexPage.sortIndex}">
+                  <h:outputText value="宛先" />
+
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='to_group_name' and corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                  </ui:fragment>
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='to_group_name' and !corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-up" aria-hidden="true"></i>
+                  </ui:fragment>
+
+                  <f:ajax render=":form:corresponIndex" execute="@all" onevent="oncompletePostProcess" />
+                </h:commandLink>
+              </f:facet>
+              <h:outputText value="#{item.correspon.toGroupName}"
+                rendered="#{item.correspon.corresponReadStatus.readStatus == corresponIndexPage.unread}"
+                styleClass="unread" />
+              <h:outputText value="#{item.correspon.toGroupName}"
+                rendered="#{item.correspon.corresponReadStatus.readStatus != corresponIndexPage.unread}" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:commandLink id="correspon_type" value=""
+                  onclick="sortHeader('correspon_type');setAjaxRequest(true);"
+                  action="#{corresponIndexPage.sortIndex}">
+                  <h:outputText value="種類" />
+
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='correspon_type' and corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                  </ui:fragment>
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='correspon_type' and !corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-up" aria-hidden="true"></i>
+                  </ui:fragment>
+
+                  <f:ajax render=":form:corresponIndex" execute="@all" onevent="oncompletePostProcess" />
+                </h:commandLink>
+              </f:facet>
+              <h:outputText
+                value="#{item.correspon.corresponType.corresponType}"
+                rendered="#{item.correspon.corresponReadStatus.readStatus == corresponIndexPage.unread}"
+                styleClass="unread" />
+              <h:outputText
+                value="#{item.correspon.corresponType.corresponType}"
+                rendered="#{item.correspon.corresponReadStatus.readStatus != corresponIndexPage.unread}" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:commandLink id="subject" value=""
+                  onclick="sortHeader('subject');setAjaxRequest(true);"
+                  action="#{corresponIndexPage.sortIndex}">
+                  <h:outputText value="件名" />
+
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='subject' and corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                  </ui:fragment>
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='subject' and !corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-up" aria-hidden="true"></i>
+                  </ui:fragment>
+
+                  <f:ajax render=":form:corresponIndex" execute="@all" onevent="oncompletePostProcess" />
+                </h:commandLink>
+              </f:facet>
+              <h:panelGroup layout="block" styleClass="text-subject" >
+              <h:outputLink
+                value="correspon.jsf?id=#{item.correspon.id}&amp;projectId=#{item.correspon.projectId}&amp;fromIndex=1">
+                <h:outputText value="#{item.correspon.subject}"
+                  rendered="#{item.correspon.corresponReadStatus.readStatus == corresponIndexPage.unread}"
+                  styleClass="unread" />
+                <h:outputText value="#{item.correspon.subject}"
+                  rendered="#{item.correspon.corresponReadStatus.readStatus != corresponIndexPage.unread}" />
+              </h:outputLink>
+              </h:panelGroup>
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:commandLink id="workflow_status" value=""
+                  onclick="sortHeader('workflow_status');setAjaxRequest(true);"
+                  action="#{corresponIndexPage.sortIndex}">
+                  <h:outputText value="ワークフロー" />
+
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='workflow_status' and corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                  </ui:fragment>
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='workflow_status' and !corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-up" aria-hidden="true"></i>
+                  </ui:fragment>
+
+                  <f:ajax render=":form:corresponIndex" execute="@all" onevent="oncompletePostProcess" />
+                </h:commandLink>
+              </f:facet>
+              <h:outputText value="#{item.correspon.workflowStatus.label}"
+                rendered="#{item.correspon.corresponReadStatus.readStatus == corresponIndexPage.unread}"
+                styleClass="unread" />
+              <h:outputText value="#{item.correspon.workflowStatus.label}"
+                rendered="#{item.correspon.corresponReadStatus.readStatus != corresponIndexPage.unread}" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:commandLink id="created_at" value=""
+                  onclick="sortHeader('created_at');setAjaxRequest(true);"
+                  action="#{corresponIndexPage.sortIndex}">
+                  <h:outputText value="作成日" />
+
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='created_at' and corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                  </ui:fragment>
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='created_at' and !corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-up" aria-hidden="true"></i>
+                  </ui:fragment>
+
+                  <f:ajax render=":form:corresponIndex" execute="@all" onevent="oncompletePostProcess" />
+                </h:commandLink>
+              </f:facet>
+              <h:outputText value="#{item.correspon.createdAt}"
+                rendered="#{item.correspon.corresponReadStatus.readStatus == corresponIndexPage.unread}"
+                styleClass="unread">
+                <f:convertDateTime pattern="yyyy-MM-dd" />
+              </h:outputText>
+              <h:outputText value="#{item.correspon.createdAt}"
+                rendered="#{item.correspon.corresponReadStatus.readStatus != corresponIndexPage.unread}">
+                <f:convertDateTime pattern="yyyy-MM-dd" />
+              </h:outputText>
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:commandLink id="issued_at" value=""
+                  onclick="sortHeader('issued_at');setAjaxRequest(true);"
+                  action="#{corresponIndexPage.sortIndex}">
+                  <h:outputText value="発行日" />
+
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='issued_at' and corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                  </ui:fragment>
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='issued_at' and !corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-up" aria-hidden="true"></i>
+                  </ui:fragment>
+
+                  <f:ajax render=":form:corresponIndex" execute="@all" onevent="oncompletePostProcess" />
+                </h:commandLink>
+              </f:facet>
+              <h:outputText value="#{item.correspon.issuedAt}"
+                rendered="#{item.correspon.corresponReadStatus.readStatus == corresponIndexPage.unread}"
+                styleClass="unread">
+                <f:convertDateTime pattern="yyyy-MM-dd" />
+              </h:outputText>
+              <h:outputText value="#{item.correspon.issuedAt}"
+                rendered="#{item.correspon.corresponReadStatus.readStatus != corresponIndexPage.unread}">
+                <f:convertDateTime pattern="yyyy-MM-dd" />
+              </h:outputText>
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:commandLink id="deadline_for_reply" value=""
+                  onclick="sortHeader('deadline_for_reply');setAjaxRequest(true);"
+                  action="#{corresponIndexPage.sortIndex}">
+                  <h:outputText value="返信期限" />
+
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='deadline_for_reply' and corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                  </ui:fragment>
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='deadline_for_reply' and !corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-up" aria-hidden="true"></i>
+                  </ui:fragment>
+
+                  <f:ajax render=":form:corresponIndex" execute="@all" onevent="oncompletePostProcess" />
+                </h:commandLink>
+              </f:facet>
+              <h:outputText value="#{item.correspon.deadlineForReply}"
+                rendered="#{item.correspon.corresponReadStatus.readStatus == corresponIndexPage.unread}"
+                styleClass="unread">
+                <f:convertDateTime pattern="yyyy-MM-dd" />
+              </h:outputText>
+              <h:outputText value="#{item.correspon.deadlineForReply}"
+                rendered="#{item.correspon.corresponReadStatus.readStatus != corresponIndexPage.unread}">
+                <f:convertDateTime pattern="yyyy-MM-dd" />
+              </h:outputText>
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:commandLink id="updated_at" value=""
+                  onclick="sortHeader('updated_at');setAjaxRequest(true);"
+                  action="#{corresponIndexPage.sortIndex}">
+                  <h:outputText value="最終更新日" />
+
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='updated_at' and corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                  </ui:fragment>
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='updated_at' and !corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-up" aria-hidden="true"></i>
+                  </ui:fragment>
+
+                  <f:ajax render=":form:corresponIndex" execute="@all" onevent="oncompletePostProcess" />
+                </h:commandLink>
+              </f:facet>
+              <h:outputText value="#{item.correspon.updatedAt}"
+                rendered="#{item.correspon.corresponReadStatus.readStatus == corresponIndexPage.unread}"
+                styleClass="unread">
+                <f:convertDateTime pattern="yyyy-MM-dd" />
+              </h:outputText>
+              <h:outputText value="#{item.correspon.updatedAt}"
+                rendered="#{item.correspon.corresponReadStatus.readStatus != corresponIndexPage.unread}">
+                <f:convertDateTime pattern="yyyy-MM-dd" />
+              </h:outputText>
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:commandLink id="created_by_name" value=""
+                  onclick="sortHeader('created_by_name');setAjaxRequest(true);"
+                  action="#{corresponIndexPage.sortIndex}">
+                  <h:outputText value="作成者" />
+
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='created_by_name' and corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                  </ui:fragment>
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='created_by_name' and !corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-up" aria-hidden="true"></i>
+                  </ui:fragment>
+
+                  <f:ajax render=":form:corresponIndex" execute="@all" onevent="oncompletePostProcess" />
+                </h:commandLink>
+              </f:facet>
+              <h:outputText value="#{item.correspon.createdBy.label}"
+                rendered="#{item.correspon.corresponReadStatus.readStatus == corresponIndexPage.unread}"
+                styleClass="unread" />
+              <h:outputText value="#{item.correspon.createdBy.label}"
+                rendered="#{item.correspon.corresponReadStatus.readStatus != corresponIndexPage.unread}" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:commandLink id="issued_by_name" value=""
+                  onclick="sortHeader('issued_by_name');setAjaxRequest(true);"
+                  action="#{corresponIndexPage.sortIndex}">
+                  <h:outputText value="発行者" />
+
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='issued_by_name' and corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                  </ui:fragment>
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='issued_by_name' and !corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-up" aria-hidden="true"></i>
+                  </ui:fragment>
+
+                  <f:ajax render=":form:corresponIndex" execute="@all" onevent="oncompletePostProcess" />
+                </h:commandLink>
+              </f:facet>
+              <h:outputText value="#{item.correspon.issuedBy.label}"
+                rendered="#{item.correspon.corresponReadStatus.readStatus == corresponIndexPage.unread}"
+                styleClass="unread" />
+              <h:outputText value="#{item.correspon.issuedBy.label}"
+                rendered="#{item.correspon.corresponReadStatus.readStatus != corresponIndexPage.unread}" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:commandLink id="updated_by_name" value=""
+                  onclick="sortHeader('updated_by_name');setAjaxRequest(true);"
+                  action="#{corresponIndexPage.sortIndex}">
+                  <h:outputText value="最終更新者" />
+
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='updated_by_name' and corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                  </ui:fragment>
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='updated_by_name' and !corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-up" aria-hidden="true"></i>
+                  </ui:fragment>
+
+                  <f:ajax render=":form:corresponIndex" execute="@all" onevent="oncompletePostProcess" />
+                </h:commandLink>
+              </f:facet>
+              <h:outputText value="#{item.correspon.updatedBy.label}"
+                rendered="#{item.correspon.corresponReadStatus.readStatus == corresponIndexPage.unread}"
+                styleClass="unread" />
+              <h:outputText value="#{item.correspon.updatedBy.label}"
+                rendered="#{item.correspon.corresponReadStatus.readStatus != corresponIndexPage.unread}" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:commandLink id="reply_required" value=""
+                  onclick="sortHeader('reply_required');setAjaxRequest(true);"
+                  action="#{corresponIndexPage.sortIndex}">
+                  <h:outputText value="返信要否" />
+
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='reply_required' and corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                  </ui:fragment>
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='reply_required' and !corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-up" aria-hidden="true"></i>
+                  </ui:fragment>
+
+                  <f:ajax render=":form:corresponIndex" execute="@all" onevent="oncompletePostProcess" />
+                </h:commandLink>
+              </f:facet>
+              <h:outputText value="#{item.correspon.replyRequired.label}"
+                rendered="#{item.correspon.corresponReadStatus.readStatus == corresponIndexPage.unread}"
+                styleClass="unread" />
+              <h:outputText value="#{item.correspon.replyRequired.label}"
+                rendered="#{item.correspon.corresponReadStatus.readStatus != corresponIndexPage.unread}" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:commandLink id="correspon_status" value=""
+                  onclick="sortHeader('correspon_status');setAjaxRequest(true);">
+                  <h:outputText value="状態" />
+
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='correspon_status' and corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                  </ui:fragment>
+                  <ui:fragment rendered="#{corresponIndexPage.sort =='correspon_status' and !corresponIndexPage.ascending}">
+                    <i class="fa fa-arrow-up" aria-hidden="true"></i>
+                  </ui:fragment>
+
+                  <f:ajax render=":form:corresponIndex" execute="@all" onevent="oncompletePostProcess" />
+                </h:commandLink>
+              </f:facet>
+              <h:outputText value="#{item.correspon.corresponStatus.label}"
+                rendered="#{item.correspon.corresponReadStatus.readStatus == corresponIndexPage.unread}"
+                styleClass="unread" />
+              <h:outputText value="#{item.correspon.corresponStatus.label}"
+                rendered="#{item.correspon.corresponReadStatus.readStatus != corresponIndexPage.unread}" />
+            </h:column>
+           </h:dataTable>
+          </h:panelGroup>
+
+          <div class="row">
+            <div class="six columns">
+              <h:panelGroup id="pagePanel_bottom">
+                <h:panelGrid columns="1">
+                  <h:panelGroup styleClass="list-count">
+                    <h:outputText id="dataCount_bottom" value="#{corresponIndexPage.dataCount}"  />
+                    <h:panelGroup styleClass="list-range">
+                      <h:outputText id="pageDisplayNo_bottom" value="#{corresponIndexPage.pageDisplayNo}"/>
+                    </h:panelGroup>
+
+                    <h:panelGroup styleClass="list-nav">
+                      <h:commandLink
+                                id="previous_bottom"
+                                value="#{corresponIndexPage.previousLabel}"
+                                action="#{corresponIndexPage.movePrevious}"
+                                onclick="preProcess(event);"
+                                rendered="#{corresponIndexPage.previous}">
+                        <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
+                      </h:commandLink>
+                      <h:outputText rendered="#{!corresponIndexPage.previous}" value="#{corresponIndexPage.previousLabel}" />
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                      <ui:repeat id="pagingNo_bottom" var="value" value="#{corresponIndexPage.pagingNo}" >
+                        <h:commandLink
+                                    value=" #{value} "
+                                    action="#{corresponIndexPage.changePage}"
+                                    onclick="setPageNo('#{value}');preProcess(event);"
+                                    rendered="#{value != corresponIndexPage.pageNo}">
+                          <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
+                        </h:commandLink>
+                        <h:outputText rendered="#{value == corresponIndexPage.pageNo}" value=" #{value} "/>
+                      </ui:repeat>
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                      <h:commandLink
+                              id="next_bottom"
+                              value="#{corresponIndexPage.nextLabel}"
+                              action="#{corresponIndexPage.moveNext}"
+                              onclick="preProcess(event);"
+                              rendered="#{corresponIndexPage.next}">
+                        <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
+                      </h:commandLink>
+                      <h:outputText rendered="#{!corresponIndexPage.next}" value="#{corresponIndexPage.nextLabel}" />
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                      <h:outputText value=" | 表示件数: " />
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                      <h:commandLink
+                              id="perPage10_bottom"
+                              value="10"
+                              action="#{corresponIndexPage.changePageRowNum}"
+                              onclick="changePageRowNum(10);preProcess(event);"
+                              rendered="#{10 != corresponIndexPage.pageRowNum}">
+                        <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
+                      </h:commandLink>
+                      <h:outputText value="10"
+                                  rendered="#{10 == corresponIndexPage.pageRowNum}" />
+                      <h:commandLink
+                                id="perPage20_bottom"
+                                value="20"
+                                action="#{corresponIndexPage.changePageRowNum}"
+                                onclick="changePageRowNum(20);preProcess(event);"
+                                rendered="#{20 != corresponIndexPage.pageRowNum}">
+                        <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
+                      </h:commandLink>
+                      <h:outputText value="20" rendered="#{20 == corresponIndexPage.pageRowNum}" />
+                      <h:commandLink
+                                id="perPage30_bottom"
+                                value="30"
+                                action="#{corresponIndexPage.changePageRowNum}"
+                                onclick="changePageRowNum(30);preProcess(event);"
+                                rendered="#{30 != corresponIndexPage.pageRowNum}">
+                        <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
+                      </h:commandLink>
+                      <h:outputText value="30" rendered="#{30 == corresponIndexPage.pageRowNum}" />
+                      <h:commandLink
+                                id="perPage50_bottom"
+                                value="50"
+                                action="#{corresponIndexPage.changePageRowNum}"
+                                onclick="changePageRowNum(50);preProcess(event);"
+                                rendered="#{50 != corresponIndexPage.pageRowNum}">
+                        <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
+                      </h:commandLink>
+                      <h:outputText value="50" rendered="#{50 == corresponIndexPage.pageRowNum}" />
+                      <h:commandLink
+                                id="perPage100_bottom"
+                                value="100"
+                                action="#{corresponIndexPage.changePageRowNum}"
+                                onclick="changePageRowNum(100);preProcess(event);"
+                                rendered="#{100 != corresponIndexPage.pageRowNum}">
+                        <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
+                      </h:commandLink>
+                      <h:outputText value="100" rendered="#{100 == corresponIndexPage.pageRowNum}" />
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                        <h:outputText value=" | " />
+                    </h:panelGroup>
+                  </h:panelGroup>
+                </h:panelGrid>
+              </h:panelGroup>
+            </div>
+          </div>
+        </h:panelGroup>
+      </h:form>
+    </f:view>
+  </ui:define>
+</ui:composition>
+</html>

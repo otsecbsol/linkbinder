@@ -1,0 +1,377 @@
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jsp/jstl/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/include/template.xhtml">
+  <ui:define name="title">プロジェクト概要</ui:define>
+  <ui:define name="link">
+    <ul>
+      <li>
+        <h:outputLink id="companies" value="javascript:disableLink('admin/companyIndex.jsf?projectId=#{projectHomePage.loginProjectId}')"  onclick="setActionName(event)">
+          <h:outputText value="会社一覧" />
+        </h:outputLink>
+      </li>
+      <li>
+        <h:outputLink id="users" value="javascript:disableLink('admin/userIndex.jsf?projectId=#{projectHomePage.loginProjectId}')"  onclick="setActionName(event)">
+          <h:outputText value="ユーザー一覧" />
+        </h:outputLink>
+      </li>
+    </ul>
+  </ui:define>
+  <ui:define name="cssOuter">
+    <link type="text/css" href="#{contextPath}/resource/#{v}/stylesheet/custom/projectHome.css" rel="stylesheet" />
+  </ui:define>
+  <ui:define name="jsOuter">
+    <script type="text/javascript" src="${contextPath}/resource/${v}/javascript/spinner.js"></script>
+    <script type="text/javascript" src="${contextPath}/resource/${v}/javascript/personInChargeInput.js"></script>
+  </ui:define>
+  <ui:define name="jsInner">
+    <!--
+    function setParameters(id, param) {
+      document.getElementById(id).value = param;
+    }
+
+    function preProcess(e) {
+      setActionName(e);
+      setAjaxRequest(true);
+    }
+
+    function initView() {
+      var gsd = document.getElementById('groupSummaryDetails');
+      var ffl = document.getElementById('favoriteFilterList');
+
+      displayDetailList(false, 'form:displayAllCorrTracking', 'CorrTrackingList', 'groupSummaryDisplay');
+      if (gsd.offsetHeight > 100) {
+        gsd.style.height = '100px';
+        gsd.style.overflow = 'hidden';
+        document.getElementById('groupSummaryDisplay').style.display = 'block';
+      }
+      changeFavoritefilterHeight();
+
+      displayDetailList(false, 'form:displayAllFavoriteFilter', 'ffList', 'favoriteFilterDetailedDisplay');
+    }
+
+    function toggleDispCorrTracking() {
+        var dispAll = document.getElementById('form:displayAllCorrTracking').value;
+        if (dispAll == 'false') {
+            displayDetailList(true, 'form:displayAllCorrTracking', 'CorrTrackingList', 'groupSummaryDisplay');
+            document.getElementById('groupSummaryDisplayLink').innerHTML = "詳細を隠す";
+        } else {
+            displayDetailList(false, 'form:displayAllCorrTracking', 'CorrTrackingList', 'groupSummaryDisplay');
+            document.getElementById('groupSummaryDisplayLink').innerHTML = "詳細を表示する";
+        }
+        changeFavoritefilterHeight();
+    }
+
+    function toggleDispFavoriteFilter() {
+        var dispAll = document.getElementById('form:displayAllFavoriteFilter').value;
+        if (dispAll == 'false') {
+            displayDetailList(true, 'form:displayAllFavoriteFilter', 'ffList', 'favoriteFilterDetailedDisplay');
+            document.getElementById('favoriteFilterDisplayLink').innerHTML = "詳細を隠す";
+        } else {
+            displayDetailList(false, 'form:displayAllFavoriteFilter', 'ffList', 'favoriteFilterDetailedDisplay');
+            document.getElementById('favoriteFilterDisplayLink').innerHTML = "詳細を表示する";
+        }
+    }
+
+    function getList(id) {
+        var result = new Array();
+        var list = document.getElementById(id).childNodes;
+        var count = 0;
+        while (list[count]){
+            if (list[count].tagName == 'LI') {
+                result.push(list[count]);
+            }
+            count++;
+        }
+        return result;
+    }
+
+    function displayDetailList(dispAll, dispAllId, listId, detailLinkId) {
+        document.getElementById(dispAllId).value = dispAll;
+        var list = getList(listId);
+        var count = 0;
+        while (list[count]){
+            if (dispAll){
+                list[count].style.display = 'block';
+            } else if(count < 5) {
+                list[count].style.display = 'block';
+            } else if (count >= 5) {
+                list[count].style.display = 'none';
+            }
+            count++;
+        }
+        if (count > 5) {
+            document.getElementById(detailLinkId).style.display = 'block';
+        }
+    }
+
+    function changeFavoritefilterHeight() {
+      var crHeight = document.getElementById('correspon-tracking-area').offsetHeight;
+      var mcHeight = document.getElementById('mycorrespon-area').offsetHeight;
+      var ffHeight = document.getElementById('favoritefilter-area').offsetHeight;
+
+      if (crHeight+mcHeight != ffHeight) {
+        // favoritefilterエリアの高さを設定
+        document.getElementById('favoritefilter-area').style.height = crHeight+mcHeight+6+'px';
+      }
+    }
+
+
+    var position = new Object();
+    function prepareRenameDialog(event, id, name) {
+        document.getElementById('form:favoriteFilterName').value = name;
+        setParameters('form:favoriteFilterId', id);
+    }
+    function showRenameDialog(event) {
+        Spinner.onStatusChange(event);
+        if (event.status != 'success') {
+            return null;
+        }
+        var dialog = document.getElementById('input-dialog');
+        var id = document.getElementById('form:favoriteFilterId').value;
+        initNameInput(id, dialog, position);
+
+        var isDisplay = document.getElementById('form:favoriteFilterDisplay').value;
+        if (isDisplay == 'true') {
+            Dialog.show('input-dialog');
+        }
+    }
+
+    function showDeleteConfirm(event, id) {
+        if(confirmButton()){
+            setParameters('form:favoriteFilterId', id);
+            setActionName(event);
+            return true;
+        }
+        return false;
+    }
+    function onDeleteComplete(event) {
+        onComplete(event);
+        var list = getList('ffList');
+        if (list.length <= 5) {
+            document.getElementById('favoriteFilterDetailedDisplay').style.display = "none";
+        }
+    }
+
+    window.onload = initView;
+    -->
+  </ui:define>
+
+  <ui:define name="body">
+    <f:view>
+      <h:form id="form" onsubmit="return disableSubmit();">
+        <h:inputHidden id="actionName" value="#{projectHomePage.actionName}" />
+        <ui:include src="/include/favoriteFilterNameInput.xhtml" />
+        <h:panelGroup id="globalMessage">
+            <h:messages globalOnly="true" showDetail="true" showSummary="false" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal"
+                rendered="#{!projectHomePage.favoriteFilterDisplay}" />
+        </h:panelGroup>
+        <div class="row">
+          <div class="six columns">
+            <div class="row">
+              <div id="correspon-tracking-area" class="column">
+                <span class="inner-title">文書状況</span>
+                <div id="groupSummaryDetails" style="margin-left: 15px;">
+                  <h:inputHidden id="selectedTo" value="#{projectHomePage.selectedTo}" />
+                  <h:inputHidden id="selectedCc" value="#{projectHomePage.selectedCc}" />
+                  <h:inputHidden id="displayAllCorrTracking"/>
+                  <ul id="CorrTrackingList">
+                    <ui:repeat value="#{projectHomePage.groupSummaryDataModel}" var="groupSummary" varStatus="groupSummaryStatus">
+                      <li id="#{groupSummaryStatus.index}" >
+                        <h:commandLink action="#{projectHomePage.goCorresponIndexTracking}" value="  #{groupSummary.corresponType.corresponType}(#{groupSummary.corresponType.workflowPattern.name})" onclick="setActionName(event);" />
+                        <h:outputText value="(" style="margin-left: 10px;" />
+                        <h:commandLink action="#{projectHomePage.goCorresponIndexTracking}" value="To" onclick="setActionName(event);setParameters('form:selectedTo', 'true');" />
+                          <h:outputText value=" : #{groupSummary.toCount}, " />
+                        <h:commandLink action="#{projectHomePage.goCorresponIndexTracking}" value="Cc" onclick="setActionName(event);setParameters('form:selectedCc', 'true');" />
+                        <h:outputText value=" : #{groupSummary.ccCount}" />
+                        <h:outputText value=")" />
+                      </li>
+                    </ui:repeat>
+                  </ul>
+                </div>
+                <div id="groupSummaryDisplay"
+                  style="width: 100%; text-align: right; display: none;">
+                  <a id="groupSummaryDisplayLink" href="javascript:void(0);" onclick="toggleDispCorrTracking();">
+                   詳細を表示する
+                  </a>
+                </div>
+                <br />
+                <h:commandLink
+                  action="#{projectHomePage.goCorresponIndexTrackingAll}"
+                  value="すべての文書を見る" />
+              </div>
+            </div>
+            <div class="row">
+              <div id="mycorrespon-area" class="column">
+                <span class="inner-title">自分宛て文書</span>
+                <div style="margin-left: 15px;">
+                  <h:inputHidden id="selectedWorkflowStatus" value="#{projectHomePage.selectedWorkflowStatus}" />
+                  <h:inputHidden id="selectedWorkflowProcessStatus" value="#{projectHomePage.selectedWorkflowProcessStatus}" />
+                  <h:inputHidden id="selectedCorresponStatus" value="#{projectHomePage.selectedCorresponStatus}" />
+                  <h:inputHidden id="selectedAttention" value="#{projectHomePage.selectedAttention}" />
+                  <h:inputHidden id="selectedPIC" value="#{projectHomePage.selectedPIC}" />
+                  <h:inputHidden id="selectedReadStatus" value="#{projectHomePage.selectedReadStatus}" />
+                  <h:commandLink
+                    action="#{projectHomePage.goCorresponIndexReadStatus}"
+                    value="Inbox" onclick="setActionName(event);" />
+                    <h:outputText value=" ( " />
+                  <h:commandLink action="#{projectHomePage.goCorresponIndexReadStatus}" value="未読" onclick="setActionName(event);setParameters('form:selectedReadStatus', '#{projectHomePage.unread}');" />
+                  <h:outputText value=" : #{projectHomePage.projectDetailsSummary.corresponUserSummary.newCount}" />
+                  <h:commandLink action="#{projectHomePage.goCorresponIndexReadStatus}" value=" 既読" onclick="setActionName(event);setParameters('form:selectedReadStatus', '#{projectHomePage.read}');" />
+                  <h:outputText value=" : #{projectHomePage.projectDetailsSummary.corresponUserSummary.readCount})" />
+                  <br />
+                  <h:commandLink
+                    action="#{projectHomePage.goCorresponIndexWorkflowStatus}"
+                    value="作成中"
+                    onclick="setActionName(event);setParameters('form:selectedWorkflowStatus', '#{projectHomePage.draft}');" />
+                  <h:outputText value=" : #{projectHomePage.projectDetailsSummary.corresponUserSummary.draftCount}" />
+                  <br />
+                  <h:commandLink
+                    action="#{projectHomePage.goCorresponIndexWorkflowProcessStatus}"
+                    value="承認依頼中"
+                    onclick="setActionName(event);setParameters('form:selectedWorkflowProcessStatus', '#{projectHomePage.underReview}');" />
+                  <h:outputText
+                    value=" : #{projectHomePage.projectDetailsSummary.corresponUserSummary.underReviewCount}" />
+                  <br />
+                  <h:commandLink
+                    action="#{projectHomePage.goCorresponIndexWorkflowProcessStatus}"
+                    value="検証対象"
+                    onclick="setActionName(event);setParameters('form:selectedWorkflowProcessStatus', '#{projectHomePage.requestForCheck}');" />
+                  <h:outputText
+                    value=" : #{projectHomePage.projectDetailsSummary.corresponUserSummary.requestForCheckCount}" />
+                  <br />
+                  <h:commandLink
+                    action="#{projectHomePage.goCorresponIndexWorkflowProcessStatus}"
+                    value="承認対象"
+                    onclick="setActionName(event);setParameters('form:selectedWorkflowProcessStatus', '#{projectHomePage.requestForApproval}');" />
+                  <h:outputText
+                    value=" : #{projectHomePage.projectDetailsSummary.corresponUserSummary.requestForApproveCount}" />
+                  <br />
+                  <h:commandLink
+                    action="#{projectHomePage.goCorresponIndexWorkflowStatus}"
+                    value="否認"
+                    onclick="setActionName(event);setParameters('form:selectedWorkflowStatus', '#{projectHomePage.denied}');" />
+                  <h:outputText
+                    value=" : #{projectHomePage.projectDetailsSummary.corresponUserSummary.deniedCount}" />
+                  <br />
+                  <h:commandLink
+                    action="#{projectHomePage.goCorresponIndexWorkflowStatus}"
+                    value="発行"
+                    onclick="setActionName(event);setParameters('form:selectedWorkflowStatus', '#{projectHomePage.issued}');" />
+                  <h:outputText value=" (  " style="margin-left: 10px;" />
+                  <h:commandLink
+                    action="#{projectHomePage.goCorresponIndexWorkflowStatus}"
+                    value="オープン"
+                    onclick="setActionName(event);setParameters('form:selectedWorkflowStatus', '#{projectHomePage.issued}');setParameters('form:selectedCorresponStatus', '#{projectHomePage.open}')" />
+                  <h:outputText
+                    value=" : #{projectHomePage.projectDetailsSummary.corresponUserSummary.openCount}, " />
+                  <h:commandLink
+                    action="#{projectHomePage.goCorresponIndexWorkflowStatus}"
+                    value="クローズ"
+                    onclick="setActionName(event);setParameters('form:selectedWorkflowStatus', '#{projectHomePage.issued}');setParameters('form:selectedCorresponStatus', '#{projectHomePage.closed}')" />
+                  <h:outputText
+                    value=" : #{projectHomePage.projectDetailsSummary.corresponUserSummary.closedCount}, " />
+                  <h:commandLink
+                    action="#{projectHomePage.goCorresponIndexWorkflowStatus}"
+                    value="キャンセル"
+                    onclick="setActionName(event);setParameters('form:selectedWorkflowStatus', '#{projectHomePage.issued}');setParameters('form:selectedCorresponStatus', '#{projectHomePage.canceled}')" />
+                  <h:outputText
+                    value=" : #{projectHomePage.projectDetailsSummary.corresponUserSummary.canceledCount}" />
+                  <h:outputText value=" )" /> <br />
+                  <h:commandLink action="#{projectHomePage.goCorresponIndexAction}"
+                    value="要アクション"
+                    onclick="setActionName(event);setParameters('form:selectedAttention', 'true');setParameters('form:selectedPIC', '#{projectHomePage.usePersonInCharge}')" />
+                  <h:outputText value=" (  " style="margin-left: 10px;" />
+                  <h:commandLink
+                    action="#{projectHomePage.goCorresponIndexAction}"
+                    value="To"
+                    onclick="setActionName(event);setParameters('form:selectedAttention', 'true');" />
+                  <h:outputText
+                    value=" : #{projectHomePage.projectDetailsSummary.corresponUserSummary.attentionCount}" />
+                  <h:outputText rendered="#{projectHomePage.usePersonInCharge}" value="  , " />
+                  <h:commandLink
+                    rendered="#{projectHomePage.usePersonInCharge}"
+                    action="#{projectHomePage.goCorresponIndexAction}"
+                    value="担当"
+                    onclick="setActionName(event);setParameters('form:selectedPIC', 'true')" />
+                  <h:outputText rendered="#{projectHomePage.usePersonInCharge}"
+                    value=" : #{projectHomePage.projectDetailsSummary.corresponUserSummary.personInChargeCount}" />
+                  <h:outputText value=" )" /> <br />
+                  <h:commandLink action="#{projectHomePage.goCorresponIndexCc}"
+                    value="Cc" onclick="setActionName(event);" />
+                  <h:outputText
+                    value=" : #{projectHomePage.projectDetailsSummary.corresponUserSummary.ccCount}" />
+                </div>
+                <br />
+                <h:commandLink
+                  action="#{projectHomePage.goCorresponIndexRelatedUserAll}"
+                  value="すべての文書を見る" />
+              </div>
+            </div>
+          </div>
+          <div id="favoritefilter-area" class="six columns">
+            <span class="inner-title">お気に入り条件</span>
+            <div id="favoriteFilterList">
+            <f:validateBean validationGroups="#{projectHomePage.skipValidationGroups}">
+            <h:panelGroup id="favoriteFilterListPanel">
+                <h:inputHidden id="favoriteFilterId" value="#{projectHomePage.targetFavoriteFilterId}" />
+                <h:inputHidden id="favoriteFilterName" value="#{projectHomePage.targetFavoriteFilterName}" />
+                <ul id="ffList">
+                  <ui:repeat value="#{projectHomePage.favoriteFilterDataModel}" var="favoriteFilterItem" varStatus="ffstatus">
+                    <li id="item#{ffstatus.index}">
+                      <h:commandLink value="  #{favoriteFilterItem.favoriteName}"
+                            action="#{projectHomePage.goCorresponIndexByFavoriteFilter}"
+                            onclick="setParameters('form:favoriteFilterId', #{favoriteFilterItem.id});setActionName(event);"/>
+                      <h:outputText value="(" style="margin-left: 10px;" />
+                      <h:commandLink value="名前変更"
+                            action="#{projectHomePage.showFavoriteFilterDialog}"
+                            onclick="prepareRenameDialog(event, #{favoriteFilterItem.id}, '#{favoriteFilterItem.favoriteName}')" >
+                        <f:ajax render=":form:favoriteFilterDisplay" onevent="showRenameDialog" />
+                      </h:commandLink>
+                      <h:outputText value=", " />
+                      <h:commandLink value="削除"
+                            action="#{projectHomePage.deleteFavoriteFilter}"
+                            onclick="return showDeleteConfirm(event, #{favoriteFilterItem.id})" >
+                        <f:ajax
+                            execute=":form:actionName :form:favoriteFilterId"
+                            render=":form:favoriteFilterListPanel :form:globalMessage :form:favoriteFilterDisplay"
+                            onevent="onDeleteComplete" />
+                      </h:commandLink>
+                      <h:outputText value=")&lt;br /&gt;" escape="false" />
+                    </li>
+                  </ui:repeat>
+                </ul>
+            </h:panelGroup>
+            </f:validateBean>
+            </div>
+                <div id="favoriteFilterDetailedDisplay"
+                  style="width: 100%; text-align: right; display: none;">
+                  <a id="favoriteFilterDisplayLink" href="javascript:void(0);" onclick="toggleDispFavoriteFilter();">
+                   詳細を表示する
+                  </a>
+                </div>
+                <h:inputHidden id="displayAllFavoriteFilter"/>
+          </div>
+        </div>
+      </h:form>
+    </f:view>
+  </ui:define>
+</ui:composition>
+</html>

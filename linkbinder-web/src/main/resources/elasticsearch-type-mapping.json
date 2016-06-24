@@ -1,0 +1,54 @@
+{
+    "document":{
+        "properties":{
+            "title":{
+                "type":"string",
+                "store":"yes",
+                "analyzer":"kuromoji_analyzer"
+            },
+            "body":{
+                "type":"string",
+                "store":"yes",
+                "analyzer":"kuromoji_analyzer"
+            },
+            "workflowStatus":{
+                "type":"string",
+                "store":"yes",
+                "analyzer":"kuromoji_analyzer"
+            },
+            "lastModified":{
+                "type":"string",
+                "store":"yes",
+                "analyzer":"kuromoji_analyzer"
+            },
+            "attachments":{
+                "properties":{
+                    "id":{
+                        "type":"string",
+                        "store":"yes",
+                        "analyzer":"kuromoji_analyzer"
+                    },
+                    "name":{
+                        "type":"string",
+                        "store":"yes",
+                        "analyzer":"kuromoji_analyzer"
+                    },
+                    "content":{
+                        "type":"attachment",
+                        "fields": {
+                            "title": {
+                                "store":"yes",
+                                "analyzer":"kuromoji_analyzer"
+                            },
+                            "content": {
+                                "store":"yes",
+                                "analyzer":"kuromoji_analyzer",
+                                "term_vector":"with_positions_offsets"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

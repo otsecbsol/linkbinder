@@ -1,0 +1,203 @@
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/include/template.xhtml">
+  <ui:define name="title">その他項目一覧</ui:define>
+  <ui:define name="cssOuter">
+    <link type="text/css" href="#{contextPath}/resource/#{v}/stylesheet/custom/normalList.css" rel="stylesheet" />
+  </ui:define>
+  <ui:define name="jsOuter"></ui:define>
+  <ui:define name="jsInner">
+    <!--
+    function clearCondition() {
+      var label = document.getElementById('form:searchLabel');
+      label.value = "";
+    }
+
+    function setId(id, projId, verNo){
+      var rowId = document.getElementById('form:customFieldId');
+      rowId.value = id;
+      var custmFieldProjId = document.getElementById('form:customFieldProjId');
+      custmFieldProjId.value = projId;
+      var customFieldVerNo = document.getElementById('form:customFieldVerNo');
+      customFieldVerNo.value = verNo;
+    }
+
+    $(document).ready(function() {
+      $('#form\\:customFieldIndex').highlightRows();
+    });
+    -->
+  </ui:define>
+
+  <ui:define name="body">
+    <f:view>
+      <h:form id="form" onsubmit="return disableSubmit();">
+        <h:inputHidden id="actionName" value="#{customFieldIndexPage.actionName}" />
+
+        <h:inputHidden id="scLabel" value="#{customFieldIndexPage.scLabel}" />
+
+        <h:inputHidden id="customFieldId" value="#{customFieldIndexPage.customFieldId}" />
+        <h:inputHidden id="customFieldProjId" value="#{customFieldIndexPage.customFieldProjId}" />
+        <h:inputHidden id="customFieldVerNo" value="#{customFieldIndexPage.customFieldVerNo}" />
+
+        <h:inputHidden id="pageNo" value="#{customFieldIndexPage.pageNo}" />
+        <h:commandLink style="display: none;" id="previous" action="#{customFieldIndexPage.movePrevious}"  onclick="deleteAllLink('paging');" />
+        <h:commandLink style="display: none;" id="pagerPageNo" action="#{customFieldIndexPage.changePage}" onclick="deleteAllLink('paging');" />
+        <h:commandLink style="display: none;" id="next" onclick="deleteAllLink('paging');" action="#{customFieldIndexPage.moveNext}"  />
+
+        <h:commandLink style="display: none;" id="downloadExcel" value="Excelダウンロード" action="#{customFieldIndexPage.downloadExcel}" onclick="setActionName(event)" />
+        <h:commandLink style="display: none;" id="update" value="更新"  action="#{customFieldIndexPage.update}" onclick="setActionName(event)" />
+        <h:commandButton style="display: none;" id="delete" value="削除" action="#{customFieldIndexPage.delete}"  onclick="setActionName(event); return confirmButton();" />
+
+        <div id="condition">
+          <div class="group">
+            <span class="condition-group-caption">検索条件</span>
+            <f:validateBean validationGroups="#{customFieldIndexPage.validationGroups}">
+            <div class="row">
+              <div class="six columns">
+                <h:outputLabel for="searchLabel" value="ラベル"/>
+                <h:inputText id="searchLabel" value="#{customFieldIndexPage.label}" maxlength="100" styleClass="u-full-width"/>
+                <h:message for="searchLabel" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+                <input type="text" name="dummy" style="position: absolute; visibility: hidden" />
+              </div>
+            </div>
+            <div class="action">
+              <h:commandButton id="search" value="検索"
+                  styleClass="button-primary"
+                  action="#{customFieldIndexPage.search}"
+                  onclick="setActionName(event)" />
+              <h:outputLink id="clear"
+                        value="javascript:void(0)"
+                        onclick="clearCondition();window.scroll(0,0);"
+                        styleClass="button">
+                <h:outputText value="検索条件クリア"  />
+              </h:outputLink>
+            </div>
+            </f:validateBean>
+          </div>
+        </div>
+
+        <h:inputHidden id="viewRender" value="#{customFieldIndexPage.dataCount}" />
+        <h:inputHidden id="viewProjectAdminRender" value="#{customFieldIndexPage.projectId}" />
+
+        <!-- Assign to Project -->
+        <h:panelGroup rendered="#{!empty customFieldIndexPage.projectId}">
+          <f:validateBean validationGroups="#{customFieldIndexPage.assignToValidationGroups}">
+          <div class="row">
+            <div class="twelve columns">
+              <h:outputLabel for="selectCustomField" value="その他項目"/>
+                <h:selectOneMenu id="selectCustomField" value="#{customFieldIndexPage.selectCustomField}"
+                    rendered="#{customFieldIndexPage.selectCustomFieldList != null}">
+                  <f:selectItems value="#{customFieldIndexPage.selectCustomFieldList}" />
+                </h:selectOneMenu>
+                <h:message for="selectCustomField" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+                <h:commandButton id="assign" value="このプロジェクトへ適用する"
+                    styleClass="button"
+                    action="#{customFieldIndexPage.assignTo}"
+                    onclick="setActionName(event)" />
+            </div>
+          </div>
+          </f:validateBean>
+        </h:panelGroup>
+
+          <div id="paging" class="row">
+            <ui:fragment rendered="#{!empty customFieldIndexPage.dataCount and customFieldIndexPage.dataCount != '0'}">
+            <div class="one column list-count">
+              <h:outputText id="dataCount" value="#{customFieldIndexPage.dataCount}"  />
+            </div>
+            <div class="one column list-range">
+              <h:outputText id="pageDisplayNo" value="#{customFieldIndexPage.pageDisplayNo}"  />
+            </div>
+            <div class="three columns list-nav">
+              <ui:fragment rendered="#{customFieldIndexPage.previous}">
+                <a id="prePrevious" href="#" onclick="clickComponent('previous');">
+                  <h:outputText value="#{customFieldIndexPage.previousLabel}"/>
+                </a>
+              </ui:fragment>
+              <h:outputText rendered="#{!customFieldIndexPage.previous}" value="#{customFieldIndexPage.previousLabel}" />
+              <ui:repeat id="pagingNo" var="value" value="#{customFieldIndexPage.pagingNo}">
+                <ui:fragment rendered="#{value != customFieldIndexPage.pageNo}">
+                  <a id="prePagerPageNo" href="#" onclick="setPageNo('#{value}');clickComponent('pagerPageNo');">
+                    <h:outputText value="#{value}"/>
+                  </a>
+                </ui:fragment>
+                <h:outputText rendered="#{value == customFieldIndexPage.pageNo}" value=" #{value} " />
+              </ui:repeat>
+              <ui:fragment rendered="#{customFieldIndexPage.next}">
+                <a id="preNext" href="#" onclick="clickComponent('next');">
+                  <h:outputText value="#{customFieldIndexPage.nextLabel}"/>
+                </a>
+              </ui:fragment>
+              <h:outputText rendered="#{!customFieldIndexPage.next}" value="#{customFieldIndexPage.nextLabel}" />
+            </div>
+            </ui:fragment>
+            <div class="six columns list-action">
+              <ui:fragment rendered="#{!empty customFieldIndexPage.dataCount and customFieldIndexPage.dataCount != '0'}">
+                出力形式:
+                <a id="preDownloadExcel" href="#" onclick="clickComponent('downloadExcel');">Excel</a>
+              </ui:fragment>
+              <h:commandLink id="create" value="新しいその他項目を追加"
+                            styleClass="button"
+                            action="#{customFieldIndexPage.create}" onclick="setActionName(event)" />
+            </div>
+          </div>
+
+        <ui:fragment rendered="#{!empty customFieldIndexPage.dataCount and customFieldIndexPage.dataCount != '0'}">
+        <div class="result-area">
+          <h:dataTable id="customFieldIndex" var="item"
+              value="#{customFieldIndexPage.dataModel}"
+              styleClass="list"
+              columnClasses="number,text width500,number width100,list-row-action" rowClasses="odd,even"
+              preserveDataModel="true" rowIndexVar="num">
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="ID" />
+              </f:facet>
+              <h:outputText value="#{item.id}" rendered="#{customFieldIndexPage.projectId == null}" />
+              <h:outputText value="#{item.projectCustomFieldId}" rendered="#{customFieldIndexPage.projectId != null}" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="ラベル" />
+              </f:facet>
+              <h:outputText value="#{item.label}" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="表示順" />
+              </f:facet>
+              <h:outputText value="#{item.orderNo}" />
+            </h:column>
+            <h:column>
+              <ui:fragment rendered="#{item.useWholeEach || customFieldIndexPage.projectId == null}" >
+                <a id="preUpdate" class="button" href="#" onclick="setId('#{item.id}', '#{item.projectCustomFieldId}', '#{item.versionNo}');clickComponent('update');">編集</a>
+              </ui:fragment>
+              <h:commandButton type="button" id="preDelete" value="削除"
+                               styleClass="button-primary"
+                               onclick="setId('#{item.id}', '#{item.projectCustomFieldId}', '#{item.versionNo}');clickComponent('delete');" />
+            </h:column>
+          </h:dataTable>
+        </div>
+        </ui:fragment>
+      </h:form>
+    </f:view>
+  </ui:define>
+</ui:composition>
+</html>

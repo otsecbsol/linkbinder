@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<ui:param name="contextPath" value="#{request.contextPath}" />
+<ui:param name="v" value="#{configHolder.resourceVersionNo}" />
+
+<h:head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta http-equiv="Expires" content="0" />
+  <meta http-equiv="Cache-Control" content="no-cache" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'/>
+  <link type="text/css" href="#{contextPath}/resource/#{v}/stylesheet/normalize.css" rel="stylesheet" />
+  <link type="text/css" href="#{contextPath}/resource/#{v}/stylesheet/skeleton.css" rel="stylesheet" />
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" type="text/css" href="#{contextPath}/resource/#{v}/stylesheet/style.css" />
+  <link type="text/css" href="#{contextPath}/resource/#{v}/stylesheet/jquery-ui.min.css" rel="stylesheet" />
+  <link type="text/css" href="#{contextPath}/resource/#{v}/stylesheet/custom/calendar_linkbinder.css" rel="stylesheet" />
+  <ui:insert name="cssOuter"/>
+  <title>Link Binder</title>
+</h:head>
+<h:body class="main-body">
+  <f:view>
+    <div id="header" class="container">
+      <ui:include src="/include/header.xhtml">
+        <ui:param name="login" value="off"/>
+      </ui:include>
+    </div>
+    <div id="content" class="container">
+      <div class="top row">
+        <div class="top_area two-third columns">
+          <span id="title"><ui:insert name="title"></ui:insert></span>
+        </div>
+      </div>
+      <h:messages rendered="#{!loginPage.passwordExpired}"
+          id="messages"
+          globalOnly="true"
+          showDetail="true"
+          showSummary="false"
+          errorClass="error"
+          warnClass="warn"
+          infoClass="info" />
+      <ui:insert name="messageOptional"></ui:insert>
+      <ui:insert name="body">To be Replaced.</ui:insert>
+    </div>
+    <div id="footer" class="container">
+      <ui:include src="/include/footer.xhtml" />
+    </div>
+
+  <script type="text/javascript" src="#{contextPath}/resource/#{v}/javascript/jquery-1.12.4.min.js"></script>
+  <script type="text/javascript" src="#{contextPath}/resource/#{v}/javascript/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="#{contextPath}/resource/#{v}/javascript/datepicker-ja.js"></script>
+  <script type="text/javascript" src="#{contextPath}/resource/#{v}/javascript/script.js"></script>
+  <ui:insert name="jsOuter"></ui:insert>
+    <ui:include src="/include/focus.xhtml" />
+    <script type="text/javascript">
+      <ui:insert name="jsInner"></ui:insert>
+    </script>
+  </f:view>
+</h:body>
+</html>

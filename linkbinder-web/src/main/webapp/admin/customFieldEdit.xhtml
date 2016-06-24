@@ -1,0 +1,175 @@
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/include/template.xhtml">
+  <ui:define name="title">#{customFieldEditPage.title}</ui:define>
+  <ui:define name="jsOuter"></ui:define>
+  <ui:define name="jsInner">
+    history.forward();
+    <!--
+      var TAB = "\t";
+      var div;
+
+      function initView() {
+        var listValue = document.getElementById('form:addValueList').value;
+        var customFieldValues = listValue.split(TAB);
+
+        div = document.getElementById("customFieldValues");
+
+        if (customFieldValues.length == 0) {
+          input = createInputTag();
+          input.id = "values0";
+
+          createDiv(input, false);
+        }
+        for (i = 0; i < customFieldValues.length; i++) {
+          input = createInputTag();
+          input.value = customFieldValues[i];
+          input.label = customFieldValues[i];
+          input.id = "values" + i;
+
+          if (i != 0) {
+            createDiv(input, true);
+          } else {
+            createDiv(input, false);
+          }
+        }
+
+        return false;
+      }
+
+      function add() {
+        var values = document.getElementsByTagName("input");
+        var idNum;
+        for (i = 0; i < values.length; i++) {
+          if (values[i].id.substring(0, 6) == "values") {
+            idNum = values[i].id.substring(6);
+          }
+        }
+        var idNumMax = parseInt(idNum);
+        var max = idNumMax + 1;
+        input = createInputTag();
+        input.id = "values" + max;
+        createDiv(input, true);
+      }
+
+      function nextPage() {
+        var values = document.getElementsByTagName("input");
+        var count = 0;
+        var valueList = "";
+        for (i = 0; i < values.length; i++) {
+          if (values[i].id.substring(0, 6) == "values") {
+            if (values[i].value.indexOf(TAB)) {
+              if (count != 0) {
+                valueList += TAB;
+              }
+              valueList += values[i].value.replace(TAB, " ");
+            }
+            count++;
+          }
+        }
+        document.getElementById('form:addValueList').value = valueList;
+      }
+
+      function createInputTag() {
+        var input = document.createElement("input");
+        input.setAttribute('type', 'text');
+        input.setAttribute('class', 'u-full-width');
+        input.name = "values";
+        return input;
+      }
+
+      function createDiv(input, appendBr) {
+        var br = document.createElement("br");
+
+        if (appendBr) {
+          div.appendChild(br);
+        }
+        div.appendChild(input);
+      }
+
+      window.onload = initView;
+    -->
+  </ui:define>
+
+  <ui:define name="body">
+    <f:view>
+      <h:form id="form" onsubmit="return disableSubmit();">
+        <h:inputHidden id="addValueList" value="#{customFieldEditPage.valueList}"
+          validator="#{customFieldEditPage.validateValues}" />
+        <h:inputHidden id="actionName" value="#{customFieldEditPage.actionName}" />
+        <div id="edit">
+
+          <h:inputHidden id="title" value="#{customFieldEditPage.title}" />
+          <h:inputHidden id="id" value="#{customFieldEditPage.id}" />
+          <h:inputHidden id="projectCustomFieldId" value="#{customFieldEditPage.projectCustomFieldId}" />
+
+          <f:validateBean validationGroups="#{customFieldEditPage.validationGroups}">
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel value="ID"/>
+              <h:outputText id="viewId" value="#{customFieldEditPage.id}"
+                  rendered="#{customFieldEditPage.projectId == null}" />
+              <h:outputText id="viewProjectCustomFieldId"
+                  value="#{customFieldEditPage.projectCustomFieldId}"
+                  rendered="#{customFieldEditPage.projectId != null}" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel for="label" value="ラベル" styleClass="required"/>
+              <h:inputText id="label" value="#{customFieldEditPage.label}" maxlength="100" styleClass="u-full-width"/>
+              <h:message for="label" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel for="orderNo" value="表示順" styleClass="required"/>
+              <h:inputText id="orderNo" value="#{customFieldEditPage.orderNo}" maxlength="5" styleClass="u-full-width"/>
+              <h:message for="orderNo" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel value="選択候補"/>
+              <a href="javascript:void(0);" onclick="add()">追加</a>
+              <h:message for="addValueList" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+              <div id="customFieldValues"></div>
+            </div>
+          </div>
+          </f:validateBean>
+        </div>
+
+        <h:inputHidden id="viewRender" value="#{customFieldEditPage.initialDisplaySuccess}" />
+
+        <div class="action-edit">
+          <ui:fragment rendered="#{customFieldEditPage.initialDisplaySuccess}">
+            <h:commandButton id="next" value="次へ"
+                              styleClass="button-primary"
+                              action="#{customFieldEditPage.next}" onclick="setActionName(event); nextPage();" />
+          </ui:fragment>
+          <h:commandLink id="back" value="戻る"
+                          styleClass="button"
+                          action="#{customFieldEditPage.back}" onclick="setActionName(event)" />
+        </div>
+      </h:form>
+    </f:view>
+  </ui:define>
+</ui:composition>
+</html>

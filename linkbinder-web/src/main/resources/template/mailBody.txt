@@ -1,0 +1,21 @@
+次の文書が作成/更新されました。
+
+URL : ${corresponUrl}
+
+文書情報
+---
+ID : ${corresponId}
+文書番号 : ${corresponNo}
+発信元 : ${fromGroup} ${from}
+To : ${toGroup}
+Cc : ${ccGroup}
+文書番号 : ${corresponType}
+件名 : ${subject}
+ワークフロー : ${workflowStatus}
+作成日 : ${createdOn}
+発行日 : ${issuedOn}
+返信期限 : ${deadlineForReply}
+作成者 : ${createdBy}
+発行者 : ${issuedBy}
+返信要否 : ${replyRequired}
+

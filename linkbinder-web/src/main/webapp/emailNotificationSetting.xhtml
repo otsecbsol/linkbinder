@@ -1,0 +1,79 @@
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/include/template.xhtml">
+  <ui:define name="title">メール通知</ui:define>
+  <ui:define name="body">
+    <f:view>
+      <h:form id="form" onsubmit="return disableSubmit();">
+        <h:inputHidden id="actionName" value="#{emailNotificationSettingPage.actionName}" />
+        <span class="inner-title">文書に関する通知</span>
+        <div id="main">
+        <h:dataTable id="notificationSettingIndex" var="item"
+          value="#{emailNotificationSettingPage.noticeSetting}"
+          styleClass="list" rowClasses="odd,even"
+          columnClasses="text,check,check,check">
+          <f:facet name="header">
+            <tr>
+              <th rowspan="2" style="width: 600px;">プロジェクト</th>
+              <th rowspan="2" style="width: 150px;">ワークフロー</th>
+              <th colspan="2" style="width: 300px;">宛先</th>
+            </tr>
+            <tr>
+              <th style="width: 150px;">To</th>
+              <th style="width: 150px;">Cc</th>
+            </tr>
+          </f:facet>
+          <h:column>
+            <h:inputHidden id="id" value="#{item.id}" />
+            <h:outputText id="projectId_name" value="  #{item.projectId} : #{item.nameE} " />
+          </h:column>
+          <h:column>
+            <h:selectBooleanCheckbox id="receiveWorkflowChk"  value="#{item.receiveWorkflowChk}" />
+          </h:column>
+          <h:column>
+            <h:selectBooleanCheckbox id="recvDistributionAttentionChk" value="#{item.recvDistributionAttentionChk}" />
+          </h:column>
+          <h:column>
+            <h:selectBooleanCheckbox id="recvDistributionCcChk" value="#{item.recvDistributionCcChk}" />
+          </h:column>
+        </h:dataTable>
+        </div>
+
+        <div class="action-edit">
+          <h:commandButton id="save"
+                           value="保存"
+                           styleClass="button-primary"
+                           action="#{emailNotificationSettingPage.save}" onclick="setActionName(event); return confirmButton();"
+                           rendered="#{emailNotificationSettingPage.editEmailNotificationSetting}" />
+          <h:commandLink id="back"
+                         value="戻る"
+                         styleClass="button"
+                         action="#{emailNotificationSettingPage.back}" onclick="setActionName(event);"
+                         rendered="#{emailNotificationSettingPage.editEmailNotificationSetting}" />
+        </div>
+      </h:form>
+    </f:view>
+  </ui:define>
+</ui:composition>
+</html>

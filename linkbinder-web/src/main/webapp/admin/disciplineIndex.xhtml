@@ -1,0 +1,182 @@
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/include/template.xhtml">
+  <ui:define name="title">部門一覧</ui:define>
+  <ui:define name="cssOuter">
+    <link type="text/css" href="#{contextPath}/resource/#{v}/stylesheet/custom/normalList.css" rel="stylesheet" />
+  </ui:define>
+  <ui:define name="jsOuter"></ui:define>
+  <ui:define name="jsInner">
+    <!--
+    function clearCondition() {
+      document.getElementById('form:searchCode').value = "";
+      document.getElementById('form:searchName').value = "";
+    }
+
+    function setId(id, projId, verNo){
+      var rowId = document.getElementById('form:disciplineRowId');
+      rowId.value = id;
+      var disciplineRowProjId = document.getElementById('form:disciplineRowProjId');
+      disciplineRowProjId.value = projId;
+      var disciplineRowVerNo = document.getElementById('form:disciplineRowVerNo');
+      disciplineRowVerNo.value = verNo;
+    }
+
+    $(document).ready(function() {
+      $('#form\\:disciplineIndex').highlightRows();
+    });
+    -->
+  </ui:define>
+
+  <ui:define name="body">
+    <f:view>
+      <h:form id="form" onsubmit="return disableSubmit();">
+        <h:inputHidden id="actionName" value="#{disciplineIndexPage.actionName}" />
+
+        <h:inputHidden id="scCode" value="#{disciplineIndexPage.scCode}" />
+        <h:inputHidden id="scName" value="#{disciplineIndexPage.scName}" />
+
+        <h:inputHidden id="pageNo" value="#{disciplineIndexPage.pageNo}" />
+        <h:inputHidden id="disciplineRowId" value="#{disciplineIndexPage.disciplineRowId}" />
+        <h:inputHidden id="disciplineRowProjId" value="#{disciplineIndexPage.disciplineRowProjId}" />
+        <h:inputHidden id="disciplineRowVerNo" value="#{disciplineIndexPage.disciplineRowVerNo}" />
+
+        <h:commandLink style="display: none;" id="previous" action="#{disciplineIndexPage.movePrevious}"  onclick="deleteAllLink('paging');setActionName(event)" />
+        <h:commandLink style="display: none;" id="pagerPageNo" action="#{disciplineIndexPage.changePage}" onclick="deleteAllLink('paging');setActionName(event);" />
+        <h:commandLink style="display: none;" id="next"  action="#{disciplineIndexPage.moveNext}" onclick="deleteAllLink('paging');setActionName(event)" />
+
+        <h:commandLink style="display: none;" id="downloadExcel" value="Excelダウンロード" action="#{disciplineIndexPage.downloadExcel}" onclick="setActionName(event)" />
+        <h:commandLink style="display: none;" id="update" value="更新"  action="#{disciplineIndexPage.update}" onclick="setActionName(event)" />
+        <h:commandButton style="display: none;" id="delete" value="削除"  action="#{disciplineIndexPage.delete}" onclick="setActionName(event); return confirmButton();" />
+
+        <div id="condition">
+          <div class="group">
+            <span class="condition-group-caption">検索条件</span>
+            <f:validateBean validationGroups="#{disciplineIndexPage.validationGroups}">
+            <div class="row">
+              <div class="four columns">
+                <h:outputLabel for="searchCode" value="部門コード"/>
+                <h:inputText id="searchCode" value="#{disciplineIndexPage.code}" maxlength="10" styleClass="u-full-width"/>
+                <h:message for="searchCode" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+              </div>
+              <div class="eight columns">
+                <h:outputLabel for="searchName" value="部門名"/>
+                <h:inputText id="searchName" value="#{disciplineIndexPage.name}" maxlength="100" styleClass="u-full-width"/>
+                <h:message for="searchName" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+              </div>
+            </div>
+            <div class="action">
+              <h:commandButton id="search" value="検索" action="#{disciplineIndexPage.search}"
+                               styleClass="button-primary"
+                               onclick="setActionName(event)" />
+              <h:outputLink id="clear" value="javascript:void(0)" onclick="clearCondition();window.scroll(0,0);" styleClass="button">
+                <h:outputText value="検索条件クリア"  />
+              </h:outputLink>
+            </div>
+            </f:validateBean>
+          </div>
+        </div>
+
+        <h:inputHidden id="viewRender" value="#{disciplineIndexPage.dataCount}" />
+
+          <div id="paging" class="row">
+            <ui:fragment rendered="#{!empty disciplineIndexPage.dataCount and disciplineIndexPage.dataCount != '0'}">
+            <div class="one column list-count">
+              <h:outputText id="dataCount" value="#{disciplineIndexPage.dataCount}"  />
+            </div>
+            <div class="one column list-range">
+              <h:outputText id="pageDisplayNo" value="#{disciplineIndexPage.pageDisplayNo}"  />
+            </div>
+            <div class="three columns list-nav">
+              <ui:fragment rendered="#{disciplineIndexPage.previous}">
+                <a id="prePrevious" href="#" onclick="clickComponent('previous');">
+                  <h:outputText value="#{disciplineIndexPage.previousLabel}"/>
+                </a>
+              </ui:fragment>
+              <h:outputText rendered="#{!disciplineIndexPage.previous}" value="#{disciplineIndexPage.previousLabel}" />
+              <ui:repeat id="pagingNo" var="value" value="#{disciplineIndexPage.pagingNo}">
+                <ui:fragment rendered="#{value != disciplineIndexPage.pageNo}">
+                  <a id="prePagerPageNo" href="#" onclick="setPageNo('#{value}');clickComponent('pagerPageNo');">
+                    <h:outputText value="#{value}"/>
+                  </a>
+                </ui:fragment>
+                <h:outputText rendered="#{value == disciplineIndexPage.pageNo}" value="#{value}" />
+              </ui:repeat>
+              <ui:fragment rendered="#{disciplineIndexPage.next}">
+                <a id="preNext" href="#" onclick="clickComponent('next');">
+                  <h:outputText value="#{disciplineIndexPage.nextLabel}"/>
+                </a>
+              </ui:fragment>
+              <h:outputText rendered="#{!disciplineIndexPage.next}" value="#{disciplineIndexPage.nextLabel}" />
+            </div>
+            </ui:fragment>
+            <div class="four columns list-action">
+              <ui:fragment rendered="#{!empty disciplineIndexPage.dataCount and disciplineIndexPage.dataCount != '0'}">
+                出力形式:
+                <a id="preDownloadExcel" href="#" onclick="clickComponent('downloadExcel');">Excel</a>
+              </ui:fragment>
+              <h:commandLink id="create" action="#{disciplineIndexPage.create}"
+                             styleClass="button"
+                             value="新しい部門を追加"  onclick="setActionName(event)" />
+            </div>
+          </div>
+
+        <ui:fragment rendered="#{!empty disciplineIndexPage.dataCount and disciplineIndexPage.dataCount != '0'}">
+        <div class="result-area">
+          <h:dataTable id="disciplineIndex"
+              value="#{disciplineIndexPage.dataModel}" var="item"
+              preserveDataModel="true" rowIndexVar="num" styleClass="list"
+              footerClass="footer" columnClasses="number id-width,text code-width,text width500,list-row-action"
+              rowClasses="odd,even" cellpadding="5"
+              rowOnMouseOver="highlight(#{num},this);"
+              rowOnMouseOut="returnColor(#{num}, this);">
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="ID" />
+              </f:facet>
+              <h:outputText id="id" value="#{item.id}" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="部門コード" />
+              </f:facet>
+              <h:outputText id="code" value="#{item.disciplineCd}" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="部門名" />
+              </f:facet>
+              <h:outputText id="name" value="#{item.name}" />
+            </h:column>
+            <h:column>
+              <a id="preUpdate" class="button" href="#" onclick="setId('#{item.id}', '#{item.projectId}', '#{item.versionNo}');clickComponent('update');">編集</a>
+
+              <h:commandButton type="button" id="preDelete" value="削除"
+                               styleClass="button-primary"
+                  onclick="setId('#{item.id}', '#{item.projectId}', '#{item.versionNo}');clickComponent('delete');" />
+            </h:column>
+          </h:dataTable>
+        </div>
+        </ui:fragment>
+      </h:form>
+    </f:view>
+  </ui:define>
+</ui:composition>
+</html>

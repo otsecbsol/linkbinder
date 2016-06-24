@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="distTemplateHeader">
+
+  <resultMap id="result" class="jp.co.opentone.bsol.linkbinder.dto.DistTemplateHeader">
+    <result property="id"                       column="id" />
+    <result property="projectId"                column="project_id" />
+    <result property="empNo"                    column="emp_no" />
+    <result property="templateCd"               column="template_cd" />
+    <result property="name"                     column="name" />
+    <result property="createdBy"                column="created_by" />
+    <result property="createdAt"                column="created_at" />
+    <result property="updatedBy"                column="updated_by" />
+    <result property="updatedAt"                column="updated_at" />
+    <result property="versionNo"                column="version_no" />
+  </resultMap>
+
+  <resultMap id="resultForSelect" class="jp.co.opentone.bsol.linkbinder.dto.DistTemplateHeader">
+    <result property="id"                       column="id" />
+    <result property="name"                     column="name" />
+  </resultMap>
+
+  <resultMap id="distribution" class="jp.co.opentone.bsol.linkbinder.dto.DistTemplateHeader"
+      groupBy="id">
+    <result property="id"                       column="dst_head_id" />
+    <result property="distTemplateGroups"       resultMap="distTemplateHeader.distributionGroup" />
+  </resultMap>
+  <resultMap id="distributionGroup" class="jp.co.opentone.bsol.linkbinder.dto.DistTemplateGroup"
+      groupBy="id">
+    <result property="id"                       column="dst_group_id" />
+    <result property="distributionType"         column="distribution_type" />
+    <result property="corresponGroup.id"        column="group_id" />
+    <result property="corresponGroup.name"      column="group_name" />
+    <result property="groupId"                  column="group_id" />
+    <result property="groupName"                column="group_name" />
+    <result property="users"                    resultMap="distTemplateHeader.distributionUser" />
+  </resultMap>
+  <resultMap id="distributionUser" class="jp.co.opentone.bsol.linkbinder.dto.DistTemplateUser"
+      groupBy="id">
+    <result property="id"                       column="dst_user_id" />
+    <result property="user.empNo"               column="emp_no" />
+<!--
+    <result property="user.empNameAndNo"        column="emp_name_view" />
+-->
+  </resultMap>
+
+  <select id="findByProjectId" parameterClass="java.util.HashMap" resultMap="result">
+    SELECT
+      id,
+      project_id,
+      emp_no,
+      template_cd,
+      name,
+      created_by,
+      created_at,
+      updated_by,
+      updated_at,
+      version_no
+    FROM
+      v_dist_template_header
+    WHERE
+      project_id = #projectId#
+    ORDER BY LPAD(template_cd, 10, '0')
+  </select>
+
+  <select id="findById" parameterClass="java.util.HashMap" resultMap="result">
+    SELECT
+        id,
+        project_id,
+        emp_no,
+        template_cd,
+        name,
+        created_by,
+        created_at,
+        updated_by,
+        updated_at,
+        version_no
+    FROM
+        v_dist_template_header
+    WHERE
+        id = #id#
+  </select>
+
+  <update id="deleteById">
+    UPDATE dist_template_header
+    SET
+        updated_by = #updatedBy#,
+        updated_at = #updatedAt#,
+        version_no = (version_no + 1),
+        delete_no  = s_dist_template_header_dno.NEXTVAL
+    WHERE id = #id#
+        AND version_no = #versionNo#
+        AND project_id = #projectId#
+        AND delete_no = 0
+  </update>
+
+  <insert id="create" parameterClass="jp.co.opentone.bsol.linkbinder.dto.DistTemplateHeader">
+    <selectKey resultClass="long" keyProperty="id" type="pre">
+        SELECT s_dist_template_header_id.NEXTVAL AS id FROM dual
+    </selectKey>
+    INSERT INTO dist_template_header (
+        id,
+        project_id,
+        emp_no,
+        template_cd,
+        name,
+        created_by,
+        created_at,
+        updated_by,
+        updated_at
+    ) VALUES (
+        #id#,
+        #projectId#,
+        #empNo#,
+        #templateCd#,
+        #name#,
+        #createdBy#,
+        #createdAt#,
+        #updatedBy#,
+        #updatedAt#
+    )
+  </insert>
+
+  <update id="update">
+    UPDATE dist_template_header
+    SET
+        name                = #name#,
+        updated_by          = #updatedBy#,
+        updated_at          = #updatedAt#,
+        version_no          = (version_no + 1)
+    WHERE id = #id#
+        AND project_id      = #projectId#
+        AND version_no      = #versionNo#
+        AND delete_no       = 0
+  </update>
+
+  <select id="getTemplateCodeByProject" resultClass="String">
+    SELECT
+        template_cd
+    FROM
+        dist_template_header
+    WHERE
+        project_id = #projectId#
+    ORDER BY
+         LPAD(template_cd, 10, '0')
+  </select>
+
+  <select id="findTemplateList" resultMap="resultForSelect">
+    SELECT
+        id,
+        name
+    FROM
+        v_dist_template_header
+    WHERE project_id = #projectId#
+    ORDER BY
+        LPAD(template_cd, 10, '0')
+  </select>
+
+  <select id="findTemplateSelect" resultMap="distribution">
+    SELECT
+        dth.id as dst_head_id,
+        dtg.id as dst_group_id,
+        dtg.distribution_type,
+        dtg.group_id,
+        dtg.group_name,
+        dtu.id as dst_user_id,
+        dtu.emp_no,
+        dtu.emp_name_view
+    FROM
+        v_dist_template_header dth
+    INNER JOIN
+        v_dist_template_group dtg
+        ON dth.id = dtg.dist_template_header_id
+    INNER JOIN v_dist_template_user dtu
+        ON dtg.id = dtu.dist_template_group_id
+    WHERE project_id = #projectId#
+        AND option1 = #option1#
+    ORDER BY
+        LPAD(dth.template_cd, 10, '0'),
+        dtg.order_no,
+        dtu.order_no
+  </select>
+
+<!-- For Test Query -->
+  <delete id="testClearTable" >
+    <![CDATA[
+    DELETE FROM dist_template_header WHERE id > 1000000000
+    ]]>
+  </delete>
+
+  <select id="testFindById" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+    SELECT
+        id,
+        project_id,
+        emp_no,
+        template_cd,
+        name,
+        created_by,
+        TO_CHAR(created_at, 'yyyy/mm/dd hh24:mi:ss') AS created_at,
+        updated_by,
+        TO_CHAR(updated_at, 'yyyy/mm/dd hh24:mi:ss') AS updated_at,
+        version_no,
+        0 AS delete_no
+    FROM
+        v_dist_template_header
+    WHERE
+        id = #id#
+  </select>
+
+  <select id="testFindByAfterUpdate" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+    SELECT
+        id,
+        project_id,
+        emp_no,
+        template_cd,
+        name,
+        created_by,
+        TO_CHAR(created_at, 'yyyy/mm/dd hh24:mi:ss') AS created_at,
+        updated_by,
+        TO_CHAR(updated_at, 'yyyy/mm/dd hh24:mi:ss') AS updated_at,
+        version_no,
+        delete_no
+    FROM
+        dist_template_header
+    WHERE
+        id = #id#
+  </select>
+
+  <insert id="testCreate" parameterClass="jp.co.opentone.bsol.linkbinder.dto.DistTemplateHeader">
+    INSERT INTO dist_template_header (
+        id,
+        project_id,
+        emp_no,
+        template_cd,
+        name,
+        created_by,
+        created_at,
+        updated_by,
+        updated_at,
+        version_no,
+        delete_no
+    ) VALUES (
+        #id#,
+        #projectId#,
+        #empNo#,
+        #templateCd#,
+        #name#,
+        #createdBy#,
+        #createdAt#,
+        #updatedBy#,
+        #updatedAt#,
+        #versionNo#,
+        #deleteNo#
+    )
+  </insert>
+</sqlMap>

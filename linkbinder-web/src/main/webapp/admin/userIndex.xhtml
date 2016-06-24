@@ -1,0 +1,228 @@
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/include/template.xhtml">
+  <ui:define name="title">ユーザー一覧</ui:define>
+  <ui:define name="cssOuter">
+    <link type="text/css" href="#{contextPath}/resource/#{v}/stylesheet/custom/normalList.css" rel="stylesheet" />
+  </ui:define>
+  <ui:define name="jsOuter"></ui:define>
+  <ui:define name="jsInner">
+    <!--
+    function clearCondition() {
+      document.getElementById('form:searchUserId').value = "";
+      document.getElementById('form:searchName').value = "";
+      document.getElementById('form:searchCompany').options[0].selected = true;
+      document.getElementById('form:searchGroup').options[0].selected = true;
+      document.getElementById('form:searchSecurity').options[0].selected = true;
+
+      return false;
+    }
+
+    function setID(no){
+      var empNo = document.getElementById('form:empNo');
+      empNo.value = no;
+    }
+
+    $(document).ready(function() {
+      $('#form\\:userIndex').highlightRows();
+    });
+    -->
+  </ui:define>
+
+  <ui:define name="body">
+    <f:view>
+      <h:form id="form" onsubmit="return disableSubmit();">
+        <h:inputHidden id="actionName" value="#{userIndexPage.actionName}" />
+
+        <h:inputHidden id="scUserId" value="#{userIndexPage.scUserId}" />
+        <h:inputHidden id="scName" value="#{userIndexPage.scName}" />
+        <h:inputHidden id="scCompanyId" value="#{userIndexPage.scCompanyId}" />
+        <h:inputHidden id="scSecurityLevel" value="#{userIndexPage.scSecurityLevel}" />
+        <h:inputHidden id="scCorresponGroupId" value="#{userIndexPage.scCorresponGroupId}" />
+
+        <h:inputHidden id="empNo" value="#{userIndexPage.empNo}" />
+
+        <h:inputHidden id="pageNo" value="#{userIndexPage.pageNo}" />
+        <h:commandLink style="display: none;" id="previous"  action="#{userIndexPage.movePrevious}" onclick="deleteAllLink('paging');setActionName(event)" />
+        <h:commandLink style="display: none;" id="pagerPageNo" action="#{userIndexPage.changePage}" onclick="deleteAllLink('paging');setActionName(event);" />
+        <h:commandLink style="display: none;" id="next"  action="#{userIndexPage.moveNext}" onclick="deleteAllLink('paging');setActionName(event)" />
+
+        <h:commandLink style="display: none;" id="update" value="Update"  action="#{userIndexPage.goUserSettings}" onclick="setActionName(event)" />
+        <h:commandLink style="display: none;" id="downloadExcel" value="Excel" action="#{userIndexPage.downloadExcel}" onclick="setActionName(event)" />
+        <h:commandLink style="display: none;" id="userSettingsId" action="#{userIndexPage.goUserSettings}" onclick="setActionName(event)" />
+
+        <div id="condition">
+          <div class="group">
+            <span class="condition-group-caption">検索条件</span>
+            <f:validateBean validationGroups="#{userIndexPage.validationGroups}">
+            <div class="row">
+              <div class="six columns">
+                <h:outputLabel for="searchUserId" value="ユーザーID"/>
+                <h:inputText id="searchUserId" value="#{userIndexPage.userId}" maxlength="5"  styleClass="u-full-width"/>
+                <h:message for="searchUserId" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+              </div>
+              <div class="six columns">
+                <h:outputLabel for="searchName" value="ユーザー名"/>
+                <h:inputText id="searchName" value="#{userIndexPage.name}" maxlength="50" styleClass="u-full-width"/>
+                <h:message for="searchName" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+              </div>
+            </div>
+            <div class="row">
+              <div class="six columns">
+                <h:outputLabel for="searchCompany" value="会社"/>
+                <h:selectOneMenu id="searchCompany" value="#{userIndexPage.companyId}" styleClass="u-full-width"
+                    rendered="#{userIndexPage.companySelectItems != null}">
+                  <f:selectItem itemLabel="" itemValue="-1" />
+                  <f:selectItems value="#{userIndexPage.companySelectItems}" />
+                </h:selectOneMenu>
+              </div>
+              <div class="six columns">
+                <h:outputLabel for="searchGroup" value="グループ"/>
+                <h:selectOneMenu id="searchGroup" value="#{userIndexPage.corresponGroupId}" styleClass="u-full-width"
+                    rendered="#{userIndexPage.groupSelectItems != null}">
+                  <f:selectItem itemLabel="" itemValue="-1" />
+                  <f:selectItems value="#{userIndexPage.groupSelectItems}" />
+                </h:selectOneMenu>
+              </div>
+            </div>
+            <div class="row">
+              <div class="six columns">
+                <h:outputLabel for="searchSecurity" value="権限"/>
+                <h:selectOneMenu id="searchSecurity" value="#{userIndexPage.securityLevel}" styleClass="u-full-width"
+                    rendered="#{userIndexPage.securityLevelSelectItems != null}">
+                  <f:selectItem itemLabel="" itemValue="-1" />
+                  <f:selectItems value="#{userIndexPage.securityLevelSelectItems}" />
+                </h:selectOneMenu>
+              </div>
+            </div>
+            <div class="action">
+              <h:commandButton id="search" value="検索"
+                               styleClass="button-primary"
+                               action="#{userIndexPage.search}" onclick="setActionName(event)" />
+              <h:outputLink id="clear" value="javascript:void(0)" onclick="clearCondition();window.scroll(0,0);"
+                            styleClass="button">
+                <h:outputText value="検索条件クリア"  />
+              </h:outputLink>
+            </div>
+            </f:validateBean>
+          </div>
+        </div>
+
+        <h:inputHidden id="viewRender" value="#{userIndexPage.dataCount}" />
+
+        <ui:fragment rendered="#{!empty userIndexPage.dataCount and userIndexPage.dataCount != '0'}">
+        <div id="paging" class="row">
+          <div class="one column list-count">
+            <h:outputText id="dataCount" value="#{userIndexPage.dataCount}"  />
+          </div>
+          <div class="one column list-range">
+            <h:outputText id="pageDisplayNo" value="#{userIndexPage.pageDisplayNo}"  />
+          </div>
+          <div class="three columns list-nav">
+            <ui:fragment rendered="#{userIndexPage.previous}">
+              <a id="prePrevious" href="#" onclick="clickComponent('previous');">
+                <h:outputText value="#{userIndexPage.previousLabel}"/>
+              </a>
+            </ui:fragment>
+            <h:outputText rendered="#{!userIndexPage.previous}" value="#{userIndexPage.previousLabel}" />
+            <ui:repeat id="pagingNo" var="value" value="#{userIndexPage.pagingNo}">
+              <ui:fragment rendered="#{value != userIndexPage.pageNo}">
+                <a id="prePagerPageNo" href="#" onclick="setPageNo('#{value}');clickComponent('pagerPageNo');">
+                  <h:outputText value="#{value}"/>
+                </a>
+              </ui:fragment>
+              <h:outputText rendered="#{value == userIndexPage.pageNo}" value="#{value}" />
+            </ui:repeat>
+            <ui:fragment rendered="#{userIndexPage.next}">
+              <a id="preNext" href="#" onclick="clickComponent('next');">
+                <h:outputText value="#{userIndexPage.nextLabel}"/>
+              </a>
+            </ui:fragment>
+            <h:outputText rendered="#{!userIndexPage.next}" value="#{userIndexPage.nextLabel}" />
+          </div>
+          <div class="four columns list-action">
+            出力形式:
+            <a id="preDownloadExcel" href="#" onclick="clickComponent('downloadExcel');">Excel</a>
+          </div>
+        </div>
+
+        <div class="result-area">
+          <h:dataTable id="userIndex" var="item"
+              value="#{userIndexPage.dataModel}"
+              columnClasses="text id-width,text,text,text,text,permission,permission,list-row-action" rowClasses="odd,even"
+              cellpadding="5" styleClass="list"
+              preserveDataModel="true" rowIndexVar="num" footerClass="footer">
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="ユーザーID" />
+              </f:facet>
+              <a id="preUserSettingsId" href="#" onclick="setID('#{item.projectUser.user.empNo}');clickComponent('userSettingsId');">
+                <h:outputText value="#{item.projectUser.user.empNo}" />
+              </a>
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="ユーザー名" />
+              </f:facet>
+              <h:outputText id="code" value="#{item.projectUser.user.nameE}" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="役割" />
+              </f:facet>
+              <h:outputText id="role" value="#{item.projectUser.user.role}" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="会社" />
+              </f:facet>
+              <h:outputText id="company" value="#{item.projectUser.projectCompany.codeAndName}" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="グループ" />
+              </f:facet>
+              <h:outputText id="group" value="#{item.corresponGroup.name}" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="プロジェクト管理者"/>
+              </f:facet>
+              <h:outputText id="pa" value="#{item.projectAdminLabel}" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="グループ管理者"/>
+              </f:facet>
+              <h:outputText id="ga" value="#{item.groupAdminLabel}" />
+            </h:column>
+            <h:column>
+              <ui:fragment rendered="#{item.permitUpdate}" >
+                <a id="preUpdate" class="button" href="#" onclick="setID('#{item.projectUser.user.empNo}');clickComponent('update');">編集</a>
+              </ui:fragment>
+            </h:column>
+          </h:dataTable>
+        </div>
+        </ui:fragment>
+      </h:form>
+    </f:view>
+  </ui:define>
+</ui:composition>
+</html>

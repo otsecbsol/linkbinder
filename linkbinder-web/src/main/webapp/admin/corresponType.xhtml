@@ -1,0 +1,123 @@
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/include/template.xhtml">
+  <ui:define name="title">文書種類</ui:define>
+  <ui:define name="jsOuter"></ui:define>
+  <ui:define name="jsInner"></ui:define>
+
+  <ui:define name="body">
+    <f:view>
+      <h:form id="form" onsubmit="return disableSubmit();">
+        <h:inputHidden id="actionName" value="#{corresponTypePage.actionName}" />
+        <div id="detail">
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel value="ID"/>
+              <h:outputText id="viewId" value="#{corresponTypePage.id}"
+                  rendered="#{corresponTypePage.projectId == null}" />
+              <h:outputText id="viewProjectCorresponTypeId"
+                  value="#{corresponTypePage.corresponType.projectCorresponTypeId}"
+                  rendered="#{corresponTypePage.projectId != null}" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel value="文書種類"/>
+              <h:outputText id="type" value="#{corresponTypePage.corresponType.corresponType}" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel value="文書種類名"/>
+              <h:outputText id="name" value="#{corresponTypePage.corresponType.name}" />
+            </div>
+          </div>
+          <hr/>
+          <div class="row">
+            <div class="twelve columns">
+              <span>ワークフロー設定</span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="ten columns">
+              <h:outputLabel value="パターン"/>
+              <h:outputText id="patternName" value="#{corresponTypePage.corresponType.workflowPattern.name}" />
+              <label>
+                <h:outputText id="allowCheck" value="#{corresponTypePage.allowCheck}" />
+                <span class="label-body">承認者は、承認前でも文書を閲覧できる</span>
+              </label>
+              <label>
+                 <h:outputText id="forceCheck" value="#{corresponTypePage.forceCheck}" />
+                 <span class="label-body">この文書種類では、文書作成者は必ずワークフローを利用する</span>
+              </label>
+            </div>
+          </div>
+          <ui:fragment rendered="#{corresponTypePage.useAccessControl}">
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel value="アクセス権限"/>
+              <label>
+                <h:outputText id="projectAdminCheck" value="#{corresponTypePage.projectAdminCheck}" />
+                <span class="label-body">プロジェクト管理者</span>
+              </label>
+              <label>
+                <h:outputText id="groupAdminCheck" value="#{corresponTypePage.groupAdminCheck}" />
+                <span class="label-body">グループ管理者</span>
+              </label>
+              <label>
+                <h:outputText id="normalUserCheck" value="#{corresponTypePage.normalUserCheck}" />
+                <span class="label-body">一般ユーザー</span>
+              </label>
+            </div>
+          </div>
+          </ui:fragment>
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel value="作成者/作成日時"/>
+              <h:outputText id="createdName" value="#{corresponTypePage.corresponType.createdBy.nameE}" />/<h:outputText id="createdId" value="#{corresponTypePage.corresponType.createdBy.empNo}" style="margin-right: 10px;" />
+              (<h:outputText id="createdAt" value="#{corresponTypePage.corresponType.createdAt}">
+                <f:convertDateTime pattern="yyyy-MM-dd HH:mm:ss" />
+              </h:outputText>)
+            </div>
+          </div>
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel value="更新者/更新日時"/>
+              <h:outputText id="updatedName" value="#{corresponTypePage.corresponType.updatedBy.nameE}" />/<h:outputText id="updatedId" value="#{corresponTypePage.corresponType.updatedBy.empNo}" style="margin-right: 10px;" />
+              (<h:outputText id="updatedAt" value="#{corresponTypePage.corresponType.updatedAt}">
+                <f:convertDateTime pattern="yyyy-MM-dd HH:mm:ss" />
+              </h:outputText>)
+            </div>
+          </div>
+        </div>
+        <div class="action-edit">
+          <h:commandLink id="index" value="一覧画面へ"
+                          styleClass="button"
+                          action="#{corresponTypePage.goIndex}" onclick="setActionName(event)" />
+        </div>
+      </h:form>
+    </f:view>
+  </ui:define>
+</ui:composition>
+</html>

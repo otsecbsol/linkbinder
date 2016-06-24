@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="addressUser">
+
+  <resultMap id="result" class="jp.co.opentone.bsol.linkbinder.dto.AddressUser">
+    <result property="id"                      column="id" />
+    <result property="addressCorresponGroupId" column="address_correspon_group_id" />
+    <result property="user.empNo"              column="emp_no" />
+    <result property="user.lastName"           column="emp_last_name" />
+    <result property="user.nameE"              column="emp_name_e" />
+    <result property="addressUserType"         column="address_user_type" />
+    <result property="createdBy.empNo"         column="created_by" />
+    <result property="createdAt"               column="created_at" />
+    <result property="updatedBy.empNo"         column="updated_by" />
+    <result property="updatedAt"               column="updated_at" />
+    <result property="deleteNo"                column="delete_no" />
+  </resultMap>
+
+  <select id="findById" resultMap="result">
+    SELECT
+      id,
+      address_correspon_group_id,
+      emp_no,
+      emp_last_name,
+      emp_name_e,
+      address_user_type,
+      created_by,
+      created_at,
+      updated_by,
+      updated_at,
+      delete_no
+    FROM
+      v_address_user
+    WHERE
+      id = #value#
+  </select>
+
+  <select id="findByAddressCorresponGroupId" resultMap="result">
+    SELECT
+      id,
+      address_correspon_group_id,
+      emp_no,
+      emp_last_name,
+      emp_name_e,
+      address_user_type,
+      created_by,
+      created_at,
+      updated_by,
+      updated_at,
+      delete_no
+    FROM
+      v_address_user
+    WHERE
+      address_correspon_group_id = #value#
+    ORDER BY
+      emp_last_name,
+      address_user_type,
+      id
+  </select>
+
+  <insert id="create">
+    <selectKey resultClass="long" keyProperty="id">
+        SELECT s_address_user_id.NEXTVAL AS id FROM dual
+    </selectKey>
+    INSERT INTO address_user (
+      id,
+      address_correspon_group_id,
+      emp_no,
+      address_user_type,
+      created_by,
+      updated_by
+    ) VALUES (
+      #id#,
+      #addressCorresponGroupId#,
+      #user.empNo#,
+      #addressUserType#,
+      #createdBy.empNo#,
+      #updatedBy.empNo#
+    )
+  </insert>
+
+  <update id="deleteByAddressCorresponGroupId">
+    UPDATE address_user
+    SET
+      updated_by = #updatedBy.empNo#,
+      updated_at = SYSTIMESTAMP,
+      delete_no  = s_address_user_dno.NEXTVAL
+    WHERE
+      address_correspon_group_id = #addressCorresponGroupId#
+    AND
+      delete_no = 0
+  </update>
+
+  <!-- Distribution 1.Attention、Ccの送付先取得 -->
+  <select id="findSendApplyUser" resultMap="result">
+    SELECT
+      au.id,
+      au.address_correspon_group_id,
+      au.emp_no,
+      au.emp_last_name,
+      au.emp_name_e,
+      au.address_user_type,
+      au.created_by,
+      au.created_at,
+      au.updated_by,
+      au.updated_at,
+      au.delete_no
+    FROM
+      v_address_user au INNER JOIN v_address_correspon_group acg
+      ON acg.id = au.address_correspon_group_id
+      AND acg.correspon_id = #addressCorresponGroup.corresponId#
+    WHERE
+      au.address_user_type = #addressUser.addressUserType#
+    AND
+      NOT EXISTS(
+        SELECT
+          1
+        FROM
+          v_email_notice_recv_setting
+        WHERE
+          project_id = #emailNoticeRecvSetting.projectId#
+        AND
+          emp_no = au.emp_no
+        AND
+          CASE au.address_user_type
+            WHEN #addressUserTypeNormalUser#
+              THEN recv_distribution_cc
+            WHEN #addressUserTypeAttention#
+              THEN recv_distribution_attention
+          END = #emailNoticeReceivableNo#
+      )
+    AND
+      EXISTS(
+        SELECT
+          1
+        FROM
+          v_project_user
+        WHERE
+          project_id = #emailNoticeRecvSetting.projectId#
+        AND
+          emp_no = au.emp_no
+      )
+  </select>
+
+  <!-- Workflow 3.Attention、Ccの送付先取得 -->
+  <select id="findSendApplyUserForPersonInCharge" resultMap="result">
+    SELECT
+      au.id,
+      au.address_correspon_group_id,
+      au.emp_no,
+      au.emp_last_name,
+      au.emp_name_e,
+      au.address_user_type,
+      au.created_by,
+      au.created_at,
+      au.updated_by,
+      au.updated_at,
+      au.delete_no
+    FROM
+      v_address_user au
+    INNER JOIN v_address_correspon_group acg
+    ON
+      acg.id = au.address_correspon_group_id
+    AND
+      acg.correspon_id = #addressCorresponGroup.corresponId#
+    WHERE
+      au.address_user_type = #addressUser.addressUserType#
+    AND
+      NOT EXISTS
+      (
+        SELECT
+          1
+        FROM
+          v_email_notice_recv_setting
+        WHERE
+          project_id = #emailNoticeRecvSetting.projectId#
+        AND
+          emp_no = au.emp_no
+        AND
+          receive_workflow = #emailNoticeReceivableNo#
+      )
+      AND
+        EXISTS
+        (
+          SELECT
+            1
+          FROM
+            v_project_user
+          WHERE
+            project_id = #emailNoticeRecvSetting.projectId#
+          AND
+            emp_no = au.emp_no
+        )
+  </select>
+</sqlMap>
+

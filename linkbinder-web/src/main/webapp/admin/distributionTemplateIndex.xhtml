@@ -1,0 +1,107 @@
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<ui:composition template="/include/template.xhtml">
+<ui:define name="title">宛先テンプレート</ui:define>
+
+<ui:define name="jsOuter">
+  <h:outputScript library="js" name="confirmation.js" target="head"/>
+</ui:define>
+<ui:define name="jsInner">
+  <!--
+    function setId(id, verNo) {
+        var hiddenId = document.getElementById('form:id');
+        hiddenId.value = id;
+        var hiddenVersionNo = document.getElementById('form:versionNo');
+        hiddenVersionNo.value = verNo;
+    }
+
+    $(document).ready(function() {
+      $('#form\\:distributionTemplate').highlightRows();
+    });
+  -->
+</ui:define>
+<ui:define name="body">
+  <f:view>
+  <div id="admin-main">
+    <div class="row">
+      <div class="four columns list-action">
+        <h:outputLink id="templates"
+                      styleClass="button"
+                      value="distributionTemplateEdit.jsf?id=0&amp;copyId=0&amp;projectId=#{flash.projectId}"
+                      onclick="setActionName(event)">
+          <h:outputText value="テンプレート追加" />
+        </h:outputLink>
+      </div>
+    </div>
+    <ui:fragment rendered="#{distributionTemplateIndexPage.viewRender}">
+      <h:form id="form" onsubmit="return disableSubmit();">
+        <h:inputHidden id="actionName" value="#{distributionTemplateIndexPage.actionName}" />
+        <h:commandButton style="display: none;" id="delete" value="削除" action="#{distributionTemplateIndexPage.delete}"  onclick="setActionName(event); return confirmButton();" />
+        <h:inputHidden id="id" value="#{distributionTemplateIndexPage.id}" />
+        <h:inputHidden id="versionNo" value="#{distributionTemplateIndexPage.versionNo}" />
+
+    <h:dataTable id="distributionTemplate"
+        var="item"
+        value="#{distributionTemplateIndexPage.dataModel}"
+        columnClasses="number id-width,text width600,list-row-action"
+        cellpadding="5"
+        styleClass="list"
+        rowClasses="odd,even"
+        rowOnMouseOver="highlight(#{num},this);"
+        rowOnMouseOut="returnColor(#{num}, this);"
+        preserveDataModel="true" rowIndexVar="num" footerClass="footer">
+      <thead>
+        <h:column>
+          <f:facet name="header">
+            <h:outputText value="ID"/>
+          </f:facet>
+          <h:outputText value="#{item.templateCd}" />
+        </h:column>
+        <h:column>
+          <f:facet name="header">
+            <h:outputText value="テンプレート名"/>
+          </f:facet>
+          <h:outputText value="#{item.name}" />
+        </h:column>
+        <h:column>
+          <f:facet name="header"></f:facet>
+            <h:commandLink id="edit"
+                value="編集"
+                styleClass="button"
+                action="#{distributionTemplateIndexPage.edit}">
+              <f:param name="id" value="#{item.id}" />
+              <f:param name="projectId" value="#{flash.projectId}" />
+              <f:param name="copyId" value="0" id="copyId" />
+            </h:commandLink>
+            <h:commandButton type="button" id="preDelete" value="削除"
+                     styleClass="button-primary"
+                     onclick="setId('#{item.id}', '#{item.versionNo}');clickComponent('delete');" />
+        </h:column>
+      </thead>
+    </h:dataTable>
+    </h:form>
+  </ui:fragment>
+
+  </div><!-- admin-main -->
+  </f:view>
+</ui:define>
+</ui:composition>
+</html>

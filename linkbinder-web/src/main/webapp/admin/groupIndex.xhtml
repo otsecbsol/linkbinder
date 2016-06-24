@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html [
+<!ENTITY nbsp "&#160;">
+<!ENTITY yen "&#165;">
+<!ENTITY plusmn "&#177;">
+<!ENTITY minus "&#8722;">
+<!ENTITY darr "&#2193;">
+<!ENTITY uarr "&#2191;">
+]>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/include/template.xhtml">
+  <ui:define name="title">グループ一覧</ui:define>
+  <ui:define name="cssOuter">
+    <link type="text/css" href="#{contextPath}/resource/#{v}/stylesheet/custom/normalList.css" rel="stylesheet" />
+  </ui:define>
+  <ui:define name="jsOuter"></ui:define>
+  <ui:define name="jsInner">
+    <!--
+    $(document).ready(function() {
+      $('#form\\:corresponGroupIndex').highlightRows();
+    });
+    -->
+  </ui:define>
+
+  <ui:define name="body">
+    <f:view>
+      <h:form id="form" onsubmit="return disableSubmit();">
+        <h:inputHidden id="actionName" value="#{groupIndexPage.actionName}" />
+        <div id="detail" class="row">
+          <div class="twelve columns">
+            <h:outputLabel value="拠点"/>
+            <h:outputText id="siteCode"  value="#{groupIndexPage.site.siteCd}" />
+            :
+            <h:outputText id="siteName" value="#{groupIndexPage.site.name}"  />
+          </div>
+        </div>
+        <br />
+        <f:validateBean validationGroups="#{groupIndexPage.validationGroups}">
+        <div class="row">
+          <div class="twelve columns">
+            <h:outputLabel for="selectDiscipline" value="部門"/>
+            <h:selectOneMenu id="selectDiscipline" value="#{groupIndexPage.selectDiscipline}"
+                rendered="#{groupIndexPage.selectDisciplineList != null}">
+              <f:selectItems value="#{groupIndexPage.selectDisciplineList}" />
+            </h:selectOneMenu>
+            <h:message for="selectDiscipline" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+            <h:commandButton id="add" value="この拠点へ追加する"
+                             styleClass="button"
+                             action="#{groupIndexPage.add}" onclick="setActionName(event)" />
+          </div>
+        </div>
+        </f:validateBean>
+        <h:inputHidden id="viewRender" value="#{groupIndexPage.dataCount}" />
+
+        <ui:fragment rendered="#{!empty groupIndexPage.dataCount and groupIndexPage.dataCount != '0'}">
+          <div id="paging" class="row">
+            <div class="one column list-count">
+              <h:outputText id="dataCount" value="#{groupIndexPage.dataCount}"  />
+            </div>
+            <div class="one column list-range">
+              <h:outputText id="pageDisplayNo" value="#{groupIndexPage.pageDisplayNo}"  />
+            </div>
+            <div class="three columns list-nav">
+              <h:commandLink id="previous"
+                  rendered="#{groupIndexPage.previous}" value="#{groupIndexPage.previousLabel}"
+                  action="#{groupIndexPage.movePrevious}" onclick="deleteAllLink('paging');setActionName(event)" />
+              <h:outputText rendered="#{!groupIndexPage.previous}" value="#{groupIndexPage.previousLabel}" />
+              <ui:repeat id="pagingNo" var="value" value="#{groupIndexPage.pagingNo}">
+                <h:commandLink rendered="#{value != groupIndexPage.pageNo}" value=" #{value} "
+                    action="#{groupIndexPage.changePage}" onclick="deleteAllLink('paging');setPageNo('#{value}');setActionName(event);" />
+                <h:outputText rendered="#{value == groupIndexPage.pageNo}" value=" #{value} " />
+              </ui:repeat>
+              <h:inputHidden id="pageNo" value="#{groupIndexPage.pageNo}" />
+              <h:commandLink id="next"
+                  rendered="#{groupIndexPage.next}" value="#{groupIndexPage.nextLabel}"
+                  action="#{groupIndexPage.moveNext}" onclick="deleteAllLink('paging');setActionName(event)" />
+              <h:outputText rendered="#{!groupIndexPage.next}" value="#{groupIndexPage.nextLabel}" />
+            </div>
+            <div class="four columns list-action">
+              出力形式:
+              <h:commandLink id="downloadExcel" value="Excel"
+                        action="#{groupIndexPage.downloadExcel}" onclick="setActionName(event)" />
+            </div>
+          </div>
+
+        <h:inputHidden id="viewRenderGroupAdmin" value="#{groupIndexPage.condition.groupAdmin}" />
+
+        <div class="result-area">
+          <h:dataTable id="corresponGroupIndex" var="item"
+              value="#{groupIndexPage.dataModel}"
+              columnClasses="number id-width,text width200,text width500,list-row-action" rowClasses="odd,even"
+              cellpadding="5" styleClass="list"
+              preserveDataModel="true" rowIndexVar="num" footerClass="footer">
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="No." />
+              </f:facet>
+              <h:outputText id="no" value="#{item.id}" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="部門" />
+              </f:facet>
+              <h:outputText id="discipline" value="#{item.discipline.codeAndName}" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="グループ" />
+              </f:facet>
+              <h:outputText id="name" value="#{item.name}" />
+            </h:column>
+            <h:column>
+              <h:commandLink id="editMember" value="メンバー編集"
+                             styleClass="button"
+                  action="#{groupIndexPage.editMember}" onclick="setActionName(event)" />
+              <h:commandButton id="delete" value="削除"
+                             styleClass="button-primary"
+                             rendered="#{!groupIndexPage.condition.groupAdmin}"
+                             action="#{groupIndexPage.delete}" onclick="setActionName(event); return confirmButton();" />
+            </h:column>
+          </h:dataTable>
+        </div>
+        </ui:fragment>
+        <br />
+        <br />
+        <table style="width: 100%;">
+          <tr>
+            <td style="text-align: center;">
+              <table style="margin-left:auto; margin-right:auto;">
+                <tr>
+                  <td>
+                    <h:commandLink id="back" value="戻る" styleClass="button"
+                        action="#{groupIndexPage.back}" onclick="setActionName(event)" />
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </h:form>
+    </f:view>
+  </ui:define>
+</ui:composition>
+</html>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+
+ <beans>
+   <bean id="Oracle" class="org.springframework.jdbc.support.SQLErrorCodes">
+     <property name="badSqlGrammarCodes">
+       <value>900,903,904,917,936,942,17006</value>
+     </property>
+     <property name="invalidResultSetAccessCodes">
+       <value>17003</value>
+     </property>
+     <property name="dataAccessResourceFailureCodes">
+       <value>17002,17447</value>
+     </property>
+     <property name="dataIntegrityViolationCodes">
+       <value>1,1400,1722,2291,2292</value>
+     </property>
+     <property name="cannotAcquireLockCodes">
+       <value>54</value>
+     </property>
+     <property name="cannotSerializeTransactionCodes">
+       <value>8177</value>
+     </property>
+     <property name="deadlockLoserCodes">
+       <value>60</value>
+     </property>
+
+     <!-- 追加ここから -->
+     <property name="customTranslations">
+       <list>
+         <bean class="org.springframework.jdbc.support.CustomSQLErrorCodesTranslation">
+           <property name="errorCodes" value="1407" />
+           <property name="exceptionClass"
+                     value="jp.co.opentone.bsol.framework.core.extension.ibatis.exception.InvalidNullUpdatedRuntimeException" />
+         </bean>
+       </list>
+     </property>
+     <!-- 追加ここまで -->
+   </bean>
+ </beans>
+

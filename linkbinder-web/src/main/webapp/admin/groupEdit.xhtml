@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html [
+<!ENTITY nbsp "&#160;">
+<!ENTITY yen "&#165;">
+<!ENTITY plusmn "&#177;">
+<!ENTITY minus "&#8722;">
+<!ENTITY darr "&#2193;">
+<!ENTITY uarr "&#2191;">
+]>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/include/template.xhtml">
+  <ui:define name="title">グループメンバー編集</ui:define>
+  <ui:define name="jsOuter"></ui:define>
+  <ui:define name="jsInner">
+    <!--
+    function setAllMembers() {
+      var adminOptions = form.elements['form:selectedAdminsList'].options;
+      var adminValue = "";
+      for ( var i = 0; i < adminOptions.length; i++) {
+        adminValue += adminOptions[i].value + ",";
+      }
+      adminValue = adminValue.substring(0, adminValue.length - 1);
+      form.elements['form:submitAdmin'].value = adminValue;
+
+      var memberOptions = form.elements['form:selectedMembersList'].options;
+      var memberValue = "";
+      for ( var i = 0; i < memberOptions.length; i++) {
+        memberValue += memberOptions[i].value + ",";
+      }
+      memberValue = memberValue.substring(0, memberValue.length - 1);
+      form.elements['form:submitMember'].value = memberValue;
+    }
+
+    function initView() {
+      var users = document.getElementById('form:userJSONString').value;
+      var admin = new SelectionInput({
+        candidate : 'candidateUsersList',
+        selected : 'selectedAdminIdList',
+        candidateValues : 'form:candidateUserValue',
+        selectedValues : 'form:selectedAdminValue',
+        addAction : 'addAdmin',
+        removeAction : 'removeAdmin',
+        saveAction : 'form:save',
+        valueProperty : 'empNo',
+        labelProperty : 'labelWithRole',
+        unremovableAdmin : '#{groupEditPage.unremovableAdmin}',
+        dataSource : JSON.parse(users)
+      });
+
+      var user = new SelectionInput({
+        candidate : 'candidateUsersList',
+        selected : 'selectedMemberIdList',
+        candidateValues : 'form:candidateUserValue',
+        selectedValues : 'form:selectedMemberValue',
+        addAction : 'add',
+        removeAction : 'remove',
+        addAllAction : 'addAll',
+        removeAllAction : 'removeAll',
+        saveAction : 'form:save',
+        valueProperty : 'empNo',
+        labelProperty : 'labelWithRole',
+        dataSource : JSON.parse(users)
+      });
+
+      admin.setup();
+      user.setup();
+
+      return false;
+    }
+
+    window.onload = initView;
+    -->
+  </ui:define>
+
+  <ui:define name="body">
+    <f:view>
+      <h:form id="form" onsubmit="return disableSubmit();">
+        <h:inputHidden id="actionName" value="#{groupEditPage.actionName}" />
+        <h:inputHidden id="userJSONString" value="#{groupEditPage.userJSONString}" />
+        <div id="detail" class="row">
+          <div class="six columns">
+            <h:outputLabel value="拠点"/>
+            <h:outputText id="siteCode" value="#{groupEditPage.corresponGroup.site.siteCd}"  />
+            :
+            <h:outputText id="siteId" value="#{groupEditPage.corresponGroup.site.name}"  />
+          </div>
+          <div class="six columns">
+            <h:outputLabel value="部門"/>
+            <h:outputText id="disciplineCode" value="#{groupEditPage.corresponGroup.discipline.disciplineCd}"  />
+            :
+            <h:outputText id="disciplineId" value="#{groupEditPage.corresponGroup.discipline.name}"  />
+          </div>
+        </div>
+        <br />
+
+        <h:inputHidden id="viewRender" value="#{groupEditPage.initialDisplaySuccess}" />
+
+        <f:validateBean validationGroups="#{groupEditPage.validationGroups}">
+        <h:panelGroup rendered="#{groupEditPage.initialDisplaySuccess}">
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel for="name" value="グループ名" styleClass="required"/>
+              <h:inputText id="name" value="#{groupEditPage.name}"
+                      styleClass="u-full-width"
+                      maxlength="100" />
+              <h:message for="name" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="six columns label">
+              メンバー編集
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="four columns">
+              <h:outputLabel value="ユーザー(追加候補)"/>
+              <select id="candidateUsersList" name="candidateUsersList"
+                            class="u-full-width user-list"
+                            multiple="multiple" size="20">
+              </select>
+              <h:inputHidden id="candidateUserValue" value="#{groupEditPage.candidateUserValue}" />
+            </div>
+            <div class="seven columns">
+
+            <div class="row">
+              <div class="three columns user-list-action">
+                <div>
+                  <a href="javascript:void(0)" id="addAdmin">&gt;&gt;</a>
+                </div>
+                <div>
+                  <a href="javascript:void(0)" id="removeAdmin">&lt;&lt;</a>
+                </div>
+              </div>
+              <div class="five columns">
+                <h:outputLabel value="グループ管理者"/>
+                <select id="selectedAdminIdList" name="selectedAdminIdList"
+                                class="u-full-width user-list"
+                                multiple="multiple" size="9">
+                </select>
+                <h:inputHidden id="selectedAdminValue" value="#{groupEditPage.selectedAdminValue}" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="three columns user-list-action">
+                <div>
+                <a href="javascript:void(0)" id="addAll">すべて追加&nbsp;&gt;&gt;</a>
+                </div>
+                <div>
+                <a href="javascript:void(0)" id="add">&gt;&gt;</a>
+                </div>
+                <div>
+                <a href="javascript:void(0)" id="remove">&lt;&lt;</a>
+                </div>
+                <div>
+                <a href="javascript:void(0)" id="removeAll">&lt;&lt;&nbsp;すべて削除</a>
+                </div>
+              </div>
+              <div class="five columns">
+                <h:outputLabel value="一般ユーザー"/>
+                <select id="selectedMemberIdList" name="selectedMemberIdList"
+                                class="u-full-width user-list"
+                                multiple="multiple" size="9">
+                </select>
+                <h:inputHidden id="selectedMemberValue" value="#{groupEditPage.selectedMemberValue}" />
+              </div>
+            </div>
+
+
+
+            </div>
+          </div>
+        </h:panelGroup>
+        </f:validateBean>
+
+        <div class="action-edit">
+          <ui:fragment rendered="#{groupEditPage.initialDisplaySuccess}">
+            <h:commandButton id="save" value="保存"
+                            styleClass="button-primary"
+                            action="#{groupEditPage.save}" onclick="setActionName(event)" />
+          </ui:fragment>
+          <h:commandLink id="back" value="戻る"
+                            styleClass="button"
+                            action="#{groupEditPage.back}" onclick="setActionName(event)" />
+        </div>
+      </h:form>
+    </f:view>
+  </ui:define>
+</ui:composition>
+</html>

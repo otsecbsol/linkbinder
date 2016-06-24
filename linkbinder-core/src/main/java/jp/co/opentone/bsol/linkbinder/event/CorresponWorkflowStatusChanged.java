@@ -1,0 +1,57 @@
+/*
+ * Copyright 2016 OPEN TONE Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package jp.co.opentone.bsol.linkbinder.event;
+
+import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowStatus;
+
+
+/**
+ * 文書のワークフローステータスが更新されたことを表すイベント.
+ * @author opentone
+ */
+public class CorresponWorkflowStatusChanged extends CorresponEvent {
+
+    /** イベント名. */
+    public static final String NAME = new CorresponWorkflowStatusChanged().getEventName();
+
+    /** 変更前ステータス. */
+    private WorkflowStatus beforeStatus;
+    /** 変更後ステータス. */
+    private WorkflowStatus afterStatus;
+
+    /** このコンストラクタはJSONデシリアライズに必要なので削除しないこと. */
+    public CorresponWorkflowStatusChanged() {}
+
+    public CorresponWorkflowStatusChanged(Long id, String projectId, WorkflowStatus beforeStatus, WorkflowStatus afterStatus) {
+        super(id, projectId);
+        this.beforeStatus = beforeStatus;
+        this.afterStatus = afterStatus;
+    }
+
+    /**
+     * @return the beforeStatus
+     */
+    public WorkflowStatus getBeforeStatus() {
+        return beforeStatus;
+    }
+
+    /**
+     * @return the afterStatus
+     */
+    public WorkflowStatus getAfterStatus() {
+        return afterStatus;
+    }
+}

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="projectUserProfile">
+
+  <resultMap id="result" class="jp.co.opentone.bsol.linkbinder.dto.ProjectUserProfile">
+    <result property="id"                        column="id" />
+    <result property="projectId"                 column="project_id" />
+    <result property="user.empNo"                column="emp_no" />
+    <result property="role"                 column="role" />
+    <result property="defaultCorresponGroup.id"  column="default_correspon_group_id" />
+    <result property="createdBy.empNo"           column="created_by" />
+    <result property="createdAt"                 column="created_at" />
+    <result property="updatedBy.empNo"           column="updated_by" />
+    <result property="updatedAt"                 column="updated_at" />
+    <result property="deleteNo"                  column="delete_no" />
+  </resultMap>
+
+  <!--  find, findByIdで共通的に利用するSELECT, FROM句 -->
+  <sql id="findSelectFrom">
+    SELECT
+      id,
+      project_id,
+      emp_no,
+      role,
+      default_correspon_group_id,
+      created_by,
+      created_at,
+      updated_by,
+      updated_at,
+      delete_no
+    FROM
+      project_user_profile
+  </sql>
+
+  <insert id="create">
+    <selectKey resultClass="long" keyProperty="id">
+        SELECT s_project_user_profile_id.NEXTVAL AS id FROM dual
+    </selectKey>
+    INSERT INTO project_user_profile (
+      id,
+      project_id,
+      emp_no,
+      role,
+      default_correspon_group_id,
+      created_by,
+      updated_by
+    ) VALUES (
+      #id#,
+      #projectId#,
+      #user.empNo#,
+      #role#,
+      #defaultCorresponGroup.id#,
+      #createdBy.empNo#,
+      #updatedBy.empNo#
+    )
+  </insert>
+
+  <update id="update">
+    UPDATE project_user_profile
+    SET
+      updated_by                   = #updatedBy.empNo#,
+      updated_at                   = SYSTIMESTAMP
+    <dynamic>
+      <isNotNull prepend="," property="projectId">
+        project_id                 = #projectId#
+      </isNotNull>
+      <isNotNull prepend="," property="user.empNo">
+        emp_no                     = #user.empNo#
+      </isNotNull>
+      <isNotNull prepend="," property="role">
+        role                       = #role#
+      </isNotNull>
+      <isNotNull prepend="," property="defaultCorresponGroup.id">
+        default_correspon_group_id = #defaultCorresponGroup.id#
+      </isNotNull>
+      <isNotNull prepend="," property="createdBy.empNo">
+        created_by                 = #createdBy.empNo#
+      </isNotNull>
+      <isNotNull prepend="," property="createdAt">
+        created_at                 = #createdAt#
+      </isNotNull>
+      <isNotEmpty prepend="," property="nullColumn">
+        $nullColumn$               = null
+      </isNotEmpty>
+    </dynamic>
+    WHERE
+      id = #id#
+  </update>
+
+  <select id="findById" resultMap="result">
+    <include refid="findSelectFrom"/>
+    WHERE
+          id = #value#
+      AND delete_no = 0
+  </select>
+
+  <select id="find" resultMap="result">
+    <include refid="findSelectFrom"/>
+    WHERE
+      delete_no  = 0
+    <dynamic>
+      <isNotNull prepend="AND" property="projectId">
+        project_id                 = #projectId#
+      </isNotNull>
+      <isNotNull prepend="AND" property="empNo">
+        emp_no                     = #empNo#
+      </isNotNull>
+      <isNotNull prepend="AND" property="role">
+        role                       = #role#
+      </isNotNull>
+      <isNotNull prepend="AND" property="defaultCorresponGroupId">
+        default_correspon_group_id = #defaultCorresponGroupId#
+      </isNotNull>
+    </dynamic>
+  </select>
+</sqlMap>
+

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE sqlMapConfig PUBLIC
+  "-//iBATIS.com//DTD SQL Map Config 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+<sqlMapConfig>
+  <settings maxTransactions="5" maxRequests="50" maxSessions="25"
+    cacheModelsEnabled="true" lazyLoadingEnabled="true"
+    useStatementNamespaces="true" />
+
+  <typeHandler
+      javaType="jp.co.opentone.bsol.linkbinder.dto.code.AddressType"
+      callback="jp.co.opentone.bsol.linkbinder.dao.handler.AddressTypeValueHandler" />
+  <typeHandler
+      javaType="jp.co.opentone.bsol.linkbinder.dto.code.AddressUserType"
+      callback="jp.co.opentone.bsol.linkbinder.dao.handler.AddressUserTypeValueHandler" />
+  <typeHandler
+      javaType="jp.co.opentone.bsol.linkbinder.dto.code.AllowApproverToBrowse"
+      callback="jp.co.opentone.bsol.linkbinder.dao.handler.AllowApproverToBrowseValueHandler" />
+  <typeHandler
+      javaType="jp.co.opentone.bsol.linkbinder.dto.code.CorresponStatus"
+      callback="jp.co.opentone.bsol.linkbinder.dao.handler.CorresponStatusValueHandler" />
+  <typeHandler
+      javaType="jp.co.opentone.bsol.linkbinder.dto.code.ForceToUseWorkflow"
+      callback="jp.co.opentone.bsol.linkbinder.dao.handler.ForceToUseWorkflowValueHandler" />
+  <typeHandler
+      javaType="jp.co.opentone.bsol.linkbinder.dto.code.ReadStatus"
+      callback="jp.co.opentone.bsol.linkbinder.dao.handler.ReadStatusValueHandler" />
+  <typeHandler
+      javaType="jp.co.opentone.bsol.linkbinder.dto.code.ReplyRequired"
+      callback="jp.co.opentone.bsol.linkbinder.dao.handler.ReplyRequiredValueHandler" />
+  <typeHandler
+      javaType="jp.co.opentone.bsol.linkbinder.dto.code.UseWhole"
+      callback="jp.co.opentone.bsol.linkbinder.dao.handler.UseWholeValueHandler" />
+  <typeHandler
+      javaType="jp.co.opentone.bsol.linkbinder.dto.code.WorkflowProcessStatus"
+      callback="jp.co.opentone.bsol.linkbinder.dao.handler.WorkflowProcessStatusValueHandler" />
+  <typeHandler
+      javaType="jp.co.opentone.bsol.linkbinder.dto.code.WorkflowStatus"
+      callback="jp.co.opentone.bsol.linkbinder.dao.handler.WorkflowStatusValueHandler" />
+  <typeHandler
+      javaType="jp.co.opentone.bsol.linkbinder.dto.code.WorkflowType"
+      callback="jp.co.opentone.bsol.linkbinder.dao.handler.WorkflowTypeValueHandler" />
+  <typeHandler
+      javaType="jp.co.opentone.bsol.linkbinder.dto.code.RSSCategory"
+      callback="jp.co.opentone.bsol.linkbinder.dao.handler.RSSCategoryValueHandler" />
+  <typeHandler
+      javaType="java.lang.String"
+      callback="jp.co.opentone.bsol.framework.core.extension.ibatis.StringNullValueHandler" />
+  <typeHandler
+      javaType="java.lang.Integer"
+      callback="jp.co.opentone.bsol.framework.core.extension.ibatis.IntegerNullValueHandler" />
+  <typeHandler
+      javaType="java.util.Date"
+      callback="jp.co.opentone.bsol.framework.core.extension.ibatis.DateNullValueHandler" />
+  <typeHandler
+      javaType="jp.co.opentone.bsol.linkbinder.dto.code.EmailNoticeEventCd"
+      callback="jp.co.opentone.bsol.linkbinder.dao.handler.EmailNoticeEventCdValueHandler" />
+  <typeHandler
+      javaType="jp.co.opentone.bsol.linkbinder.dto.code.EmailNoticeAddressType"
+      callback="jp.co.opentone.bsol.linkbinder.dao.handler.EmailNoticeAddressTypeValueHandler" />
+  <typeHandler
+      javaType="jp.co.opentone.bsol.linkbinder.dto.code.EmailNoticeCategory"
+      callback="jp.co.opentone.bsol.linkbinder.dao.handler.EmailNoticeCategoryValueHandler" />
+  <typeHandler
+      javaType="jp.co.opentone.bsol.linkbinder.dto.code.EmailNoticeStatus"
+      callback="jp.co.opentone.bsol.linkbinder.dao.handler.EmailNoticeStatusValueHandler" />
+  <typeHandler
+      javaType="jp.co.opentone.bsol.linkbinder.dto.code.EmailNoticeReceivable"
+      callback="jp.co.opentone.bsol.linkbinder.dao.handler.EmailNoticeReceivableValueHandler" />
+  <typeHandler
+      javaType="jp.co.opentone.bsol.linkbinder.dto.code.DistributionType"
+      callback="jp.co.opentone.bsol.linkbinder.dao.handler.DistributionTypeValueHandler" />
+
+  <sqlMap resource="sql/addressCorresponGroup.xml" />
+  <sqlMap resource="sql/addressUser.xml" />
+  <sqlMap resource="sql/correspon.xml" />
+  <sqlMap resource="sql/personInCharge.xml" />
+  <sqlMap resource="sql/workflow.xml" />
+  <sqlMap resource="sql/attachment.xml" />
+  <sqlMap resource="sql/user.xml" />
+  <sqlMap resource="sql/project.xml" />
+  <sqlMap resource="sql/corresponGroup.xml" />
+  <sqlMap resource="sql/corresponGroupUser.xml" />
+  <sqlMap resource="sql/parentCorresponNoSeq.xml" />
+  <sqlMap resource="sql/replyCorresponNoSeq.xml" />
+  <sqlMap resource="sql/company.xml" />
+  <sqlMap resource="sql/corresponCustomField.xml" />
+  <sqlMap resource="sql/corresponHierarchy.xml" />
+  <sqlMap resource="sql/corresponType.xml" />
+  <sqlMap resource="sql/projectCompany.xml" />
+  <sqlMap resource="sql/companyUser.xml" />
+  <sqlMap resource="sql/customField.xml" />
+  <sqlMap resource="sql/customFieldValue.xml" />
+  <sqlMap resource="sql/discipline.xml" />
+  <sqlMap resource="sql/corresponReadStatus.xml" />
+  <sqlMap resource="sql/userProfile.xml" />
+  <sqlMap resource="sql/site.xml" />
+  <sqlMap resource="sql/projectUserProfile.xml" />
+  <sqlMap resource="sql/projectCustomField.xml" />
+  <sqlMap resource="sql/projectCorresponType.xml" />
+  <sqlMap resource="sql/workflowPattern.xml" />
+  <sqlMap resource="sql/workflowTemplateUser.xml" />
+  <sqlMap resource="sql/workflowTemplate.xml" />
+  <sqlMap resource="sql/projectCustomSetting.xml" />
+  <sqlMap resource="sql/favoriteFilter.xml" />
+  <sqlMap resource="sql/emailNotice.xml" />
+  <sqlMap resource="sql/emailNoticeRecvSetting.xml" />
+  <sqlMap resource="sql/distTemplateHeader.xml" />
+  <sqlMap resource="sql/distTemplateGroup.xml" />
+  <sqlMap resource="sql/distTemplateUser.xml" />
+</sqlMapConfig>

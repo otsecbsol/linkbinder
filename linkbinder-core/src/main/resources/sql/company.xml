@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="company">
+
+<resultMap id="result" class="jp.co.opentone.bsol.linkbinder.dto.Company">
+    <result property="id"                                       column="id" />
+    <result property="companyCd"                                column="company_cd" />
+    <result property="name"                                     column="name" />
+    <result property="createdBy.empNo"                          column="created_by" />
+    <result property="createdBy.nameE"                          column="created_by_name" />
+    <result property="createdAt"                                column="created_at" />
+    <result property="updatedBy.empNo"                          column="updated_by" />
+    <result property="updatedBy.nameE"                          column="updated_by_name" />
+    <result property="updatedAt"                                column="updated_at" />
+    <result property="versionNo"                         column="version_no" />
+    <result property="deleteNo"                       column="delete_no" />
+</resultMap>
+<resultMap id="resultProject" class="jp.co.opentone.bsol.linkbinder.dto.Company">
+    <result property="id"                                       column="id" />
+    <result property="projectCompanyId"                         column="project_company_id" />
+    <result property="projectId"                                column="project_id" />
+    <result property="projectNameE"                             column="project_name_e" />
+    <result property="companyCd"                                column="company_cd" />
+    <result property="name"                                     column="name" />
+    <result property="role"                                     column="role" />
+    <result property="createdBy.empNo"                          column="pc_created_by" />
+    <result property="createdBy.nameE"                          column="pc_created_by_name" />
+    <result property="createdAt"                                column="pc_created_at" />
+    <result property="updatedBy.empNo"                          column="pc_updated_by" />
+    <result property="updatedBy.nameE"                          column="pc_updated_by_name" />
+    <result property="updatedAt"                                column="pc_updated_at" />
+    <result property="versionNo"                                column="version_no" />
+    <result property="deleteNo"                                 column="delete_no" />
+</resultMap>
+<resultMap id="resultAssign" class="jp.co.opentone.bsol.linkbinder.dto.Company">
+    <result property="id"                                       column="id" />
+    <result property="companyCd"                                column="company_cd" />
+    <result property="name"                                     column="name" />
+</resultMap>
+<resultMap id="resultFindMembers" class="jp.co.opentone.bsol.linkbinder.dto.CompanyUser">
+    <result property="projectCompanyId"                         column="project_company_id" />
+    <result property="projectId"                                column="project_id" />
+    <result property="user.empNo"                               column="emp_no" />
+    <result property="user.nameE"                               column="emp_name_e" />
+    <result property="user.role"                                column="role" />
+</resultMap>
+<resultMap id="resultForUpdate" class="jp.co.opentone.bsol.linkbinder.dto.Company">
+    <result property="versionNo"             column="version_no" />
+</resultMap>
+
+  <!--  findCompany,findProjectCompany,countCompanyで共通的に利用するFROM, WHERE句 -->
+  <sql id="findWhere">
+    <dynamic prepend="WHERE">
+      <isNotNull prepend="AND" property="companyCd">
+        company_cd like #companyCd# || '%' {escape #escapeChar#}
+      </isNotNull>
+      <isNotNull prepend="AND" property="name">
+        name       like #name#      || '%' {escape #escapeChar#}
+      </isNotNull>
+      <isNotNull prepend="AND" property="projectId">
+        project_id =    #projectId#
+      </isNotNull>
+      <isNotNull prepend="AND" property="role">
+        role       like #role#      || '%' {escape #escapeChar#}
+      </isNotNull>
+    </dynamic>
+  </sql>
+
+  <select id="findCompany" resultMap="result">
+    SELECT
+      DISTINCT
+        id,
+        company_cd,
+        name,
+        created_by,
+        created_by_name,
+        created_at,
+        updated_by,
+        updated_by_name,
+        updated_at,
+        version_no,
+        delete_no
+   FROM
+      v_project_company
+      <include refid="findWhere"/>
+   ORDER BY id
+  </select>
+
+  <select id="findProjectCompany" resultMap="resultProject">
+    SELECT
+      id,
+      project_company_id,
+      project_id,
+      project_name_e,
+      company_cd,
+      name,
+      role,
+      pc_created_by,
+      pc_created_by_name,
+      pc_created_at,
+      pc_updated_by,
+      pc_updated_by_name,
+      pc_updated_at,
+      version_no,
+      delete_no
+    FROM
+      v_project_company
+      <include refid="findWhere"/>
+    ORDER BY project_company_id
+  </select>
+
+  <select id="countCompany" resultClass="int">
+    SELECT
+      COUNT(id)
+    FROM
+      (SELECT
+        DISTINCT
+          id,
+          company_cd,
+          name,
+          created_by,
+          created_by_name,
+          created_at,
+          updated_by,
+          updated_by_name,
+          updated_at,
+          version_no,
+          delete_no
+       FROM
+         v_project_company
+         <include refid="findWhere"/>
+      )
+
+  </select>
+
+  <select id="findNotAssignTo" resultMap="resultAssign">
+    SELECT DISTINCT
+      id,
+      company_cd,
+      name
+    FROM
+      company
+    WHERE
+      id not in (SELECT
+                   id
+                 FROM
+                  v_project_company
+                 WHERE
+                   project_id = #value#)
+    AND
+      delete_no = 0
+    ORDER BY
+      company_cd
+  </select>
+
+  <select id="findById" resultMap="result">
+    SELECT
+      DISTINCT
+        id,
+        company_cd,
+        name,
+        created_by,
+        created_by_name,
+        created_at,
+        updated_by,
+        updated_by_name,
+        updated_at,
+        version_no,
+        delete_no
+   FROM
+      v_project_company
+   WHERE
+     id = #value#
+  </select>
+
+  <select id="findProjectCompanyById" resultMap="resultProject">
+    SELECT
+      id,
+      project_company_id,
+      project_id,
+      project_name_e,
+      company_cd,
+      name,
+      role,
+      pc_created_by,
+      pc_created_by_name,
+      pc_created_at,
+      pc_updated_by,
+      pc_updated_by_name,
+      pc_updated_at,
+      version_no,
+      delete_no
+    FROM
+      v_project_company
+    WHERE
+      project_id = #projectId#
+    AND
+      id = #id#
+  </select>
+
+  <select id="findMembers" resultMap="resultFindMembers">
+    SELECT
+      project_company_id,
+      project_id,
+      emp_no,
+      emp_name_e,
+      role
+    FROM
+      v_project_user
+    WHERE
+      project_company_id = #value#
+  </select>
+
+  <insert id="create">
+    <selectKey resultClass="long" keyProperty="id">
+        SELECT s_company_id.NEXTVAL AS id FROM dual
+    </selectKey>
+    INSERT INTO company (
+      id,
+      company_cd,
+      name,
+      created_by,
+      updated_by
+    ) VALUES (
+      #id#,
+      #companyCd#,
+      #name#,
+      #createdBy.empNo#,
+      #updatedBy.empNo#
+    )
+  </insert>
+
+  <update id="update">
+    UPDATE company
+    SET
+      updated_by = #updatedBy.empNo#,
+      updated_at = SYSTIMESTAMP,
+      version_no = (version_no + 1)
+      <dynamic>
+        <isNotNull prepend="," property="companyCd">
+          company_cd = #companyCd#
+        </isNotNull>
+        <isNotNull prepend="," property="name">
+          name       = #name#
+        </isNotNull>
+      </dynamic>
+    WHERE
+      id = #id#
+  </update>
+
+  <update id="delete">
+    UPDATE company
+    SET
+      updated_by = #updatedBy.empNo#,
+      updated_at = SYSTIMESTAMP,
+      version_no = (version_no + 1),
+      delete_no  = s_company_dno.NEXTVAL
+    WHERE
+      id = #id#
+  </update>
+
+  <select id="findByIdForUpdate" resultMap="resultForUpdate">
+    SELECT
+      version_no
+    FROM
+      company
+    WHERE
+      id = #id#
+    FOR UPDATE
+  </select>
+
+  <select id="countCheck" resultClass="int">
+    SELECT
+      count(id) as cnt
+    FROM
+      company
+    WHERE
+      delete_no      = 0
+      <dynamic>
+        <isNotNull prepend="AND" property="companyCd">
+          company_cd = #companyCd#
+        </isNotNull>
+        <isNotNull prepend="AND" property="id">
+          id        <![CDATA[<>]]> #id#
+        </isNotNull>
+      </dynamic>
+  </select>
+
+</sqlMap>

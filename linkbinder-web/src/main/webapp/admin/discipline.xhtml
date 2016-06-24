@@ -1,0 +1,77 @@
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/include/template.xhtml">
+  <ui:define name="title">部門</ui:define>
+  <ui:define name="jsOuter"></ui:define>
+  <ui:define name="jsInner"></ui:define>
+
+  <ui:define name="body">
+    <f:view>
+      <h:form id="form" onsubmit="return disableSubmit();">
+        <h:inputHidden id="actionName" value="#{disciplinePage.actionName}" />
+        <div id="detail">
+          <h:inputHidden id="id" value="#{disciplinePage.id}" />
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel value="ID"/>
+              <h:outputText id="viewId" value="#{disciplinePage.discipline.id}" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel value="部門コード"/>
+              <h:outputText id="code" value="#{disciplinePage.discipline.disciplineCd}" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel value="部門名"/>
+              <h:outputText id="name" value="#{disciplinePage.discipline.name}" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel value="作成者/作成日時"/>
+              <h:outputText id="createdName" value="#{disciplinePage.discipline.createdBy.nameE}" />/<h:outputText id="createdId" value="#{disciplinePage.discipline.createdBy.empNo}" style="margin-right: 10px;" />
+              (<h:outputText id="createdAt" value="#{disciplinePage.discipline.createdAt}">
+                <f:convertDateTime pattern="yyyy-MM-dd HH:mm:ss" />
+              </h:outputText>)
+            </div>
+          </div>
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel value="更新者/更新日時"/>
+              <h:outputText id="updatedName" value="#{disciplinePage.discipline.updatedBy.nameE}" />/<h:outputText id="updatedId" value="#{disciplinePage.discipline.updatedBy.empNo}" style="margin-right: 10px;" />
+              (<h:outputText id="updatedAt" value="#{disciplinePage.discipline.updatedAt}">
+                <f:convertDateTime pattern="yyyy-MM-dd HH:mm:ss" />
+              </h:outputText>)
+            </div>
+          </div>
+        </div>
+        <div class="action-edit">
+          <h:commandLink id="index" value="一覧画面へ"
+                         styleClass="button"
+                         action="#{disciplinePage.goIndex}" onclick="setActionName(event)" />
+        </div>
+      </h:form>
+    </f:view>
+  </ui:define>
+</ui:composition>
+</html>

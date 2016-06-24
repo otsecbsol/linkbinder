@@ -1,0 +1,195 @@
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/include/template.xhtml">
+  <ui:define name="title">拠点とグループ</ui:define>
+  <ui:define name="cssOuter">
+    <link type="text/css" href="#{contextPath}/resource/#{v}/stylesheet/custom/normalList.css" rel="stylesheet" />
+  </ui:define>
+  <ui:define name="jsOuter"></ui:define>
+  <ui:define name="jsInner">
+    <!--
+    function clearCondition() {
+        document.getElementById('form:searchCode').value = "";
+        document.getElementById('form:searchName').value = "";
+    }
+
+    function initView() {
+        var view = document.getElementById('form:viewRender');
+        if (view.value == null || view.value == '0') {
+            document.getElementById('viewPaging').style.display = "none";
+            document.getElementById('viewRow').style.display = "none";
+            document.getElementById('viewArea').style.display = "none";
+        }
+        return false;
+    }
+    window.onload = initView;
+
+    function setId(id, projId, no){
+      var rowId = document.getElementById('form:siteId');
+      rowId.value = id;
+      var siteProjId = document.getElementById('form:siteProjId');
+      siteProjId.value = projId;
+      var verNo = document.getElementById('form:siteVerNo');
+      verNo.value = no;
+    }
+
+    $(document).ready(function() {
+      $('#form\\:siteIndex').highlightRows();
+    });
+    -->
+  </ui:define>
+
+  <ui:define name="body">
+    <f:view>
+      <h:form id="form" onsubmit="return disableSubmit();">
+        <h:inputHidden id="actionName" value="#{siteIndexPage.actionName}" />
+
+        <h:inputHidden id="scCode" value="#{siteIndexPage.scCode}" />
+        <h:inputHidden id="scName" value="#{siteIndexPage.scName}" />
+
+        <h:inputHidden id="siteId" value="#{siteIndexPage.siteId}" />
+        <h:inputHidden id="siteProjId" value="#{siteIndexPage.siteProjId}" />
+        <h:inputHidden id="siteVerNo" value="#{siteIndexPage.siteVerNo}" />
+
+        <h:commandLink style="display: none;" id="previous"  action="#{siteIndexPage.movePrevious}" onclick="deleteAllLink('paging');setActionName(event)" />
+        <h:commandLink style="display: none;" id="pagerPageNo" action="#{siteIndexPage.changePage}" onclick="deleteAllLink('paging');setActionName(event);" />
+        <h:commandLink style="display: none;" id="next"  action="#{siteIndexPage.moveNext}" onclick="deleteAllLink('paging');setActionName(event)" />
+
+        <h:commandLink style="display: none;" id="downloadExcel" value="Excelダウンロード" action="#{siteIndexPage.downloadExcel}" onclick="setActionName(event)" />
+        <h:commandLink style="display: none;" id="update" value="更新" action="#{siteIndexPage.update}"  onclick="setActionName(event)" />
+        <h:commandLink style="display: none;" id="group" value="グループ" action="#{siteIndexPage.goGroupIndex}"  onclick="setActionName(event)" />
+        <h:commandButton style="display: none;" id="delete" value="削除" action="#{siteIndexPage.delete}"  onclick="setActionName(event); return confirmButton();" />
+
+        <div id="condition">
+          <div class="group">
+            <span class="condition-group-caption">検索条件</span>
+            <f:validateBean validationGroups="#{siteIndexPage.validationGroups}">
+            <div class="row">
+              <div class="four columns">
+                <h:outputLabel for="searchCode" value="拠点コード"/>
+                <h:inputText id="searchCode" value="#{siteIndexPage.code}" maxlength="10" styleClass="u-full-width"/>
+                <h:message for="searchCode" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+              </div>
+              <div class="eight columns">
+                <h:outputLabel for="searchName" value="拠点名"/>
+                <h:inputText id="searchName" value="#{siteIndexPage.name}" maxlength="100" styleClass="u-full-width"/>
+                <h:message for="searchName" infoClass="info" errorClass="error"
+                    warnClass="warn" fatalClass="fatal" />
+              </div>
+            </div>
+            <div class="action">
+              <h:commandButton id="search" value="検索"
+                               styleClass="button-primary"
+                               action="#{siteIndexPage.search}" onclick="setActionName(event)" />
+              <h:outputLink id="clear" value="javascript:void(0)" onclick="clearCondition();window.scroll(0,0);" styleClass="button">
+                <h:outputText value="検索条件クリア"  />
+              </h:outputLink>
+            </div>
+            </f:validateBean>
+          </div>
+        </div>
+        <h:inputHidden id="viewRender" value="#{siteIndexPage.dataCount}" />
+        <div id="paging" class="row">
+          <ui:fragment rendered="#{!empty siteIndexPage.dataCount and siteIndexPage.dataCount != '0'}">
+          <div class="one column list-count">
+             <h:outputText id="dataCount" value="#{siteIndexPage.dataCount}"  />
+          </div>
+          <div class="one column list-range">
+             <h:outputText id="pageDisplayNo" value="#{siteIndexPage.pageDisplayNo}"  />
+          </div>
+          <div class="three columns list-nav">
+            <ui:fragment rendered="#{siteIndexPage.previous}">
+              <a id="prePrevious" href="#" onclick="clickComponent('previous');">
+                <h:outputText value="#{siteIndexPage.previousLabel}"/>
+              </a>
+            </ui:fragment>
+            <h:outputText rendered="#{!siteIndexPage.previous}" value="#{siteIndexPage.previousLabel}" />
+            <ui:repeat id="pagingNo" var="value" value="#{siteIndexPage.pagingNo}">
+              <ui:fragment rendered="#{value != siteIndexPage.pageNo}">
+                <a id="prePagerPageNo" href="#" onclick="setPageNo('#{value}');clickComponent('pagerPageNo');">
+                  <h:outputText value="#{value}"/>
+                </a>
+              </ui:fragment>
+              <h:outputText rendered="#{value == siteIndexPage.pageNo}" value="#{value}" />
+            </ui:repeat>
+            <h:inputHidden id="pageNo" value="#{siteIndexPage.pageNo}" />
+            <ui:fragment rendered="#{siteIndexPage.next}">
+              <a id="preNext" href="#" onclick="clickComponent('next');">
+                <h:outputText value="#{siteIndexPage.nextLabel}"/>
+              </a>
+            </ui:fragment>
+            <h:outputText rendered="#{!siteIndexPage.next}" value="#{siteIndexPage.nextLabel}" />
+          </div>
+          </ui:fragment>
+          <div class="four columns list-action">
+            <ui:fragment rendered="#{!empty siteIndexPage.dataCount and siteIndexPage.dataCount != '0'}">
+              出力形式:
+              <a id="preDownloadExcel" href="#" onclick="clickComponent('downloadExcel');">Excel</a>
+            </ui:fragment>
+            <h:commandLink id="create" value="新しい拠点を追加"
+                styleClass="button"
+                rendered="#{siteIndexPage.permitMasterEdit}"
+                action="#{siteIndexPage.create}" onclick="setActionName(event)" />
+          </div>
+        </div>
+        <ui:fragment rendered="#{!empty siteIndexPage.dataCount and siteIndexPage.dataCount != '0'}">
+        <div id="viewArea" class="result-area">
+          <h:dataTable id="siteIndex"  var="item"
+              value="#{siteIndexPage.dataModel}"
+              columnClasses="number id-width,text code-width,text width500,list-row-action" rowClasses="odd,even"
+              cellpadding="5" styleClass="list"
+              preserveDataModel="true" rowIndexVar="num" footerClass="footer">
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="ID" />
+              </f:facet>
+              <h:outputText id="id" value="#{item.id}" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="拠点コード" />
+              </f:facet>
+              <h:outputText id="code" value="#{item.siteCd}" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="拠点名" />
+              </f:facet>
+              <h:outputText id="name" value="#{item.name}" />
+            </h:column>
+            <h:column>
+              <ui:fragment rendered="#{siteIndexPage.permitMasterEdit}" >
+                <a id="preUpdate" class="button" href="#" onclick="setId('#{item.id}', '#{item.projectId}', '#{item.versionNo}');clickComponent('update');">編集</a>
+              </ui:fragment>
+              <ui:fragment rendered="#{siteIndexPage.permitMasterEdit}" >
+              <a id="preGroup" class="button" href="#" onclick="setId('#{item.id}', '#{item.projectId}', '#{item.versionNo}');clickComponent('group');">グループ</a>
+              <h:commandButton type="button" id="preDelete" value="削除"
+                               styleClass="button-primary"
+                               onclick="setId('#{item.id}', '#{item.projectId}', '#{item.versionNo}');clickComponent('delete');" />
+              </ui:fragment>
+            </h:column>
+          </h:dataTable>
+        </div>
+        </ui:fragment>
+      </h:form>
+    </f:view>
+  </ui:define>
+</ui:composition>
+</html>

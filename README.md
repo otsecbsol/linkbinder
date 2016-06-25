@@ -70,7 +70,7 @@ root@xxxx:/# sqlplus sys/oracle as sysdba @/root/ddl/create_user.sql
 root@xxxx:/# exit
 ```
 ```
-./gradlew update
+./gradlew update -PrunList=production
 ```
 アプリケーションをビルドします。
 ```

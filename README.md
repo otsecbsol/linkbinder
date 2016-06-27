@@ -33,7 +33,7 @@ Link Binderは、基本機能だけでも次の機能を実現しています。
 
 Link Binderは、全文検索インデックス操作やメール通知を行うための`Subscriber`と、Webブラウザ上でユーザーインターフェイスを提供する`Web`の2つのアプリケーションで構成されています。
 
-デモ的な動作であれば、後述するインストール手順を実施後に以下コマンドを実行すると、Link Binderを起動することができます。
+デモ的な動作確認を行いたい場合は、後述するインストール手順を実施後に以下コマンドを実行してください。Link Binderを起動することができます。
 
 ### Subscriberの起動
 
@@ -70,7 +70,7 @@ root@xxxx:/# sqlplus sys/oracle as sysdba @/root/ddl/create_user.sql
 root@xxxx:/# exit
 ```
 ```
-./gradlew update
+./gradlew update -PrunList=production
 ```
 アプリケーションをビルドします。
 ```

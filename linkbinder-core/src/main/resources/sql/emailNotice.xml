@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="emailNotice">
+
+  <resultMap id="result" class="jp.co.opentone.bsol.linkbinder.dto.notice.EmailNotice">
+    <result property="id" column="id" />
+    <result property="projectId" column="project_id" />
+    <result property="emailNoticeCategory" column="notice_category" />
+    <result property="emailNoticeEventCd" column="event_cd" />
+    <result property="emailNoticeAddressType" column="notice_address_type" />
+    <result property="emailNoticeStatus" column="notice_status" />
+    <result property="notifiedAt" column="notified_at" />
+    <result property="mhSubject" column="mh_subject" />
+    <result property="mhTo" column="mh_to" />
+    <result property="mhFrom" column="mh_from" />
+    <result property="mhErrorsTo" column="mh_errors_to" />
+    <result property="corresponId" column="correspon_id" />
+    <result property="mailBody" column="mail_body" />
+    <result property="createdBy.empNo" column="created_by" />
+    <result property="createdAt" column="created_at" />
+    <result property="updatedBy.empNo" column="updated_by" />
+    <result property="updatedAt" column="updated_at" />
+    <result property="deleteNo" column="delete_no" />
+
+  </resultMap>
+
+  <insert id="create">
+    <selectKey resultClass="long" keyProperty="id">
+        SELECT s_email_notice_id.NEXTVAL AS id FROM dual
+    </selectKey>
+    INSERT INTO email_notice (
+      id,
+      project_id,
+      notice_category,
+      event_cd,
+      notice_address_type,
+      notice_status,
+      notified_at,
+      mh_subject,
+      mh_to,
+      mh_from,
+      mh_errors_to,
+      correspon_id,
+      mail_body,
+      created_by,
+      updated_by,
+      delete_no
+    ) VALUES (
+      #id#,
+      #projectId#,
+      #emailNoticeCategory#,
+      #emailNoticeEventCd#,
+      #emailNoticeAddressType#,
+      #emailNoticeStatus#,
+      #notifiedAt#,
+      #mhSubject#,
+      #mhTo#,
+      #mhFrom#,
+      #mhErrorsTo#,
+      #corresponId#,
+      #mailBody#,
+      #createdBy.empNo#,
+      #updatedBy.empNo#,
+      0
+    )
+  </insert>
+
+  <update id="update">
+    UPDATE email_notice
+    SET
+      updated_by = #updatedBy.empNo#,
+      updated_at = SYSTIMESTAMP,
+      notice_status = #emailNoticeStatus#,
+      notified_at = #notifiedAt#
+    WHERE
+      id = #id#
+  </update>
+
+  <select id="findByCorresponId" resultMap="result">
+    SELECT * FROM v_email_notice
+    WHERE correspon_id = #corresponId#
+    <dynamic>
+      AND notice_status IN
+        (-1
+        <iterate property="statuses" conjunction="," prepend=", ">
+          #statuses[]#
+        </iterate>
+        )
+    </dynamic>
+    ORDER BY id
+  </select>
+</sqlMap>
+

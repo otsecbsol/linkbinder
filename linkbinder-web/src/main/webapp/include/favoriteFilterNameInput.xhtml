@@ -1,0 +1,119 @@
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:component>
+<div id="input-dialog" style="display:none; position: absolute;"  class="dialog favorite-filter-dialog">
+  <f:validateBean validationGroups="#{projectHomePage.validationGroups}">
+    <table class="diaTbl" border="0" cellpadding="5" cellspacing="3" style="font-size: 12px;">
+    <tr>
+      <!-- label -->
+      <td id="nameInputMessage" >
+        <h:outputLabel value="お気に入り条件の名前を入力してください" />
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <!-- global message -->
+        <h:panelGroup id="favoriteFilterGlobalMessage">
+            <h:messages globalOnly="true" showDetail="true" showSummary="false"
+                infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal"
+                rendered="#{projectHomePage.favoriteFilterDisplay}" />
+        </h:panelGroup>
+      </td>
+    </tr>
+    <tr>
+      <!-- input -->
+      <td style="fontSize: 12px;">
+          <h:inputText id="nameInputText" value="#{projectHomePage.targetFavoriteFilterName}"
+              maxlength="100"
+              style="type: text; width: 360px;" />
+      </td>
+    </tr>
+    <tr>
+      <td>
+          <!-- message -->
+          <h:panelGroup id="favoriteFilterMessage">
+            <h:message for="nameInputText" errorClass="error" warnClass="warn" infoClass="info" />
+          </h:panelGroup>
+      </td>
+    </tr>
+    <tr>
+      <!-- action -->
+      <td id="label" align="right" style="fontSize: 12px;">
+        <h:commandLink id="nameInputOkLink" value="OK" style="margin-right:15px;"
+            onclick="setActionName(event);preProcess(event, true);"
+            action="#{projectHomePage.updateFavoriteFilter}">
+            <f:ajax
+                execute=":form:actionName :form:favoriteFilterId :form:nameInputText"
+                render=":form:favoriteFilterListPanel :form:globalMessage :form:favoriteFilterMessage :form:favoriteFilterDisplay :form:favoriteFilterGlobalMessage"
+                onevent="onComplete"/>
+        </h:commandLink>
+        <h:commandLink id="renameClose" value="閉じる" style="margin-right:15px;"
+            action="#{projectHomePage.closeFavoriteFilterDialog}"
+            onclick="preProcess(event, true);" >
+            <f:ajax
+                render=":form:favoriteFilterDisplay :form:globalMessage :form:favoriteFilterGlobalMessage"
+                onevent="onComplete"/>
+        </h:commandLink>
+      </td>
+    </tr>
+    </table>
+    <h:inputHidden id="favoriteFilterDisplay" value="#{projectHomePage.favoriteFilterDisplay}" />
+  </f:validateBean>
+<script type="text/javascript">
+    <!--
+    function onComplete (event) {
+        Spinner.onStatusChange(event);
+        if (event.status != 'success') {
+          return null;
+        }
+        enableAction();
+        var isDisplay = document.getElementById('form:favoriteFilterDisplay').value;
+        if (isDisplay == 'false') {
+          Dialog.close('input-dialog');
+          refreshList();
+        }
+    }
+    function refreshList() {
+        var dispAll = document.getElementById('form:displayAllFavoriteFilter').value;
+        if (dispAll == 'false') {
+          displayDetailList(false, 'form:displayAllFavoriteFilter', 'ffList', 'favoriteFilterDetailedDisplay');
+        } else {
+          displayDetailList(true, 'form:displayAllFavoriteFilter', 'ffList', 'favoriteFilterDetailedDisplay');
+        }
+    }
+    function initNameInput(id, dialog, position) {
+        // initialize
+        document.getElementById('form:favoriteFilterMessage').innerHTML = "";
+        // preparaion
+        document.getElementById('form:favoriteFilterId').value = id;
+
+        // display default input name.
+        var defaultName = document.getElementById('form:favoriteFilterName').value;
+        document.getElementById('form:nameInputText').value = defaultName;
+
+        // position config
+        dialog.style.position = "absolute";
+    }
+    -->
+</script>
+</div>
+</ui:component>
+</html>

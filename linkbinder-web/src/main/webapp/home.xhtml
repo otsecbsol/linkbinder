@@ -1,0 +1,83 @@
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/include/template.xhtml">
+  <ui:define name="title">ホーム</ui:define>
+
+  <ui:define name="jsInner">
+    $(document).ready(function() {
+      $('#form\\:projectSummary').highlightRows();
+    });
+  </ui:define>
+
+  <ui:define name="body">
+    <f:view>
+      <h:form id="form" onsubmit="return disableSubmit();">
+        <h:inputHidden id="actionName" value="#{homePage.actionName}" />
+        <div id="main">
+          <h:dataTable id="projectSummary"
+              styleClass="list"
+              columnClasses="text,number,number,number"
+              rowClasses="odd,even"
+              value="#{homePage.dataModel}"
+              var="projectSummary"
+              footerClass="footer">
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="プロジェクト" />
+              </f:facet>
+              <h:commandLink id="project" action="#{homePage.goProjectHome}"
+                value="  #{projectSummary.project.projectId} : #{projectSummary.project.nameE} "
+                onclick="setActionName(event)" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="To" />
+              </f:facet>
+              <h:commandLink id="attention"
+                action="#{homePage.goCorresponIndex}" value="#{projectSummary.attentionCount}"
+                onclick="setActionName(event); document.getElementById('form:attentionSearch').value = true" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="担当" />
+              </f:facet>
+              <h:commandLink rendered="#{projectSummary.usePersonInCharge}"
+                id="personInCharge" action="#{homePage.goCorresponIndex}"
+                value="#{projectSummary.personInChargeCount}"
+                onclick="setActionName(event); document.getElementById('form:personInChargeSearch').value = true" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="Cc" />
+              </f:facet>
+              <h:commandLink id="cc" action="#{homePage.goCorresponIndex}"
+                value="#{projectSummary.ccCount}"
+                onclick="setActionName(event); document.getElementById('form:ccSearch').value = true" />
+            </h:column>
+          </h:dataTable>
+          <h:inputHidden id="attentionSearch" value="#{homePage.attentionSearch}" />
+          <h:inputHidden id="personInChargeSearch" value="#{homePage.personInChargeSearch}" />
+          <h:inputHidden id="ccSearch" value="#{homePage.ccSearch}" />
+        </div>
+      </h:form>
+    </f:view>
+  </ui:define>
+</ui:composition>
+</html>

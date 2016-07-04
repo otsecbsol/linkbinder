@@ -1,0 +1,214 @@
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/include/template.xhtml">
+  <ui:define name="title">#{userSettingsPage.title}</ui:define>
+  <ui:define name="jsInner"></ui:define>
+
+  <ui:define name="body">
+    <f:view>
+      <h:form id="form" onsubmit="return disableSubmit();">
+        <h:inputHidden id="actionName" value="#{userSettingsPage.actionName}" />
+        <f:validateBean validationGroups="#{userSettingsPage.validationGroups}">
+        <span class="inner-title">一般</span>
+        <div id="main">
+          <div class="row">
+            <div class="ten columns">
+              <h:outputLabel value="ユーザー"/>
+              <h:outputText id="user" value="#{userSettingsPage.userSettings.user.label}" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="ten columns">
+              <h:outputLabel value="最終ログイン日時"/>
+              <h:outputText id="lastLogedinAt" value="#{userSettingsPage.userSettings.user.lastLoggedInAt}">
+                <f:convertDateTime pattern="yyyy-MM-dd HH:mm:ss" />
+              </h:outputText>
+            </div>
+          </div>
+          <f:validateBean validationGroups="#{userSettingsPage.emailAddressValidationGroups}">
+          <ui:fragment rendered="#{userSettingsPage.editingProject}">
+            <div class="row">
+              <div class="six columns">
+                <h:outputLabel for="inPassword" value="パスワード"/>
+                <h:inputSecret id="inPassword"
+                         value="#{userSettingsPage.password}" maxlength="31"
+                         styleClass="u-full-width"/>
+                 <h:message for="inPassword" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+             </div>
+            </div>
+            <div class="row">
+              <div class="six columns">
+                <h:outputLabel for="inPasswordConf" value="パスワード(確認用)"/>
+                <h:inputSecret id="inPasswordConf"
+                               value="#{userSettingsPage.passwordConf}"
+                               maxlength="31"
+                               styleClass="u-full-width"
+                               rendered="#{userSettingsPage.editingProject}" />
+                <h:message for="inPasswordConf" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+              </div>
+
+            </div>
+          </ui:fragment>
+          </f:validateBean>
+          <f:validateBean validationGroups="#{userSettingsPage.emailAddressValidationGroups}">
+          <div class="row">
+            <div class="seven columns">
+              <h:outputLabel for="email_address" value="メールアドレス" styleClass="required"/>
+              <div>
+                <h:inputText id="email_address"
+                            value="#{userSettingsPage.defaultEmailAddress}"
+                            styleClass="width300"
+                            rendered="#{userSettingsPage.editingProject}" />
+                <h:commandLink id="email_notification_setting"
+                               action="#{userSettingsPage.goEmailNotificationSetting}" value="通知情報編集"
+                               rendered="#{userSettingsPage.editingProject}"
+                               onclick="setActionName(event)" />
+              </div>
+              <h:message for="email_address" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+              <h:outputText id="nonSystemAdmin" value="Unknown" rendered="#{!userSettingsPage.editingProject}" />
+            </div>
+          </div>
+          </f:validateBean>
+          <div class="row">
+            <div class="ten columns">
+              <h:outputLabel for="defaultProjectId" value="最優先するプロジェクト" styleClass="required"/>
+              <h:selectOneMenu id="defaultProjectId"
+                  value="#{userSettingsPage.defaultProjectId}"
+                  styleClass="u-full-width"
+                  rendered="#{userSettingsPage.projectSelectItems != null and userSettingsPage.editingProject}">
+                <f:selectItems value="#{userSettingsPage.projectSelectItems}" />
+              </h:selectOneMenu>
+              <h:message for="defaultProjectId" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+              <h:outputText id="lastLogin" value="Unknown" rendered="#{!userSettingsPage.editingProject}" />
+            </div>
+          </div>
+        </div>
+        <hr/>
+        <span class="inner-title">プロジェクト一覧</span>
+        <div id="main">
+          <ui:repeat id="projects" var="row" value="#{userSettingsPage.userSettings.projectUserSettingList}">
+            <ui:fragment rendered="#{!empty row.project}">
+              <div class="row">
+                <h:outputText styleClass="label"
+                    value="#{row.project.projectId} : #{row.project.nameE}" />
+                <h:outputText styleClass="label" value=" (管理者) "
+                    rendered="#{!userSettingsPage.userSettings.systemAdmin and row.projectAdmin}" />
+                <h:outputText styleClass="label" value=" (一般ユーザー) "
+                    rendered="#{!userSettingsPage.userSettings.systemAdmin and row.normalUser}" />
+              </div>
+              <div class="row">
+                <div class="twelve columns">
+                  <h:outputLabel value="会社"/>
+                  <h:outputText rendered="#{row.projectUser.projectCompany != null}"
+                      value="#{row.projectUser.projectCompany.companyCd} : #{row.projectUser.projectCompany.name}" />
+                </div>
+              </div>
+              <div class="row">
+                <div class="twelve columns">
+                  <h:outputLabel for="projectRole" value="役割"/>
+                  <h:inputText id="projectRole" rendered="#{userSettingsPage.editingProjectUserProfile}" value="#{row.role}" maxlength="50" />
+                  <h:outputText rendered="#{!userSettingsPage.editingProjectUserProfile}" value="#{row.role}" />
+                  <h:message for="projectRole" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+                </div>
+              </div>
+              <div class="row">
+                <div class="twelve columns">
+                  <h:outputLabel for="defaultCorresponGroupId" value="グループ"/>
+                  <h:selectOneRadio id="defaultCorresponGroupId"
+                                    styleClass="select-group"
+                                    layout="pageDirection" value="#{row.defaultCorresponGroupId}"
+                                    disabled="#{!userSettingsPage.editingProjectUserProfile}"
+                                    rendered="#{!row.groupListEmpty}">
+                    <f:selectItems value="#{row.groupSelectItems}" styleClass="label-body"/>
+                  </h:selectOneRadio>
+                  <h:message for="defaultCorresponGroupId" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+                </div>
+              </div>
+            </ui:fragment>
+          </ui:repeat>
+
+          <ui:remove>
+          <h:dataTable id="projects" var="row" value="#{userSettingsPage.userSettings.projectUserSettingList}">
+            <h:column>
+              <h:panelGrid columns="4" rendered="#{!empty row.project}">
+                <f:facet name="header">
+                  <h:panelGroup>
+                    <h:outputText styleClass="label" value="プロジェクト : " />
+                    <h:outputText styleClass="label" style="margin-left: 10px;"
+                        value="#{row.project.projectId} : #{row.project.nameE}" />
+                    <h:outputText styleClass="label" value=" (管理者) "
+                        rendered="#{!userSettingsPage.userSettings.systemAdmin and row.projectAdmin}" />
+                    <h:outputText styleClass="label" value=" (一般ユーザー) "
+                        rendered="#{!userSettingsPage.userSettings.systemAdmin and row.normalUser}" />
+                  </h:panelGroup>
+                </f:facet>
+                <h:outputText value="会社" />
+                <h:outputText value=":" />
+                <h:outputText value="" escape="false" />
+                <h:panelGroup style="text-align:left;">
+                  <h:outputText rendered="#{row.projectUser.projectCompany != null}"
+                      value="#{row.projectUser.projectCompany.companyCd} : #{row.projectUser.projectCompany.name}" />
+                </h:panelGroup>
+                <h:outputText value="役割" />
+                <h:outputText value=":" />
+                <h:outputText value="" escape="false" />
+                <h:panelGroup style="text-align:left;">
+                  <h:inputText id="projectRole" rendered="#{userSettingsPage.editingProjectUserProfile}" value="#{row.role}" maxlength="50" />
+                  <h:outputText rendered="#{!userSettingsPage.editingProjectUserProfile}" value="#{row.role}" />
+                  <h:message for="projectRole" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+                </h:panelGroup>
+                <h:outputText value="グループ" />
+                <h:outputText value=":" />
+                <h:outputText value="*" rendered="#{!row.groupListEmpty}" escape="false" />
+                <h:panelGroup>
+                  <h:selectOneRadio id="defaultCorresponGroupId"
+                      layout="pageDirection" value="#{row.defaultCorresponGroupId}"
+                      disabled="#{!userSettingsPage.editingProjectUserProfile}"
+                      rendered="#{!row.groupListEmpty}">
+                    <f:selectItems value="#{row.groupSelectItems}" />
+                  </h:selectOneRadio>
+                  <h:message for="defaultCorresponGroupId" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+                </h:panelGroup>
+              </h:panelGrid>
+            </h:column>
+          </h:dataTable>
+          </ui:remove>
+        </div>
+        </f:validateBean>
+
+        <div class="action-edit">
+          <h:commandButton id="save" value="保存"
+                           action="#{userSettingsPage.save}" onclick="setActionName(event);"
+                           styleClass="button-primary"
+                           rendered="#{userSettingsPage.editingProject || userSettingsPage.editingProjectUserProfile}"/>
+          <h:commandLink id="back" value="戻る"
+                           rendered="#{userSettingsPage.backPage != null}"
+                           styleClass="button"
+                           action="#{userSettingsPage.back}" onclick="setActionName(event);" />
+        </div>
+      </h:form>
+    </f:view>
+  </ui:define>
+</ui:composition>
+</html>

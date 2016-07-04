@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="emailNoticeRecvSetting">
+
+  <resultMap id="result" class="jp.co.opentone.bsol.linkbinder.dto.notice.EmailNoticeRecvSetting">
+    <result property="id"                        column="id" />
+    <result property="projectId"                 column="project_id" />
+    <result property="empNo"                     column="emp_no" />
+    <result property="receiveWorkflow"           column="receive_workflow" />
+    <result property="recvDistributionAttention" column="recv_distribution_attention" />
+    <result property="recvDistributionCc"        column="recv_distribution_cc" />
+    <result property="createdBy"                 column="created_by" />
+    <result property="createdAt"                 column="created_at" />
+    <result property="updatedBy"                 column="updated_by" />
+    <result property="updatedAt"                 column="updated_at" />
+    <result property="deleteNo"                  column="delete_no" />
+  </resultMap>
+
+  <resultMap id="resultEmailNotice" class="jp.co.opentone.bsol.linkbinder.dto.notice.EmailNoticeRecvSetting">
+    <result property="empNo"                     column="emp_no" />
+  </resultMap>
+
+  <resultMap id="resultEmailNoticeRecvSetting" class="jp.co.opentone.bsol.linkbinder.dto.notice.EmailNoticeRecvSetting">
+    <result property="id"                        column="id" />
+    <result property="nameE"                     column="name_e" />
+    <result property="projectId"                 column="project_id" />
+    <result property="receiveWorkflow"           column="receive_workflow" />
+    <result property="recvDistributionAttention" column="recv_distribution_attention" />
+    <result property="recvDistributionCc"        column="recv_distribution_cc" />
+  </resultMap>
+
+<!-- 共通的に使用するSELECT,FROM句 -->
+  <sql id="selectFrom">
+    SELECT
+      id,
+      project_id,
+      emp_no,
+      receive_workflow,
+      recv_distribution_attention,
+      recv_distribution_cc,
+      created_by,
+      created_at,
+      updated_by,
+      updated_at,
+      delete_no
+    FROM
+      v_email_notice_recv_setting
+  </sql>
+
+  <insert id="create">
+    <selectKey resultClass="long" keyProperty="id">
+        SELECT s_email_notice_recv_setting_id.NEXTVAL AS id FROM dual
+    </selectKey>
+    INSERT INTO email_notice_recv_setting (
+      id,
+      project_id,
+      emp_no,
+      receive_workflow,
+      recv_distribution_attention,
+      recv_distribution_cc,
+      created_by,
+      updated_by
+    ) VALUES (
+      #id#,
+      #projectId#,
+      #empNo#,
+      #receiveWorkflow#,
+      #recvDistributionAttention#,
+      #recvDistributionCc#,
+      #createdBy.empNo#,
+      #updatedBy.empNo#
+    )
+  </insert>
+
+  <!-- Workflow 2.Preparer、Person in Chargeの送付先取得 -->
+  <select id="findSendApplyUser" resultMap="resultEmailNotice">
+    SELECT
+      nrs.emp_no
+    FROM
+      v_project_user nrs
+    WHERE
+      nrs.project_id = #projectId#
+    AND
+      nrs.emp_no = #empNo#
+    AND
+      NOT EXISTS(
+        SELECT
+          1
+        FROM
+          v_email_notice_recv_setting mnrs
+        WHERE
+          mnrs.project_id = #projectId#
+        AND
+          mnrs.emp_no = nrs.emp_no
+        AND
+          mnrs.receive_workflow = 0
+      )
+  </select>
+
+  <!-- E-mail通知受信設定画面の初期表示 -->
+  <select id="findByEmpNo" resultMap="resultEmailNoticeRecvSetting">
+    SELECT
+      enrs.id,
+      sp.name_e,
+      pu.project_id,
+      enrs.receive_workflow,
+      enrs.recv_distribution_attention,
+      enrs.recv_distribution_cc
+    FROM
+      v_system_project sp,
+      v_project_user pu
+      LEFT OUTER JOIN v_email_notice_recv_setting enrs
+      ON enrs.project_id = pu.project_id
+      AND enrs.emp_no = pu.emp_no
+      AND enrs.delete_no = 0
+    WHERE
+      pu.emp_no = #empNo#
+    AND
+      pu.project_id = sp.project_id
+    ORDER BY
+      sp.project_id
+  </select>
+
+  <!-- E-mail通知受信設定の更新  -->
+  <update id="update">
+    UPDATE
+      email_notice_recv_setting
+    SET
+      receive_workflow = #receiveWorkflow#,
+      recv_distribution_attention = #recvDistributionAttention#,
+      recv_distribution_cc = #recvDistributionCc#,
+      updated_by = #updatedBy.empNo#,
+      updated_at = SYSTIMESTAMP
+    WHERE
+      id = #id#
+    AND
+      project_id = #projectId#
+    AND
+      emp_no = #empNo#
+  </update>
+</sqlMap>

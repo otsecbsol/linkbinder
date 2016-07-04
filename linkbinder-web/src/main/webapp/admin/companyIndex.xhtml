@@ -1,0 +1,229 @@
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/include/template.xhtml">
+  <ui:define name="title">会社一覧</ui:define>
+  <ui:define name="cssOuter">
+    <link type="text/css" href="#{contextPath}/resource/#{v}/stylesheet/custom/normalList.css" rel="stylesheet" />
+  </ui:define>
+  <ui:define name="jsOuter"></ui:define>
+  <ui:define name="jsInner">
+    <!--
+    function clearCondition() {
+      var code = document.getElementById('form:code');
+      var name = document.getElementById('form:name');
+      code.value = "";
+      name.value = "";
+
+      if (document.getElementById('form:role') != null) {
+        var role = document.getElementById('form:role');
+        role.value = "";
+      }
+
+      return false;
+    }
+
+    function setId(id, no){
+      var rowId = document.getElementById('form:companyRowId');
+      rowId.value = id;
+      var verNo = document.getElementById('form:companyVerNo');
+      verNo.value = no
+    }
+
+    $(document).ready(function() {
+      $('#form\\:companyIndex').highlightRows();
+    });
+    -->
+  </ui:define>
+
+  <ui:define name="body">
+    <f:view>
+      <h:form id="form" onsubmit="return disableSubmit();">
+        <h:inputHidden id="actionName" value="#{companyIndexPage.actionName}" />
+
+        <h:inputHidden id="scCode" value="#{companyIndexPage.scCode}" />
+        <h:inputHidden id="scName" value="#{companyIndexPage.scName}" />
+        <h:inputHidden id="scRole" value="#{companyIndexPage.scRole}" />
+        <h:inputHidden id="pageNo" value="#{companyIndexPage.pageNo}" />
+
+        <h:inputHidden id="companyRowId" value="#{companyIndexPage.companyRowId}" />
+        <h:inputHidden id="companyVerNo" value="#{companyIndexPage.companyVerNo}" />
+
+        <h:commandLink style="display: none;" id="previous" action="#{companyIndexPage.movePrevious}" onclick="deleteAllLink('paging');setActionName(event)" />
+        <h:commandLink style="display: none;" id="pagerPageNo" action="#{companyIndexPage.changePage}" onclick="deleteAllLink('paging');setActionName(event);" />
+        <h:commandLink style="display: none;" id="next" action="#{companyIndexPage.moveNext}" onclick="deleteAllLink('paging');setActionName(event)" />
+
+        <h:commandLink style="display: none;" id="downloadExcel" value="Excelダウンロード" action="#{companyIndexPage.downloadExcel}" onclick="setActionName(event)" />
+        <h:commandLink style="display: none;" id="update" value="更新"
+            action="#{companyIndexPage.update}" onclick="setActionName(event)" />
+        <h:commandLink style="display: none;" id="editMember" value="メンバー編集"
+            rendered="#{companyIndexPage.projectId != null}"
+            action="#{companyIndexPage.editMember}" onclick="setActionName(event)" />
+        <h:commandButton style="display: none;" id="delete" value="削除"
+            action="#{companyIndexPage.delete}"
+            onclick="setActionName(event); return confirmButton();" />
+
+        <div id="condition">
+          <div class="group">
+            <span class="condition-group-caption">検索条件</span>
+            <f:validateBean validationGroups="#{companyIndexPage.validationGroups}">
+            <div class="row">
+              <div class="four columns">
+                <h:outputLabel for="code" value="会社コード"/>
+                <h:inputText id="code" value="#{companyIndexPage.companyCd}" maxlength="10" styleClass="u-full-width"/>
+                <h:message for="code" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+              </div>
+              <div class="eight columns">
+                <h:outputLabel for="name" value="会社名"/>
+                <h:inputText id="name" value="#{companyIndexPage.name}" maxlength="100" styleClass="u-full-width"/>
+                <h:message for="name" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+              </div>
+            </div>
+            <ui:fragment rendered="#{companyIndexPage.projectId != null}">
+            <div class="row">
+              <div class="eight columns">
+                <h:outputLabel for="role" value="#{companyIndexPage.roleDisplay}" />
+                <h:inputText id="role" value="#{companyIndexPage.role}" maxlength="50" />
+                <h:message for="role" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+              </div>
+            </div>
+            </ui:fragment>
+            <div class="action">
+              <h:commandButton id="search" value="検索"
+                               styleClass="button-primary"
+                               action="#{companyIndexPage.search}"
+                               onclick="setActionName(event)" />
+              <h:outputLink id="clear" value="javascript:void(0)" onclick="clearCondition();window.scroll(0,0);" styleClass="button">
+                <h:outputText value="検索条件クリア"/>
+              </h:outputLink>
+            </div>
+            </f:validateBean>
+          </div>
+        </div>
+
+        <h:inputHidden id="viewRender" value="#{companyIndexPage.dataCount}" />
+        <h:inputHidden id="viewProjectAdminRender" value="#{companyIndexPage.projectId}" />
+
+        <ui:fragment rendered="#{companyIndexPage.updatableCompany and !empty companyIndexPage.projectId}">
+        <f:validateBean validationGroups="#{companyIndexPage.assignToValidationGroup}">
+        <div id="viewProjectAdmin" class="row">
+          <div class="twelve columns">
+            <h:outputLabel for="selectCompany" value="会社"/>
+            <h:selectOneMenu id="selectCompany" value="#{companyIndexPage.selectCompany}"
+                              rendered="#{companyIndexPage.selectCompanyList != null}">
+              <f:selectItems value="#{companyIndexPage.selectCompanyList}" />
+            </h:selectOneMenu>
+            <h:message for="selectCompany" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+            <h:commandButton id="assign" value="このプロジェクトへ適用する"
+                action="#{companyIndexPage.assignTo}"
+                onclick="setActionName(event)" styleClass="button" />
+          </div>
+        </div>
+        </f:validateBean>
+        </ui:fragment>
+
+          <div id="paging" class="row">
+            <ui:fragment rendered="#{!empty companyIndexPage.dataCount and companyIndexPage.dataCount != '0'}">
+            <div class="one column list-count">
+              <h:outputText id="dataCount" value="#{companyIndexPage.dataCount}"  />
+            </div>
+            <div class="one column list-range">
+              <h:outputText id="pageDisplayNo" value="#{companyIndexPage.pageDisplayNo}"  />
+            </div>
+            <div class="three columns list-nav">
+              <ui:fragment rendered="#{companyIndexPage.previous}">
+                <a id="prePrevious" href="#" onclick="clickComponent('previous');">
+                  <h:outputText value="#{companyIndexPage.previousLabel}"/>
+                </a>
+              </ui:fragment>
+              <h:outputText rendered="#{!companyIndexPage.previous}" value="#{companyIndexPage.previousLabel}" />
+              <ui:repeat id="pagingNo" var="value" value="#{companyIndexPage.pagingNo}">
+                <ui:fragment rendered="#{value != companyIndexPage.pageNo}">
+                  <a id="prePagerPageNo" href="#" onclick="setPageNo('#{value}');clickComponent('pagerPageNo');">
+                    <h:outputText value="#{value}"/>
+                  </a>
+                </ui:fragment>
+                <h:outputText rendered="#{value == companyIndexPage.pageNo}" value="#{value}" />
+              </ui:repeat>
+              <ui:fragment rendered="#{companyIndexPage.next}">
+                <a id="preNext" href="#" onclick="clickComponent('next');">
+                  <h:outputText value="#{companyIndexPage.nextLabel}"/>
+                </a>
+              </ui:fragment>
+              <h:outputText rendered="#{!companyIndexPage.next}" value="#{companyIndexPage.nextLabel}" />
+            </div>
+            </ui:fragment>
+            <div class="four columns list-action">
+              <ui:fragment rendered="#{!empty companyIndexPage.dataCount and companyIndexPage.dataCount != '0'}">
+                出力形式:
+                <a id="preDownloadExcel" href="#" onclick="clickComponent('downloadExcel');">Excel</a>
+              </ui:fragment>
+              <ui:fragment rendered="#{companyIndexPage.updatableCompany and empty companyIndexPage.projectId}">
+                <h:commandLink id="create" value="新しい会社を追加" styleClass="button"
+                    action="#{companyIndexPage.create}" onclick="setActionName(event)" />
+              </ui:fragment>
+            </div>
+          </div>
+        <ui:fragment rendered="#{!empty companyIndexPage.dataCount and companyIndexPage.dataCount != '0'}">
+          <div class="result-area">
+            <h:dataTable id="companyIndex" var="com"
+                value="#{companyIndexPage.companyModel}"
+                columnClasses="#{companyIndexPage.tableStyleClasses}" rowClasses="odd,even"
+                styleClass="list">
+              <h:column>
+                <f:facet name="header">
+                  <h:outputText value="ID" />
+                </f:facet>
+                <h:outputText value="#{com.id}" rendered="#{companyIndexPage.projectId == null}" />
+                <h:outputText value="#{com.projectCompanyId}" rendered="#{companyIndexPage.projectId != null}" />
+              </h:column>
+              <h:column>
+                <f:facet name="header">
+                  <h:outputText value="会社コード" />
+                </f:facet>
+                <h:outputText value="#{com.companyCd}" />
+              </h:column>
+              <h:column>
+                <f:facet name="header">
+                  <h:outputText value="会社名" />
+                </f:facet>
+                <h:outputText value="#{com.name}" />
+              </h:column>
+              <h:column rendered="#{companyIndexPage.projectId != null}">
+                <f:facet name="header">
+                  <h:outputText value="役割" />
+                </f:facet>
+                <h:outputText value="#{com.role}" />
+              </h:column>
+              <h:column rendered="#{companyIndexPage.updatableCompany}">
+                <a id="preUpdate" class="button" href="#" onclick="setId('#{com.id}', '#{com.versionNo}');clickComponent('update');">編集</a>
+                <ui:fragment rendered="#{companyIndexPage.projectId != null}">
+                  <a id="preEditMember" class="button" href="#" onclick="setId('#{com.id}', '#{com.versionNo}');clickComponent('editMember');">メンバー編集</a>
+                </ui:fragment>
+                <h:commandButton type="button" id="preDelete" value="削除" styleClass="button-primary"
+                    onclick="setId('#{com.id}', '#{com.versionNo}');clickComponent('delete');" />
+              </h:column>
+            </h:dataTable>
+          </div>
+        </ui:fragment>
+      </h:form>
+    </f:view>
+  </ui:define>
+</ui:composition>
+</html>

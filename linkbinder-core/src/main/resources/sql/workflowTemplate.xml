@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="workflowTemplate">
+
+  <resultMap id="result" class="jp.co.opentone.bsol.linkbinder.dto.WorkflowTemplate">
+    <result property="id"                                 column="id" />
+    <result property="user.empNo"                         column="emp_no" />
+    <result property="user.nameE"                         column="emp_name_e" />
+    <result property="user.role"                          column="role" />
+    <result property="workflowTemplateUserId"             column="workflow_template_user_id" />
+    <result property="workflowType"                       column="workflow_type" />
+    <result property="workflowNo"                         column="workflow_no" />
+    <result property="createdBy.empNo"                    column="created_by" />
+    <result property="createdBy.nameE"                    column="created_by_name" />
+    <result property="createdAt"                          column="created_at" />
+    <result property="updatedBy.empNo"                    column="updated_by" />
+    <result property="updatedBy.nameE"                    column="updated_by_name" />
+    <result property="updatedAt"                          column="updated_at" />
+    <result property="deleteNo"                           column="delete_no" />
+  </resultMap>
+
+  <select id="findByWorkflowTemplateUserId" resultMap="result">
+    SELECT
+      id,
+      workflow_template_user_id,
+      emp_no,
+      emp_name_e,
+      role,
+      workflow_type,
+      workflow_no,
+      created_by,
+      created_by_name,
+      created_at,
+      updated_by,
+      updated_by_name,
+      updated_at,
+      delete_no
+    FROM
+      v_workflow_template
+    WHERE
+      workflow_template_user_id = #value#
+    ORDER BY workflow_no ASC
+  </select>
+
+  <insert id="create">
+    <selectKey resultClass="long" keyProperty="id">
+      SELECT s_workflow_template_id.NEXTVAL AS id FROM dual
+    </selectKey>
+    INSERT INTO workflow_template(
+      id,
+      workflow_template_user_id,
+      emp_no,
+      workflow_type,
+      workflow_no,
+      created_by,
+      updated_by
+    ) VALUES (
+      #id#,
+      #workflowTemplateUserId#,
+      #user.empNo#,
+      #workflowType#,
+      #workflowNo#,
+      #createdBy.empNo#,
+      #updatedBy.empNo#
+    )
+  </insert>
+
+  <update id="deleteByWorkflowTemplateUserId">
+    UPDATE workflow_template
+    SET
+      updated_by = #updatedBy.empNo#,
+      updated_at = SYSTIMESTAMP,
+      delete_no  = s_workflow_template_dno.NEXTVAL
+    WHERE
+      workflow_template_user_id = #workflowTemplateUserId#
+    AND
+      delete_no = 0
+  </update>
+
+</sqlMap>

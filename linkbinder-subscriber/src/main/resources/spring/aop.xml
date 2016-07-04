@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="
+      http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+      http://www.springframework.org/schema/aop
+      http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+      http://www.springframework.org/schema/tx
+      http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+      http://www.springframework.org/schema/context
+      http://www.springframework.org/schema/context/spring-context-3.0.xsd
+      ">
+
+  <!-- 各層のオブジェクトのpublicメソッド呼び出しをトレース出力するための設定 -->
+  <aop:aspectj-autoproxy proxy-target-class="true"/>
+
+   <aop:config>
+     <!-- 各層オブジェクトのpublicメソッド呼出時のトレースログを出力する -->
+     <!-- Service -->
+     <aop:advisor id="traceService"
+                  pointcut="execution(* jp.co.opentone.bsol..service..*Service*.*(..))"
+                  advice-ref="traceServiceInterceptor"/>
+     <!-- DataAccess -->
+     <aop:advisor id="traceDataAccess"
+                  pointcut="execution(* jp.co.opentone.bsol..dao..*Dao*.*(..))"
+                  advice-ref="traceDataAccessInterceptor"/>
+   </aop:config>
+
+   <bean id="traceServiceInterceptor"
+         class="jp.co.opentone.bsol.framework.core.aop.MethodTraceInterceptor">
+        <property name="marker" value="#{T(jp.co.opentone.bsol.framework.core.log.Markers).SERVICE}"/>
+   </bean>
+   <bean id="traceDataAccessInterceptor"
+         class="jp.co.opentone.bsol.framework.core.aop.MethodTraceInterceptor">
+        <property name="marker" value="#{T(jp.co.opentone.bsol.framework.core.log.Markers).DATA_ACCESS}"/>
+   </bean>
+
+   <bean id="tracer"
+          class="jp.co.opentone.bsol.framework.core.tracer.MethodTracerImpl"/>
+</beans>
+

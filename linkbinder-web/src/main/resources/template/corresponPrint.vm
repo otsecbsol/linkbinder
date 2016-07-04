@@ -1,0 +1,1242 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Pragma" content="no-cache">
+  </head>
+  <title>Print</title>
+#if($util.isZip())
+  <body>
+#else
+  <body onload="window.print();">
+#end
+    <style type="text/css" media="print">
+    <!--
+    #print { display: none; }
+    #close { display: none; }
+    #print_bottom { display: none; }
+    #close_bottom { display: none; }
+    -->
+    </style>
+    <style type="text/css">
+    <!--
+body {
+  font-family: Verdana, "游ゴシック", YuGothic, "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, sans-serif;
+  font-size: 14px;
+  color:#484848;
+  margin: 0;
+  padding: 0;
+  min-width: 900px;
+}
+
+table {
+  font-size: 12px;
+}
+pre {
+  font-family: Verdana, "游ゴシック", YuGothic, "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, sans-serif;
+  color:#484848;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  white-space: pre-wrap;
+  word-wrap:  break-word;
+  word-break: break-all;
+}
+
+hr {
+  border: 0;
+  border-top: dashed 1px #d7d7d7;
+}
+
+#error-caption {
+  font-size: 14px;
+  font-weight: bold;
+}
+textarea {
+  font-family: Verdana, "游ゴシック", YuGothic, "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, sans-serif;
+
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+}
+
+blockquote {
+    margin-left: 30px;
+    padding-left: 15px;
+    border-left: 3px solid #ccc;
+}
+
+.reply-header {
+    margin-top: 3px;
+    margin-left: 10px;
+    font-size: 9px;
+    color: #212121;
+}
+
+a {
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 13px;
+}
+a:hover { background:#759FCF; color:#fff; }
+
+#header {
+  height:7.3em;
+  margin:0;
+  background :#009688;
+  color:#f8f8f8;
+  padding-left: 60px;
+  position:relative;
+}
+
+#project {
+  position: relative;
+  left: 50px;
+  
+  display: inline;
+  margin: 0;
+  white-space:nowrap;
+  color: #ffffff;
+}
+#login {
+  display: inline;
+  text-align: right;
+  position: relative;
+  top: 8px;
+  white-space:nowrap;
+  color: #ffffff;
+}
+#header a {
+  color:#f8f8f8;
+}
+
+#main {
+  margin: 2px 2px 2px 0px;
+  padding: 5px 5px 5px 8px;
+  border: 1px solid #d7d7d7;
+}
+.container {
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+}
+
+#main-menu {
+  width: 100%;
+  min-width: 500px;
+  height: 28px;
+  bottom: 0px;
+  left:6px;
+  margin-right: -500px;
+  position: absolute;
+}
+#main-menu ul { margin: 0;  padding: 0; }
+#main-menu li {
+  float:left;
+  list-style-type:none;
+  margin: 0px 2px 0px 0px;
+  padding: 0px 0px 0px 0px;
+  white-space:nowrap;
+}
+#main-menu li a {
+  display: block;
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 12px;
+  margin: 0;
+  padding: 4px 10px 10px 10px;
+}
+#main-menu li a:hover {
+  background:#759FCF;
+  color:#fff;
+}
+#main-menu li a.selected,
+#main-menu li a.selected:hover {
+  background:#fff;
+  color:#555;
+}
+#main-menu li#project_admin {
+    left: 85%;
+    position: absolute;
+    top: 0;
+}
+
+#content {
+  background-color: #fff;
+  border-right: 1px solid #ddd;
+  width: 98%;
+  margin: 0px;
+  padding: 6px 10px 10px 10px;
+  min-height: 600px;
+  z-index: 10;
+}
+
+#footer {
+}
+
+#content h3 {
+    margin: 0px 0px 0px 0px;
+}
+
+#content ul {
+  list-style-type:none;
+}
+
+#main {
+  margin: 2px 2px 2px 0px;
+  padding: 5px 5px 5px 8px;
+  border: 1px solid #d7d7d7;
+}
+
+#condition {
+  background-color: #EDE9E9;
+  border: 1px solid #B6B6B6;
+  display: block;
+  margin: 4px 1px 0px 0px;
+  padding: 5px 5px 5px 8px;
+  visibility: visible;
+
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+}
+
+#edit {
+  width: 100%;
+  margin: 4px 1px 0px 0px;
+  padding: 5px 5px 5px 8px;
+}
+#edit table td{
+  padding: 0 0 20px 0;
+}
+
+#layer {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  filter: alpha(opacity=50);
+  opacity: 0.5;
+  background-color: #cccccc;
+}
+
+.info  { color: #0000ff; }
+.error { color: #ff0000; }
+.warn  { color: #ffff00; }
+.fatal { color: #ff0000; }
+
+.top {
+  border-bottom: 1px solid #d7d7d7;
+  height: 30px;
+  margin: 0px 1px 15px 0px;
+  padding: 0;
+}
+.top #title {
+  position: relative;
+  top: 0px;
+  left:6px;
+  float: left;
+  font-weight: bold;
+  font-size: 16px;
+}
+.top ul {
+  margin: 0;
+  padding: 0;
+  float: right;
+}
+.top li {
+  float: left;
+  list-style-type:none;
+  margin: 0px 2px 0px 0px;
+  padding: 0px 0px 0px 0px;
+  white-space:nowrap;
+}
+.top li a {
+  display: block;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 14px;
+  margin: 0;
+  padding: 0px 10px 4px 10px;
+}
+.top li a:hover {
+  background:#759FCF;
+  color:#fff;
+}
+
+.bottom-border {
+  height: -1px;
+  margin: 5px 1px 2px 0px;
+  padding: 0;
+  border-bottom: 3px groove #cccccc;
+}
+
+.bottom {
+  height: 30px;
+  margin: 0px 1px 0px 0px;
+  padding: 0;
+}
+.bottom #title {
+  position: relative;
+  top: 0px;
+  left:6px;
+  float: left;
+  font-weight: bold;
+  font-size: 16px;
+}
+.bottom ul {
+  margin: 0;
+  padding: 0;
+  float: right;
+}
+.bottom li {
+  float: left;
+  list-style-type:none;
+  margin: 0px 2px 0px 0px;
+  padding: 0px 0px 0px 0px;
+  white-space:nowrap;
+}
+.bottom li a {
+  display: block;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 14px;
+  margin: 0;
+  padding: 0px 10px 4px 10px;
+}
+.bottom li a:hover {
+  background:#759FCF;
+  color:#fff;
+}
+.bottom li label {
+  display: block;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 14px;
+  margin: 0;
+  padding: 0px 10px 4px 10px;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.label {
+  font-weight: bold;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+.inner-title {
+  font-weight: bold;
+  vertical-align: top;
+  font-size: 16px;
+  margin-left: 10px;
+}
+
+#detail {
+  margin: 4px 1px 0px 0px;
+  padding: 5px 5px 5px 8px;
+}
+#detail table td{
+  padding: 0 0 20px 0;	
+}
+
+.detail {
+  width: 100%;
+  border: 1px solid #d7d7d7;
+  padding: 7px 7px 7px 7px;
+
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+}
+
+.necessary {
+  color: #FF0000;
+  font-weight: bold;
+  font-size: 14px;
+  width: 10px;
+  vertical-align: middle;
+}
+
+table.list {
+  padding: 4px;
+  border-collapse: separate;
+  width: 100%;
+  margin-bottom: 4px;
+  font-size: 12px;
+
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+}
+
+table.list th {
+  background-color:#009688;
+  padding: 4px;
+  white-space:nowrap;
+  border:1px #009688 solid;
+  color: #ffffff;
+
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+}
+
+table.list td {
+  vertical-align: top;
+  padding: 1px 5px 1px 5px;
+
+  border:1px #ffffff solid;
+
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+}
+table.list td.id {
+  width: 2%;
+  text-align: center;
+}
+table.list td.checkbox {
+  width: 15px;
+  padding: 0px;
+}
+table.list td.concatleft  {
+  vertical-align: top;
+  border-style: solid solid solid none;
+  border-width: 1px;
+  border-color: #AAAAFF;
+  padding: 1px 5px 1px 5px;
+}
+table.list td.concatright {
+  vertical-align: top;
+  border-style: solid none solid solid;
+  border-width: 1px;
+  border-color: #AAAAFF;
+  padding: 1px 5px 1px 5px;
+}
+
+table.inner {
+  margin: 0px;
+  padding: 0px;
+  border: none;
+}
+table.inner td {
+  border: none;
+  margin: 0px 0px 0px 0px;
+  padding: 0px 0px 0px 0px;
+}
+.address-group        { text-align: left;   width: 120px; font-size:11px;}
+.address-attention    { text-align: left;   vertical-align:bottom; background-color: transparent; font-size:11px;}
+.address-blank        { text-align: left;   background-color: transparent; width: 210px; font-size:11px;}
+.address-pic          { text-align: left;   vertical-align:bottom; background-color: transparent; font-size:11px;}
+.address-edit         { text-align: center; vertical-align:bottom; width: 40px;  background-color: transparent; font-size:11px;}
+.address-delete       { text-align: center; vertical-align:bottom; width: 50px;  background-color: transparent; font-size:11px;}
+.address-assign-to    { text-align: center; width: 40px;  background-color: transparent; font-size:11px;}
+.address-cc           { text-align: left;   height: 16px; background-color: transparent; font-size:11px;}
+.address-reply        { text-align: center; width: 48px;  background-color: transparent; font-size:11px;}
+.address-reply-status { text-align: left;  width: 140px; font-size:11px; }
+.reply-correspon      { font-size: 10px; }
+.edit-address-user    { display: block; }
+.address-text         { text-align: left; padding:0px; margin:0px;}
+
+.even  {
+  background-color: #EDE9E9;
+}
+.odd {
+  background-color: #F6F6F6;
+}
+.role {
+  background-color: #FFFFAA;
+}
+.deadline {
+  background-color: #FFDDDD;
+}
+.canceled {
+  background-color: #CCCCCC;
+}
+.highlight {
+  background-color: #FFFFAA;
+}
+
+.check   { text-align: center; }
+.text    { text-align: left; white-space:nowrap; }
+.number  { text-align: right; white-space:nowrap; }
+
+.margin  { margin-right:5px; margin-left:5px;}
+.diaTbl  { background-color: #DDDDFF; border: 3px solid #6666FF; font-size: 10px; }
+
+.action-panel {
+  margin-top: 30px;
+  padding-top: 5px;
+}
+input[type="submit"],
+input[type="button"] {
+  position: relative;
+  display: inline-block;
+  margin: 1px 1px 1px 1px;
+  padding: 15px 10px;
+  min-width: 100px;
+  background: #009688;
+  color: #fff;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  font-weight: bold;
+  line-height: 1px;
+  cursor: pointer;
+  border: solid 1px #ccc;
+
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+}
+
+button {
+  position: relative !important;
+  display: inline-block !important;
+  margin: 1px 1px 1px 1px !important;
+  background: #009688 !important;
+  color: #fff !important;
+  text-align: center !important;
+  text-decoration: none !important;
+  white-space: nowrap !important;
+  font-weight: bold !important;
+  line-height: 1px !important;
+  cursor: pointer !important;
+  border: none !important;
+
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+}
+button.ui-datepicker-trigger {
+  padding: 10px 10px;
+  min-width: 30px;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="radio"],
+input[type="checkbox"],
+select,
+option,
+label,
+.label
+{
+  font-family: Verdana, "游ゴシック", YuGothic, "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, sans-serif;
+  font-size: 14px;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="radio"],
+input[type="checkbox"],
+select {
+  font-family: Verdana, "游ゴシック", YuGothic, "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, sans-serif;
+  font-size: 14px;
+
+  border: solid 1px #ccc;
+
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+}
+
+input:focus {
+  border: solid 1px #EEA34A;
+}
+
+#attachments a {
+  display: block;
+}
+span.customField {
+  display: block;
+}
+
+.correspon-action-group {
+  border: 1px solid #d7d7d7;
+  margin: 20px 5px 1px 5px;
+  padding: 10px 5px 5px 5px;
+  background-color: inherit;
+  height: 25px;
+}
+
+.group {
+  border: 1px solid #d7d7d7;
+  margin: 20px 5px 1px 5px;
+  padding: 10px 5px 5px 5px;
+  background-color: inherit;
+}
+
+.group-caption {
+  margin: 1px 1px 1px 1px;
+  padding: 3px 3px 3px 3px;
+  position: relative;
+  top: -25;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.condition-group-caption {
+  margin: 1px 1px 1px 1px;
+  padding: 3px 3px 3px 3px;
+  position: relative;
+  top: -20px;
+  font-size: 14px;
+  font-weight: bold;
+  background-color: #EDE9E9;
+}
+
+p {
+  margin-top:0;
+  margin-bottom:0;
+  padding-top:0;
+  padding-bottom:0;
+}
+
+ul li {
+  list-style-type:disc;
+}
+
+.subject {
+  font-weight: bold;
+  vertical-align: top;
+  font-size: 16px;
+}
+.subject-child td {
+  font-size: 10px;
+  padding-right: 10px;
+}
+
+.workflow-no {
+  width: 10px;
+}
+.workflow-role {
+  width: 50px;
+}
+.workflow-group {
+  width: 150px;
+}
+.workflow-user {
+  width: 320px;
+}
+.workflow-user2 {
+  width: 70%;
+}
+.workflow-status {
+  width: 150px;
+}
+.workflow-delete {
+  width: 100px;
+}
+.workflow-comment {
+  width: 300px;
+}
+.workflow-mark {
+  width: 150px;
+}
+
+.workflow-action {
+    width: 60px;
+ }
+.workflow-input-comment {
+  width: 300px;
+  height: 110px;
+  overflow: scroll;
+}
+.comment {
+  width: 300px;
+  height: 40px;
+  border: none;
+  overflow-y: visible;
+  background-color: transparent;
+
+}
+
+.unread {
+  color: #FF0000;
+}
+.returned-unread {
+  color: #FF0000;
+  font-weight: bold;
+  font-size: 14px;
+  vertical-align: middle;
+}
+div#tos {
+  width: 99%;
+}
+
+    //-->
+    </style>
+    <div id="content">
+    <div class="top">
+      <span id="title">文書</span>
+#if(!$util.isZip())
+      <table align="right">
+        <tr>
+          <td>
+            <span class="margin">
+              <a href="javascript:void(0)" id="print" onclick="window.print();">印刷</a>
+            </span>
+          </td>
+          <td>
+            <span class="margin">
+              <a href="javascript:void(0)" id="close" onclick="(window.open('', '_self').opener = window).close();">閉じる</a>
+            </span>
+          </td>
+        </tr>
+      </table>
+    <br>
+#end
+    </div>
+    <div id="main" class="container">
+    <table style="width:100%;">
+      <tr>
+        <td rowspan="2" style="vertical-align:top;">
+          <img alt="" src="$util.getIconPathName()">
+        </td>
+        <td class="subject">
+          <span id="subject">$util.encode($data.subject)</span>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <table class="subject-child" style="width:100%; table-layout:fixed;">
+            <tr>
+              <td style="width:77px"><span class="label">発信元</span></td>
+              <td style="width:10px"><span class="label delim">:</span></td>
+              <td style="width:100px;">
+                <span id="from">$util.encode($data.fromCorresponGroup.name)</span>
+              </td>
+              <td style="width:115px"><span class="label">文書番号</span></td>
+              <td style="width:10px"><span class="label">:</span></td>
+              <td style="width:180px">
+                <span id="corresponNo">$util.encode($util.formatCorresponNo($data))</span>
+              </td>
+              <td></td>
+              <td style="width:50px;"><span class="label">発行</span></td>
+              <td style="width:10px;"><span class="label delim">:</span></td>
+              <td style="width:220px;">
+#if($data.issuedBy)
+                <span id="issuedBy">
+                  $util.encode($data.issuedBy.label)
+                </span>
+              </td>
+              <td style="text-align:right; width:150px;">
+                <span id="issuedAt">$util.toString($data.issuedAt, "yyyy-MM-dd HH:mm:ss")</span>
+#end
+              </td>
+            </tr>
+            <tr>
+              <td><span class="label">ID</span></td>
+              <td><span class="label delim">:</span></td>
+              <td>
+                <span id="id">$util.encode($data.id)</span>
+              </td>
+              <td><span class="label">ワークフロー</span></td>
+              <td><span class="label delim">:</span></td>
+              <td>
+                <span id="workflowStatus">$util.encode($data.workflowStatus.label)</span>
+              </td>
+              <td></td>
+              <td><span class="label">最終更新</span></td>
+              <td><span class="label delim">:</span></td>
+              <td>
+#if($data.updatedBy)
+                <span id="updatedBy">
+                  $util.encode($data.updatedBy.label)
+                </span>
+              </td>
+              <td style="text-align:right;">
+                <span id="updatedAt">$util.toString($data.updatedAt, "yyyy-MM-dd HH:mm:ss")</span>
+#end
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+    <hr>
+    <table style="table-layout:fixed;">
+      <tr>
+        <td style="width:140px;"><span class="label">文書種類</span></td>
+        <td style="width:10px;"><span class="label">:</span></td>
+        <td>
+          <span id="corresponType">$util.encode($data.corresponType.label)</span>
+        </td>
+        <td style="width:140px;"><span class="label">状態</span></td>
+        <td style="width:10px;"><span class="label">:</span></td>
+        <td>
+          <span id="corresponStatus">$util.encode($data.corresponStatus.label)</span>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="label">返信</span></td>
+        <td><span class="label">:</span></td>
+        <td>
+          <span id="parentCorrespon">$util.encode($data.parentCorresponNo)</span>
+        </td>
+        <td><span class="label">改訂元</span></td>
+        <td><span class="label">:</span></td>
+        <td>
+          <span id="previousRevision">$util.encode($data.previousRevCorresponNo)</span>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="label">宛先</span></td>
+        <td><span class="label">:</span></td>
+        <td colspan="4"></td>
+      </tr>
+      <tr>
+        <td colspan="6">
+          <div id="tos" class="detail">
+            <div id="toGroup">
+              <table style="table-layout:fixed;">
+                <tr>
+                  <td class="label" style="width:129px; vertical-align:top;">To</td>
+                  <td class="label" style="width:10px; vertical-align:top;">:</td>
+                  <td colspan="2">
+                  <table id="toGroup" class="list" style="table-layout:fixed;">
+                    <thead>
+                      <tr>
+                        <th style="text-align:center; width:120px;">グループ</th>
+                        <th style="text-align:center; padding:0px;">To</th>
+#if($util.isUsePersonInCharge())
+                        <th style="padding:0px;">担当</th>
+#end
+                        <th style="width:140px;">&nbsp;</th>
+                      </tr>
+                    </thead>
+                    <tbody id="toGroup:tbody_element">
+#set($row = true)
+#foreach($toGroup in $data.addressCorresponGroups)
+#if($toGroup.to)
+#if($row)
+                      <tr class="odd">
+#else
+                      <tr class="even">
+#end
+                        <td class="address-group">$util.encode($toGroup.corresponGroup.name)</td>
+                        <td class="text">
+                          <table border="0" class="inner" cellspacing="0" cellpadding="0">
+                            <tbody>
+#foreach($attention in $toGroup.users)
+#if($attention.attention)
+                              <tr>
+                                <td class="address-attention">
+                                  <span id="attentionName">$util.encode($attention.user.labelWithRole)</span>
+                                </td>
+                              <tr>
+#end
+#end
+                            </tbody>
+                          </table>
+                        </td>
+#if($util.isUsePersonInCharge())
+                        <td class="text">
+                          <table border="0" class="inner" cellspacing="0" cellpadding="0">
+                            <tbody>
+#foreach($attention in $toGroup.users)
+#if($attention.attention)
+                              <tr>
+                                <td class="address-blank">
+                                  <table border="0" class="inner" cellspacing="0" cellpadding="0">
+                                    <tbody>
+#if($util.isUsePersonInCharge())
+#foreach($pic in $attention.personInCharges)
+                                      <tr>
+                                        <td class="address-pic">
+                                          <span id="pic">$util.encode($pic.user.label)</span>
+                                        </td>
+                                      </tr>
+#end
+#end
+#if(($attention.personInCharges && $attention.personInCharges.size() == 0) || !$util.isUsePersonInCharge())
+                                      <tr>
+                                        <td class="address-pic">
+                                          &nbsp;
+                                        </td>
+                                      </tr>
+#end
+                                    </tbody>
+                                  </table>
+                                </td>
+                                <td class="address-edit"></td>
+                                <td class="address-delete"></td>
+                                <td class="address-assign-to"></td>
+                              <tr>
+#end
+#end
+                            </tbody>
+                          </table>
+                        </td>
+#end
+                        <td class="address-reply-status" style="margin-left:200px;">
+                          <span id="pic">返信件数: $util.encode($toGroup.replyCount)</span>
+                        </td>
+                      </tr>
+#set($row = !$row)
+#end
+#end
+                    </tbody>
+                  </table>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div id="ccGroup">
+              <table style="table-layout:fixed;">
+                <tr>
+                  <td class="label" style="width:129px; vertical-align:top;">Cc</td>
+                  <td class="label" style="width:10px; vertical-align:top;">:</td>
+                  <td colspan="2">
+                  <table id="ccGroup" class="list" style="table-layout:fixed;">
+                    <thead>
+                      <tr>
+                        <th style="text-align:center; width:120px;">グループ</th>
+                        <th style="text-align:center;">Cc</th>
+                        <th style="width:140px;">&nbsp;</th>
+                      </tr>
+                    </thead>
+                    <tbody id="ccGroup:tbody_element">
+#set($row = true)
+#foreach($ccGroup in $data.addressCorresponGroups)
+#if($ccGroup.cc)
+#if($row)
+                      <tr class="odd">
+#else
+                      <tr class="even">
+#end
+                        <td class="address-group">$util.encode($ccGroup.corresponGroup.name)</td>
+                        <td class="text">
+                          <table class="inner">
+                            <tbody>
+#foreach($cc in $ccGroup.users)
+#if($cc.cc)
+                              <tr>
+                                <td class="address-cc">
+                                  <span id="attentionName">$util.encode($cc.user.labelWithRole)</span>
+                                </td>
+                                <td class="address-blank"></td>
+                                <td class="address-edit"></td>
+                                <td class="address-delete"></td>
+                                <td class="address-assign-to"></td>
+                              <tr>
+#end
+#end
+                            </tbody>
+                          </table>
+                        </td>
+                        <td class="address-reply-status" style="margin-left:200px;">
+                          <span id="pic">返信件数: $util.encode($ccGroup.replyCount)</span>
+                        </td>
+                      </tr>
+#set($row = !$row)
+#end
+#end
+                    </tbody>
+                  </table>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="label">返信要否</td>
+        <td class="label">:</td>
+        <td colspan="4">
+          <span id="replyRequired">$util.encode($data.replyRequired.label)</span>
+#if($util.isViewDeadline($data.replyRequired))
+          <span id="deadlineForReply" style="margin-left:50px;">
+            $util.toString($data.deadlineForReply, "yyyy-MM-dd")
+          </span>
+#end
+        </td>
+      </tr>
+    </table>
+    <hr/>
+    <table style="table-layout:fixed;">
+      <tr>
+        <td class="label" style="width:140px; vertical-align:top;">本文</td>
+        <td class="label" style="width:10px; vertical-align:top;">:</td>
+        <td>
+          <div id="body" class="detail">
+            $util.formatBody($data)
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="label">添付ファイル</td>
+        <td class="label">:</td>
+        <td>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3">
+          <div id="attachments" class="detail">
+            <table border="0" cellspacing="0" cellpadding="0" >
+#if($data.file1FileName)
+              <tr>
+                <td style="width:160px;" ></td>
+                <td>$data.file1FileName</td>
+              </tr>
+#end
+#if($data.file2FileName)
+              <tr>
+                <td style="width:160px;" ></td>
+                <td>$data.file2FileName</td>
+              </tr>
+#end
+#if($data.file3FileName)
+              <tr>
+                <td style="width:160px;" ></td>
+                <td>$data.file3FileName</td>
+              </tr>
+#end
+#if($data.file4FileName)
+              <tr>
+                <td style="width:160px;" ></td>
+                <td>$data.file4FileName</td>
+              </tr>
+#end
+#if($data.file5FileName)
+              <tr>
+                <td style="width:160px;" ></td>
+                <td>$data.file5FileName</td>
+              </tr>
+#end
+            </table>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="label">その他属性</td>
+        <td class="label">:</td>
+        <td>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3">
+          <div id="customFields" class="detail">
+#if($data.customField1Label)
+            <div class="customField">
+              <label style="width:130px;" class="label">$data.customField1Label</label>
+              <label id="delim1" style="width:10px;" class="label">:</label>
+              $util.encode($data.customField1Value)
+            </div>
+#end
+#if($data.customField2Label)
+            <div class="customField">
+              <label style="width:130px;" class="label">$data.customField2Label</label>
+              <label id="delim1" style="width:10px;" class="label">:</label>
+              $util.encode($data.customField2Value)
+            </div>
+#end
+#if($data.customField3Label)
+            <div class="customField">
+              <label style="width:130px;" class="label">$data.customField3Label</label>
+              <label id="delim1" style="width:10px;" class="label">:</label>
+              $util.encode($data.customField3Value)
+            </div>
+#end
+#if($data.customField4Label)
+            <div class="customField">
+              <label style="width:130px;" class="label">$data.customField4Label</label>
+              <label id="delim1" style="width:10px;" class="label">:</label>
+              $util.encode($data.customField4Value)
+            </div>
+#end
+#if($data.customField5Label)
+            <div class="customField">
+              <label style="width:130px;" class="label">$data.customField5Label</label>
+              <label id="delim1" style="width:10px;" class="label">:</label>
+              $util.encode($data.customField5Value)
+            </div>
+#end
+#if($data.customField6Label)
+            <div class="customField">
+              <label style="width:130px;" class="label">$data.customField6Label</label>
+              <label id="delim1" style="width:10px;" class="label">:</label>
+              $util.encode($data.customField6Value)
+            </div>
+#end
+#if($data.customField7Label)
+            <div class="customField">
+              <label style="width:130px;" class="label">$data.customField7Label</label>
+              <label id="delim1" style="width:10px;" class="label">:</label>
+              $util.encode($data.customField7Value)
+            </div>
+#end
+#if($data.customField8Label)
+            <div class="customField">
+              <label style="width:130px;" class="label">$data.customField8Label</label>
+              <label id="delim1" style="width:10px;" class="label">:</label>
+              $util.encode($data.customField8Value)
+            </div>
+#end
+#if($data.customField9Label)
+            <div class="customField">
+              <label style="width:130px;" class="label">$data.customField9Label</label>
+              <label id="delim1" style="width:10px;" class="label">:</label>
+              $util.encode($data.customField9Value)
+            </div>
+#end
+#if($data.customField10Label)
+            <div class="customField">
+              <label style="width:130px;" class="label">$data.customField10Label</label>
+              <label id="delim1" style="width:10px;" class="label">:</label>
+              $util.encode($data.customField10Value)
+            </div>
+#end
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3"><hr/></td>
+      </tr>
+      <tr>
+        <td class="label">返信履歴</td>
+        <td class="label">:</td>
+        <td>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3">
+
+#if($util.corresponResponseHistoryModel && $util.corresponResponseHistoryModel.size() != 0)
+          <div id="responseHistory" class="detail" style='display:block'>
+            <div id="historyContents">
+              <table id="workflow" style="width:100%;" class="list">
+              <thead>
+                <tr>
+                   <th class="text">文書番号</th>
+                   <th class="text">発行日</th>
+                   <th class="text">発信元</th>
+                   <th class="text">宛先</th>
+                   <th class="text">件名</th>
+                </tr>
+              </thead>
+              <tbody>
+#set($row = true)
+#foreach($history in $util.corresponResponseHistoryModel)
+#if($row)
+                <tr class="$util.getClassId(true, $history.corresponResponseHistory, $data.id)">
+#else
+                <tr class="$util.getClassId(false, $history.corresponResponseHistory, $data.id)">
+#end
+                  <td class="text">$util.encode($history.corresponResponseHistory.correspon.corresponNo)</td>
+                  <td class="text">$util.toString($history.corresponResponseHistory.correspon.issuedAt, "yyyy-MM-dd HH:mm:ss")</td>
+                  <td class="text">$util.encode($history.corresponResponseHistory.correspon.fromCorresponGroup.name)</td>
+                  <td class="text">
+#if($history.corresponResponseHistory.toCount > 1)
+                  $util.encode($history.corresponResponseHistory.correspon.addressCorresponGroups.get(0).corresponGroup.name)...
+#else
+                  $util.encode($history.corresponResponseHistory.correspon.addressCorresponGroups.get(0).corresponGroup.name)
+#end
+                  </td>
+                  <td class="text">
+                    $history.corresponResponseHistory.indent
+                    $history.corresponResponseHistory.subject
+                  </td>
+                </tr>
+#set($row = !$row)
+#end
+              </tbody>
+              </table>
+            </div>
+          </div>
+#end
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3"><hr/></td>
+      </tr>
+      <tr>
+        <td class="label">ワークフロー</td>
+        <td class="label">:</td>
+        <td>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3">
+        <div class="detail">
+        <table id="workflow" style="width:100%;" class="list">
+        <thead>
+          <tr>
+             <th class="workflow-no">No.</th>
+             <th class="workflow-role">役割</th>
+             <th class="workflow-user">ユーザー</th>
+             <th class="workflow-status">状態</th>
+             <th class="workflow-user">最終更新</th>
+             <th class="workflow-comment">コメント</th>
+          </tr>
+        </thead>
+        <tbody id="workflow:tbody_element">
+#set($row = true)
+#foreach($workflow in $data.workflows)
+#if($row)
+          <tr class="odd">
+#else
+          <tr class="even">
+#end
+            <td class="number">$util.encode($workflow.workflowNo)</td>
+#if($workflow.workflowType)
+            <td class="text">$util.encode($workflow.workflowType.label)</td>
+#else
+            <td class="text">作成者</td>
+#end
+            <td class="text">
+#if($workflow.corresponGroup)
+              $util.encode($workflow.corresponGroup.name)<br/>
+#end
+              $util.encode($workflow.user.labelWithRole)
+            </td>
+            <td class="text">$util.encode($workflow.workflowProcessStatus.label)</td>
+            <td class="text">
+#if($workflow.updatedBy)
+              $util.encode($workflow.updatedBy.label)<br/>
+              $util.toString($workflow.updatedAt, "yyyy-MM-dd HH:mm:ss")
+#end
+            </td>
+            <td class="text"><textarea class="comment" readonly="true">$util.encode($workflow.commentOn)</textarea></td>
+          </tr>
+#set($row = !$row)
+#end
+        </tbody>
+        </table>
+        </div>
+        </td>
+      </tr>
+    </table>
+    </div>
+    <div class="bottom">
+#if(!$util.isZip())
+      <table align="right">
+        <tr>
+          <td>
+            <span class="margin">
+              <a href="#" id="print_bottom" onclick="window.print();">印刷</a>
+            </span>
+          </td>
+          <td>
+            <span class="margin">
+              <a href="#" id="close_bottom" onclick="(window.open('', '_self').opener = window).close();">閉じる</a>
+            </span>
+          </td>
+        </tr>
+      </table>
+    <br>
+    <br>
+    <br>
+#end
+    </div>
+    </div>
+  </body>
+</html>

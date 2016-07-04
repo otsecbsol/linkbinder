@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="parentCorresponNoSeq">
+
+  <resultMap id="result" class="jp.co.opentone.bsol.linkbinder.dto.ParentCorresponNoSeq">
+    <result property="id"                column="id" />
+    <result property="siteId"            column="site_id" />
+    <result property="disciplineId"      column="discipline_id" />
+    <result property="no"                column="no" />
+    <result property="createdBy.empNo"   column="created_by" />
+    <result property="createdAt"         column="created_at" />
+    <result property="updatedBy.empNo"   column="updated_by" />
+    <result property="updatedAt"         column="updated_at" />
+    <result property="versionNo"         column="version_no" />
+    <result property="deleteNo"          column="delete_no" />
+  </resultMap>
+  <resultMap id="resultForUpdate" class="jp.co.opentone.bsol.linkbinder.dto.ParentCorresponNoSeq">
+    <result property="versionNo"         column="version_no" />
+  </resultMap>
+
+  <!--  findById, findForUpdateで共通的に利用するSELECT, FROM句 -->
+  <sql id="findSelectFrom">
+    SELECT
+      id,
+      site_id,
+      discipline_id,
+      no,
+      created_by,
+      created_at,
+      updated_by,
+      updated_at,
+      version_no,
+      delete_no
+    FROM
+      parent_correspon_no_seq
+  </sql>
+
+  <select id="findById" resultMap="result">
+    <include refid="findSelectFrom"/>
+    WHERE
+        id = #value#
+      AND
+        delete_no = 0
+  </select>
+
+  <select id="findForUpdate" resultMap="result">
+    <include refid="findSelectFrom"/>
+    WHERE
+        site_id = #siteId#
+      AND
+        discipline_id = #disciplineId#
+      AND
+        delete_no = 0
+    FOR UPDATE
+  </select>
+
+  <insert id="create">
+    <selectKey resultClass="long" keyProperty="id">
+        SELECT s_parent_correspon_no_seq_id.NEXTVAL AS id FROM dual
+    </selectKey>
+    INSERT INTO parent_correspon_no_seq (
+      id,
+      site_id,
+      discipline_id,
+      no,
+      created_by,
+      updated_by
+    ) VALUES (
+      #id#,
+      #siteId#,
+      #disciplineId#,
+      #no#,
+      #createdBy.empNo#,
+      #updatedBy.empNo#
+    )
+  </insert>
+
+  <update id="update">
+    UPDATE parent_correspon_no_seq
+    SET
+      updated_by           = #updatedBy.empNo#,
+      updated_at           = SYSTIMESTAMP,
+      version_no           = (version_no + 1)
+    <dynamic>
+      <isNotNull prepend="," property="siteId">
+        site_id            = #siteId#
+      </isNotNull>
+      <isNotNull prepend="," property="disciplineId">
+        discipline_id      = #disciplineId#
+      </isNotNull>
+      <isNotNull prepend="," property="no">
+        no                 = #no#
+      </isNotNull>
+      <isNotNull prepend="," property="createdBy.empNo">
+        created_by         = #createdBy.empNo#
+      </isNotNull>
+      <isNotNull prepend="," property="createdAt">
+        created_at         = #createdAt#
+      </isNotNull>
+    </dynamic>
+    WHERE
+      id = #id#
+  </update>
+
+  <select id="findByIdForUpdate" resultMap="resultForUpdate">
+    SELECT
+      version_no
+    FROM
+      parent_correspon_no_seq
+    WHERE
+      id = #id#
+  </select>
+
+</sqlMap>

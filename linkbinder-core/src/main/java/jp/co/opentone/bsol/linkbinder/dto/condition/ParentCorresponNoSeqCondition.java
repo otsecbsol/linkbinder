@@ -1,0 +1,79 @@
+/*
+ * Copyright 2016 OPEN TONE Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package jp.co.opentone.bsol.linkbinder.dto.condition;
+
+
+/**
+ * テーブル [parent_correspon_no_seq] の検索条件を表すDto.
+ *
+ * @author opentone
+ *
+ */
+public class ParentCorresponNoSeqCondition extends AbstractCondition {
+
+    /**
+     * SerialVersionUID.
+     */
+    private static final long serialVersionUID = -6848212019195754316L;
+
+    /**
+     * 拠点ID.
+     */
+    private Long siteId;
+
+    /**
+     * 部門ID.
+     */
+    private Long disciplineId;
+
+    /**
+     * 空のインスタンスを生成する.
+     */
+    public ParentCorresponNoSeqCondition() {
+    }
+
+    /**
+     * 拠点IDを取得する.
+     * @return 拠点ID
+     */
+    public Long getSiteId() {
+        return siteId;
+    }
+
+    /**
+     * 拠点IDを設定する.
+     * @param siteId 拠点ID
+     */
+    public void setSiteId(Long siteId) {
+        this.siteId = siteId;
+    }
+
+    /**
+     * 部門IDを取得する.
+     * @return 部門ID
+     */
+    public Long getDisciplineId() {
+        return disciplineId;
+    }
+
+    /**
+     * 部門IDを設定する.
+     * @param disciplineId 部門ID
+     */
+    public void setDisciplineId(Long disciplineId) {
+        this.disciplineId = disciplineId;
+    }
+}

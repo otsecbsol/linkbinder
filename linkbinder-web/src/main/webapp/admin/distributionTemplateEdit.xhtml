@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html [
+<!ENTITY nbsp "&#160;">
+<!ENTITY yen "&#165;">
+<!ENTITY plusmn "&#177;">
+<!ENTITY minus "&#8722;">
+<!ENTITY darr "&#2193;">
+<!ENTITY uarr "&#2191;">
+]>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<ui:composition template="/include/template.xhtml">
+<ui:define name="title">#{distributionTemplateEditPage.title}</ui:define>
+<ui:define name="jsOuter">
+  <script type="text/javascript" src="#{contextPath}/resource/#{v}/javascript/distributionTemplateInput.js"></script>
+</ui:define>
+
+<ui:define name="jsInner">
+// <![CDATA[
+function buildAddressTable() {
+    var value;
+    value = document.getElementById('form:toAddressValues').value;
+    AddressTableBuilder.build('toAddressTable',
+                              true,
+                              JSON.parse(value ? value : '[]'));
+
+    value = document.getElementById('form:ccAddressValues').value;
+    AddressTableBuilder.build('ccAddressTable',
+                              false,
+                              JSON.parse(value ? value : '[]'));
+
+    value = document.getElementById('form:toRemovedAddressValues').value;
+    AddressTable.getTable('toAddressTable', true).removed =
+            JSON.parse(value ? value : '[]');
+
+    value = document.getElementById('form:ccRemovedAddressValues').value;
+    AddressTable.getTable('ccAddressTable', false).removed =
+            JSON.parse(value ? value : '[]');
+}
+
+function processSubmit() {
+    var toAddressValues        = document.getElementById('form:toAddressValues');
+    var ccAddressValues        = document.getElementById('form:ccAddressValues');
+    var toRemovedAddressValues = document.getElementById('form:toRemovedAddressValues');
+    var ccRemovedAddressValues = document.getElementById('form:ccRemovedAddressValues');
+
+    var toTable = AddressTable.getTable('toAddressTable', true);
+    var toAddresses = toTable.toAddressObject();
+    var toRemovedAddresses = toTable.toRemovedAddressObject();
+
+    var ccTable = AddressTable.getTable('ccAddressTable', false);
+    var ccAddresses = ccTable.toAddressObject();
+    var ccRemovedAddresses = ccTable.toRemovedAddressObject();
+
+    toAddressValues.value        = JSON.stringify(toAddresses);
+    ccAddressValues.value        = JSON.stringify(ccAddresses);
+    toRemovedAddressValues.value = JSON.stringify(toRemovedAddresses);
+    ccRemovedAddressValues.value = JSON.stringify(ccRemovedAddresses);
+
+    return true;
+}
+
+window.onload = function() {
+    AddressInput.setupDataSource(
+          JSON.parse(document.getElementById('form:groupJSONString').value),
+          JSON.parse(document.getElementById('form:groupUserMappingsJSONString').value),
+          JSON.parse(document.getElementById('form:groupUserJSONString').value),
+          JSON.parse(document.getElementById('form:updateModeJSONString').value),
+          false
+    );
+    buildAddressTable();
+    setDistributionTemplateAddressTableIniData();
+}
+
+function setDistributionTemplateAddressTableIniData(){
+    var iniToAddrData = getTdTextData('toAddressTable');
+    distributionTemplateToAddressTableIniData = iniToAddrData;
+
+    var iniCoAddrData = getTdTextData('ccAddressTable');
+    distributionTemplateCcAddressTableIniData = iniCoAddrData;
+}
+// ]]>
+</ui:define>
+
+<ui:define name="body">
+  <f:view>
+    <h:form id="form">
+      <h:inputHidden id="projectId" value="#{flash.projectId}"/>
+      <h:inputHidden id="groupJSONString" value="#{distributionTemplateEditPage.groupJSONString}"/>
+      <h:inputHidden id="groupUserMappingsJSONString" value="#{distributionTemplateEditPage.groupUserMappingsJSONString}"/>
+      <h:inputHidden id="groupUserJSONString" value="#{distributionTemplateEditPage.userJSONString}"/>
+      <h:inputHidden id="updateModeJSONString" value="#{distributionTemplateEditPage.updateModeJSONString}"/>
+      <ui:fragment rendered="#{distributionTemplateEditPage.initialDisplaySuccess}">
+      <ui:fragment rendered="#{distributionTemplateEditPage.isViewCopyLink}">
+        <h:outputLink id="copy"
+                      value="distributionTemplateEdit.jsf?id=0&amp;projectId=#{flash.projectId}&amp;copyId=#{distributionTemplateEditPage.distTemplateHeader.id}"
+                      styleClass="button"
+                      onclick="return clickCopyLink();">
+          <h:outputText value="このテンプレートをコピーして新規作成" />
+        </h:outputLink>
+      </ui:fragment>
+      <div id="main">
+        <div class="row">
+          <div class="three columns">
+            <h:outputLabel value="ID"/>
+            <h:outputText value="#{distributionTemplateEditPage.distTemplateHeader.templateCd}" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="eight columns">
+            <h:outputLabel for="name" value="テンプレート名" styleClass="required"/>
+            <h:inputText id="name"
+                value="#{distributionTemplateEditPage.name}"
+                styleClass="u-full-width"
+                maxlength="100">
+            </h:inputText>
+            <h:message for="name" errorClass="error" warnClass="warn" infoClass="info"/>
+          </div>
+        </div>
+      </div><!-- main -->
+
+      <div id="admin-main">
+        <div class="row">
+          <div class="twelve columns">
+            <label>宛先</label>
+          </div>
+        </div>
+        <div id="main">
+          <div class="row">
+            <div class="twelve columns">
+              <h:outputLabel value="To"/>
+              <h:outputLink value="javascript:void(0);"
+                            onclick="AddressInput.showDialog({action:this, tableId:'toAddressTable', key:'AddTo', to:true});">
+                <h:outputText value="追加"/>
+              </h:outputLink>
+              <h:outputLink value="javascript:void(0);"
+                            onclick="AddressTable.removeAllRows('toAddressTable');">
+                <h:outputText value="すべて削除"/>
+              </h:outputLink>
+              <h:inputHidden id="toAddressValues"
+                             value="#{distributionTemplateEditPage.toAddressValues}"/>
+              <h:inputHidden id="toRemovedAddressValues"
+                             value="#{distributionTemplateEditPage.toRemovedAddressValues}"/>
+
+              <h:message for="toAddressValues" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal"/>
+            </div>
+
+            <div id="toAddress">
+              <table id="toAddressTable" class="list">
+                <thead>
+                  <tr>
+                    <th style="text-align:center; width: 200px;">グループ</th>
+                    <th style="text-align:center; width: 350px;">To</th>
+                    <th style="width: 150px;">&nbsp;</th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="twelve columns">
+              <h:outputLabel value="Cc"/>
+              <h:outputLink value="javascript:void(0);"
+                            onclick="AddressInput.showDialog({action:this, tableId:'ccAddressTable', key:'AddCc', to:false});">
+                <h:outputText value="追加"/>
+              </h:outputLink>
+              <h:outputLink value="javascript:void(0);"
+                            onclick="AddressTable.removeAllRows('ccAddressTable');">
+                <h:outputText value="すべて削除"/>
+              </h:outputLink>
+
+              <h:inputHidden id="ccAddressValues"
+                             value="#{distributionTemplateEditPage.ccAddressValues}"/>
+              <h:inputHidden id="ccRemovedAddressValues"
+                             value="#{distributionTemplateEditPage.ccRemovedAddressValues}"/>
+
+              <h:message for="ccAddressValues" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal"/>
+            </div>
+
+            <div id="ccAddress">
+              <table id="ccAddressTable" class="list">
+                <thead>
+                  <tr>
+                    <th style="text-align:center; width: 200px;">グループ</th>
+                    <th style="text-align:center; width: 350px;">Cc</th>
+                    <th style="width: 150px;">&nbsp;</th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div><!-- admin-main -->
+
+      <div class="action-edit">
+        <h:commandButton id="Save"
+                       value="保存"
+                       styleClass="button-primary"
+                       action="#{distributionTemplateEditPage.save}"
+                       onclick="return processSubmit();">
+        </h:commandButton>
+        <h:outputLink id="index"
+                      value="distributionTemplateIndex.jsf?projectId=#{flash.projectId}"
+                      styleClass="button"
+                      onclick="setActionName(event)">
+          <h:outputText value="戻る" />
+        </h:outputLink>
+      </div>
+      </ui:fragment>
+    </h:form>
+  </f:view>
+</ui:define>
+</ui:composition>
+</html>

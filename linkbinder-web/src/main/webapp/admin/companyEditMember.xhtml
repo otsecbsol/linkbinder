@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html [
+<!ENTITY nbsp "&#160;">
+<!ENTITY yen "&#165;">
+<!ENTITY plusmn "&#177;">
+<!ENTITY minus "&#8722;">
+<!ENTITY darr "&#2193;">
+<!ENTITY uarr "&#2191;">
+]>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/include/template.xhtml">
+  <ui:define name="title">会社メンバー編集</ui:define>
+  <ui:define name="jsOuter"></ui:define>
+  <ui:define name="jsInner">
+    <!--
+    function initView() {
+      var user = new SelectionInput( {
+        candidate : 'candidateUsersList',
+        selected : 'selectedMemberIdList',
+        candidateValues : 'form:candidateUserValue',
+        selectedValues : 'form:selectedMemberValue',
+        addAction : 'add',
+        removeAction : 'remove',
+        addAllAction : 'addAll',
+        removeAllAction : 'removeAll',
+        saveAction : 'form:save',
+        valueProperty : 'empNo',
+        labelProperty : 'labelWithRole',
+        dataSource : JSON.parse(document.getElementById('form:userJSONString').value)
+      });
+
+      user.setup();
+      return false;
+    }
+
+    window.onload = initView;
+    -->
+  </ui:define>
+
+  <ui:define name="body">
+    <f:view>
+      <h:form id="form" onsubmit="return disableSubmit();">
+        <h:inputHidden id="actionName" value="#{companyEditMemberPage.actionName}" />
+        <h:inputHidden id="userJSONString" value="#{companyEditMemberPage.userJSONString}" />
+        <div id="detail" class="row">
+          <div class="twelve columns">
+            <h:outputLabel value="会社"/>
+            <h:outputText id="viewCode" value="#{companyEditMemberPage.company.companyCd}"  />
+            :
+            <h:outputText id="viewId" value="#{companyEditMemberPage.company.name}"  />
+          </div>
+        </div>
+        <br />
+
+        <h:inputHidden id="viewRender" value="#{companyEditMemberPage.initialDisplaySuccess}" />
+
+        <ui:fragment rendered="#{companyEditMemberPage.initialDisplaySuccess}">
+        <div>
+          <f:validateBean validationGroups="#{companyEditMemberPage.validationGroups}">
+          <div class="row">
+            <div class="five columns">
+              <h:outputLabel value="ユーザー(追加候補)"/>
+              <select id="candidateUsersList" name="candidateUsersList"
+                        class="u-full-width user-list"
+                        multiple="multiple" size="20">
+              </select>
+              <h:inputHidden id="candidateUserValue" value="#{companyEditMemberPage.candidateUserValue}" />
+            </div>
+            <div class="two columns user-list-action">
+              <div>
+                <a href="javascript:void(0)" id="addAll">すべて追加&nbsp;&gt;&gt;</a>
+              </div>
+              <div>
+                <a href="javascript:void(0)" id="add">&gt;&gt;</a>
+              </div>
+              <div>
+                <a href="javascript:void(0)" id="remove">&lt;&lt;</a>
+              </div>
+              <div>
+                <a href="javascript:void(0)" id="removeAll">&lt;&lt;&nbsp;すべて削除</a>
+              </div>
+            </div>
+            <div class="five columns">
+              <h:outputLabel value="メンバー"/>
+              <select id="selectedMemberIdList" name="selectedMemberIdList"
+                        class="u-full-width user-list"
+                        multiple="multiple" size="20">
+              </select>
+              <h:inputHidden id="selectedMemberValue" value="#{companyEditMemberPage.selectedMemberValue}" />
+            </div>
+          </div>
+          </f:validateBean>
+        </div>
+        </ui:fragment>
+
+        <div class="action-edit">
+          <ui:fragment rendered="#{companyEditMemberPage.initialDisplaySuccess}">
+            <h:commandButton id="save" value="保存"
+                            styleClass="button-primary"
+                            action="#{companyEditMemberPage.save}" onclick="setActionName(event)" />
+          </ui:fragment>
+          <h:commandLink id="back" value="戻る"
+                            styleClass="button"
+                            action="#{companyEditMemberPage.back}" onclick="setActionName(event)" />
+        </div>
+      </h:form>
+    </f:view>
+  </ui:define>
+</ui:composition>
+</html>

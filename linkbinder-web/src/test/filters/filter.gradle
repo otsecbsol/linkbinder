@@ -1,0 +1,25 @@
+// values for logback.xml
+filterLogback.path = '/log'
+filterLogback.filename.suffix = ''
+filterLogback.level.root = 'WARN'
+filterLogback.level.linkbinder = 'DEBUG'
+filterLogback.level.sql.connection = 'TRACE'
+filterLogback.level.sql.statement = 'TRACE'
+filterLogback.level.springframework = 'ERROR'
+filterLogback.level.springframeworkjta = 'ERROR'
+filterLogback.level.jsf = 'ERROR'
+
+filterLogback.additivity.trace = true
+filterLogback.additivity.sql.connection = true
+filterLogback.additivity.sql.statement = true
+
+filterLogback.filter.presentation = 'ACCEPT'
+filterLogback.filter.service = 'ACCEPT'
+filterLogback.filter.dataAccess = 'ACCEPT'
+filterLogback.filter.lifecycle = 'ACCEPT'
+
+// values for config
+filterConfig.filter.error.show.stacktrace = true
+
+//config.filter.server.name = localhost
+filterConfig.filter.server.name = '192.168.1.84'

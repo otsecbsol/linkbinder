@@ -1,0 +1,80 @@
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/include/template.xhtml">
+  <ui:define name="title">拠点</ui:define>
+  <ui:define name="jsOuter"></ui:define>
+  <ui:define name="jsInner"></ui:define>
+
+  <ui:define name="body">
+    <f:view>
+      <h:form id="form" onsubmit="return disableSubmit();">
+        <h:inputHidden id="actionName" value="#{sitePage.actionName}" />
+        <div id="detail">
+          <h:inputHidden id="id" value="#{sitePage.id}" />
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel value="ID"/>
+              <h:outputText id="viewId" value="#{sitePage.site.id}" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel value="拠点コード"/>
+              <h:outputText id="code" value="#{sitePage.site.siteCd}" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel value="拠点名"/>
+              <h:outputText id="name" value="#{sitePage.site.name}" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel value="作成者/作成日時"/>
+              <h:outputText id="createdName" value="#{sitePage.site.createdBy.nameE}" />/<h:outputText id="createdId" value="#{sitePage.site.createdBy.empNo}" style="margin-right: 10px;" />
+              (<h:outputText id="createdAt" value="#{sitePage.site.createdAt}">
+                <f:convertDateTime pattern="yyyy-MM-dd HH:mm:ss" />
+              </h:outputText>)
+            </div>
+          </div>
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel value="更新者/更新日時"/>
+              <h:outputText id="updatedName" value="#{sitePage.site.updatedBy.nameE}" />/<h:outputText id="updatedId" value="#{sitePage.site.updatedBy.empNo}" style="margin-right: 10px;" />
+              (<h:outputText id="updatedAt" value="#{sitePage.site.updatedAt}">
+                <f:convertDateTime pattern="yyyy-MM-dd HH:mm:ss" />
+              </h:outputText>)
+            </div>
+          </div>
+        </div>
+        <div class="action-edit">
+          <h:commandLink id="index" value="一覧画面へ"
+                          styleClass="button"
+                          action="#{sitePage.goIndex}" onclick="setActionName(event)" />
+          <h:commandLink id="group" value="グループ"
+                          styleClass="button"
+                          action="#{sitePage.goGroupIndex}" onclick="setActionName(event)" />
+        </div>
+      </h:form>
+    </f:view>
+  </ui:define>
+</ui:composition>
+</html>

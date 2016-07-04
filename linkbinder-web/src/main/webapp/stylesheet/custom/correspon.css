@@ -1,0 +1,336 @@
+/*
+ * Copyright 2016 OPEN TONE Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@CHARSET "utf-8";
+
+/*---- コレポン独自スタイル ---------*/
+#edit table td{ /* style.cssを上書き */
+  padding: 0;	
+}
+
+.subject {
+  font-weight: bold;
+  vertical-align: top;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+.subject-child td {
+  font-size: 10px;
+  padding-right: 10px;
+}
+
+.correspon-header-info {
+  font-size: 1rem;
+}
+
+.correspon-header-info span {
+  margin-right: 1rem;
+}
+.unread {
+  color: #FF0000;
+}
+.returned-unread {
+  color: #FF0000;
+  font-weight: bold;
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.ajax-loader {
+  display: none;
+  position: absolute;
+}
+
+.action-panel {
+  margin-top: 30px;
+  padding-top: 5px;
+}
+
+#attachments a {
+  display: block;
+}
+span.customField {
+  display: block;
+}
+
+.label-customfield-delim {
+  margin-left: 4px;
+}
+
+.label-customfield-delim2 {
+  margin-left:  1px;
+  margin-right: 4px;
+}
+
+.label-customfield-delim3 {
+  margin-right: 4px;
+  margin-left: 4px;
+}
+
+/* correspon */
+.bottom-border {
+  height: -1px;
+  margin: 5px 1px 2px 0px;
+  padding: 0;
+  border-bottom: 3px groove #cccccc;
+}
+
+.bottom {
+  height: 30px;
+  margin: 0px 1px 0px 0px;
+  padding: 0;
+}
+.bottom #title {
+  position: relative;
+  top: 0px;
+  left:6px;
+  float: left;
+  font-weight: bold;
+  font-size: 16px;
+}
+.bottom ul {
+  margin: 0;
+  padding: 0;
+  float: right;
+}
+.bottom li {
+  float: left;
+  list-style-type:none;
+  margin: 0px 2px 0px 0px;
+  padding: 0px 0px 0px 0px;
+  white-space:nowrap;
+}
+.bottom li a {
+  display: block;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 14px;
+  margin: 0;
+  padding: 0px 10px 4px 10px;
+}
+.bottom li a:hover {
+  background:#759FCF;
+  color:#fff;
+}
+.bottom li label {
+  display: block;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 14px;
+  margin: 0;
+  padding: 0px 10px 4px 10px;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.workflow-no {
+  width: 10px;
+}
+.workflow-role {
+  width: 50px;
+}
+.workflow-group {
+  width: 150px;
+}
+.workflow-user {
+  width: 320px;
+}
+.workflow-user2 {
+  width: 70%;
+}
+.workflow-status {
+  width: 150px;
+}
+.workflow-delete {
+  width: 100px;
+}
+.workflow-comment {
+  width: 300px;
+}
+.workflow-mark {
+  width: 150px;
+}
+
+.workflow-action {
+    width: 60px;
+ }
+.workflow-input-comment {
+  width: 300px;
+  height: 110px;
+  overflow: scroll;
+}
+.comment {
+  width: 300px;
+  height: 40px;
+  border: none;
+  overflow-y: visible;
+  background-color: transparent;
+}
+
+#historyContents {
+  width: 100%;
+  border: 0px ;
+  padding: 0px;
+}
+
+#historyContents table#historyCount {
+  border : 0px;
+}
+#historyContents table#historyCount td {
+  /*background-color : #ffffdd ;*/
+  border : 0px;
+}
+#historyContents table#historyCount table {
+  border : 0px;
+}
+
+.history-corresponNo {
+  width : 170px ;
+  height : 23px;
+}
+.history-issuedOn {
+  width : 100px ;
+  height : 23px;
+}
+.history-from {
+  width : 80px ;
+  height : 23px;
+}
+.history-to {
+  width : 80px ;
+  height : 23px;
+}
+.history-subject {
+  width : 500px ;
+  height : 23px;
+}
+
+.workflow-dialog {
+  background-color: #ffffdd;
+  border: 1px solid #666666;
+  padding: 7px 7px 7px 7px;
+
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  position: absolute !important;
+}
+
+.workflow-action-panel ul { float: left; }
+
+#under-construction { margin-left: 15px; }
+
+#under-construction p {
+  font-size:120%;
+  color:#cccccc;
+}
+
+#actions {
+}
+.action-caption {
+  font-weight:bold;
+  text-align:left;
+
+  display: inline;
+}
+.correspon-action {
+  border-width: 1px 1px 1px 1px;
+  border-color: #d7d7d7;
+  border-style: solid;
+}
+.correspon-action span {
+  display: block;
+}
+.correspon-action-button {
+  text-align:center;
+}
+.correspon-action-button input[type="submit"]{
+  padding-left: 15px;
+  padding-right: 15px;
+  margin-left: 0.5em;
+}
+
+/* --- 一覧表示部分 --- */
+.address-group        { text-align: left;   width: 120px; font-size:11px;}
+.address-attention    { text-align: left;   vertical-align:bottom; background-color: transparent; font-size:11px;}
+.address-blank        { text-align: left;   background-color: transparent; width: 210px; font-size:11px;}
+.address-pic          { text-align: left;   vertical-align:bottom; background-color: transparent; font-size:11px;}
+.address-edit         { text-align: center; vertical-align:bottom; width: 40px;  background-color: transparent; font-size:11px;}
+.address-delete       { text-align: center; vertical-align:bottom; width: 50px;  background-color: transparent; font-size:11px;}
+.address-assign-to    { text-align: center; width: 40px;  background-color: transparent; font-size:11px;}
+.address-cc           { text-align: left;   height: 16px; background-color: transparent; font-size:11px;}
+.address-reply        { text-align: center; width: 48px;  background-color: transparent; font-size:11px;}
+.address-reply-status { text-align: left;  width: 140px; font-size:11px; }
+.reply-correspon      { font-size: 10px; }
+.edit-address-user    { display: block; }
+.address-text         { text-align: left; padding:0px; margin:0px;}
+
+
+/* dataTable個別設定  */
+.width-120 {
+	width:120px;
+}
+.padding-0 {
+	padding:0px;
+}
+.width-140 {
+	width:140px;
+}
+.width-150 {
+	width:150px;
+}
+.width-200 {
+	width:200px;
+}
+.width-400 {
+	width:400px;
+}
+.text-center {
+	text-align:center;
+}
+.border-right-0 {
+	border-right-width:0px;
+}
+
+/* corresponConfirmation */
+.confirm-toAddr-group {
+	border-right-width:0px;
+	text-align:center;
+	width: 200px;
+}
+
+.confirm-toAddr-attention {
+	border-right-width:0px;
+	text-align:center;
+}
+.confirm-coAddr-group {
+	border-right-width:0px;
+	text-align:center;
+	width: 200px;
+}
+.confirm-coAddr-cc {
+	border-right-width:0px;
+	text-align:center;
+}
+
+/* corresponSearch */
+#searchHelp {
+  display:none;
+  width: 500px;
+  border: 1px solid #d7d7d7;
+  background-color: #ffffe0;
+  position:absolute;
+}

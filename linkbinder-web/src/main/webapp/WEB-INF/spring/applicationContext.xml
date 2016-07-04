@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="
+      http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+      http://www.springframework.org/schema/aop
+      http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+      http://www.springframework.org/schema/tx
+      http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+      http://www.springframework.org/schema/context
+      http://www.springframework.org/schema/context/spring-context-3.0.xsd
+      ">
+
+<!--
+  <bean
+      id="propertyConfigurer"
+      class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="locations">
+      <list>
+        <value>classpath:jdbc.properties</value>
+    </list>
+  </property>
+  </bean>
+-->
+
+  <!-- fieldに@Resourceアノテーションを付けてDIするための設定 -->
+  <context:annotation-config/>
+
+  <context:component-scan base-package="jp.co.opentone.bsol.framework.web"/>
+
+  <!-- ManagedBeanは、各クラスで適切なScopeを指定すること -->
+  <context:component-scan base-package="jp.co.opentone.bsol.linkbinder.view"
+          use-default-filters="false">
+    <context:include-filter type="annotation"
+                expression="javax.annotation.ManagedBean"/>
+  </context:component-scan>
+
+  <!-- 安全のため、Service/Dao/Dto/その他のScopeはprototype固定とする -->
+  <context:component-scan base-package="jp.co.opentone.bsol.linkbinder"
+          scope-resolver="jp.co.opentone.bsol.framework.core.extension.spring.scope.PrototypeScopeMetadataResolver"
+          use-default-filters="false">
+    <context:include-filter type="annotation"
+                expression="org.springframework.stereotype.Service"/>
+    <context:include-filter type="annotation"
+                expression="org.springframework.stereotype.Repository"/>
+    <context:include-filter type="annotation"
+                expression="org.springframework.stereotype.Component"/>
+  </context:component-scan>
+
+  <bean id="viewHelper" class="jp.co.opentone.bsol.framework.web.view.util.ViewHelper" scope="prototype"/>
+  <bean id="actionHandler" class="jp.co.opentone.bsol.framework.web.view.action.ActionHandler" scope="prototype"/>
+
+  <bean id="fileStoreClient" class="jp.co.opentone.bsol.framework.core.filestore.FileStoreClient" scope="prototype"/>
+  <bean id="projectLogoManager" class="jp.co.opentone.bsol.linkbinder.view.logo.ProjectLogoManager"  scope="singleton"/>
+  <bean id="dataSourceSelector" class="jp.co.opentone.bsol.framework.core.dao.UserIdConventionDataSourceSelector"/>
+  <bean id="transactionalActionExecutor" class="jp.co.opentone.bsol.framework.web.view.action.TransactionalActionExecutor" scope="prototype"/>
+  <bean id="serviceActionHandler" class="jp.co.opentone.bsol.framework.web.view.action.ServiceActionHandler" scope="prototype"/>
+  <bean id="currentUser" class="jp.co.opentone.bsol.linkbinder.dto.User" scope="session"/>
+  <bean id="daoFinder" class="jp.co.opentone.bsol.linkbinder.dao.DaoFinder" scope="prototype"/>
+  <bean id="feedAuthenticator" class="jp.co.opentone.bsol.linkbinder.view.auth.DefaultFeedAuthenticator" scope="prototype"/>
+  <bean id="currentProjectUser" class="jp.co.opentone.bsol.linkbinder.dto.ProjectUser" scope="session"/>
+
+  <!-- システム定義情報の設定 -->
+  <bean id="systemConfigSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+    <property name="basenames">
+      <list>
+        <value>classpath:config/framework-config</value>
+        <value>classpath:config/linkbinder-config</value>
+        <!-- override -->
+        <value>file:${LB_RESOURCE_DIR}/framework-config</value>
+        <value>file:${LB_RESOURCE_DIR}/linkbinder-config</value>
+      </list>
+    </property>
+  </bean>
+  <bean id="systemConfigInitializer" class="jp.co.opentone.bsol.framework.core.config.SystemConfigInitializer"
+        init-method="initialize" />
+
+  <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+    <property name="basenames">
+      <list>
+        <value>classpath:message/framework-messages</value>
+        <value>classpath:message/validation_messages</value>
+        <value>classpath:message/messages</value>
+        <value>classpath:message/errors</value>
+        <!-- override -->
+        <value>file:${LB_RESOURCE_DIR}/framework-messages</value>
+        <value>file:${LB_RESOURCE_DIR}/validation_messages</value>
+        <value>file:${LB_RESOURCE_DIR}/messages</value>
+        <value>file:${LB_RESOURCE_DIR}/errors</value>
+      </list>
+    </property>
+    <property name="defaultEncoding" value="UTF-8"/>
+    <property name="fileEncodings" value="UTF-8"/>
+  </bean>
+  <bean id="messageInitializer" class="jp.co.opentone.bsol.framework.core.message.MessageInitializer"
+        init-method="initialize" />
+
+  <!-- JSON初期化 -->
+  <bean id="jsonInitializer" class="jp.co.opentone.bsol.framework.web.view.JsonInitializer"
+        init-method="initialize" />
+
+</beans>

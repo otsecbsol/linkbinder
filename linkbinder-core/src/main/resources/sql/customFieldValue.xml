@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="customFieldValue">
+
+  <resultMap id="customFieldValue" class="jp.co.opentone.bsol.linkbinder.dto.CustomFieldValue">
+    <result property="id"                        column="id" />
+    <result property="customFieldId"             column="custom_field_id" />
+    <result property="value"                     column="value" />
+    <result property="orderNo"                   column="order_no" />
+    <result property="createdBy.empNo"           column="created_by" />
+    <result property="createdAt"                 column="created_at" />
+    <result property="updatedBy.empNo"           column="updated_by" />
+    <result property="updatedAt"                 column="updated_at" />
+    <result property="deleteNo"                  column="delete_no" />
+  </resultMap>
+
+  <select id="findByCustomFieldId" resultMap="customFieldValue">
+    SELECT
+      id,
+      custom_field_id,
+      value,
+      order_no,
+      created_by,
+      created_at,
+      updated_by,
+      updated_at,
+      delete_no
+    FROM
+      custom_field_value
+    WHERE
+      custom_field_id = #customFieldId#
+    AND
+      delete_no = 0
+  </select>
+
+  <update id="deleteByCustomFieldId">
+    UPDATE custom_field_value
+    SET
+      updated_by = #updatedBy.empNo#,
+      updated_at = SYSTIMESTAMP,
+      delete_no = s_custom_field_value_dno.NEXTVAL
+    WHERE
+      custom_field_id = #customFieldId#
+    AND
+      delete_no = 0
+  </update>
+
+  <insert id="create">
+    <selectKey resultClass="long" keyProperty="id">
+        SELECT s_custom_field_value_id.NEXTVAL AS id FROM dual
+    </selectKey>
+    INSERT INTO custom_field_value (
+      id,
+      custom_field_id,
+      value,
+      order_no,
+      created_by,
+      updated_by
+    ) VALUES (
+      #id#,
+      #customFieldId#,
+      #value#,
+      #orderNo#,
+      #createdBy.empNo#,
+      #updatedBy.empNo#
+    )
+  </insert>
+
+</sqlMap>

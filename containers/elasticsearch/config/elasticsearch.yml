@@ -1,0 +1,5 @@
+network.host: 0.0.0.0
+
+# node.name: node0
+# node.name: ${NODE_NAME}
+discovery.zen.ping.unicast.hosts: ["192.168.99.100"]

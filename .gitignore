@@ -1,0 +1,25 @@
+*.class
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+# project
+.gradle
+*.iml
+target
+classes
+.idea
+build
+bin
+.classpath
+.project
+.settings
+docker-compose.yml
+docker-compose.yml-e
+/logback.xml
+/logback.groovy
+db/main.xml
+db/changelog

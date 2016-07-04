@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="projectCompany">
+
+<resultMap id="result" class="jp.co.opentone.bsol.linkbinder.dto.ProjectCompany">
+    <result property="id"                                       column="id" />
+    <result property="projectId"                                column="project_id" />
+    <result property="companyId"                                column="company_id" />
+    <result property="role"                                     column="role" />
+    <result property="createdBy.empNo"                          column="created_by" />
+    <result property="createdAt"                                column="created_at" />
+    <result property="updatedBy.empNo"                         column="updated_by" />
+    <result property="updatedAt"                                column="updated_at" />
+    <result property="deleteNo"                                 column="delete_no" />
+</resultMap>
+
+  <insert id="create">
+    <selectKey resultClass="long" keyProperty="id">
+        SELECT s_project_company_id.NEXTVAL AS id FROM dual
+    </selectKey>
+    INSERT INTO project_company (
+      id,
+      project_id,
+      company_id,
+      created_by,
+      updated_by
+    ) VALUES (
+      #id#,
+      #projectId#,
+      #companyId#,
+      #createdBy.empNo#,
+      #updatedBy.empNo#
+    )
+  </insert>
+
+  <select id="findById" resultMap="result">
+    SELECT
+      id,
+      project_id,
+      company_id,
+      role,
+      created_by,
+      created_at,
+      updated_by,
+      updated_at,
+      delete_no
+    FROM
+      project_company
+    WHERE
+      delete_no = 0
+    AND
+      id = #value#
+  </select>
+
+  <update id="update">
+    UPDATE project_company
+    SET
+      role = #role#,
+      updated_by = #updatedBy.empNo#,
+      updated_at = SYSTIMESTAMP
+    WHERE
+      id = #id#
+  </update>
+
+  <update id="delete">
+    UPDATE project_company
+    SET
+      updated_by = #updatedBy.empNo#,
+      updated_at = SYSTIMESTAMP,
+      delete_no  = s_project_company_dno.NEXTVAL
+    WHERE
+      id = #id#
+  </update>
+
+  <select id="countCheck" resultClass="int">
+    SELECT
+      count(id) as cnt
+    FROM
+      project_company
+    <dynamic prepend="WHERE">
+      <isNotNull prepend="AND" property="companyId">
+        company_id = #companyId#
+      </isNotNull>
+    </dynamic>
+  </select>
+
+</sqlMap>

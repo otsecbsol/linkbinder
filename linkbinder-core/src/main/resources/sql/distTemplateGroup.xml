@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="distTemplateGroup">
+
+  <resultMap id="result" class="jp.co.opentone.bsol.linkbinder.dto.DistTemplateGroup">
+    <result property="id"                       column="id" />
+    <result property="distTemplateHeaderId"     column="dist_template_header_id" />
+    <result property="distributionType"         column="distribution_type" />
+    <result property="orderNo"                  column="order_no" />
+    <result property="groupId"                  column="group_id" />
+    <result property="createdBy"                column="created_by" />
+    <result property="createdAt"                column="created_at" />
+    <result property="updatedBy"                column="updated_by" />
+    <result property="updatedAt"                column="updated_at" />
+  </resultMap>
+
+  <resultMap id="resultDetail" class="jp.co.opentone.bsol.linkbinder.dto.DistTemplateGroup" groupBy="id">
+    <result property="id"                       column="id" />
+    <result property="distTemplateHeaderId"     column="dist_template_header_id" />
+    <result property="distributionType"         column="distribution_type" />
+    <result property="orderNo"                  column="order_no" />
+    <result property="groupId"                  column="group_id" />
+    <result property="corresponGroup.id"        column="group_id" />
+    <result property="corresponGroup.name"      column="group_name" />
+    <result property="createdBy"                column="created_by" />
+    <result property="createdAt"                column="created_at" />
+    <result property="updatedBy"                column="updated_by" />
+    <result property="updatedAt"                column="updated_at" />
+    <result property="users"         resultMap="distTemplateGroup.resultList" />
+  </resultMap>
+
+  <resultMap id="resultList" class="jp.co.opentone.bsol.linkbinder.dto.DistTemplateUser">
+    <result property="id"                       column="dist_template_user_id" />
+    <result property="distTemplateGroupId"      column="dist_template_group_id" />
+    <result property="orderNo"                  column="dist_template_user_order_no" />
+    <result property="user.empNo"               column="emp_no" />
+    <result property="user.lastName"            column="emp_last_nm" />
+    <result property="user.nameE"               column="emp_nm_e" />
+    <result property="user.role"                column="emp_role" />
+<!--
+    <result property="empNameAndNo"             column="emp_name_view" />
+    <result property="role"                     column="role" />
+-->
+  </resultMap>
+
+  <resultMap id="resultDeleteId" class="jp.co.opentone.bsol.linkbinder.dto.DistTemplateGroup">
+    <result property="id"                       column="id" />
+  </resultMap>
+
+  <select id="findByDeleteId" resultMap="resultDeleteId">
+    SELECT
+      id
+    FROM
+      v_dist_template_group
+    WHERE
+      dist_template_header_id = #value#
+  </select>
+
+  <select id="findByDistTemplateHeaderId" parameterClass="java.util.HashMap" resultMap="resultDetail">
+    SELECT
+      tg.id,
+      tg.dist_template_header_id,
+      tg.distribution_type,
+      tg.order_no,
+      tg.group_id,
+      tg.group_name,
+      tg.created_by,
+      tg.created_at,
+      tg.updated_by,
+      tg.updated_at,
+      tu.id as dist_template_user_id,
+      tu.dist_template_group_id,
+      tu.order_no as dist_template_user_order_no,
+      tu.emp_no,
+      tu.emp_last_nm,
+      tu.emp_nm_e,
+      tu.emp_role
+    FROM
+      v_dist_template_group tg
+      LEFT OUTER JOIN v_dist_template_user tu
+          ON tg.id = tu.dist_template_group_id
+    WHERE
+      tg.dist_template_header_id = #distTemplateHeaderId#
+    ORDER BY
+      tg.order_no,
+      tu.order_no
+  </select>
+
+  <insert id="create" parameterClass="jp.co.opentone.bsol.linkbinder.dto.DistTemplateGroup">
+    <selectKey resultClass="long" keyProperty="id" type="pre">
+        SELECT s_dist_template_group_id.NEXTVAL AS id FROM dual
+    </selectKey>
+    INSERT INTO dist_template_group (
+        id,
+        dist_template_header_id,
+        distribution_type,
+        order_no,
+        group_id,
+        created_by,
+        created_at,
+        updated_by,
+        updated_at
+    ) VALUES (
+        #id#,
+        #distTemplateHeaderId#,
+        #distributionType#,
+        #orderNo#,
+        #groupId#,
+        #createdBy#,
+        #createdAt#,
+        #updatedBy#,
+        #updatedAt#
+    )
+  </insert>
+
+  <update id="delete">
+    UPDATE dist_template_group
+      SET
+        updated_by = #updatedBy#,
+        updated_at = #updatedAt#,
+        delete_no  = s_dist_template_group_dno.NEXTVAL
+      WHERE
+        id = #id#
+      AND
+        delete_no = 0
+  </update>
+
+  <update id="update">
+    UPDATE dist_template_group
+    SET
+      dist_template_header_id       = #distTemplateHeaderId#,
+      distribution_type             = #distributionType#,
+      order_no                      = #orderNo#,
+      group_id                      = #groupId#,
+      updated_by                    = #updatedBy#,
+      updated_at                    = #updatedAt#
+    WHERE
+      id = #id#
+  </update>
+
+<!-- For Test Query -->
+  <delete id="testClearTable" >
+    <![CDATA[
+    DELETE FROM dist_template_group WHERE dist_template_header_id > 1000000000
+    ]]>
+  </delete>
+  <select id="testFindById" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+    <![CDATA[
+    SELECT
+        id,
+        dist_template_header_id,
+        distribution_type,
+        order_no,
+        group_id,
+        created_by,
+        TO_CHAR(created_at, 'yyyy/mm/dd hh24:mi:ss') AS created_at,
+        updated_by,
+        TO_CHAR(updated_at, 'yyyy/mm/dd hh24:mi:ss') AS updated_at,
+        delete_no
+    FROM dist_template_group WHERE id = #id#
+    ]]>
+  </select>
+</sqlMap>

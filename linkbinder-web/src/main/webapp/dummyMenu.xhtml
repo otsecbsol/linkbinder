@@ -1,0 +1,98 @@
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/include/template.xhtml">
+	<ui:define name="body">
+		<f:view>
+			<h:form id="form">
+				<div class="top"><span id="title">Menu (Dummy)</span></div>
+				<h:messages globalOnly="true" showDetail="true" infoClass="info"
+					errorClass="error" warnClass="warn" fatalClass="fatal" />
+				<div id="main">
+				<table>
+					<tr>
+						<td class="label">Project:</td>
+						<td>
+							<h:selectOneMenu id="projectId"
+								value="#{dummyMenuPage.projectId}"
+								onchange="document.getElementById('form:changeProject').click();"
+								rendered="#{dummyMenuPage.projectList != null}">
+								<f:selectItems value="#{dummyMenuPage.projectList}" />
+							</h:selectOneMenu>
+							<h:commandButton id="changeProject" action="#{dummyMenuPage.changeProject}" value="Change" style="display:none;" />
+						</td>
+					</tr>
+				</table>
+				<h:dataTable id="users" var="u" value="#{dummyMenuPage.users}"
+					border="1" cellspacing="0" cellpadding="0" styleClass="list"
+					rowClasses="odd,even">
+					<h:column style="width:400px;">
+						<f:facet name="header">
+							<h:outputText value="" />
+						</f:facet>
+						<h:commandLink action="#{dummyMenuPage.login}">
+							<h:outputText value="Login" />
+						</h:commandLink>
+						<h:outputText id="separator1" value=" | "
+							rendered="#{u.user.systemAdmin}" />
+						<h:commandLink action="#{dummyMenuPage.loginAsAdmin}"
+							rendered="#{u.user.systemAdmin}">
+							<h:outputText value="Login(AdminHome)" />
+						</h:commandLink>
+						<h:outputText id="separator2" value=" | "
+							rendered="#{u.user.systemAdmin || u.projectAdmin}" />
+						<h:commandLink action="#{dummyMenuPage.loginAsProjectAdmin}"
+							rendered="#{u.user.systemAdmin || u.projectAdmin}">
+							<h:outputText value="Login(ProjectAdminHome)" />
+						</h:commandLink>
+					</h:column>
+					<h:column style="width:400px;">
+						<f:facet name="header">
+							<h:outputText value="User" />
+						</f:facet>
+						<h:outputText value="#{u.user.nameE}/#{u.user.empNo}" />
+					</h:column>
+					<h:column style="width:40;">
+						<f:facet name="header">
+							<h:outputText value="System Admin" />
+						</f:facet>
+						<h:outputText id="systemAdmin" value="yes"
+							rendered="#{u.user.systemAdmin}" />
+						<h:outputText id="notSystemAdmin" value="no"
+							rendered="#{!u.user.systemAdmin}" />
+					</h:column>
+					<h:column style="width:40;">
+						<f:facet name="header">
+							<h:outputText value="Project Admin" />
+						</f:facet>
+						<h:outputText id="projectAdmin" value="yes"
+							rendered="#{u.projectAdmin}" />
+						<h:outputText id="notProjectAdmin" value="no"
+							rendered="#{!u.projectAdmin}" />
+					</h:column>
+				</h:dataTable></div>
+			</h:form>
+		</f:view>
+	</ui:define>
+</ui:composition>
+</html>

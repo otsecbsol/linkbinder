@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="corresponGroup">
+
+<resultMap id="result" class="jp.co.opentone.bsol.linkbinder.dto.CorresponGroup">
+  <result property="id"                       column="id" />
+  <result property="projectId"                column="project_id" />
+  <result property="projectNameE"             column="project_name_e" />
+  <result property="site.id"                  column="site_id" />
+  <result property="site.siteCd"              column="site_cd" />
+  <result property="site.name"                column="site_name" />
+  <result property="discipline.id"            column="discipline_id" />
+  <result property="discipline.disciplineCd"  column="discipline_cd" />
+  <result property="discipline.name"          column="discipline_name" />
+  <result property="name"                     column="name" />
+  <result property="createdBy.empNo"          column="created_by" />
+  <result property="createdAt"                column="created_at" />
+  <result property="updatedBy.empNo"          column="updated_by" />
+  <result property="updatedAt"                column="updated_at" />
+  <result property="versionNo"                column="version_no" />
+  <result property="deleteNo"                 column="delete_no" />
+</resultMap>
+
+<resultMap id="user" class="jp.co.opentone.bsol.linkbinder.dto.CorresponGroupUser">
+  <result property="id"                       column="id" />
+  <result property="corresponGroup.projectId" column="project_id" />
+  <result property="corresponGroup.id"        column="correspon_group_id" />
+  <result property="corresponGroup.name"      column="correspon_group_name" />
+  <result property="user.empNo"               column="emp_no" />
+  <result property="user.lastName"            column="emp_last_name" />
+  <result property="user.nameE"               column="emp_name_e" />
+  <result property="user.role"               column="role" />
+  <result property="securityLevel"            column="security_level" />
+  <result property="createdBy.empNo"          column="created_by" />
+  <result property="createdAt"                column="created_at" />
+  <result property="updatedBy.empNo"          column="updated_by" />
+  <result property="updatedAt"                column="updated_at" />
+  <result property="deleteNo"                 column="delete_no" />
+</resultMap>
+<resultMap id="resultForUpdate" class="jp.co.opentone.bsol.linkbinder.dto.CorresponGroup">
+  <result property="versionNo"             column="version_no" />
+</resultMap>
+
+  <!--  findById, find,findByDisciplineIdで共通的に利用するSELECT, FROM句 -->
+  <sql id="findSelect">
+    SELECT
+      DISTINCT
+        g.id,
+        g.project_id,
+        g.project_name_e,
+        g.site_id,
+        g.site_cd,
+        g.site_name,
+        g.discipline_id,
+        g.discipline_cd,
+        g.discipline_name,
+        g.name,
+        g.created_by,
+        g.created_at,
+        g.updated_by,
+        g.updated_at,
+        g.version_no,
+        g.delete_no
+  </sql>
+
+  <select id="find" resultMap="result">
+    <include refid="findSelect"/>
+    FROM
+      v_correspon_group g
+
+    <dynamic>
+      <isEqual property="groupAdmin" compareValue="true">
+        LEFT OUTER JOIN correspon_group_user u
+        ON g.id = u.correspon_group_id AND u.delete_no = 0
+      </isEqual>
+    </dynamic>
+
+    <dynamic prepend="WHERE">
+      <isNotNull prepend="AND" property="projectId">
+        g.project_id    = #projectId#
+      </isNotNull>
+      <isNotNull prepend="AND" property="siteId">
+        g.site_id       = #siteId#
+      </isNotNull>
+      <isNotNull prepend="AND" property="disciplineId">
+        g.discipline_id = #disciplineId#
+      </isNotNull>
+      <isEqual prepend="AND" property="groupAdmin" compareValue="true" >
+        u.emp_no = #searchUser.empNo#
+        AND
+        security_level = #searchUser.securityLevel#
+      </isEqual>
+    </dynamic>
+
+    <dynamic>
+      <isNotEmpty prepend="ORDER BY" property="sortColumn">
+      	g.$sortColumn$
+      </isNotEmpty>
+    </dynamic>
+  </select>
+
+  <select id="findById" resultMap="result">
+    <include refid="findSelect"/>
+    FROM
+      v_correspon_group g
+    WHERE
+      id = #value#
+  </select>
+
+  <select id="findByEmpNo" resultMap="user">
+    SELECT
+      id,
+      project_id,
+      correspon_group_id,
+      correspon_group_name,
+      emp_no,
+      emp_last_name,
+      emp_name_e,
+      role,
+      security_level,
+      created_by,
+      created_at,
+      updated_by,
+      updated_at,
+      delete_no
+    FROM
+      v_correspon_group_user
+    WHERE
+          project_id = #projectId#
+      AND emp_no = #empNo#
+
+    <dynamic>
+      <isNotEmpty prepend="ORDER BY" property="sortColumn">
+      	$sortColumn$
+      </isNotEmpty>
+    </dynamic>
+  </select>
+
+  <select id="findByDisciplineId" resultMap="result">
+    <include refid="findSelect"/>
+    FROM
+      v_correspon_group g
+    WHERE
+      g.discipline_id = #value#
+  </select>
+
+  <select id="countCorresponGroup" resultClass="int">
+    SELECT
+      COUNT(g.id)
+    FROM
+      v_correspon_group g
+
+    <dynamic>
+      <isEqual property="groupAdmin" compareValue="true">
+        LEFT OUTER JOIN correspon_group_user u
+        ON g.id = u.correspon_group_id AND u.delete_no = 0
+      </isEqual>
+    </dynamic>
+    WHERE
+      g.site_id = #siteId#
+
+    <dynamic>
+      <isEqual prepend="AND" property="groupAdmin" compareValue="true" >
+        u.emp_no = #searchUser.empNo#
+        AND
+        security_level = #searchUser.securityLevel#
+      </isEqual>
+    </dynamic>
+
+  </select>
+
+  <insert id="create">
+    <selectKey resultClass="long" keyProperty="id">
+      SELECT s_correspon_group_id.NEXTVAL AS id FROM dual
+    </selectKey>
+    INSERT INTO correspon_group(
+      id,
+      site_id,
+      discipline_id,
+      name,
+      created_by,
+      updated_by
+    ) VALUES (
+      #id#,
+      #site.id#,
+      #discipline.id#,
+      #name#,
+      #createdBy.empNo#,
+      #updatedBy.empNo#
+    )
+  </insert>
+
+  <update id="update">
+    UPDATE correspon_group
+    SET
+      updated_by = #updatedBy.empNo#,
+      updated_at = SYSTIMESTAMP,
+      version_no = (version_no + 1)
+      <dynamic>
+        <isNotNull prepend="," property="name">
+          name = #name#
+        </isNotNull>
+      </dynamic>
+    WHERE
+      id = #id#
+  </update>
+
+  <select id="findByIdForUpdate" resultMap="resultForUpdate">
+    SELECT
+      version_no
+    FROM
+      correspon_group
+    WHERE
+      id = #id#
+    FOR UPDATE
+  </select>
+  <update id="delete">
+    UPDATE correspon_group
+    SET
+      updated_by = #updatedBy.empNo#,
+      updated_at = SYSTIMESTAMP,
+      version_no = (version_no + 1),
+      delete_no  = s_correspon_group_dno.NEXTVAL
+    WHERE
+      id         = #id#
+  </update>
+
+</sqlMap>

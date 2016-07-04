@@ -1,0 +1,110 @@
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/include/template.xhtml">
+  <ui:define name="title">会社</ui:define>
+  <ui:define name="jsOuter"></ui:define>
+  <ui:define name="jsInner"></ui:define>
+
+  <ui:define name="body">
+    <f:view>
+      <h:form id="form" onsubmit="return disableSubmit();">
+        <h:inputHidden id="actionName" value="#{companyPage.actionName}" />
+        <div id="detail">
+          <h:inputHidden id="id" value="#{companyPage.id}" />
+          <h:inputHidden id="projectId" value="#{companyPage.projectId}" />
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel value="ID"/>
+              <h:outputText id="viewId" value="#{companyPage.company.id}"
+                  rendered="#{companyPage.projectId == null}" />
+              <h:outputText id="viewProjectCompanyId" value="#{companyPage.company.projectCompanyId}"
+                  rendered="#{companyPage.projectId != null}" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel value="会社コード"/>
+              <h:outputText id="code" value="#{companyPage.company.companyCd}" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel value="会社名"/>
+              <h:outputText id="name" value="#{companyPage.company.name}" />
+            </div>
+          </div>
+          <ui:fragment rendered="#{!empty companyPage.projectId}">
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel value="役割"/>
+              <h:outputText id="role" value="#{companyPage.company.role}" />
+            </div>
+          </div>
+          </ui:fragment>
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel value="作成者/作成日時"/>
+                <h:outputText id="createdName" value="#{companyPage.company.createdBy.nameE}" />/<h:outputText id="createdId" value="#{companyPage.company.createdBy.empNo}" style="margin-right: 10px;" />
+                (<h:outputText id="createdAt" value="#{companyPage.company.createdAt}">
+                  <f:convertDateTime pattern="yyyy-MM-dd HH:mm:ss" />
+                </h:outputText>)
+            </div>
+          </div>
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel value="更新者/更新日時"/>
+                <h:outputText id="updatedName" value="#{companyPage.company.updatedBy.nameE}" />/<h:outputText id="updatedId" value="#{companyPage.company.updatedBy.empNo}" style="margin-right: 10px;" />
+                (<h:outputText id="updatedAt" value="#{companyPage.company.updatedAt}">
+                  <f:convertDateTime pattern="yyyy-MM-dd HH:mm:ss" />
+                </h:outputText>)
+            </div>
+          </div>
+        </div>
+        <div class="action-edit">
+          <h:commandLink id="index" value="一覧画面へ"
+                         styleClass="button"
+                         action="#{companyPage.goIndex}" onclick="setActionName(event)" />
+          <ui:fragment rendered="#{!empty companyPage.projectId}">
+            <h:commandLink id="editMember" value="メンバー編集"
+                          styleClass="button"
+                          action="#{companyPage.editMember}" onclick="setActionName(event)" />
+          </ui:fragment>
+        </div>
+        <table style="width: 100%;">
+          <tr>
+            <td style="text-align: center;">
+              <table class="editActionArea">
+                <tr>
+                  <td>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </h:form>
+    </f:view>
+  </ui:define>
+</ui:composition>
+</html>

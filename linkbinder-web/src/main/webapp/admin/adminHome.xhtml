@@ -1,0 +1,72 @@
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/include/template.xhtml">
+  <ui:define name="title">システム管理</ui:define>
+  <ui:define name="jsOuter"></ui:define>
+  <ui:define name="jsInner"></ui:define>
+
+  <ui:define name="body">
+    <f:view>
+      <h:form id="form" onsubmit="return disableSubmit();">
+        <h:inputHidden id="actionName" value="#{adminHomePage.actionName}" />
+        <div id="main">
+        <ul class="menu-list">
+          <li>
+              <h:outputLink id="projects"
+               value="projectIndex.jsf"
+               onclick="setActionName(event)">
+                <h:outputText value="プロジェクト" />
+              </h:outputLink>
+          </li>
+          <li>
+              <h:outputLink id="companies"
+               value="companyIndex.jsf"
+               onclick="setActionName(event)">
+                <h:outputText value="会社" />
+              </h:outputLink>
+          </li>
+          <li>
+              <h:outputLink id="correspondenceTypes"
+                value="corresponTypeIndex.jsf"
+                onclick="setActionName(event)">
+                <h:outputText value="文書種類" />
+              </h:outputLink>
+          </li>
+          <li>
+              <h:outputLink id="customFields"
+                value="customFieldIndex.jsf"
+                onclick="setActionName(event)">
+                  <h:outputText value="文書内追加項目(その他項目)" />
+              </h:outputLink>
+          </li>
+          <li>
+               <h:outputLink id="masterSetting"
+                 value="masterSetting.jsf"
+                 onclick="setActionName(event)">
+                   <h:outputText value="マスタデータ登録" />
+               </h:outputLink>
+          </li>
+        </ul>
+        </div>
+      </h:form>
+    </f:view>
+  </ui:define>
+</ui:composition>
+</html>

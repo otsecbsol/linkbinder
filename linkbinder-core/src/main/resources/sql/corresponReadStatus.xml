@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="corresponReadStatus">
+
+  <resultMap id="result" class="jp.co.opentone.bsol.linkbinder.dto.CorresponReadStatus">
+    <result property="id"               column="id" />
+    <result property="empNo"            column="emp_no" />
+    <result property="corresponId"      column="correspon_id" />
+    <result property="readStatus"       column="read_status" />
+    <result property="createdBy.empNo"  column="created_by" />
+    <result property="createdAt"        column="created_at" />
+    <result property="updatedBy.empNo"  column="updated_by" />
+    <result property="updatedAt"        column="updated_at" />
+    <result property="versionNo"        column="version_no" />
+    <result property="deleteNo"         column="delete_no" />
+  </resultMap>
+  <resultMap id="resultForUpdate" class="jp.co.opentone.bsol.linkbinder.dto.CorresponReadStatus">
+    <result property="versionNo"        column="version_no" />
+  </resultMap>
+
+  <!-- findById, findByEmpNoで共通して使うSELECT, WHERE句 -->
+  <sql id="findSelectFrom">
+    SELECT
+      id,
+      emp_no,
+      correspon_id,
+      read_status,
+      created_by,
+      created_at,
+      updated_by,
+      updated_at,
+      version_no,
+      delete_no
+    FROM
+      correspon_read_status
+  </sql>
+
+  <!-- update, updateByCorresponIdで共通して使うSELECT, WHERE句 -->
+  <sql id="updateSet">
+    UPDATE correspon_read_status
+    SET
+      updated_by = #updatedBy.empNo#,
+      updated_at = SYSTIMESTAMP,
+      version_no = (version_no + 1)
+      <dynamic>
+        <isNotNull prepend="," property="readStatus">
+          read_status = #readStatus#
+        </isNotNull>
+      </dynamic>
+  </sql>
+
+  <select id="findById" resultMap="result">
+    <include refid="findSelectFrom"/>
+    WHERE
+        delete_no = 0
+      AND
+        id = #id#
+  </select>
+
+  <select id="findByEmpNo" resultMap="result">
+    <include refid="findSelectFrom"/>
+    WHERE
+        delete_no = 0
+      AND
+        correspon_id = #corresponId#
+      AND
+        emp_no = #empNo#
+  </select>
+
+  <insert id="create">
+    <selectKey resultClass="long" keyProperty="id">
+        SELECT s_correspon_read_status_id.NEXTVAL AS id FROM dual
+    </selectKey>
+    INSERT INTO correspon_read_status (
+      id,
+      emp_no,
+      correspon_id,
+      read_status,
+      created_by,
+      updated_by
+    ) VALUES (
+      #id#,
+      #empNo#,
+      #corresponId#,
+      #readStatus#,
+      #createdBy.empNo#,
+      #updatedBy.empNo#
+    )
+  </insert>
+
+  <update id="update">
+    <include refid="updateSet"/>
+    WHERE
+        id = #id#
+      <dynamic>
+        <isNotNull prepend="AND" property="readStatus">
+          <![CDATA[read_status <> #readStatus#]]>
+        </isNotNull>
+      </dynamic>
+  </update>
+
+  <update id="updateByCorresponId">
+    <include refid="updateSet"/>
+    WHERE
+        delete_no = 0
+      AND
+        correspon_id = #corresponId#
+      <dynamic>
+        <isNotNull prepend="AND" property="readStatus">
+          <![CDATA[read_status <> #readStatus#]]>
+        </isNotNull>
+      </dynamic>
+  </update>
+
+
+  <select id="findByIdForUpdate" resultMap="resultForUpdate">
+    SELECT
+      version_no
+    FROM
+      correspon_read_status
+    WHERE
+      id = #id#
+    FOR UPDATE
+  </select>
+</sqlMap>

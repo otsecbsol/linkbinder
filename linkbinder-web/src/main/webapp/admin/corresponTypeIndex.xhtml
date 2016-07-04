@@ -1,0 +1,243 @@
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/include/template.xhtml">
+  <ui:define name="title">文書種類一覧</ui:define>
+  <ui:define name="cssOuter">
+    <link type="text/css" href="#{contextPath}/resource/#{v}/stylesheet/custom/normalList.css" rel="stylesheet" />
+  </ui:define>
+  <ui:define name="jsOuter"></ui:define>
+  <ui:define name="jsInner">
+    <!--
+    function clearCondition() {
+      var searchType = document.getElementById('form:searchType');
+      searchType.value = "";
+      var searchName = document.getElementById('form:searchName');
+      searchName.value = "";
+    }
+
+    function setId(id, no, projId, useWhole){
+      var rowId = document.getElementById('form:corrTypeId');
+      rowId.value = id;
+      var verNo = document.getElementById('form:corrTypeVerNo');
+      verNo.value = no
+      var corrTypeProjId = document.getElementById('form:corrTypeProjId');
+      corrTypeProjId.value = projId;
+      var corrTypeUseWhole = document.getElementById('form:corrTypeUseWhole');
+      corrTypeUseWhole.value = useWhole;
+    }
+
+    $(document).ready(function() {
+      $('#form\\:corresponTypeIndex').highlightRows();
+    });
+    -->
+  </ui:define>
+
+  <ui:define name="body">
+    <f:view>
+      <h:form id="form" onsubmit="return disableSubmit();">
+        <h:inputHidden id="actionName" value="#{corresponTypeIndexPage.actionName}" />
+
+        <h:inputHidden id="scType" value="#{corresponTypeIndexPage.scType}" />
+        <h:inputHidden id="scName" value="#{corresponTypeIndexPage.scName}" />
+
+        <h:inputHidden id="pageNo" value="#{corresponTypeIndexPage.pageNo}" />
+        <h:commandLink style="display: none;" id="previous" action="#{corresponTypeIndexPage.movePrevious}"  onclick="deleteAllLink('paging');setActionName(event)" />
+        <h:commandLink style="display: none;" id="pagerPageNo" action="#{corresponTypeIndexPage.changePage}" onclick="deleteAllLink('paging');setActionName(event);" />
+        <h:commandLink style="display: none;" id="next" action="#{corresponTypeIndexPage.moveNext}"  onclick="deleteAllLink('paging');setActionName(event)" />
+
+        <h:inputHidden id="corrTypeId" value="#{corresponTypeIndexPage.corrTypeId}" />
+        <h:inputHidden id="corrTypeVerNo" value="#{corresponTypeIndexPage.corrTypeVerNo}" />
+        <h:inputHidden id="corrTypeProjId" value="#{corresponTypeIndexPage.corrTypeProjId}" />
+        <h:inputHidden id="corrTypeUseWhole" value="#{corresponTypeIndexPage.corrTypeUseWhole}" />
+
+        <h:commandLink style="display: none;" id="downloadExcel" value="Excelダウンロード" action="#{corresponTypeIndexPage.downloadExcel}" onclick="setActionName(event)" />
+        <h:commandLink style="display: none;" id="update" value="更新"
+            action="#{corresponTypeIndexPage.update}"
+             onclick="setActionName(event)" />
+        <h:commandButton style="display: none;" id="delete" value="削除"
+            action="#{corresponTypeIndexPage.delete}"
+            onclick="setActionName(event); return confirmButton();" />
+
+        <div id="condition">
+          <div class="group">
+            <span class="condition-group-caption">検索条件</span>
+            <f:validateBean validationGroups="#{corresponTypeIndexPage.validationGroups}">
+            <div class="row">
+              <div class="four columns">
+                <h:outputLabel for="searchType" value="文書種類"/>
+                <h:inputText id="searchType" value="#{corresponTypeIndexPage.corresponType}" styleClass="u-full-width" maxlength="10" />
+                <h:message for="searchType" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+              </div>
+              <div class="eight columns">
+                <h:outputLabel for="searchName" value="文書種類名"/>
+                <h:inputText id="searchName" value="#{corresponTypeIndexPage.name}" styleClass="u-full-width" maxlength="100" />
+                <h:message for="searchName" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+              </div>
+            </div>
+            <div class="action">
+              <h:commandButton id="search" value="検索"
+                  styleClass="button-primary"
+                  action="#{corresponTypeIndexPage.search}"
+                  onclick="setActionName(event)" />
+              <h:outputLink id="clear" value="javascript:void(0)" onclick="clearCondition();window.scroll(0,0);" styleClass="button">
+                <h:outputText value="検索条件クリア"  />
+              </h:outputLink>
+            </div>
+            </f:validateBean>
+          </div>
+        </div>
+
+        <h:inputHidden id="viewRender" value="#{corresponTypeIndexPage.dataCount}" />
+        <h:inputHidden id="viewProjectAdminRender" value="#{corresponTypeIndexPage.projectId}" />
+
+        <!-- Assign to Project -->
+        <h:panelGroup rendered="#{!empty corresponTypeIndexPage.projectId}">
+          <f:validateBean validationGroups="#{corresponTypeIndexPage.assignToValidationGroups}">
+          <div class="row">
+            <div class="twelve columns">
+              <h:outputLabel for="selectType" value="文書種類"/>
+              <h:selectOneMenu id="selectType" value="#{corresponTypeIndexPage.selectType}"
+                  rendered="#{corresponTypeIndexPage.selectTypeList != null}">
+                <f:selectItems value="#{corresponTypeIndexPage.selectTypeList}" />
+              </h:selectOneMenu>
+              <h:message for="selectType" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+              <h:commandButton id="assign" value="このプロジェクトへ適用する"
+                  action="#{corresponTypeIndexPage.assignTo}"
+                  onclick="setActionName(event)"
+                  stypeClass="button"/>
+            </div>
+          </div>
+          </f:validateBean>
+        </h:panelGroup>
+
+          <div id="paging" class="row">
+            <ui:fragment rendered="#{!empty corresponTypeIndexPage.dataCount and corresponTypeIndexPage.dataCount != '0'}">
+            <div class="one column list-count">
+              <h:outputText id="dataCount" value="#{corresponTypeIndexPage.dataCount}"  />
+            </div>
+            <div class="one column list-range">
+             <h:outputText id="pageDisplayNo" value="#{corresponTypeIndexPage.pageDisplayNo}"  />
+            </div>
+            <div class="three columns list-nav">
+              <ui:fragment rendered="#{corresponTypeIndexPage.previous}">
+                <a id="prePrevious" href="#" onclick="clickComponent('previous');">
+                  <h:outputText value="#{corresponTypeIndexPage.previousLabel}"/>
+                </a>
+              </ui:fragment>
+              <h:outputText rendered="#{!corresponTypeIndexPage.previous}" value="#{corresponTypeIndexPage.previousLabel}" />
+              <ui:repeat id="pagingNo" var="value" value="#{corresponTypeIndexPage.pagingNo}">
+                <ui:fragment rendered="#{value != corresponTypeIndexPage.pageNo}">
+                  <a id="prePagerPageNo" href="#" onclick="setPageNo('#{value}');clickComponent('pagerPageNo');">
+                    <h:outputText value="#{value}"/>
+                  </a>
+                </ui:fragment>
+                <h:outputText rendered="#{value == corresponTypeIndexPage.pageNo}" value="#{value}" />
+              </ui:repeat>
+              <ui:fragment rendered="#{corresponTypeIndexPage.next}">
+                <a id="preNext" href="#" onclick="clickComponent('next');">
+                  <h:outputText value="#{corresponTypeIndexPage.nextLabel}"/>
+                </a>
+              </ui:fragment>
+              <h:outputText rendered="#{!corresponTypeIndexPage.next}" value="#{corresponTypeIndexPage.nextLabel}" />
+            </div>
+            </ui:fragment>
+            <div class="seven columns list-action">
+              <ui:fragment rendered="#{!empty corresponTypeIndexPage.dataCount and corresponTypeIndexPage.dataCount != '0'}">
+                出力形式:
+                <a id="preDownloadExcel" href="#" onclick="clickComponent('downloadExcel');">Excel</a>
+              </ui:fragment>
+              <h:commandLink id="create" value="新しい文書種類を追加"
+                  styleClass="button"
+                  action="#{corresponTypeIndexPage.create}" onclick="setActionName(event)" />
+            </div>
+        </div>
+        <ui:fragment rendered="#{!empty corresponTypeIndexPage.dataCount and corresponTypeIndexPage.dataCount != '0'}">
+          <div class="result-area">
+            <h:dataTable id="corresponTypeIndex" var="item"
+                value="#{corresponTypeIndexPage.dataModel}"
+                headerClass="no-white-space"
+                columnClasses="number id-width,text type-width,text,text,permission,permission,list-row-action"
+                rowClasses="odd,even"
+                styleClass="list"
+                preserveDataModel="true" rowIndexVar="num" footerClass="footer">
+              <h:column>
+                <f:facet name="header">
+                  <h:outputText value="ID" />
+                </f:facet>
+                <h:outputText id="id" value="#{item.id}" rendered="#{corresponTypeIndexPage.projectId == null}" />
+                <h:outputText id="projectCorresponTypeId" value="#{item.projectCorresponTypeId}"
+                    rendered="#{corresponTypeIndexPage.projectId != null}" />
+              </h:column>
+              <h:column>
+                <f:facet name="header">
+                  <h:outputText value="文書種類" />
+                </f:facet>
+                <h:outputText id="type" value="#{item.corresponType}" />
+              </h:column>
+              <h:column>
+                <f:facet name="header">
+                  <h:outputText value="文書種類名" />
+                </f:facet>
+                <h:outputText id="name" value="#{item.name}" />
+              </h:column>
+              <h:column>
+                <f:facet name="header">
+                  <h:outputText value="ワークフローパターン" />
+                </f:facet>
+                <h:outputText id="workfloPattern" value="#{item.workflowPattern.id}:" />
+                <h:outputText value="#{item.workflowPattern.name}" />
+              </h:column>
+              <h:column>
+                <f:facet name="header">
+                  <h:outputText value="承認者閲覧許可" escape="false" />
+                </f:facet>
+                <h:outputText id="allowApprover" value="#{item.allowApprover}" />
+              </h:column>
+              <h:column>
+                <f:facet name="header">
+                  <h:outputText value="ワークフロー利用強制" escape="false" />
+                </f:facet>
+                <h:outputText id="userWorkflow" value="#{item.useWorkflow}" />
+              </h:column>
+              <h:column>
+                <ui:fragment rendered="#{corresponTypeIndexPage.useAccessControl}" >
+                  <a id="preUpdate" class="button" href="#" onclick="setId('#{item.id}', '#{item.versionNo}', '#{item.projectCorresponTypeId}', '#{item.useWhole}');clickComponent('update');">編集</a>
+                </ui:fragment>
+                <ui:fragment rendered="#{!corresponTypeIndexPage.useAccessControl}" >
+                  <ui:fragment rendered="#{item.useWholeEach || corresponTypeIndexPage.projectId == null}" >
+                    <a id="preUpdate" class="button" href="#" onclick="setId('#{item.id}', '#{item.versionNo}', '#{item.projectCorresponTypeId}', '#{item.useWhole}');clickComponent('update');">編集</a>
+                  </ui:fragment>
+                </ui:fragment>
+                <h:commandButton type="button" id="preDelete" value="削除"
+                    styleClass="button-primary"
+                    onclick="setId('#{item.id}', '#{item.versionNo}', '#{item.projectCorresponTypeId}', '#{item.useWhole}');clickComponent('delete');" />
+              </h:column>
+            </h:dataTable>
+          </div>
+        </ui:fragment>
+      </h:form>
+    </f:view>
+  </ui:define>
+</ui:composition>
+</html>

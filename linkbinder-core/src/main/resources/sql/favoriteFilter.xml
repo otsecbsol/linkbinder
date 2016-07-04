@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="favoriteFilter">
+<resultMap id="result" class="jp.co.opentone.bsol.linkbinder.dto.FavoriteFilter">
+    <result property="id"                         column="id" />
+    <result property="projectId"                  column="project_id" />
+    <result property="user.nameE"                 column="emp_name_e" />
+    <result property="user.empNo"                 column="emp_no" />
+    <result property="favoriteName"               column="favorite_name" />
+    <result property="searchConditions"           column="search_conditions" />
+    <result property="createdBy.empNo"            column="created_by" />
+    <result property="createdBy.nameE"            column="created_by_name" />
+    <result property="createdAt"                  column="created_at" />
+    <result property="updatedBy.empNo"            column="updated_by" />
+    <result property="updatedBy.nameE"            column="updated_by_name" />
+    <result property="updatedAt"                  column="updated_at" />
+    <result property="versionNo"                  column="version_no" />
+    <result property="deleteNo"                   column="delete_no" />
+</resultMap>
+<resultMap id="resultForUpdate" class="jp.co.opentone.bsol.linkbinder.dto.FavoriteFilter">
+    <result property="versionNo"             column="version_no" />
+</resultMap>
+
+  <select id="findFavoriteFilter" resultMap="result">
+    SELECT
+        id,
+        project_id,
+        emp_name_e,
+        emp_no,
+        favorite_name,
+        search_conditions,
+        created_by,
+        created_by_name,
+        created_at,
+        updated_by,
+        updated_by_name,
+        updated_at,
+        version_no,
+        delete_no
+   FROM
+      v_favorite_filter
+    WHERE
+      project_id = #projectId#
+    AND
+      emp_no = #user.empNo#
+   ORDER BY TRIM(favorite_name)
+  </select>
+
+  <select id="findById" resultMap="result">
+    SELECT
+        id,
+        project_id,
+        emp_name_e,
+        emp_no,
+        favorite_name,
+        search_conditions,
+        created_by,
+        created_by_name,
+        created_at,
+        updated_by,
+        updated_by_name,
+        updated_at,
+        version_no,
+        delete_no
+   FROM
+      v_favorite_filter
+    WHERE
+      id = #value#
+   ORDER BY favorite_name
+  </select>
+
+  <select id="findByIdForUpdate" resultMap="resultForUpdate">
+    SELECT
+      version_no
+    FROM
+      v_favorite_filter
+    WHERE
+      id = #id#
+    FOR UPDATE
+  </select>
+
+  <insert id="create">
+    <selectKey resultClass="long" keyProperty="id">
+        SELECT s_favorite_filter_id.NEXTVAL AS id FROM dual
+    </selectKey>
+    INSERT INTO favorite_filter (
+	  id,
+	  project_id,
+	  emp_no,
+	  favorite_name,
+	  search_conditions,
+      created_by,
+      updated_by
+    ) VALUES (
+      #id#,
+	  #projectId#,
+	  #user.empNo#,
+	  #favoriteName#,
+	  #searchConditions#,
+      #createdBy.empNo#,
+      #updatedBy.empNo#
+    )
+  </insert>
+
+  <update id="update">
+    UPDATE favorite_filter
+    SET
+      updated_by = #updatedBy.empNo#,
+      updated_at = SYSTIMESTAMP,
+      version_no = (version_no + 1)
+      <dynamic>
+        <isNotNull prepend="," property="favoriteName">
+          favorite_name = #favoriteName#
+        </isNotNull>
+        <isNotNull prepend="," property="searchConditions">
+          search_conditions = #searchConditions#
+        </isNotNull>
+      </dynamic>
+    WHERE
+      id = #id#
+  </update>
+
+  <update id="delete">
+    UPDATE favorite_filter
+    SET
+      updated_by = #updatedBy.empNo#,
+      updated_at = SYSTIMESTAMP,
+      version_no = (version_no + 1),
+      delete_no  = s_favorite_filter_dno.NEXTVAL
+    WHERE
+      id = #id#
+  </update>
+</sqlMap>

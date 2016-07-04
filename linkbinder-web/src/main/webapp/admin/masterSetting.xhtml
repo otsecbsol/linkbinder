@@ -1,0 +1,94 @@
+
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/include/template.xhtml">
+  <ui:define name="title">マスタデータ登録</ui:define>
+  <ui:define name="jsOuter">
+    <script type="text/javascript" src="#{contextPath}/resource/#{v}/javascript/fileUpload.js"></script>
+  </ui:define>
+  <ui:define name="body">
+    <f:view>
+      <h:form id="form" onsubmit="return disableSubmit();" >
+        <h:inputHidden id="actionName" value="#{masterSettingPage.actionName}" />
+        <h:commandLink style="display: none;" id="downloadExcel" value="Excel" action="#{masterSettingPage.csv}" onclick="setActionName(event);" />
+        <span class="inner-title">処理条件</span>
+        <div id="main">
+          <f:validateBean validationGroups="#{masterSettingPage.validationGroups}">
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel for="selectData" value="登録データ" styleClass="required"/>
+              <h:selectOneMenu id="selectData" value="#{masterSettingPage.selectDataID}"
+                               styleClass="u-full-width">
+                <f:selectItems value="#{masterSettingPage.selectImportDataType}" />
+              </h:selectOneMenu>
+            </div>
+            <div class="six columns">
+              <h:outputLabel for="processId" value="処理区分" styleClass="required"/>
+              <h:selectOneRadio id="processId" value="#{masterSettingPage.processID}" styleClass="select-group">
+                <f:selectItems value="#{masterSettingPage.selectProcessType}" />
+              </h:selectOneRadio>
+              <h:message for="processId" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="six columns">
+              <input id="form:importFile" name="importFile" type="file" class="u-full-width"/>
+              <h:inputHidden id="importFileKey" value="#{masterSettingPage.importFile.key}" validator="#{masterSettingPage.validateAttachment}" />
+              <h:inputHidden id="importFileName" value="#{masterSettingPage.importFile.filename}" />
+              <h:inputHidden id="importFileSize" value="#{masterSettingPage.importFile.fileSize}" />
+            </div>
+          </div>
+          </f:validateBean>
+        </div>
+
+        <div class="action-edit">
+          <h:commandButton id="createDummy"
+                           type="button"
+                           value="取込開始"
+                           styleClass="button-primary"
+                           onclick="fileUpdateProcess('create', 'createError', this, '${request.contextPath}/upload');" />
+          <h:commandLink id="csv"
+                           value="出力"
+                           styleClass="button"
+                           action="#{masterSettingPage.export}" onclick="setActionName(event)" />
+          <ui:remove>
+          <!-- ファイルアップロード用隠しボタン -->
+          </ui:remove>
+          <h:commandButton style="display: none;" id="create"
+                           action="#{masterSettingPage.create}"
+                           onclick="setActionName(event);" />
+          <h:commandButton style="display: none;" id="createError"
+                           action="#{masterSettingPage.uploadingException}"
+                           onclick="setActionName(event);" />
+        </div>
+
+        <hr/>
+        <ui:fragment rendered="#{not empty masterSettingPage.errorMessageList}">
+        <ul>
+          <ui:repeat id="errorMessages" value="#{masterSettingPage.errorMessageList}" var="m">
+            <li><span class="error">#{m}</span></li>
+          </ui:repeat>
+        </ul>
+        </ui:fragment>
+      </h:form>
+    </f:view>
+  </ui:define>
+</ui:composition>
+</html>

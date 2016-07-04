@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="addressCorresponGroup">
+
+  <resultMap id="result" class="jp.co.opentone.bsol.linkbinder.dto.AddressCorresponGroup">
+    <result property="id"                  column="id" />
+    <result property="corresponId"         column="correspon_id" />
+    <result property="corresponGroup.id"   column="correspon_group_id" />
+    <result property="corresponGroup.name" column="correspon_group_name" />
+    <result property="addressType"         column="address_type" />
+    <result property="createdBy.empNo"     column="created_by" />
+    <result property="createdAt"           column="created_at" />
+    <result property="updatedBy.empNo"     column="updated_by" />
+    <result property="updatedAt"           column="updated_at" />
+    <result property="deleteNo"            column="delete_no" />
+  </resultMap>
+
+  <resultMap id="address" class="jp.co.opentone.bsol.linkbinder.dto.AddressCorresponGroup"
+             groupBy="id">
+    <result property="id"                  column="id" />
+    <result property="corresponId"         column="correspon_id" />
+    <result property="corresponGroup.id"   column="correspon_group_id" />
+    <result property="corresponGroup.name" column="correspon_group_name" />
+    <result property="addressType"         column="address_type" />
+    <result property="createdBy.empNo"     column="created_by" />
+    <result property="createdAt"           column="created_at" />
+    <result property="updatedBy.empNo"     column="updated_by" />
+    <result property="updatedAt"           column="updated_at" />
+    <result property="deleteNo"            column="delete_no" />
+    <result property="replyCount"          column="reply_count" />
+    <result property="users"               resultMap="addressCorresponGroup.addressUser" />
+  </resultMap>
+
+  <resultMap id="addressUser" class="jp.co.opentone.bsol.linkbinder.dto.AddressUser"
+             groupBy="id">
+    <result property="id"                      column="address_user_id" />
+    <result property="addressCorresponGroupId" column="id" />
+    <result property="user.empNo"              column="emp_no" />
+    <result property="user.lastName"           column="emp_last_name" />
+    <result property="user.nameE"              column="emp_name_e" />
+    <result property="user.role"               column="role" />
+    <result property="addressUserType"         column="address_user_type" />
+    <result property="personInCharges"         resultMap="addressCorresponGroup.personInCharge" />
+  </resultMap>
+
+  <resultMap id="personInCharge" class="jp.co.opentone.bsol.linkbinder.dto.PersonInCharge">
+    <result property="id"            column="charge_id" />
+    <result property="addressUserId" column="address_user_id" />
+    <result property="user.empNo"    column="charge_emp_no" />
+    <result property="user.lastName" column="charge_last_name" />
+    <result property="user.nameE"    column="charge_name_e" />
+    <result property="user.role"     column="charge_role" />
+  </resultMap>
+
+  <select id="findById" resultMap="result">
+    SELECT
+      id,
+      correspon_id,
+      correspon_group_id,
+      correspon_group_name,
+      address_type,
+      created_by,
+      created_at,
+      updated_by,
+      updated_at,
+      delete_no
+    FROM
+      v_address_correspon_group
+    WHERE
+      id = #value#
+  </select>
+
+  <select id="findByCorresponId" resultMap="address">
+    SELECT
+      a.id,
+      a.correspon_id,
+      a.correspon_group_id,
+      a.correspon_group_name,
+      a.address_type,
+      a.address_user_id,
+      a.emp_no,
+      a.emp_last_name,
+      a.emp_name_e,
+      a.role,
+      a.address_user_type,
+      a.charge_id,
+      a.charge_emp_no,
+      a.charge_last_name,
+      a.charge_name_e,
+      a.charge_role,
+      a.created_by,
+      a.created_at,
+      a.updated_by,
+      a.updated_at,
+      a.delete_no,
+      nvl(ch.reply_count, 0) AS reply_count
+    FROM
+      v_address a
+      LEFT OUTER JOIN
+        (SELECT
+           h.parent_correspon_id,
+           c.from_correspon_group_id,
+           count(h.child_correspon_id) AS reply_count
+         FROM
+           correspon_hierarchy h
+             INNER JOIN correspon c
+                ON h.child_correspon_id = c.id
+               AND c.delete_no = 0
+               AND c.workflow_status = #workflowStatus#
+         WHERE
+           h.delete_no = 0
+         GROUP BY
+           h.parent_correspon_id,
+           c.from_correspon_group_id) ch
+         ON a.correspon_id = ch.parent_correspon_id
+        AND a.correspon_group_id = ch.from_correspon_group_id
+    WHERE
+      correspon_id = #corresponId#
+    ORDER BY
+      id,
+      address_type,
+      address_user_id,
+      charge_id
+  </select>
+
+  <insert id="create">
+    <selectKey resultClass="long" keyProperty="id">
+        SELECT s_address_correspon_group_id.NEXTVAL AS id FROM dual
+    </selectKey>
+    INSERT INTO address_correspon_group (
+      id,
+      correspon_id,
+      correspon_group_id,
+      address_type,
+      created_by,
+      updated_by
+    ) VALUES (
+      #id#,
+      #corresponId#,
+      #corresponGroup.id#,
+      #addressType#,
+      #createdBy.empNo#,
+      #updatedBy.empNo#
+    )
+  </insert>
+
+  <update id="deleteByCorresponId">
+    UPDATE address_correspon_group
+    SET
+      updated_by = #updatedBy.empNo#,
+      updated_at = SYSTIMESTAMP,
+      delete_no  = s_address_correspon_group_dno.NEXTVAL
+    WHERE
+      correspon_id = #corresponId#
+    AND
+      delete_no = 0
+  </update>
+
+  <update id="update">
+    UPDATE address_correspon_group
+    SET
+      updated_by           = #updatedBy.empNo#,
+      updated_at           = SYSTIMESTAMP
+    <dynamic>
+      <isNotNull prepend="," property="corresponId" >
+        correspon_id       = #corresponId#
+      </isNotNull>
+      <isNotNull prepend="," property="corresponGroup.id" >
+        correspon_group_id = #corresponGroup.id#
+      </isNotNull>
+      <isNotNull prepend="," property="addressType" >
+        address_type       = #addressType#
+      </isNotNull>
+      <isNotNull prepend="," property="createdBy.empNo">
+        created_by         = #createdBy.empNo#
+      </isNotNull>
+      <isNotNull prepend="," property="createdAt">
+        created_at         = #createdAt#
+      </isNotNull>
+    </dynamic>
+    WHERE
+      id = #id#
+  </update>
+
+  <update id="delete">
+    UPDATE address_correspon_group
+    SET
+      updated_by = #updatedBy.empNo#,
+      updated_at = SYSTIMESTAMP,
+      delete_no  = s_address_correspon_group_dno.NEXTVAL
+    WHERE
+      id = #id#
+  </update>
+</sqlMap>
+
+
+

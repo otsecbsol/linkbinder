@@ -1,0 +1,1791 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="correspon">
+
+  <resultMap id="resultDetail" class="jp.co.opentone.bsol.linkbinder.dto.Correspon">
+    <result property="id"                                       column="id" />
+    <result property="corresponNo"                              column="correspon_no" />
+    <result property="parentCorresponId"                        column="parent_correspon_id" />
+    <result property="parentCorresponNo"                        column="parent_correspon_no" />
+    <result property="projectId"                                column="project_id" />
+    <result property="projectNameE"                             column="project_name_e" />
+    <result property="fromCorresponGroup.id"                    column="from_correspon_group_id" />
+    <result property="fromCorresponGroup.name"                  column="from_correspon_group_name" />
+    <result property="previousRevCorresponId"                   column="previous_rev_correspon_id" />
+    <result property="previousRevCorresponNo"                   column="previous_rev_correspon_no" />
+    <result property="corresponType.projectCorresponTypeId"     column="correspon_type_id" />
+    <result property="corresponType.corresponType"              column="correspon_type" />
+    <result property="corresponType.name"                       column="correspon_type_name" />
+    <result property="corresponType.allowApproverToBrowse"      column="allow_approver_to_browse" />
+    <result property="corresponType.forceToUseWorkflow"         column="force_to_use_workflow" />
+    <result property="corresponType.workflowPattern.id"         column="workflow_pattern_id" />
+    <result property="corresponType.workflowPattern.workflowCd" column="workflow_cd" />
+    <result property="corresponType.workflowPattern.name"       column="workflow_pattern_name" />
+    <result property="subject"                                  column="subject" />
+    <result property="body"                                     column="body" />
+    <result property="issuedBy.empNo"                           column="issued_by" />
+    <result property="issuedBy.nameE"                           column="issued_by_name" />
+    <result property="issuedAt"                                 column="issued_at" />
+    <result property="corresponStatus"                          column="correspon_status" />
+    <result property="replyRequired"                            column="reply_required" />
+    <result property="deadlineForReply"                         column="deadline_for_reply" />
+    <result property="requestedApprovalAt"                      column="requested_approval_at" />
+    <result property="workflowStatus"                           column="workflow_status" />
+    <result property="customField1Id"                           column="custom_field1_id" />
+    <result property="customField1Label"                        column="custom_field1_label" />
+    <result property="customField1Value"                        column="custom_field1_value" />
+    <result property="customField2Id"                           column="custom_field2_id" />
+    <result property="customField2Label"                        column="custom_field2_label" />
+    <result property="customField2Value"                        column="custom_field2_value" />
+    <result property="customField3Id"                           column="custom_field3_id" />
+    <result property="customField3Label"                        column="custom_field3_label" />
+    <result property="customField3Value"                        column="custom_field3_value" />
+    <result property="customField4Id"                           column="custom_field4_id" />
+    <result property="customField4Label"                        column="custom_field4_label" />
+    <result property="customField4Value"                        column="custom_field4_value" />
+    <result property="customField5Id"                           column="custom_field5_id" />
+    <result property="customField5Label"                        column="custom_field5_label" />
+    <result property="customField5Value"                        column="custom_field5_value" />
+    <result property="customField6Id"                           column="custom_field6_id" />
+    <result property="customField6Label"                        column="custom_field6_label" />
+    <result property="customField6Value"                        column="custom_field6_value" />
+    <result property="customField7Id"                           column="custom_field7_id" />
+    <result property="customField7Label"                        column="custom_field7_label" />
+    <result property="customField7Value"                        column="custom_field7_value" />
+    <result property="customField8Id"                           column="custom_field8_id" />
+    <result property="customField8Label"                        column="custom_field8_label" />
+    <result property="customField8Value"                        column="custom_field8_value" />
+    <result property="customField9Id"                           column="custom_field9_id" />
+    <result property="customField9Label"                        column="custom_field9_label" />
+    <result property="customField9Value"                        column="custom_field9_value" />
+    <result property="customField10Id"                          column="custom_field10_id" />
+    <result property="customField10Label"                       column="custom_field10_label" />
+    <result property="customField10Value"                       column="custom_field10_value" />
+    <result property="file1Id"                                  column="file1_id" />
+    <result property="file1FileId"                              column="file1_file_id" />
+    <result property="file1FileName"                            column="file1_file_name" />
+    <result property="file2Id"                                  column="file2_id" />
+    <result property="file2FileId"                              column="file2_file_id" />
+    <result property="file2FileName"                            column="file2_file_name" />
+    <result property="file3Id"                                  column="file3_id" />
+    <result property="file3FileId"                              column="file3_file_id" />
+    <result property="file3FileName"                            column="file3_file_name" />
+    <result property="file4Id"                                  column="file4_id" />
+    <result property="file4FileId"                              column="file4_file_id" />
+    <result property="file4FileName"                            column="file4_file_name" />
+    <result property="file5Id"                                  column="file5_id" />
+    <result property="file5FileId"                              column="file5_file_id" />
+    <result property="file5FileName"                            column="file5_file_name" />
+    <result property="createdBy.empNo"                          column="created_by" />
+    <result property="createdBy.nameE"                          column="created_by_name" />
+    <result property="createdBy.role"                           column="created_by_role" />
+    <result property="createdAt"                                column="created_at" />
+    <result property="updatedBy.empNo"                          column="updated_by" />
+    <result property="updatedBy.nameE"                          column="updated_by_name" />
+    <result property="updatedAt"                                column="updated_at" />
+    <result property="versionNo"                                column="version_no" />
+    <result property="deleteNo"                                 column="delete_no" />
+    <result property="corresponType.corresponAccessControlFlags" column="correspon_access_control_flags" />
+  </resultMap>
+  <resultMap id="resultWithoutAttachment" class="jp.co.opentone.bsol.linkbinder.dto.Correspon">
+    <result property="id"                                       column="id" />
+    <result property="corresponNo"                              column="correspon_no" />
+    <result property="parentCorresponId"                        column="parent_correspon_id" />
+    <result property="parentCorresponNo"                        column="parent_correspon_no" />
+    <result property="projectId"                                column="project_id" />
+    <result property="projectNameE"                             column="project_name_e" />
+    <result property="fromCorresponGroup.id"                    column="from_correspon_group_id" />
+    <result property="fromCorresponGroup.name"                  column="from_correspon_group_name" />
+    <result property="previousRevCorresponId"                   column="previous_rev_correspon_id" />
+    <result property="previousRevCorresponNo"                   column="previous_rev_correspon_no" />
+    <result property="corresponType.projectCorresponTypeId"     column="correspon_type_id" />
+    <result property="corresponType.corresponType"              column="correspon_type" />
+    <result property="corresponType.name"                       column="correspon_type_name" />
+    <result property="corresponType.allowApproverToBrowse"      column="allow_approver_to_browse" />
+    <result property="corresponType.forceToUseWorkflow"         column="force_to_use_workflow" />
+    <result property="corresponType.workflowPattern.id"         column="workflow_pattern_id" />
+    <result property="corresponType.workflowPattern.workflowCd" column="workflow_cd" />
+    <result property="corresponType.workflowPattern.name"       column="workflow_pattern_name" />
+    <result property="subject"                                  column="subject" />
+    <result property="body"                                     column="body" />
+    <result property="issuedBy.empNo"                           column="issued_by" />
+    <result property="issuedBy.nameE"                           column="issued_by_name" />
+    <result property="issuedAt"                                 column="issued_at" />
+    <result property="corresponStatus"                          column="correspon_status" />
+    <result property="replyRequired"                            column="reply_required" />
+    <result property="deadlineForReply"                         column="deadline_for_reply" />
+    <result property="workflowStatus"                           column="workflow_status" />
+    <result property="customField1Id"                           column="custom_field1_id" />
+    <result property="customField1Label"                        column="custom_field1_label" />
+    <result property="customField1Value"                        column="custom_field1_value" />
+    <result property="customField2Id"                           column="custom_field2_id" />
+    <result property="customField2Label"                        column="custom_field2_label" />
+    <result property="customField2Value"                        column="custom_field2_value" />
+    <result property="customField3Id"                           column="custom_field3_id" />
+    <result property="customField3Label"                        column="custom_field3_label" />
+    <result property="customField3Value"                        column="custom_field3_value" />
+    <result property="customField4Id"                           column="custom_field4_id" />
+    <result property="customField4Label"                        column="custom_field4_label" />
+    <result property="customField4Value"                        column="custom_field4_value" />
+    <result property="customField5Id"                           column="custom_field5_id" />
+    <result property="customField5Label"                        column="custom_field5_label" />
+    <result property="customField5Value"                        column="custom_field5_value" />
+    <result property="customField6Id"                           column="custom_field6_id" />
+    <result property="customField6Label"                        column="custom_field6_label" />
+    <result property="customField6Value"                        column="custom_field6_value" />
+    <result property="customField7Id"                           column="custom_field7_id" />
+    <result property="customField7Label"                        column="custom_field7_label" />
+    <result property="customField7Value"                        column="custom_field7_value" />
+    <result property="customField8Id"                           column="custom_field8_id" />
+    <result property="customField8Label"                        column="custom_field8_label" />
+    <result property="customField8Value"                        column="custom_field8_value" />
+    <result property="customField9Id"                           column="custom_field9_id" />
+    <result property="customField9Label"                        column="custom_field9_label" />
+    <result property="customField9Value"                        column="custom_field9_value" />
+    <result property="customField10Id"                          column="custom_field10_id" />
+    <result property="customField10Label"                       column="custom_field10_label" />
+    <result property="customField10Value"                       column="custom_field10_value" />
+    <result property="createdBy.empNo"                          column="created_by" />
+    <result property="createdBy.nameE"                          column="created_by_name" />
+    <result property="createdAt"                                column="created_at" />
+    <result property="updatedBy.empNo"                          column="updated_by" />
+    <result property="updatedBy.nameE"                          column="updated_by_name" />
+    <result property="updatedAt"                                column="updated_at" />
+    <result property="versionNo"                                column="version_no" />
+    <result property="deleteNo"                                 column="delete_no" />
+    <result property="corresponType.corresponAccessControlFlags" column="correspon_access_control_flags" />
+  </resultMap>
+  <resultMap id="resultIndex" class="jp.co.opentone.bsol.linkbinder.dto.Correspon">
+    <result property="id"                                      column="id" />
+    <result property="corresponNo"                             column="correspon_no" />
+    <result property="parentCorresponId"                       column="parent_correspon_id" />
+    <result property="parentCorresponNo"                       column="parent_correspon_no" />
+    <result property="projectId"                               column="project_id" />
+    <result property="projectNameE"                            column="project_name_e" />
+    <result property="fromCorresponGroup.id"                   column="from_correspon_group_id" />
+    <result property="fromCorresponGroup.name"                 column="from_correspon_group_name" />
+    <result property="previousRevCorresponId"                  column="previous_rev_correspon_id" />
+    <result property="previousRevCorresponNo"                  column="previous_rev_correspon_no" />
+    <result property="corresponType.projectCorresponTypeId"    column="correspon_type_id" />
+    <result property="corresponType.corresponType"             column="correspon_type" />
+    <result property="corresponType.name"                      column="correspon_type_name" />
+    <result property="subject"                                 column="subject" />
+    <result property="body"                                    column="body" />
+    <result property="issuedBy.empNo"                          column="issued_by" />
+    <result property="issuedBy.nameE"                          column="issued_by_name" />
+    <result property="issuedAt"                                column="issued_at" />
+    <result property="corresponStatus"                         column="correspon_status" />
+    <result property="replyRequired"                           column="reply_required" />
+    <result property="deadlineForReply"                        column="deadline_for_reply" />
+    <result property="workflowStatus"                          column="workflow_status" />
+    <result property="customField1Id"                          column="custom_field1_id" />
+    <result property="customField1Label"                       column="custom_field1_label" />
+    <result property="customField1Value"                       column="custom_field1_value" />
+    <result property="customField2Id"                          column="custom_field2_id" />
+    <result property="customField2Label"                       column="custom_field2_label" />
+    <result property="customField2Value"                       column="custom_field2_value" />
+    <result property="customField3Id"                          column="custom_field3_id" />
+    <result property="customField3Label"                       column="custom_field3_label" />
+    <result property="customField3Value"                       column="custom_field3_value" />
+    <result property="customField4Id"                          column="custom_field4_id" />
+    <result property="customField4Label"                       column="custom_field4_label" />
+    <result property="customField4Value"                       column="custom_field4_value" />
+    <result property="customField5Id"                          column="custom_field5_id" />
+    <result property="customField5Label"                       column="custom_field5_label" />
+    <result property="customField5Value"                       column="custom_field5_value" />
+    <result property="customField6Id"                          column="custom_field6_id" />
+    <result property="customField6Label"                       column="custom_field6_label" />
+    <result property="customField6Value"                       column="custom_field6_value" />
+    <result property="customField7Id"                          column="custom_field7_id" />
+    <result property="customField7Label"                       column="custom_field7_label" />
+    <result property="customField7Value"                       column="custom_field7_value" />
+    <result property="customField8Id"                          column="custom_field8_id" />
+    <result property="customField8Label"                       column="custom_field8_label" />
+    <result property="customField8Value"                       column="custom_field8_value" />
+    <result property="customField9Id"                          column="custom_field9_id" />
+    <result property="customField9Label"                       column="custom_field9_label" />
+    <result property="customField9Value"                       column="custom_field9_value" />
+    <result property="customField10Id"                         column="custom_field10_id" />
+    <result property="customField10Label"                      column="custom_field10_label" />
+    <result property="customField10Value"                      column="custom_field10_value" />
+    <result property="createdBy.empNo"                         column="created_by" />
+    <result property="createdBy.nameE"                         column="created_by_name" />
+    <result property="createdAt"                               column="created_at" />
+    <result property="updatedBy.empNo"                         column="updated_by" />
+    <result property="updatedBy.nameE"                         column="updated_by_name" />
+    <result property="updatedAt"                               column="updated_at" />
+    <result property="versionNo"                               column="version_no" />
+    <result property="deleteNo"                                column="delete_no" />
+    <result property="corresponReadStatus.readStatus"          column="read_status" />
+    <result property="corresponReadStatus.id"                  column="read_status_id" />
+    <result property="corresponReadStatus.versionNo"           column="read_status_version_no" />
+    <result property="toCorresponGroup.id"                     column="to_group_id" />
+    <result property="toCorresponGroup.name"                   column="to_group_name" />
+    <result property="toCorresponGroupCount"                   column="to_group_count" />
+  </resultMap>
+  <resultMap id="resultForUpdate" class="jp.co.opentone.bsol.linkbinder.dto.Correspon">
+    <result property="versionNo"               column="version_no" />
+  </resultMap>
+  <resultMap id="corresponGroupSummary" class="jp.co.opentone.bsol.linkbinder.dto.CorresponGroupSummary">
+    <result property="corresponType.projectCorresponTypeId" column="id" />
+    <result property="corresponType.corresponType"          column="correspon_type" />
+    <result property="toCount"                              column="to_count" />
+    <result property="ccCount"                              column="cc_count" />
+    <result property="corresponType.workflowPattern.name"   column="workflow_pattern_name" />
+  </resultMap>
+  <resultMap id="corresponUserSummary" class="jp.co.opentone.bsol.linkbinder.dto.CorresponUserSummary">
+    <result property="draftCount"             column="draft_count" />
+    <result property="underReviewCount"       column="under_review_count" />
+    <result property="requestForCheckCount"   column="request_for_check_count" />
+    <result property="requestForApproveCount" column="request_for_approve_count" />
+    <result property="deniedCount"            column="denied_count" />
+    <result property="openCount"              column="open_count" />
+    <result property="closedCount"            column="closed_count" />
+    <result property="canceledCount"          column="canceled_count" />
+    <result property="attentionCount"         column="attention_count" />
+    <result property="personInChargeCount"    column="person_in_charge_count" />
+    <result property="ccCount"                column="cc_count" />
+    <result property="newCount"               column="new_count" />
+    <result property="readCount"              column="read_count" />
+  </resultMap>
+  <resultMap id="resultForReplyCorrespon" class="jp.co.opentone.bsol.linkbinder.dto.Correspon">
+    <result property="id"                                       column="id" />
+    <result property="corresponNo"                              column="correspon_no" />
+  </resultMap>
+  <resultMap id="resultRSS" class="jp.co.opentone.bsol.linkbinder.dto.RSSCorrespon">
+    <result property="id"                                      column="id" />
+    <result property="corresponNo"                             column="correspon_no" />
+    <result property="projectId"                               column="project_id" />
+    <result property="projectNameE"                            column="project_name_e" />
+    <result property="fromCorresponGroup.id"                   column="from_correspon_group_id" />
+    <result property="fromCorresponGroup.name"                 column="from_correspon_group_name" />
+    <result property="corresponType.projectCorresponTypeId"    column="correspon_type_id" />
+    <result property="corresponType.corresponType"             column="correspon_type" />
+    <result property="corresponType.name"                      column="correspon_type_name" />
+    <result property="subject"                                 column="subject" />
+    <result property="issuedBy.empNo"                          column="issued_by" />
+    <result property="issuedBy.nameE"                          column="issued_by_name" />
+    <result property="issuedAt"                                column="issued_at" />
+    <result property="corresponStatus"                         column="correspon_status" />
+    <result property="replyRequired"                           column="reply_required" />
+    <result property="deadlineForReply"                        column="deadline_for_reply" />
+    <result property="workflowStatus"                          column="workflow_status" />
+    <result property="createdBy.empNo"                         column="created_by" />
+    <result property="createdBy.nameE"                         column="created_by_name" />
+    <result property="createdAt"                               column="created_at" />
+    <result property="updatedBy.empNo"                         column="updated_by" />
+    <result property="updatedBy.nameE"                         column="updated_by_name" />
+    <result property="updatedAt"                               column="updated_at" />
+    <result property="toCorresponGroup.id"                     column="to_group_id" />
+    <result property="toCorresponGroup.name"                   column="to_group_name" />
+    <result property="toCorresponGroupCount"                   column="to_group_count" />
+    <result property="ccCorresponGroup.id"                     column="cc_group_id" />
+    <result property="ccCorresponGroup.name"                   column="cc_group_name" />
+    <result property="ccCorresponGroupCount"                   column="cc_group_count" />
+    <result property="category"                                column="category" />
+  </resultMap>
+
+  <resultMap id="corresponResponseHistory" class="jp.co.opentone.bsol.linkbinder.dto.CorresponResponseHistory"
+               groupBy="correspon.id">
+      <result property="correspon.id"                          column="id" />
+      <result property="correspon.corresponNo"                 column="correspon_no" />
+      <result property="correspon.issuedAt"                    column="issued_at" />
+      <result property="correspon.fromCorresponGroup.id"       column="from_correspon_group_id" />
+      <result property="correspon.fromCorresponGroup.name"     column="from_name" />
+      <result property="correspon.subject"                     column="subject" />
+      <result property="correspon.corresponStatus"             column="correspon_status" />
+      <result property="correspon.deadlineForReply"            column="deadline_for_reply" />
+      <result property="correspon.addressCorresponGroups"      resultMap="correspon.address" />
+      <result property="level"                                 column="lvl" />
+  </resultMap>
+
+  <resultMap id="address" class="jp.co.opentone.bsol.linkbinder.dto.AddressCorresponGroup">
+    <result property="id"                  column="address_correspon_group_id" />
+    <result property="corresponGroup.id"   column="correspon_group_id" />
+    <result property="corresponGroup.name" column="correspon_group_name" />
+  </resultMap>
+
+  <!--  共通的に利用するSELECT, FROM句。現在はfindByIdのみ利用 -->
+  <sql id="findSelectFrom">
+    SELECT
+      id,
+      correspon_no,
+      parent_correspon_id,
+      parent_correspon_no,
+      project_id,
+      project_name_e,
+      from_correspon_group_id,
+      from_correspon_group_name,
+      previous_rev_correspon_id,
+      previous_rev_correspon_no,
+      correspon_type_id,
+      correspon_type,
+      correspon_type_name,
+      allow_approver_to_browse,
+      force_to_use_workflow,
+      correspon_access_control_flags,
+      workflow_pattern_id,
+      workflow_cd,
+      workflow_pattern_name,
+      subject,
+      body,
+      issued_by,
+      issued_by_name,
+      issued_at,
+      correspon_status,
+      reply_required,
+      deadline_for_reply,
+      requested_approval_at,
+      workflow_status,
+      custom_field1_id,
+      custom_field1_label,
+      custom_field1_value,
+      custom_field2_id,
+      custom_field2_label,
+      custom_field2_value,
+      custom_field3_id,
+      custom_field3_label,
+      custom_field3_value,
+      custom_field4_id,
+      custom_field4_label,
+      custom_field4_value,
+      custom_field5_id,
+      custom_field5_label,
+      custom_field5_value,
+      custom_field6_id,
+      custom_field6_label,
+      custom_field6_value,
+      custom_field7_id,
+      custom_field7_label,
+      custom_field7_value,
+      custom_field8_id,
+      custom_field8_label,
+      custom_field8_value,
+      custom_field9_id,
+      custom_field9_label,
+      custom_field9_value,
+      custom_field10_id,
+      custom_field10_label,
+      custom_field10_value,
+      file1_id,
+      file1_file_id,
+      file1_file_name,
+      file2_id,
+      file2_file_id,
+      file2_file_name,
+      file3_id,
+      file3_file_id,
+      file3_file_name,
+      file4_id,
+      file4_file_id,
+      file4_file_name,
+      file5_id,
+      file5_file_id,
+      file5_file_name,
+      created_by,
+      created_by_name,
+      (SELECT p.role
+         FROM project_user_profile p
+         WHERE p.project_id = c.project_id
+           AND p.emp_no = c.created_by
+           AND p.delete_no = 0) AS created_by_role,
+      created_at,
+      updated_by,
+      updated_by_name,
+      updated_at,
+      version_no,
+      delete_no
+    FROM
+      v_correspon_detail c
+  </sql>
+  <!--  find, findIdで共通的に利用するFROM句 -->
+  <sql id="findFrom">
+    FROM
+      v_correspon c
+      LEFT OUTER JOIN correspon_read_status s
+        ON s.correspon_id = c.id AND s.emp_no = #userId# AND s.delete_no = 0
+      LEFT OUTER JOIN workflow w
+        ON w.correspon_id = c.id AND w.workflow_type =#approver# AND w.delete_no = 0
+      LEFT OUTER JOIN (SELECT count(id) AS to_group_count, min(correspon_group_id) AS correspon_group_id, correspon_id
+                         FROM address_correspon_group
+                         WHERE delete_no = 0 AND address_type = #to#
+                         GROUP BY correspon_id) ag
+        ON ag.correspon_id = c.id
+      LEFT OUTER JOIN correspon_group g
+        ON g.id = ag.correspon_group_id AND g.delete_no = 0
+  </sql>
+
+	<!--  countで利用するFROM句 -->
+  <sql id="findFromForCount">
+    FROM
+      v_correspon c
+    <isNotEmpty property="readStatuses">
+      LEFT OUTER JOIN correspon_read_status s
+        ON s.correspon_id = c.id AND s.emp_no = #userId# AND s.delete_no = 0
+    </isNotEmpty>
+  </sql>
+
+
+  <!--  find, findId, countで共通的に利用するFROM, WHERE句 -->
+  <sql id="findWhere">
+    WHERE
+      project_id = #projectId#
+      <include refid="partOfWhere"/>
+      <dynamic>
+        <isNotNull prepend="AND" property="sequenceNo">
+          c.id = #sequenceNo#
+        </isNotNull>
+        <isNotNull prepend="AND" property="fromId">
+          <![CDATA[c.id >= #fromId#]]>
+        </isNotNull>
+        <isNotNull prepend="AND" property="toId">
+          <![CDATA[c.id <= #toId#]]>
+        </isNotNull>
+        <isNotNull prepend="AND" property="idList">
+          <iterate property="idList" conjunction="or"
+                   open="(" close=")">
+              <iterate property="idList[].ids" conjunction=","
+                       open="c.id in (" close=")">
+                    #idList[].ids[]#
+              </iterate>
+          </iterate>
+        </isNotNull>
+        <isNotNull prepend="AND" property="corresponNo">
+          (correspon_no like #corresponNo# || '%' {escape #escapeChar#}
+          <isEqual prepend="OR" property="includingRevision" compareValue="true">
+            previous_rev_correspon_no like #corresponNo# || '%' {escape #escapeChar#}
+          </isEqual>
+          )
+        </isNotNull>
+        <isNotEmpty prepend="AND" property="corresponTypes">
+          correspon_type_id in
+          <iterate property="corresponTypes" conjunction=","
+                   open="(" close=")">
+            #corresponTypes[].projectCorresponTypeId#
+          </iterate>
+        </isNotEmpty>
+        <isNotEmpty prepend="AND" property="workflowStatuses">
+          workflow_status in
+          <iterate property="workflowStatuses" conjunction=","
+                   open="(" close=")">
+            #workflowStatuses[]#
+          </iterate>
+        </isNotEmpty>
+        <isNotEmpty prepend="AND" property="readStatuses">
+          ( read_status in
+          <iterate property="readStatuses" conjunction=","
+                   open="(" close=")">
+            #readStatuses[]#
+          </iterate>
+          <isEqual property="readStatusNull" compareValue="true">
+            or read_status is null
+          </isEqual>
+          )
+        </isNotEmpty>
+        <isNotEmpty prepend="AND" property="corresponStatuses">
+          correspon_status in
+          <iterate property="corresponStatuses" conjunction=","
+                   open="(" close=")">
+            #corresponStatuses[]#
+          </iterate>
+        </isNotEmpty>
+<!-- 宛先ユーザー -->
+        <isEqual prepend="AND" property="useToUsers" compareValue="true">
+          (
+          <isEqual property="userCc" compareValue="true">
+            (EXISTS
+              (
+                SELECT correspon_id
+                FROM address_correspon_group ag
+                LEFT OUTER JOIN address_user au
+                  ON au.address_correspon_group_id = ag.id
+                  AND au.delete_no = 0
+                WHERE ag.delete_no = 0
+                AND ag.address_type = #cc#
+                AND au.address_user_type = #normalUser#
+                AND au.emp_no in
+                <iterate property="toUsers" conjunction="," open="(" close=")">
+                  #toUsers[].empNo#
+                </iterate>
+                <isEqual prepend="AND" property="userUnreplied" compareValue="true">
+                  0 = (
+                    SELECT count(ch.id)
+                    FROM correspon_hierarchy ch
+                    WHERE c.id = ch.parent_correspon_id
+                    AND ch.created_by = au.emp_no
+                    AND ch.delete_no = 0
+                  )
+                </isEqual>
+                AND ag.correspon_id = c.id
+              )
+            <isEqual prepend="AND" property="userUnreplied" compareValue="true">
+              c.reply_required = #yes#
+            </isEqual>
+            )
+          </isEqual>
+          <isEqual property="userAttention" compareValue="true">
+            <isEqual property="userCc" compareValue="true">
+              OR
+            </isEqual>
+            (EXISTS
+              (
+                SELECT correspon_id
+                FROM address_correspon_group ag
+                LEFT OUTER JOIN address_user au
+                  ON au.address_correspon_group_id = ag.id
+                  AND au.delete_no = 0
+                WHERE ag.delete_no = 0
+                AND ag.address_type = #to#
+                AND au.address_user_type = #attention#
+                AND au.emp_no in
+                <iterate property="toUsers" conjunction="," open="(" close=")">
+                  #toUsers[].empNo#
+                </iterate>
+                <isEqual prepend="AND" property="userUnreplied" compareValue="true">
+                  0 = (
+                    SELECT count(ch.id)
+                    FROM correspon_hierarchy ch
+                    WHERE c.id = ch.parent_correspon_id
+                    AND ch.created_by = au.emp_no
+                    AND ch.delete_no = 0
+                  )
+                </isEqual>
+                AND ag.correspon_id = c.id
+              )
+            <isEqual prepend="AND" property="userUnreplied" compareValue="true">
+              c.reply_required = #yes#
+            </isEqual>
+            )
+          </isEqual>
+          <isEqual property="userPic" compareValue="true">
+            <isEqual property="userCc" compareValue="true">
+              OR
+            </isEqual>
+            <isNotEqual property="userCc" compareValue="true">
+              <isEqual property="userAttention" compareValue="true">
+                OR
+              </isEqual>
+            </isNotEqual>
+            (EXISTS
+              (
+                SELECT correspon_id
+                FROM address_correspon_group ag
+                LEFT OUTER JOIN address_user au
+                  ON au.address_correspon_group_id = ag.id
+                  AND au.delete_no = 0
+                LEFT OUTER JOIN person_in_charge pic
+                  ON pic.address_user_id = au.id
+                  AND pic.delete_no = 0
+                WHERE ag.delete_no = 0
+                AND ag.address_type = #to#
+                AND au.address_user_type = #attention#
+                AND pic.emp_no in
+                <iterate property="toUsers" conjunction="," open="(" close=")">
+                  #toUsers[].empNo#
+                </iterate>
+                <isEqual prepend="AND" property="userUnreplied" compareValue="true">
+                  0 = (
+                    SELECT count(ch.id)
+                    FROM correspon_hierarchy ch
+                    WHERE c.id = ch.parent_correspon_id
+                    AND ch.created_by = pic.emp_no
+                    AND ch.delete_no = 0
+                  )
+                </isEqual>
+                AND ag.correspon_id = c.id
+              )
+            <isEqual prepend="AND" property="userUnreplied" compareValue="true">
+              c.reply_required = #yes#
+            </isEqual>
+            )
+          </isEqual>
+          )
+        </isEqual>
+<!-- 差出ユーザー -->
+        <isEqual prepend="AND" property="useFromUsers" compareValue="true">
+          (
+          <isEqual property="userPreparer" compareValue="true">
+            c.created_by in
+            <iterate property="fromUsers" conjunction="," open="(" close=")">
+              #fromUsers[].empNo#
+            </iterate>
+          </isEqual>
+          <isEqual property="useRoleOfWorkflow" compareValue="true">
+            <isEqual property="userPreparer" compareValue="true">
+              OR
+            </isEqual>
+            c.id in (
+              SELECT correspon_id
+              FROM workflow
+              WHERE delete_no = 0
+              AND emp_no in
+              <iterate property="fromUsers" conjunction="," open="(" close=")">
+                #fromUsers[].empNo#
+              </iterate>
+              AND workflow_type in
+              <iterate property="workflowTypes" conjunction="," open="(" close=")">
+                #workflowTypes[]#
+              </iterate>
+            )
+          </isEqual>
+          )
+        </isEqual>
+        <isEqual prepend="AND" property="useWorkflow" compareValue="true">
+          c.id in (
+            SELECT correspon_id
+            FROM workflow
+            WHERE delete_no = 0
+            <isNotEmpty prepend="AND" property="fromUsers">
+              emp_no in
+              <iterate property="fromUsers" conjunction="," open="(" close=")">
+                #fromUsers[].empNo#
+              </iterate>
+            </isNotEmpty>
+            <isNotEmpty prepend="AND" property="workflowProcessStatuses">
+              workflow_process_status in
+              <iterate property="workflowProcessStatuses" conjunction="," open="(" close=")">
+                #workflowProcessStatuses[]#
+              </iterate>
+            </isNotEmpty>
+          )
+        </isEqual>
+<!-- 差出グループ -->
+        <isEqual prepend="AND" property="useFromGroups" compareValue="true">
+          c.from_correspon_group_id in
+          <iterate property="fromGroups" conjunction="," open="(" close=")">
+            #fromGroups[].id#
+          </iterate>
+        </isEqual>
+<!-- 宛先グループ -->
+        <isEqual prepend="AND" property="useToGroups" compareValue="true">
+          (
+          <isEqual property="groupTo" compareValue="true">
+            c.id in (
+              SELECT correspon_id
+              FROM address_correspon_group ag
+              WHERE ag.delete_no = 0
+              AND ag.address_type = #to#
+              AND ag.correspon_group_id in
+              <iterate property="toGroups" conjunction="," open="(" close=")">
+                #toGroups[].id#
+              </iterate>
+            )
+          </isEqual>
+          <isEqual property="groupCc" compareValue="true">
+            <isEqual property="groupTo" compareValue="true">
+              OR
+            </isEqual>
+            c.id in (
+              SELECT correspon_id
+              FROM address_correspon_group ag
+              WHERE ag.delete_no = 0
+              AND ag.address_type = #cc#
+              AND ag.correspon_group_id in
+              <iterate property="toGroups" conjunction="," open="(" close=")">
+                #toGroups[].id#
+              </iterate>
+            )
+          </isEqual>
+          <isEqual property="groupUnreplied" compareValue="true">
+            <isEqual property="groupTo" compareValue="true">
+              OR
+            </isEqual>
+            <isNotEqual property="groupTo" compareValue="true">
+              <isEqual property="groupCc" compareValue="true">
+                OR
+              </isEqual>
+            </isNotEqual>
+            c.id IN (
+              SELECT correspon_id
+              FROM address_correspon_group ag
+              WHERE ag.delete_no = 0
+              AND ag.address_type = 1
+              AND ag.correspon_group_id IN
+              <iterate property="toGroups" conjunction="," open="(" close=")">
+                #toGroups[].id#
+              </iterate>
+            )
+            AND 0 = (
+              SELECT count(h.id)
+              FROM correspon_hierarchy h
+              INNER JOIN correspon cc
+                ON h.parent_correspon_id = cc.id
+                AND cc.delete_no = 0
+              WHERE h.parent_correspon_id = c.id
+              AND h.delete_no = 0
+              AND h.child_correspon_id IN (
+                SELECT correspon_id
+                FROM address_correspon_group ag
+                WHERE ag.delete_no = 0
+                AND ag.address_type = 1
+                AND ag.correspon_group_id IN
+                <iterate property="toGroups" conjunction="," open="(" close=")">
+                  #toGroups[].id#
+                </iterate>
+              )
+            )
+          </isEqual>
+          )
+        </isEqual>
+
+        <isNotEmpty prepend="AND" property="fromCreatedOn">
+          <![CDATA[c.created_at >= #fromCreatedOn#]]>
+        </isNotEmpty>
+        <isNotEmpty prepend="AND" property="toCreatedOn">
+          <![CDATA[c.created_at < #toCreatedOnEnd#]]>
+        </isNotEmpty>
+        <isNotEmpty prepend="AND" property="fromIssuedOn">
+          <![CDATA[c.issued_at >= #fromIssuedOn#]]>
+        </isNotEmpty>
+        <isNotEmpty prepend="AND" property="toIssuedOn">
+          <![CDATA[c.issued_at < #toIssuedOnEnd#]]>
+        </isNotEmpty>
+        <isNotEmpty prepend="AND" property="fromDeadlineForReply">
+          <![CDATA[deadline_for_reply >= #fromDeadlineForReply#]]>
+        </isNotEmpty>
+        <isNotEmpty prepend="AND" property="toDeadlineForReply">
+          <![CDATA[deadline_for_reply < #toDeadlineForReplyEnd#]]>
+        </isNotEmpty>
+        <isNotEmpty prepend="AND" property="customFieldNo">
+          (EXISTS (SELECT cf.id
+                  FROM correspon_custom_field cf
+                  WHERE cf.correspon_id = c.id
+                    AND cf.delete_no = 0
+                    AND cf.project_custom_field_id = #customFieldNo#
+            <isNotEmpty property="customFieldValue" >
+                          AND cf.value like #customFieldValue# || '%' {escape #escapeChar#}
+                        )
+            </isNotEmpty>
+            <isEmpty property="customFieldValue" >
+                          AND cf.value IS NULL
+                        )
+            OR NOT EXISTS (SELECT ccf.id FROM correspon_custom_field ccf
+                           WHERE ccf.correspon_id  = c.id
+                           AND ccf.project_custom_field_id = #customFieldNo#
+                           AND ccf.delete_no = 0)
+            </isEmpty>
+                    )
+        </isNotEmpty>
+      </dynamic>
+  </sql>
+  <!--  find, count, findCorresponUserSummaryで共通的に利用するWHERE句の一部 -->
+  <sql id="partOfWhere">
+      <dynamic>
+        <isEqual prepend="AND" open="(" close=")" property="systemAdmin" compareValue="false">
+            c.created_by = #userId#
+          OR
+            (<![CDATA[c.workflow_status <> #draft#]]>
+            <isEqual prepend="AND" open="(" close=")" property="projectAdmin" compareValue="false">
+                c.workflow_status = #issued#
+              OR
+                c.id in (SELECT correspon_id
+                           FROM workflow
+                          WHERE delete_no = 0
+                            AND emp_no = #userId#
+                            AND (<![CDATA[workflow_process_status <> #none#]]>
+                                OR (workflow_type = #approver#
+                                   AND allow_approver_to_browse = #visible#)))
+              OR
+                c.from_correspon_group_id in (SELECT correspon_group_id
+                                                FROM correspon_group_user
+                                               WHERE delete_no = 0
+                                                 AND emp_no = #userId#
+                                                 AND security_level = #groupAdmin#)
+            </isEqual>
+            )
+        </isEqual>
+      </dynamic>
+  </sql>
+
+  <sql id="findSelect">
+    SELECT
+      c.id,
+      correspon_no,
+      parent_correspon_id,
+      parent_correspon_no,
+      project_id,
+      project_name_e,
+      from_correspon_group_id,
+      from_correspon_group_name,
+      previous_rev_correspon_id,
+      previous_rev_correspon_no,
+      correspon_type_id,
+      correspon_type,
+      correspon_type_name,
+      subject,
+      body,
+      issued_at,
+      correspon_status,
+      reply_required,
+      deadline_for_reply,
+      workflow_status,
+      custom_field1_id,
+      custom_field1_label,
+      custom_field1_value,
+      custom_field2_id,
+      custom_field2_label,
+      custom_field2_value,
+      custom_field3_id,
+      custom_field3_label,
+      custom_field3_value,
+      custom_field4_id,
+      custom_field4_label,
+      custom_field4_value,
+      custom_field5_id,
+      custom_field5_label,
+      custom_field5_value,
+      custom_field6_id,
+      custom_field6_label,
+      custom_field6_value,
+      custom_field7_id,
+      custom_field7_label,
+      custom_field7_value,
+      custom_field8_id,
+      custom_field8_label,
+      custom_field8_value,
+      custom_field9_id,
+      custom_field9_label,
+      custom_field9_value,
+      custom_field10_id,
+      custom_field10_label,
+      custom_field10_value,
+      c.created_by,
+      created_by_name,
+      c.created_at,
+      c.updated_by,
+      updated_by_name,
+      c.updated_at,
+      c.version_no,
+      c.delete_no,
+      nvl2(read_status, read_status, 0) AS read_status,
+      s.id                              AS read_status_id,
+      s.version_no                      AS read_status_version_no,
+      issued_by,
+      issued_by_name,
+      g.id                              AS to_group_id,
+      g.name                            AS to_group_name,
+      ag.to_group_count                 AS to_group_count
+  </sql>
+
+  <select id="findById" resultMap="resultDetail">
+    <include refid="findSelectFrom"/>
+    WHERE
+      id = #value#
+  </select>
+
+  <select id="find" resultMap="resultIndex">
+    <include refid="findSelect"/>
+    <include refid="findFrom"/>
+    <include refid="findWhere"/>
+    ORDER BY
+      $orderBy$
+  </select>
+
+  <!-- 取得するのはIDのみ（その他のカラムは一覧と並び順を一致させるために使用する） -->
+  <select id="findId" resultClass="java.lang.Long">
+    <include refid="findSelect"/>
+    <include refid="findFrom"/>
+    <include refid="findWhere"/>
+    ORDER BY
+      $orderBy$
+  </select>
+
+  <select id="count" resultClass="int">
+    SELECT
+      count(c.id) as cnt
+    <include refid="findFromForCount"/>
+    <include refid="findWhere"/>
+  </select>
+
+  <select id="findByIdForUpdate" resultMap="resultForUpdate">
+    SELECT
+      version_no
+    FROM
+      correspon
+    WHERE
+      id = #id#
+    FOR UPDATE
+  </select>
+
+  <update id="update">
+    UPDATE correspon
+    SET
+      updated_by                  = #updatedBy.empNo#,
+      updated_at                  = SYSTIMESTAMP,
+      version_no                  = (version_no + 1)
+    <dynamic>
+      <isNotNull prepend="," property="corresponNo">
+        correspon_no              = #corresponNo#
+      </isNotNull>
+      <isNotNull prepend="," property="projectId">
+        project_id                = #projectId#
+      </isNotNull>
+      <isNotNull prepend="," property="previousRevCorresponId">
+        previous_rev_correspon_id = #previousRevCorresponId#
+      </isNotNull>
+      <isNotNull prepend="," property="fromCorresponGroup.id">
+        from_correspon_group_id   = #fromCorresponGroup.id#
+      </isNotNull>
+      <isNotNull prepend="," property="corresponType.projectCorresponTypeId">
+        project_correspon_type_id = #corresponType.projectCorresponTypeId#
+      </isNotNull>
+      <isNotNull prepend="," property="subject">
+        subject                   = #subject#
+      </isNotNull>
+      <isNotNull prepend="," property="issuedBy.empNo">
+        issued_by                 = #issuedBy.empNo#
+      </isNotNull>
+      <isNotNull prepend="," property="issuedAt">
+        issued_at                 = #issuedAt#
+      </isNotNull>
+      <isNotNull prepend="," property="corresponStatus">
+        correspon_status          = #corresponStatus#
+      </isNotNull>
+      <isNotNull prepend="," property="replyRequired">
+        reply_required            = #replyRequired#
+      </isNotNull>
+      <isNotNull prepend="," property="deadlineForReply">
+        deadline_for_reply        = #deadlineForReply#
+      </isNotNull>
+      <isNotNull prepend="," property="requestedApprovalAt">
+        requested_approval_at       = #requestedApprovalAt#
+      </isNotNull>
+      <isNotNull prepend="," property="workflowStatus">
+        workflow_status           = #workflowStatus#
+      </isNotNull>
+      <isNotNull prepend="," property="createdBy.empNo">
+        created_by                = #createdBy.empNo#
+      </isNotNull>
+      <isNotNull prepend="," property="createdAt">
+        created_at                = #createdAt#
+      </isNotNull>
+      <isNotNull prepend="," property="body">
+        body                      = #body#
+      </isNotNull>
+    </dynamic>
+    WHERE
+      id = #id#
+  </update>
+
+  <insert id="create">
+    <selectKey resultClass="long" keyProperty="id">
+        SELECT s_correspon_id.NEXTVAL AS id FROM dual
+    </selectKey>
+    INSERT INTO correspon (
+      id,
+      project_id,
+      from_correspon_group_id,
+      previous_rev_correspon_id,
+      project_correspon_type_id,
+      subject,
+      body,
+      correspon_status,
+      reply_required,
+      deadline_for_reply,
+      workflow_status,
+      created_by,
+      updated_by
+    ) VALUES (
+      #id#,
+      #projectId#,
+      #fromCorresponGroup.id#,
+      #previousRevCorresponId#,
+      #corresponType.projectCorresponTypeId#,
+      #subject#,
+      #body#,
+      #corresponStatus#,
+      #replyRequired#,
+      #deadlineForReply#,
+      #workflowStatus#,
+      #createdBy.empNo#,
+      #updatedBy.empNo#
+    )
+  </insert>
+
+  <update id="delete">
+    UPDATE correspon
+    SET
+      updated_by = #updatedBy.empNo#,
+      updated_at = SYSTIMESTAMP,
+      version_no = (version_no + 1),
+      delete_no  = s_correspon_dno.NEXTVAL
+    WHERE
+      id = #id#
+  </update>
+
+  <select id="findTopParent" resultMap="resultWithoutAttachment">
+    SELECT
+      id,
+      correspon_no,
+      parent_correspon_id,
+      parent_correspon_no,
+      project_id,
+      project_name_e,
+      from_correspon_group_id,
+      from_correspon_group_name,
+      previous_rev_correspon_id,
+      previous_rev_correspon_no,
+      correspon_type_id,
+      correspon_type,
+      correspon_type_name,
+      allow_approver_to_browse,
+      force_to_use_workflow,
+      correspon_access_control_flags,
+      workflow_pattern_id,
+      workflow_cd,
+      workflow_pattern_name,
+      subject,
+      body,
+      issued_by,
+      issued_by_name,
+      issued_at,
+      correspon_status,
+      reply_required,
+      deadline_for_reply,
+      workflow_status,
+      custom_field1_id,
+      custom_field1_label,
+      custom_field1_value,
+      custom_field2_id,
+      custom_field2_label,
+      custom_field2_value,
+      custom_field3_id,
+      custom_field3_label,
+      custom_field3_value,
+      custom_field4_id,
+      custom_field4_label,
+      custom_field4_value,
+      custom_field5_id,
+      custom_field5_label,
+      custom_field5_value,
+      custom_field6_id,
+      custom_field6_label,
+      custom_field6_value,
+      custom_field7_id,
+      custom_field7_label,
+      custom_field7_value,
+      custom_field8_id,
+      custom_field8_label,
+      custom_field8_value,
+      custom_field9_id,
+      custom_field9_label,
+      custom_field9_value,
+      custom_field10_id,
+      custom_field10_label,
+      custom_field10_value,
+      created_by,
+      created_by_name,
+      created_at,
+      updated_by,
+      updated_by_name,
+      updated_at,
+      version_no,
+      delete_no
+    FROM
+      v_correspon
+    WHERE
+      parent_correspon_id is null
+    START WITH
+      id = #id#
+    CONNECT BY
+      prior parent_correspon_id = id
+  </select>
+
+  <select id="findCorresponGroupSummary" resultMap="corresponGroupSummary">
+    SELECT
+      id,
+      correspon_type,
+      sum(to_count) as to_count,
+      sum(cc_count) as cc_count,
+      workflow_pattern_name
+    FROM (SELECT distinct pct.id,
+                 correspon_type,
+                 (CASE WHEN ag.address_type = #to# THEN 1 ELSE 0 END) AS to_count,
+                 (CASE WHEN ag.address_type = #cc# THEN 1 ELSE 0 END) AS cc_count,
+                 wp.name as workflow_pattern_name,
+                 c.id as correspon_id
+          FROM project_correspon_type pct
+               LEFT OUTER JOIN correspon_type ct
+               ON (pct.correspon_type_id = ct.id
+                   AND ct.delete_no = 0)
+               LEFT OUTER JOIN workflow_pattern wp
+               ON  ct.workflow_pattern_id = wp.id
+               LEFT OUTER JOIN correspon c
+               ON (c.project_correspon_type_id = pct.id
+                   AND c.project_id = #projectId#
+                   AND c.workflow_status = #issued#
+                   AND c.delete_no = 0)
+               LEFT OUTER JOIN address_correspon_group ag
+               ON (ag.correspon_id = c.id
+                   AND ag.delete_no = 0
+               <dynamic>
+                 AND correspon_group_id in
+                     (-1<!-- userGroupsが空のときのため -->
+                     <iterate property="userGroups" conjunction="," prepend=", ">
+                       #userGroups[].id#
+                     </iterate>
+                     )
+               </dynamic>)
+          WHERE
+              pct.delete_no = 0
+            AND
+              pct.project_id = #projectId#)
+    GROUP BY id, correspon_type, workflow_pattern_name
+    ORDER BY id
+  </select>
+
+  <select id="findCorresponUserSummary" resultMap="corresponUserSummary">
+    SELECT
+      nvl(sum(draft), 0)               AS draft_count,
+      nvl(sum(under_review), 0)        AS under_review_count,
+      nvl(sum(request_for_check), 0)   AS request_for_check_count,
+      nvl(sum(request_for_approve), 0) AS request_for_approve_count,
+      nvl(sum(denied), 0)              AS denied_count,
+      nvl(sum(open), 0)                AS open_count,
+      nvl(sum(closed), 0)              AS closed_count,
+      nvl(sum(canceled), 0)            AS canceled_count,
+      nvl(attention, 0)                AS attention_count,
+      nvl(person_in_charge, 0)         AS person_in_charge_count,
+      nvl(cc, 0)                       AS cc_count,
+      nvl(inbox, 0) - nvl(read, 0)     AS new_count,
+      nvl(read, 0)                     AS read_count
+    FROM
+      ((SELECT
+         (CASE WHEN c.workflow_status = #draft# AND c.created_by = #userId#
+               THEN 1 ELSE 0 END) AS draft,
+         (CASE WHEN c.workflow_status in
+         <iterate property="requesting" conjunction=","
+                   open="(" close=")">
+            #requesting[]#
+         </iterate>
+               AND c.created_by = #userId#
+               THEN 1 ELSE 0 END) AS under_review,
+         (CASE WHEN c.workflow_status in
+         <iterate property="requesting" conjunction=","
+                   open="(" close=")">
+            #requesting[]#
+         </iterate>
+               AND (w.workflow_process_status = #requestForCheck# OR w.workflow_process_status = #underConsideration# )
+               AND w.workflow_type = #checker#
+               AND w.emp_no = #userId#
+               THEN 1 ELSE 0 END) AS request_for_check,
+         (CASE WHEN c.workflow_status in
+         <iterate property="requesting" conjunction=","
+                   open="(" close=")">
+            #requesting[]#
+         </iterate>
+               AND (w.workflow_process_status = #requestForApproval# OR w.workflow_process_status = #underConsideration#)
+               AND w.workflow_type = #approver#
+               AND w.emp_no = #userId#
+               THEN 1 ELSE 0 END) AS request_for_approve,
+         (CASE WHEN c.workflow_status = #denied# AND c.created_by = #userId#
+               THEN 1 ELSE 0 END) AS denied,
+         (CASE WHEN c.workflow_status = #issued# AND c.created_by = #userId# AND c.correspon_status = #open#
+               THEN 1 ELSE 0 END) AS open,
+         (CASE WHEN c.workflow_status = #issued# AND c.created_by = #userId# AND c.correspon_status = #closed#
+               THEN 1 ELSE 0 END) AS closed,
+         (CASE WHEN c.workflow_status = #issued# AND c.created_by = #userId# AND c.correspon_status = #canceled#
+               THEN 1 ELSE 0 END) AS canceled,
+         (
+            SELECT count(distinct ccc.id)
+            FROM address_user au
+              INNER JOIN address_correspon_group ag
+                 ON au.address_correspon_group_id = ag.id
+                AND ag.address_type = #to#
+                AND ag.delete_no = 0
+              INNER JOIN correspon ccc
+                 ON ag.correspon_id = ccc.id
+                AND ccc.project_id = #projectId#
+                AND ccc.workflow_status = #issued#
+                AND ccc.correspon_status = #open#
+                AND ccc.reply_required = #yes#
+                AND ccc.delete_no = 0
+            WHERE au.emp_no = #userId#
+              AND au.address_user_type = #attention#
+              AND au.delete_no = 0
+              AND 0 = (SELECT count(ch.id)
+                       FROM correspon_hierarchy ch
+                       WHERE ccc.id = ch.parent_correspon_id
+                       AND ch.created_by = au.emp_no
+                       AND ch.delete_no = 0)
+        ) AS attention,
+         (
+  <dynamic>
+    <isEqual property="usePersonInCharge" compareValue="true">
+            SELECT count(distinct ccc.id)
+            FROM person_in_charge pic
+              INNER JOIN address_user au
+                 ON pic.address_user_id = au.id
+                 AND au.address_user_type = #attention#
+                 AND au.delete_no = 0
+              INNER JOIN address_correspon_group ag
+                 ON au.address_correspon_group_id = ag.id
+                AND ag.address_type = #to#
+                AND ag.delete_no = 0
+              INNER JOIN correspon ccc
+                 ON ag.correspon_id = ccc.id
+                AND ccc.project_id = #projectId#
+                AND ccc.workflow_status = #issued#
+                AND ccc.correspon_status = #open#
+                AND ccc.reply_required = #yes#
+                AND ccc.delete_no = 0
+            WHERE pic.emp_no = #userId#
+              AND pic.delete_no = 0
+              AND 0 = (SELECT count(ch.id)
+                       FROM correspon_hierarchy ch
+                       WHERE ccc.id = ch.parent_correspon_id
+                       AND ch.created_by = pic.emp_no
+                       AND ch.delete_no = 0)
+    </isEqual>
+    <isEqual property="usePersonInCharge" compareValue="false">0</isEqual>
+  </dynamic>
+        ) AS person_in_charge,
+         (
+            SELECT count(distinct ccc.id)
+            FROM address_user au
+              INNER JOIN address_correspon_group ag
+                 ON au.address_correspon_group_id = ag.id
+                AND ag.address_type = #cc#
+                AND ag.delete_no = 0
+              INNER JOIN correspon ccc
+                 ON ag.correspon_id = ccc.id
+                AND ccc.project_id = #projectId#
+                AND ccc.workflow_status = #issued#
+                AND ccc.correspon_status = #open#
+                AND ccc.delete_no = 0
+            WHERE au.emp_no = #userId#
+              AND au.address_user_type = #normalUser#
+              AND au.delete_no = 0
+        ) AS cc,
+         (
+            SELECT count(c.id)
+            FROM
+              correspon c
+            INNER JOIN (
+              SELECT acg.correspon_id, au.emp_no
+              FROM address_correspon_group acg
+                INNER JOIN address_user au
+                   ON acg.id = au.address_correspon_group_id
+                  AND au.delete_no = 0
+              WHERE acg.delete_no = 0
+                AND au.emp_no = #userId#
+              GROUP BY
+                acg.correspon_id,
+                au.emp_no
+  <dynamic>
+    <isEqual property="usePersonInCharge" compareValue="true">
+              UNION
+              SELECT acg.correspon_id, pic.emp_no
+              FROM address_correspon_group acg
+                INNER JOIN address_user au
+                   ON acg.id = au.address_correspon_group_id
+                  AND au.delete_no = 0
+                INNER JOIN person_in_charge pic
+                   ON au.id = pic.address_user_id
+                  AND pic.delete_no = 0
+              WHERE acg.delete_no = 0
+                AND pic.emp_no = #userId#
+              GROUP BY
+                acg.correspon_id,
+                pic.emp_no
+    </isEqual>
+  </dynamic>
+            ) cu
+               ON c.id = cu.correspon_id
+            WHERE c.project_id = #projectId#
+              AND c.workflow_status = #issued#
+              AND c.delete_no = 0
+        ) as inbox,
+         (
+            SELECT count(c.id)
+            FROM
+              correspon c
+            INNER JOIN (
+              SELECT acg.correspon_id, au.emp_no
+              FROM address_correspon_group acg
+                INNER JOIN address_user au
+                   ON acg.id = au.address_correspon_group_id
+                  AND au.delete_no = 0
+              WHERE acg.delete_no = 0
+                AND au.emp_no = #userId#
+              GROUP BY
+                acg.correspon_id,
+                au.emp_no
+  <dynamic>
+    <isEqual property="usePersonInCharge" compareValue="true">
+              UNION
+              SELECT acg.correspon_id, pic.emp_no
+              FROM address_correspon_group acg
+                INNER JOIN address_user au
+                   ON acg.id = au.address_correspon_group_id
+                  AND au.delete_no = 0
+                INNER JOIN person_in_charge pic
+                   ON au.id = pic.address_user_id
+                  AND pic.delete_no = 0
+              WHERE acg.delete_no = 0
+                AND pic.emp_no = #userId#
+              GROUP BY
+                acg.correspon_id,
+                pic.emp_no
+    </isEqual>
+  </dynamic>
+            ) cu
+               ON c.id = cu.correspon_id
+            INNER JOIN correspon_read_status crs
+               ON crs.emp_no = cu.emp_no
+              AND crs.correspon_id = c.id
+              AND crs.read_status = #read#
+              AND crs.delete_no = 0
+            WHERE c.project_id = #projectId#
+              AND c.workflow_status = #issued#
+              AND c.delete_no = 0
+        ) as read
+       FROM
+         correspon c
+         LEFT OUTER JOIN workflow w
+         ON (c.id = w.correspon_id
+             AND w.emp_no = #userId#
+             AND w.delete_no = 0)
+     <dynamic>
+        <isEqual property="systemAdmin" compareValue="false">
+          <isEqual property="projectAdmin" compareValue="false">
+            INNER JOIN v_project_correspon_type ct
+            ON c.project_correspon_type_id = ct.project_correspon_type_id
+          </isEqual>
+        </isEqual>
+      </dynamic>
+       WHERE
+           c.delete_no = 0
+         AND
+           c.project_id = #projectId#
+         <include refid="partOfWhere"/>))
+       GROUP BY
+         nvl(attention, 0),
+         nvl(person_in_charge, 0),
+         nvl(cc, 0),
+         nvl(inbox, 0),
+         nvl(read, 0)
+  </select>
+
+  <select id="countCorresponByCustomField" resultClass="int">
+    SELECT
+      count(c.id) as cnt
+    FROM
+      correspon c
+      INNER JOIN correspon_custom_field f
+      ON (c.id = f.correspon_id AND c.delete_no = 0 AND f.delete_no = 0)
+    WHERE
+      f.project_custom_field_id = #value#
+    AND
+      c.delete_no = 0
+  </select>
+
+  <select id="findReplyCorresponByAddressUserId" resultMap="resultForReplyCorrespon">
+    SELECT
+      h.child_correspon_id AS id,
+      c.correspon_no       AS correspon_no
+    FROM
+      correspon_hierarchy h
+        INNER JOIN correspon c
+           ON h.child_correspon_id = c.id
+          AND c.delete_no = 0
+          AND c.workflow_status = #workflowStatus#
+    WHERE
+          h.reply_address_user_id = #addressUserId#
+      AND h.delete_no = 0
+    ORDER BY
+      c.correspon_no
+  </select>
+
+  <select id="findReplyCorresponByGroupId" resultMap="resultForReplyCorrespon">
+    SELECT
+      h.child_correspon_id AS id,
+      c.correspon_no       AS correspon_no
+    FROM correspon c
+      INNER JOIN correspon_hierarchy h
+         ON c.id = h.child_correspon_id
+        AND h.delete_no = 0
+      INNER JOIN correspon p
+         ON h.parent_correspon_id = p.id
+        AND p.delete_no = 0
+      INNER JOIN address_correspon_group acg
+         ON p.id = acg.correspon_id
+        AND c.from_correspon_group_id = acg.correspon_group_id
+        AND acg.delete_no = 0
+    WHERE c.workflow_status = #workflowStatus#
+      AND c.from_correspon_group_id = #groupId#
+      AND c.delete_no = 0
+      AND p.id = #corresponId#
+    GROUP BY
+      h.child_correspon_id,
+      c.correspon_no
+    ORDER BY
+      c.correspon_no
+  </select>
+
+  <select id="countCorresponByCorresponType" resultClass="int">
+    SELECT
+      count(id) cnt
+    FROM
+      correspon
+    WHERE
+      project_correspon_type_id = #value#
+    AND
+      delete_no = 0
+  </select>
+
+  <!-- RSS用コレポン取得FROM部 -->
+  <sql id="findRSSCorresponFrom">
+    FROM
+      v_correspon c
+      LEFT OUTER JOIN (SELECT min(correspon_group_id) AS correspon_group_id, correspon_id
+                         FROM address_correspon_group
+                         WHERE delete_no = 0 AND address_type = #to#
+                         GROUP BY correspon_id) ag
+        ON ag.correspon_id = c.id
+      LEFT OUTER JOIN correspon_group g
+        ON g.id = ag.correspon_group_id AND g.delete_no = 0
+      LEFT OUTER JOIN (SELECT count(id) AS to_group_count, correspon_id
+                         FROM address_correspon_group
+                         WHERE delete_no = 0 AND address_type = #to#
+                         GROUP BY correspon_id) agc
+        ON agc.correspon_id = c.id
+      LEFT OUTER JOIN (SELECT min(correspon_group_id) AS correspon_group_id, correspon_id
+                         FROM address_correspon_group
+                         WHERE delete_no = 0 AND address_type = #cc#
+                         GROUP BY correspon_id) cc_ag
+        ON cc_ag.correspon_id = c.id
+      LEFT OUTER JOIN correspon_group cc_g
+        ON cc_g.id = cc_ag.correspon_group_id AND cc_g.delete_no = 0
+      LEFT OUTER JOIN (SELECT count(id) AS cc_group_count, correspon_id
+                         FROM address_correspon_group
+                         WHERE delete_no = 0 AND address_type = #cc#
+                         GROUP BY correspon_id) cc_agc
+        ON cc_agc.correspon_id = c.id
+  </sql>
+
+  <!-- ユーザーがAttentionに設定されているコレポン文書 -->
+  <sql id="findRSSCorresponAttention">
+    SELECT
+      <include refid="findRSSCorresponColumns"/>
+      , 1 AS category
+    <include refid="findRSSCorresponFrom"/>
+      INNER JOIN (
+       SELECT correspon_id
+       FROM address_correspon_group ag
+         LEFT OUTER JOIN address_user au
+           ON au.address_correspon_group_id = ag.id
+          AND au.delete_no = 0
+       WHERE ag.delete_no       = 0
+       AND ag.address_type      = #to#
+       AND au.address_user_type = #attention#
+       AND au.emp_no            = #userId#
+      ) condition1
+      ON condition1.correspon_id = c.id
+        AND c.workflow_status = #issued#
+        AND (c.correspon_status = #open# OR c.correspon_status = #closed#)
+  </sql>
+
+  <!-- ユーザーがCcに設定されているコレポン文書 -->
+  <sql id="findRSSCorresponCc">
+    SELECT
+      <include refid="findRSSCorresponColumns"/>
+      , 2 AS category
+    <include refid="findRSSCorresponFrom"/>
+      INNER JOIN (
+       SELECT correspon_id
+       FROM address_correspon_group ag
+         LEFT OUTER JOIN address_user au
+           ON au.address_correspon_group_id = ag.id
+          AND au.delete_no = 0
+       WHERE ag.delete_no       = 0
+       AND ag.address_type      = #cc#
+       AND au.address_user_type = #normalUser#
+       AND au.emp_no            = #userId#
+      ) condition2
+      ON condition2.correspon_id = c.id
+        AND c.workflow_status = #issued#
+        AND (c.correspon_status = #open# OR c.correspon_status = #closed#)
+  </sql>
+
+  <!-- ユーザーがCheckerに設定されているコレポン文書 -->
+  <sql id="findRSSCorresponChecker">
+    SELECT
+      <include refid="findRSSCorresponColumns"/>
+      , 3 AS category
+    <include refid="findRSSCorresponFrom"/>
+      INNER JOIN (
+       SELECT correspon_id
+       FROM workflow
+       WHERE delete_no = 0
+         AND emp_no = #userId#
+         AND workflow_type = #checker#
+         AND workflow_process_status = #requestForCheckProcess#
+      ) condition3
+      ON condition3.correspon_id = c.id
+       AND (c.workflow_status = #requestForCheck# OR c.workflow_status = #requestForApproval# OR c.workflow_status = #underConsideration#)
+  </sql>
+
+  <!-- ユーザーがApproverに設定されているコレポン文書 -->
+  <sql id="findRSSCorresponApprover">
+    SELECT
+      <include refid="findRSSCorresponColumns"/>
+      , 4 AS category
+    <include refid="findRSSCorresponFrom"/>
+      INNER JOIN (
+       SELECT correspon_id
+       FROM workflow
+       WHERE delete_no = 0
+         AND emp_no = #userId#
+         AND workflow_type = #approver#
+         AND workflow_process_status = #requestForApprovalProcess#
+      ) condition4
+      ON condition4.correspon_id = c.id
+       AND (c.workflow_status = #requestForCheck# OR c.workflow_status = #requestForApproval# OR c.workflow_status = #underConsideration#)
+  </sql>
+
+  <!-- ユーザーがPerson in Chargeに設定されているコレポン文書 -->
+  <sql id="findRSSCorresponPersonInCharge">
+    SELECT
+      <include refid="findRSSCorresponColumns"/>
+      , 5 AS category
+    <include refid="findRSSCorresponFrom"/>
+      INNER JOIN (
+       SELECT correspon_id
+       FROM address_correspon_group ag
+         LEFT OUTER JOIN address_user au
+           ON au.address_correspon_group_id = ag.id AND au.delete_no = 0
+         LEFT OUTER JOIN person_in_charge pic
+           ON pic.address_user_id = au.id AND pic.delete_no = 0
+       WHERE ag.delete_no = 0
+         AND ag.address_type = #to#
+         AND au.address_user_type = #attention#
+         AND pic.emp_no = #userId#
+      ) condition5
+      ON condition5.correspon_id = c.id
+        AND c.workflow_status = #issued#
+        AND (c.correspon_status = #open# OR c.correspon_status = #closed#)
+  </sql>
+
+  <!-- ユーザーが作成して否認されたコレポン文書 -->
+  <sql id="findRSSCorresponDenied">
+    SELECT
+      <include refid="findRSSCorresponColumns"/>
+      , 6 AS category
+    <include refid="findRSSCorresponFrom"/>
+    WHERE c.delete_no = 0
+      AND c.workflow_status = #denied#
+      AND c.created_by = #userId#
+  </sql>
+
+  <!-- RSS用コレポン文書取得SQLのSELECT句 -->
+  <sql id="findRSSCorresponColumns">
+      c.id,
+      correspon_no,
+      project_id,
+      project_name_e,
+      from_correspon_group_id,
+      from_correspon_group_name,
+      correspon_type_id,
+      correspon_type,
+      correspon_type_name,
+      subject,
+      issued_by,
+      issued_by_name,
+      issued_at,
+      correspon_status,
+      reply_required,
+      deadline_for_reply,
+      workflow_status,
+      c.created_by,
+      created_by_name,
+      c.created_at,
+      c.updated_by,
+      updated_by_name,
+      c.updated_at,
+      g.id                  AS to_group_id,
+      g.name                AS to_group_name,
+      agc.to_group_count    AS to_group_count,
+      cc_g.id               AS cc_group_id,
+      cc_g.name             AS cc_group_name,
+      NVL(cc_group_count,0) AS cc_group_count
+  </sql>
+
+  <!-- RSS用コレポン文書取得SQLのGROUP BY句 -->
+  <sql id="findRSSCorresponGroupByColumns">
+      c.id,
+      correspon_no,
+      project_id,
+      project_name_e,
+      from_correspon_group_id,
+      from_correspon_group_name,
+      correspon_type_id,
+      correspon_type,
+      correspon_type_name,
+      subject,
+      issued_by,
+      issued_by_name,
+      issued_at,
+      correspon_status,
+      reply_required,
+      deadline_for_reply,
+      workflow_status,
+      c.created_by,
+      created_by_name,
+      c.created_at,
+      c.updated_by,
+      updated_by_name,
+      c.updated_at,
+      to_group_id,
+      to_group_name,
+      to_group_count,
+      cc_group_id,
+      cc_group_name,
+      cc_group_count
+  </sql>
+
+  <!-- RSS取得SQL -->
+  <!-- RSSの対象となるコレポン文書を抽出するSQLをUNION ALLで結合 -->
+  <select id="findRSSCorrespon" resultMap="resultRSS">
+    SELECT
+      <include refid="findRSSCorresponGroupByColumns"/>
+      , min(category) AS category
+    FROM (
+      <include refid="findRSSCorresponAttention"/>
+      UNION ALL
+      <include refid="findRSSCorresponCc"/>
+      UNION ALL
+      <include refid="findRSSCorresponChecker"/>
+      UNION ALL
+      <include refid="findRSSCorresponApprover"/>
+      UNION ALL
+      <include refid="findRSSCorresponPersonInCharge"/>
+      UNION ALL
+      <include refid="findRSSCorresponDenied"/>
+    ) c
+    WHERE c.updated_at >= #dayPeriod#
+    GROUP BY
+      <include refid="findRSSCorresponGroupByColumns"/>
+    ORDER BY
+      c.updated_at DESC
+  </select>
+
+  <select id="findRootCorresponId" resultClass="long">
+    SELECT
+      min(ch.parent_correspon_id)
+    FROM
+      correspon_hierarchy ch
+      INNER JOIN correspon c
+         ON ch.child_correspon_id = c.id
+        AND c.delete_no = 0
+    START WITH
+        ch.child_correspon_id = #corresponId#
+    AND ch.delete_no = 0
+    CONNECT BY
+        prior ch.parent_correspon_id = ch.child_correspon_id
+    AND prior ch.delete_no = 0
+  </select>
+
+  <!-- 応答履歴取得SQL -->
+  <!-- あるコレポン文書の全応答履歴を取得する(大本の文書はUNIONで先頭に追加している) -->
+  <select id="findCorresponResponseHistory" resultMap="corresponResponseHistory">
+    SELECT
+      c.id,
+      c.correspon_no,
+      c.issued_at,
+      c.from_correspon_group_id,
+      fcg.name as from_name,
+      c.subject,
+      c.correspon_status,
+      c.deadline_for_reply,
+      acg.id as address_correspon_group_id,
+      cg.id as correspon_group_id,
+      cg.name as correspon_group_name,
+      0 lvl,
+      0 rn
+    FROM correspon c
+      INNER JOIN correspon_group fcg
+         ON c.from_correspon_group_id = fcg.id
+      INNER JOIN address_correspon_group acg
+         ON c.id = acg.correspon_id
+      INNER JOIN correspon_group cg
+         ON acg.correspon_group_id = cg.id
+    WHERE c.id = #corresponId#
+      AND (c.workflow_status = #workflowStatus# or c.id = #currentCorresponId#)
+      AND c.delete_no = 0
+      AND fcg.delete_no = 0
+      AND acg.address_type = #addressType#
+      AND acg.delete_no = 0
+      AND cg.delete_no = 0
+    UNION
+    SELECT
+      ch.id,
+      ch.correspon_no,
+      ch.issued_at,
+      ch.from_correspon_group_id,
+      fcg.name as from_name,
+      ch.subject,
+      ch.correspon_status,
+      ch.deadline_for_reply,
+      acg.id as address_correspon_group_id,
+      cg.id as correspon_group_id,
+      cg.name as correspon_group_name,
+      ch.lvl,
+      ch.rn
+    FROM (
+        SELECT c.id,
+               c.correspon_no,
+               c.issued_at,
+               c.from_correspon_group_id,
+               c.subject,
+               c.correspon_status,
+               c.deadline_for_reply,
+               c.workflow_status,
+               level lvl,
+               rownum rn
+        FROM correspon_hierarchy ch
+        INNER JOIN correspon c
+           ON ch.child_correspon_id = c.id
+          AND c.delete_no = 0
+        START WITH ch.parent_correspon_id = #corresponId#
+               AND ch.delete_no = 0
+        CONNECT BY prior ch.child_correspon_id = ch.parent_correspon_id
+        ORDER SIBLINGS BY
+          c.issued_at,
+          c.created_at
+      ) ch
+      INNER JOIN correspon_group fcg
+         ON ch.from_correspon_group_id = fcg.id
+      INNER JOIN address_correspon_group acg
+         ON ch.id = acg.correspon_id
+      INNER JOIN correspon_group cg
+         ON acg.correspon_group_id = cg.id
+    WHERE (ch.workflow_status = #workflowStatus# or ch.id = #currentCorresponId#)
+      AND fcg.delete_no = 0
+      AND acg.address_type = #addressType#
+      AND acg.delete_no = 0
+      AND cg.delete_no = 0
+    ORDER BY
+      rn
+  </select>
+
+</sqlMap>

@@ -1,0 +1,11 @@
+flyway.url=jdbc:oracle:thin:@localhost:1521
+flyway.user=ocotsidb
+flyway.password=ocotsidb
+
+# List are defined as comma-separated values
+flyway.schemas=
+
+flyway.locations=filesystem:db/migration
+
+flyway.placeholders.tablespace=ocotsi
+flyway.placeholders.idx_tablespace=ocotsi_ix

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<annotations>
+  <class name="jp.co.opentone.bsol.framework.core.S">
+    <annotation name="net.java.amateras.xlsbeans.annotation.Sheet">
+      <attribute name="number">0</attribute>
+    </annotation>
+
+    <method name="setRecords">
+      <annotation name="net.java.amateras.xlsbeans.annotation.HorizontalRecords">
+        <attribute name="tableLabel">'Test Data'</attribute>
+        <attribute name="recordClass">@jp.co.opentone.bsol.framework.core.R@class</attribute>
+      </annotation>
+    </method>
+  </class>
+
+  <class name="jp.co.opentone.bsol.framework.core.R">
+    <field name="no">
+      <annotation name="net.java.amateras.xlsbeans.annotation.Column">
+        <attribute name="columnName">'No.'</attribute>
+      </annotation>
+    </field>
+    <field name="title">
+      <annotation name="net.java.amateras.xlsbeans.annotation.Column">
+        <attribute name="columnName">'Title'</attribute>
+      </annotation>
+    </field>
+    <field name="categoryCd">
+      <annotation name="net.java.amateras.xlsbeans.annotation.Column">
+        <attribute name="columnName">'Category Code'</attribute>
+      </annotation>
+    </field>
+    <field name="symbol">
+      <annotation name="net.java.amateras.xlsbeans.annotation.Column">
+        <attribute name="columnName">'Symbol'</attribute>
+      </annotation>
+    </field>
+    <field name="symbolCategoryCd">
+      <annotation name="net.java.amateras.xlsbeans.annotation.Column">
+        <attribute name="columnName">'Symbol Category Code'</attribute>
+      </annotation>
+    </field>
+    <field name="description">
+      <annotation name="net.java.amateras.xlsbeans.annotation.Column">
+        <attribute name="columnName">'Description'</attribute>
+      </annotation>
+    </field>
+    <field name="quantity">
+      <annotation name="net.java.amateras.xlsbeans.annotation.Column">
+        <attribute name="columnName">'Quantity'</attribute>
+      </annotation>
+    </field>
+  </class>
+</annotations>

@@ -1,0 +1,151 @@
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/include/template.xhtml">
+  <ui:define name="title">#{corresponTypeEditPage.title}</ui:define>
+  <ui:define name="jsOuter">
+  <script type="application/json" id="workflowPatterns">
+    #{corresponTypeEditPage.workflowPatternJson}
+  </script>
+  </ui:define>
+  <ui:define name="jsInner">
+    history.forward();
+    function showWorkflowPatternDescription(val) {
+      var patterns = $.parseJSON($('#workflowPatterns').text());
+      $('#workflowPatternDescription').html(patterns[val]['description']);
+      $('#workflowPatternDescription').show();
+    }
+  </ui:define>
+  <ui:define name="body">
+    <f:view>
+      <h:form id="form" onsubmit="return disableSubmit();">
+        <h:inputHidden id="actionName" value="#{corresponTypeEditPage.actionName}" />
+        <div id="edit">
+
+          <h:inputHidden id="title" value="#{corresponTypeEditPage.title}" />
+          <h:inputHidden id="id" value="#{corresponTypeEditPage.id}" />
+          <h:inputHidden id="projectCorresponTypeId" value="#{corresponTypeEditPage.projectCorresponTypeId}" />
+
+          <f:validateBean validationGroups="#{corresponTypeEditPage.validationGroups}">
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel value="ID"/>
+              <h:outputText id="viewId" value="#{corresponTypeEditPage.id}"
+                  rendered="#{corresponTypeEditPage.projectId == null}" />
+              <h:outputText id="viewProjectCorresponTypeId" value="#{corresponTypeEditPage.projectCorresponTypeId}"
+                  rendered="#{corresponTypeEditPage.projectId != null}" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel for="type" value="文書種類" styleClass="required"/>
+              <h:inputText id="type" value="#{corresponTypeEditPage.type}"
+                            maxlength="10"
+                            styleClass="u-full-width"
+                            disabled="#{corresponTypeEditPage.projectId != null and
+                  corresponTypeEditPage.corresponType.useWhole.value == 0}"/>
+              <h:message for="type" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel for="name" value="文書種類名" styleClass="required"/>
+              <h:inputText id="name" value="#{corresponTypeEditPage.name}"
+                            maxlength="100"
+                            styleClass="u-full-width"
+                            disabled="#{corresponTypeEditPage.projectId != null and
+                  corresponTypeEditPage.corresponType.useWhole.value == 0}"/>
+              <h:message for="name" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+            </div>
+          </div>
+          <hr/>
+          <div class="row">
+            <div class="twelve columns">
+              <span>ワークフロー設定</span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="ten columns">
+              <h:outputLabel for="selectWorkflowPattern" value="パターン" styleClass="required"/>
+              <h:selectOneMenu id="selectWorkflowPattern" value="#{corresponTypeEditPage.selectWorkflowPattern}"
+                            styleClass="u-full-width"
+                            onchange="showWorkflowPatternDescription(this.value)"
+                            rendered="#{corresponTypeEditPage.selectWorkflowPatternList != null}"
+                            disabled="#{corresponTypeEditPage.projectId != null and corresponTypeEditPage.corresponType.useWhole.value == 0}">
+                <f:selectItems value="#{corresponTypeEditPage.selectWorkflowPatternList}" />
+              </h:selectOneMenu>
+              <h:message for="selectWorkflowPattern" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+              <div id="workflowPatternDescription" style="display:none;"></div>
+                <label>
+                  <h:selectBooleanCheckbox value="#{corresponTypeEditPage.allow}"
+                            disabled="#{corresponTypeEditPage.projectId != null and
+                            corresponTypeEditPage.corresponType.useWhole.value == 0}"/>
+                  <span class="label-body">承認者は、承認前でも文書を閲覧できる</span>
+                </label>
+                <label>
+                   <h:selectBooleanCheckbox value="#{corresponTypeEditPage.force}"
+                      disabled="#{corresponTypeEditPage.projectId != null and
+                        corresponTypeEditPage.corresponType.useWhole.value == 0}"/>
+                   <span class="label-body">この文書種類では、文書作成者は必ずワークフローを利用する</span>
+                </label>
+            </div>
+          </div>
+          <ui:fragment rendered="#{corresponTypeEditPage.useAccessControl}">
+          <div class="row">
+            <div class="six columns">
+              <h:outputLabel value="アクセス権限"/>
+              <label>
+                <h:selectBooleanCheckbox value="#{corresponTypeEditPage.projectAdminAccessAlow}" />
+                <span class="label-body">プロジェクト管理者</span>
+              </label>
+              <label>
+                <h:selectBooleanCheckbox value="#{corresponTypeEditPage.groupAdminAccessAlow}" />
+                <span class="label-body">グループ管理者</span>
+              </label>
+              <label>
+                <h:selectBooleanCheckbox value="#{corresponTypeEditPage.normalUserAccessAlow}" />
+                <span class="label-body">一般ユーザー</span>
+              </label>
+            </div>
+          </div>
+          </ui:fragment>
+          </f:validateBean>
+        </div>
+
+        <h:inputHidden id="viewRender" value="#{corresponTypeEditPage.initialDisplaySuccess}" />
+
+        <div class="action-edit">
+          <ui:fragment rendered="#{corresponTypeEditPage.initialDisplaySuccess}">
+            <h:commandButton id="next" value="次へ"
+                              styleClass="button-primary"
+                              action="#{corresponTypeEditPage.next}" onclick="setActionName(event)" />
+          </ui:fragment>
+            <h:commandLink id="back" value="戻る"
+                              styleClass="button"
+                              action="#{corresponTypeEditPage.back}" onclick="setActionName(event)" />
+        </div>
+      </h:form>
+    </f:view>
+  </ui:define>
+</ui:composition>
+</html>

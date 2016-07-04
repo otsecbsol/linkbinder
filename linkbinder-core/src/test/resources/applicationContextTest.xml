@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+  xsi:schemaLocation="
+			http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+			http://www.springframework.org/schema/aop
+			http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+			http://www.springframework.org/schema/tx
+			http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+		    http://www.springframework.org/schema/context
+		    http://www.springframework.org/schema/context/spring-context-2.5.xsd
+    	">
+
+  <aop:aspectj-autoproxy proxy-target-class="false"/>
+  <bean id="trace"
+        class="jp.co.opentone.bsol.framework.core.MethodTraceAdvice"/>
+  <bean id="emptyStringToNull"
+        class="jp.co.opentone.bsol.framework.core.aop.EmptyStringToNullInterceptor"/>
+
+	<!-- fieldに@Resourceアノテーションを付けてDIするための設定 -->
+  <context:annotation-config />
+
+	<!-- viewパッケージ内で@Componentアノテーションが付いたクラスを対象とする -->
+  <context:component-scan base-package="jp.co.opentone.bsol.linkbinder.view"
+    use-default-filters="false">
+    <context:include-filter type="annotation"
+      expression="org.springframework.stereotype.Component" />
+  </context:component-scan>
+
+	<!--
+      serviceパッケージ内で@Serviceアノテーションが付いたクラスを対象とする
+      scopeはprototype固定とする
+    -->
+	<context:component-scan base-package="jp.co.opentone.bsol.linkbinder.service"
+                            scope-resolver="jp.co.opentone.bsol.framework.core.extension.spring.scope.PrototypeScopeMetadataResolver"
+							use-default-filters="false">
+		<context:include-filter type="annotation"
+								expression="org.springframework.stereotype.Service"/>
+	</context:component-scan>
+
+	<!--
+      daoパッケージ内で@Repositoryアノテーションが付いたクラスを対象とする
+      scopeはprototype固定とする
+    -->
+	<context:component-scan base-package="jp.co.opentone.bsol.linkbinder.dao"
+                            scope-resolver="jp.co.opentone.bsol.framework.core.extension.spring.scope.PrototypeScopeMetadataResolver"
+							use-default-filters="false">
+		<context:include-filter type="annotation"
+								expression="org.springframework.stereotype.Repository"/>
+	</context:component-scan>
+
+  <!-- Configurer that replaces ${...} placeholders with values from properties files -->
+  <!-- (in this case, mail and JDBC related properties) -->
+  <bean
+      id="propertyConfigurer"
+      class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+
+    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+    <property name="searchSystemEnvironment" value="true" />
+    <property name="ignoreResourceNotFound" value="true" />
+
+    <property name="locations">
+      <list>
+        <!-- jdbc -->
+        <value>classpath:jdbc.properties</value>
+        <!-- mail -->
+        <value>classpath:mail.properties</value>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="fileStoreClient" class="jp.co.opentone.bsol.framework.core.filestore.FileStoreClient" scope="prototype"/>
+  <bean id="dataSourceSelector" class="jp.co.opentone.bsol.linkbinder.dao.MockDataSourceSelector"/>
+<!-- core のテストでは不要
+  <bean id="serviceActionHandler" class="ServiceActionHandler"/>
+  <bean id="actionExecutor" class="TransactionalActionExecutor"/>
+  <bean id="viewHelper" class="ViewHelper" scope="prototype"/>
+-->
+  <bean id="currentUser" class="jp.co.opentone.bsol.linkbinder.dto.User" scope="session"/>
+    <!-- FIXME:認証処理が完成するまでのダミー情報 -->
+  <bean id= "corresponGroup" class="jp.co.opentone.bsol.linkbinder.dto.CorresponGroup"/>
+  <bean id="currentProjectUser" class="jp.co.opentone.bsol.linkbinder.dto.ProjectUser" scope="session">
+      <!-- FIXME:認証処理が完成するまでのダミー情報 -->
+      <property name="defaultCorresponGroup"><ref local="corresponGroup"/></property>
+  </bean>
+  <bean id="daoFinder" class="jp.co.opentone.bsol.linkbinder.dao.DaoFinder" scope="prototype"/>
+<!-- FIXME
+	Core から Web を参照している
+	暫定的にコメントアウト で対応。
+  <bean id="feedAuthenticator" class="jp.co.opentone.bsol.linkbinder.view.auth.DefaultFeedAuthenticator" scope="request"/>
+-->
+
+  <!-- システム定義情報の設定 -->
+  <bean id="systemConfigSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+    <property name="basenames">
+      <list>
+        <value>config.framework-config</value>
+        <value>config.linkbinder-config</value>
+      </list>
+    </property>
+  </bean>
+  <bean id="systemConfigInitializer" class="jp.co.opentone.bsol.framework.core.config.SystemConfigInitializer"
+        init-method="initialize" />
+
+  <!-- メッセージリソースの設定 -->
+  <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+    <property name="basenames">
+      <list>
+        <value>classpath:message/framework-messages</value>
+        <value>classpath:message/validation_messages</value>
+        <value>classpath:message/messages</value>
+        <value>classpath:message/errors</value>
+      </list>
+    </property>
+    <property name="defaultEncoding" value="UTF-8"/>
+    <property name="fileEncodings" value="UTF-8"/>
+  </bean>
+  <bean id="messageInitializer" class="jp.co.opentone.bsol.framework.core.message.MessageInitializer"
+        init-method="initialize" />
+
+  <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+    <property name="host" value="${mail.host}"/>
+    <property name="port" value="${mail.port}"/>
+    <property name="username" value="${mail.username}"/>
+    <property name="password" value="${mail.password}"/>
+    <property name="javaMailProperties">
+      <props>
+        <prop key="mail.transport.protocol">smtp</prop>
+        <prop key="mail.smtp.auth">true</prop>
+        <prop key="mail.smtp.startttl.enable">true</prop>
+      </props>
+    </property>
+  </bean>
+</beans>

@@ -70,7 +70,7 @@
             </div>
           </div>
           <div class="row">
-            <div class="four columns">
+            <div class="five columns">
               <h:outputLabel for="fullTextSearchMode" value="検索対象"/>
               <h:selectOneMenu id="fullTextSearchMode"
                             value="#{corresponSearchPage.fullTextSearchMode}"
@@ -78,6 +78,10 @@
                             rendered="#{corresponSearchPage.fullTextSearchModeSelectList != null}">
                 <f:selectItems value="#{corresponSearchPage.fullTextSearchModeSelectList}" />
               </h:selectOneMenu>
+              <label>
+                  <h:selectBooleanCheckbox id="includeImage" value="#{corresponSearchPage.includeImage}"/>
+                  <span class="label-body">画像を検索対象に含める</span>
+              </label>
             </div>
           </div>
           <div class="row">

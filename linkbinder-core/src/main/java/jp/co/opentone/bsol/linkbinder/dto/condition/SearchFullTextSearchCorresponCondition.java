@@ -41,6 +41,11 @@ public class SearchFullTextSearchCorresponCondition extends AbstractCondition {
     private FullTextSearchMode fullTextSearchMode;
 
     /**
+     * 画像検索要否.
+     */
+    private boolean includeImage;
+
+    /**
      * 空のインスタンスを生成する.
      */
     public SearchFullTextSearchCorresponCondition() {
@@ -76,5 +81,21 @@ public class SearchFullTextSearchCorresponCondition extends AbstractCondition {
      */
     public void setFullTextSearchMode(FullTextSearchMode fullTextSearchMode) {
         this.fullTextSearchMode = fullTextSearchMode;
+    }
+
+    /**
+     * 画像検索要否を返す.
+     * @return 画像検索要否
+     */
+    public boolean isIncludeImage() {
+        return includeImage;
+    }
+
+    /**
+     * 画像検索要否を設定する
+     * @param includeImage 画像検索要否
+     */
+    public void setIncludeImage(boolean includeImage) {
+        this.includeImage = includeImage;
     }
 }

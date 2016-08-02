@@ -144,6 +144,12 @@ public class CorresponSearchPage extends AbstractPage {
      */
     @Transfer
     private Integer fullTextSearchMode = null;
+
+    /**
+     * 画像を検索対象に含むか否か.
+     */
+    @Transfer
+    private boolean includeImage;
     /**
      * 検索条件.
      */
@@ -242,6 +248,22 @@ public class CorresponSearchPage extends AbstractPage {
      */
     public void setFullTextSearchMode(Integer fullTextSearchMode) {
         this.fullTextSearchMode = fullTextSearchMode;
+    }
+
+    /**
+     * 画像を検索対象に含む場合はtrueを返す.
+     * @return 結果
+     */
+    public boolean isIncludeImage() {
+        return includeImage;
+    }
+
+    /**
+     * 画像を検索対象に含むか否かを設定する
+     * @param includeImage 設定値
+     */
+    public void setIncludeImage(boolean includeImage) {
+        this.includeImage = includeImage;
     }
 
     /**
@@ -585,6 +607,7 @@ public class CorresponSearchPage extends AbstractPage {
     private void setSearchCondition() {
         condition.setKeyword(keyword);
         condition.setFullTextSearchMode(getSelectedFullTextSearchMode());
+        condition.setIncludeImage(includeImage);
     }
 
     /**
@@ -721,6 +744,7 @@ public class CorresponSearchPage extends AbstractPage {
                 } else {
                     page.fullTextSearchMode = FullTextSearchMode.ALL.getValue();
                 }
+                page.includeImage = page.condition.isIncludeImage();
             } else {
                 page.condition = new SearchFullTextSearchCorresponCondition();
             }

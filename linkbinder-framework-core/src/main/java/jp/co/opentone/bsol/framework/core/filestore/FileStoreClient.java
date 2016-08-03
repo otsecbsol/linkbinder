@@ -86,7 +86,7 @@ public class FileStoreClient implements Serializable {
      * ファイルは呼び出し側で削除処理を行う事.
      *
      * @param fileId ファイルID
-     * @param filePathファイルパス
+     * @param filePath ファイルパス
      * @return ファイルのバイナリデータ
      * @throws FileStoreException ファイル情報の取得に失敗
      */

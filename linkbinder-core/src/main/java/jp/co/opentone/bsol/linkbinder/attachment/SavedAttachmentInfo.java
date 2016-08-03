@@ -46,9 +46,7 @@ public class SavedAttachmentInfo extends AttachmentInfo {
      * @param service コレポン文書サービス
      */
     public SavedAttachmentInfo(Attachment attachment, CorresponService service) {
-        setFileName(attachment.getFileName());
-        setFileId(attachment.getId());
-
+        populate(attachment);
         this.attachment = attachment;
         this.service = service;
     }

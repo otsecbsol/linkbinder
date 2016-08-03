@@ -86,6 +86,9 @@
   <typeHandler
       javaType="jp.co.opentone.bsol.linkbinder.dto.code.DistributionType"
       callback="jp.co.opentone.bsol.linkbinder.dao.handler.DistributionTypeValueHandler" />
+    <typeHandler
+            javaType="jp.co.opentone.bsol.linkbinder.dto.code.AttachmentFileType"
+            callback="jp.co.opentone.bsol.linkbinder.dao.handler.AttachmentFileTypeValueHandler" />
 
   <sqlMap resource="sql/addressCorresponGroup.xml" />
   <sqlMap resource="sql/addressUser.xml" />

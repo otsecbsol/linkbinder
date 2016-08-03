@@ -551,6 +551,7 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
 
         for (Attachment a : attachments) {
             a.setCorresponId(correspon.getId());
+            a.setFileType(Attachment.detectFileTypeByFileName(a.getFileName()));
             a.setCreatedBy(getCurrentUser());
             a.setUpdatedBy(getCurrentUser());
 

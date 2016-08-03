@@ -438,6 +438,16 @@
                               onclick="setFileId('#{attachment.fileId}', #{i.index + 1}); setSkipDisable(true);" />
                           </td>
                           <td>
+                            <h:outputLink
+                                    id="attachmentEditTextLink"
+                                    value="javascript:void(0)"
+                                    rendered="#{not empty attachment.extractedText and attachment.imageFile}"
+                                    styleClass="button button-primary"
+                                    onclick="alert('#{attachment.extractedText}');">
+                              画像テキストを修正する
+                            </h:outputLink>
+                          </td>
+                          <td>
                             <h:commandLink
                                 id="attachmentDeleteLink"
                                 value="削除"

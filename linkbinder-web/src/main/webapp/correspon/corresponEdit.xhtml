@@ -62,6 +62,7 @@
     <script type="text/javascript" src="${contextPath}/resource/${v}/javascript/addressInput.js"></script>
     <script type="text/javascript" src="#{contextPath}/resource/#{v}/javascript/fileUpload.js"></script>
     <script type="text/javascript" src="#{contextPath}/resource/#{v}/javascript/page/corresponEdit.js"></script>
+    <script type="text/javascript" src="${contextPath}/resource/${v}/javascript/attachmentExtractedTextEdit.js"></script>
   </ui:define>
   <ui:define name="jsInner">
     history.forward();
@@ -70,7 +71,6 @@
       <ui:param name="styleKey" value="form:deadlineForReply" />
     </ui:include>
   </ui:define>
-
   <ui:define name="body">
     <f:view>
       <h:form id="form" onsubmit="return processSubmit();">
@@ -100,6 +100,14 @@
           value="#{corresponEditPage.corresponGroupId}" />
         <h:inputHidden id="addressUserValues"
           value="#{corresponEditPage.addressUserValues}" />
+
+        <h:panelGroup id="attachmentExtractedTextEditArea">
+          <ui:include src="/include/attachmentExtractedTextEdit.xhtml">
+            <ui:param name="attachment" value="#{corresponEditPage.editingAttachment}" />
+            <ui:param name="page" value="#{corresponEditPage}" />
+          </ui:include>
+        </h:panelGroup>
+
         <div id="corresponEdit">
           <h:inputHidden id="initialDisplaySuccess" value="#{corresponEditPage.initialDisplaySuccess}" />
           <f:validateBean validationGroups="#{corresponEditPage.validationGroups}">
@@ -438,14 +446,15 @@
                               onclick="setFileId('#{attachment.fileId}', #{i.index + 1}); setSkipDisable(true);" />
                           </td>
                           <td>
-                            <h:outputLink
-                                    id="attachmentEditTextLink"
-                                    value="javascript:void(0)"
-                                    rendered="#{not empty attachment.extractedText and attachment.imageFile}"
-                                    styleClass="button button-primary"
-                                    onclick="alert('#{attachment.extractedText}');">
-                              画像テキストを修正する
-                            </h:outputLink>
+                            <h:commandLink value="画像テキストを修正する"
+                                           id="attachmentEditTextLink"
+                                           styleClass="button button-primary"
+                                           action="#{corresponEditPage.showAttachmentExtractedTextEditDialog(attachment.fileId)}">
+                              <f:ajax
+                                      execute="@none"
+                                      render=":form:attachmentExtractedTextEditArea"
+                                      onevent="AttachmentExtractedTextEdit.onInit" />
+                            </h:commandLink>
                           </td>
                           <td>
                             <h:commandLink

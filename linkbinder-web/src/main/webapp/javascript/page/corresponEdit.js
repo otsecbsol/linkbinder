@@ -312,7 +312,8 @@ $(document).ready(function() {
         ],
         toolbar1: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | preview media | forecolor backcolor emoticons',
         image_advtab: true,
-        content_css : "../stylesheet/content.css"
+        content_css : "../stylesheet/content.css",
+        editor_deselector: "ignoreTinyEditor"
     });
 
     if (document.getElementById('form:initialDisplaySuccess').value == 'true') {

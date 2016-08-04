@@ -30,6 +30,8 @@ import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 
+import jp.co.opentone.bsol.linkbinder.attachment.SavedAttachmentInfo;
+import jp.co.opentone.bsol.linkbinder.view.correspon.attachment.AttachmentExtractedTextEditablePage;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
@@ -87,7 +89,8 @@ import jp.co.opentone.bsol.linkbinder.view.validator.AttachmentValidator;
  */
 @ManagedBean
 @Scope("view")
-public class CorresponEditPage extends AbstractCorresponPage implements AttachmentDownloadablePage {
+public class CorresponEditPage extends AbstractCorresponPage
+        implements AttachmentDownloadablePage, AttachmentExtractedTextEditablePage {
     /**
      * SerialVersionUID.
      */
@@ -441,6 +444,11 @@ public class CorresponEditPage extends AbstractCorresponPage implements Attachme
      * </p>
      */
     private UploadedFile attachment5;
+
+    /**
+     * 編集中の添付ファイル情報.
+     */
+    private AttachmentInfo editingAttachment;
 
     /**
      * ダウンロード対象ファイルのID.
@@ -823,6 +831,45 @@ public class CorresponEditPage extends AbstractCorresponPage implements Attachme
      */
     public void setDistributionTemplateList(List<DistTemplateHeader> distributionTemplateList) {
         this.distributionTemplateList = distributionTemplateList;
+    }
+
+    @Override
+    public void showAttachmentExtractedTextEditDialog(Long attachmentId) {
+        editingAttachment = attachments.stream()
+                .filter(a -> attachmentId.equals(a.getFileId()))
+                .findFirst()
+                .orElse(emptyAttachmentInfo());
+    }
+
+    @Override
+    public void saveExtractedText() {
+        // 何もしない
+    }
+
+    @Override
+    public void cancelExtractedTextEdit() {
+        editingAttachment = emptyAttachmentInfo();
+    }
+
+    private AttachmentInfo emptyAttachmentInfo() {
+        return new AttachmentInfo() {
+            @Override
+            public byte[] getContent() throws ServiceAbortException {
+                return null;
+            }
+
+            @Override
+            public Attachment toAttachment() throws ServiceAbortException {
+                return null;
+            }
+        };
+    }
+
+    @Override
+    public AttachmentInfo getEditingAttachment() {
+        return editingAttachment != null
+                ? editingAttachment
+                : emptyAttachmentInfo();
     }
 
     /**

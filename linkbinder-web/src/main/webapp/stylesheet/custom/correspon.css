@@ -334,3 +334,7 @@ span.customField {
   background-color: #ffffe0;
   position:absolute;
 }
+.extractedText {
+    width: 500px;
+    height: 300px;
+}

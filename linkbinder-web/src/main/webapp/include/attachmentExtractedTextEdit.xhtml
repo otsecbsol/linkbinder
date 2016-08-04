@@ -1,0 +1,73 @@
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:component>
+  <div id="extracted-text-edit-dialog" style="display:none; position: absolute;" class="dialog">
+    <f:validateBean validationGroups="#{page.validationGroups}">
+      <table class="diaTbl" border="0" cellpadding="5" cellspacing="3">
+        <tr>
+          <td>
+            <!-- global message -->
+            <h:panelGroup id="extractedTextGlobalMessage">
+              <h:messages globalOnly="true" showDetail="true" showSummary="false"
+                          infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal"/>
+            </h:panelGroup>
+          </td>
+        </tr>
+        <tr>
+          <!-- input -->
+          <td>
+            <h:inputTextarea id="extractedText" value="#{attachment.extractedText}"
+                    styleClass="ignoreTinyEditor extractedText"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <!-- message -->
+            <h:panelGroup id="extractedTextMessage">
+              <h:message for="extractedText" errorClass="error" warnClass="warn" infoClass="info" />
+            </h:panelGroup>
+          </td>
+        </tr>
+        <tr>
+          <!-- action -->
+          <td id="label">
+            <h:commandLink id="saveExtractedTextEdit" value="OK"
+                           onclick="setActionName(event);preProcess(event, true);"
+                           action="#{page.saveExtractedText}">
+              <f:ajax
+                      execute="actionName extractedText"
+                      render="extractedTextMessage extractedTextGlobalMessage"
+                      onevent="AttachmentExtractedTextEdit.onComplete"/>
+            </h:commandLink>
+            <h:commandLink id="cancelExtractedTextEdit" value="キャンセル"
+                           action="#{page.cancelExtractedTextEdit}"
+                           onclick="preProcess(event, true);" >
+              <f:ajax
+                      execute="actionName"
+                      render="extractedTextGlobalMessage extractedText"
+                      onevent="AttachmentExtractedTextEdit.onComplete"/>
+            </h:commandLink>
+          </td>
+        </tr>
+      </table>
+    </f:validateBean>
+  </div>
+</ui:component>
+</html>

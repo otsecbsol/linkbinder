@@ -165,6 +165,24 @@
                         rendered="#{!corresponEditPage.elemControl.fromEditable}" />
             </div>
           </div>
+            <div class="twelve columns">
+              <label>
+                <h:selectBooleanCheckbox id="isCorresponLearning"
+                                         value="" />
+                <span class="label-body">この文書を学習用文書として設定する</span>
+                <h:message for="corresponNo" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+              </label>
+            </div>
+            <div class="row">
+              <div class="six columns">
+                <h:outputLabel for="learning_correspon_label" value="学習用文書ラベル" />
+                <h:inputText id="learning_correspon_label" value="" styleClass="u-full-width"/>
+              </div>
+              <div class="six columns">
+                <h:outputLabel for="learning_correspon_tag" value="学習用文書タグ" />
+                <h:inputText id="learning_correspon_tag" value="" styleClass="u-full-width"/>
+              </div>
+            </div>
           <ui:fragment rendered="#{corresponEditPage.distributionTemplateList != null}">
           <div class="row">
             <div class="ten columns">

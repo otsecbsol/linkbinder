@@ -646,6 +646,12 @@ public class CorresponIndexPage extends AbstractPage {
     private boolean advancedSearchDisplayed;
 
     /**
+     * 学習用文書検索の表示状態.
+     */
+    @Transfer
+    private boolean learningCorresponSearchDisplayed;
+
+    /**
      * 高度な検索の表示を行ったかどうか.
      */
     private boolean advancedSearchRequested;
@@ -2540,6 +2546,15 @@ public class CorresponIndexPage extends AbstractPage {
         if (simpleSearch) {
             advancedSearchDisplayed = false;
         }
+    }
+
+    /**
+     * 学習用文書の検索条件入力フォームを表示する.
+     * @return null
+     */
+    public String showLearningCorresponSearch() {
+        learningCorresponSearchDisplayed = true;
+        return null;
     }
 
     /**

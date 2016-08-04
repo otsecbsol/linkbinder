@@ -150,6 +150,13 @@ public class CorresponSearchPage extends AbstractPage {
      */
     @Transfer
     private boolean includeImage;
+
+    /**
+     * 学習用文書のみを檢索対象とするか否か
+     */
+    @Transfer
+    private boolean onlyLearningCorrespon;
+
     /**
      * 検索条件.
      */
@@ -264,6 +271,22 @@ public class CorresponSearchPage extends AbstractPage {
      */
     public void setIncludeImage(boolean includeImage) {
         this.includeImage = includeImage;
+    }
+
+    /**
+     * 学習用文書のみを檢索対象とする場合にはtrueを返す.
+     * @return 結果
+     */
+    public boolean isOnlyLearningCorrespon() {
+        return onlyLearningCorrespon;
+    }
+
+    /**
+     * 学習用文書のみを檢索対象とするか否かを設定する.
+     * @param onlyLearningCorrespon 設定値
+     */
+    public void setOnlyLearningCorrespon(boolean onlyLearningCorrespon) {
+        this.onlyLearningCorrespon = onlyLearningCorrespon;
     }
 
     /**

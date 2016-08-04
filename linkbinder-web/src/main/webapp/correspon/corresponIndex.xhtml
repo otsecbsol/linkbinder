@@ -697,7 +697,7 @@
               <h:panelGroup id="simplePanel">
                 <h:panelGroup id="advancedLinkPanel">
                   <div class="row">
-                    <div class="four columns u-pull-right">
+                    <div class="five columns u-pull-right">
                       <h:panelGrid columns="1" styleClass="u-right">
                         <h:panelGroup styleClass="searchActionLink">
                           <h:outputText value=" シンプルな検索 " styleClass="select" />
@@ -715,6 +715,10 @@
                           <h:outputLink id="advancedSearch3" value="#" onclick="changeSearchView(false);" rendered="#{corresponIndexPage.advancedSearchDisplayed}">
                             <h:outputText value=" 高度な検索 "  />
                           </h:outputLink>
+                          <h:outputText value=" | " />
+                          <h:commandLink id="learningCorresponSearch"
+                                         value=" 学習用文書検索 " >
+                          </h:commandLink>
                         </h:panelGroup>
                       </h:panelGrid>
                     </div>
@@ -821,7 +825,7 @@
                 <h:panelGroup id="advancedSearchPanel">
                   <h:panelGroup rendered="#{corresponIndexPage.advancedSearchDisplayed}">
                     <div class="row">
-                      <div class="four columns u-pull-right">
+                      <div class="five columns u-pull-right">
                       <h:panelGrid styleClass="searchActionLink u-right">
                         <h:panelGroup>
                           <h:outputLink id="simpleSearch" value="#" onclick="changeSearchView(true);">
@@ -829,6 +833,11 @@
                           </h:outputLink>
                           <h:outputText value=" | " />
                           <h:outputText value=" 高度な検索 " styleClass="select" />
+                          <h:outputText value=" | " />
+                          <h:outputLink id="learningCorresponSearchForAdvancedSearch"
+                                         value="#">
+                            <h:outputText value="学習用文書検索" />
+                          </h:outputLink>
                         </h:panelGroup>
                       </h:panelGrid>
                       </div>

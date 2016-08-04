@@ -318,6 +318,11 @@
                     value="Cc" onclick="setActionName(event);" />
                   <h:outputText
                     value=" : #{projectHomePage.projectDetailsSummary.corresponUserSummary.ccCount}" />
+                  <br />
+                  <h:commandLink action="#{projectHomePage.goCorresponIndexCc}"
+                                 value="学習用文書" onclick="setActionName(event);" />
+                  <h:outputText
+                          value=" : #{projectHomePage.projectDetailsSummary.corresponUserSummary.ccCount}" />
                 </div>
                 <br />
                 <h:commandLink

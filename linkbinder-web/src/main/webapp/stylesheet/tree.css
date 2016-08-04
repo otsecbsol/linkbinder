@@ -1,24 +1,23 @@
-ul.menu, ul.menu ul {
-    display: block;
+ul.learning, ul.learning ul {
     list-style-type: disc;
     margin: 10px 0px 5px 15px;
     padding: 0px;
 }
-ul.menu li {
+
+ul.learning li {
     font-size: 15px;
     line-height: 100%;
     margin: 0px;
     padding: 0px;
 }
-ul.menu a {
+
+ul.learning a {
     text-decoration: none;
     margin: 0px;
     padding: 0px;
 }
-ul.menu ul {
+
+ul.learning ul {
     display: none;
     _display: block;
-}
-ul.menu li:hover>ul {
-    display: block;
 }

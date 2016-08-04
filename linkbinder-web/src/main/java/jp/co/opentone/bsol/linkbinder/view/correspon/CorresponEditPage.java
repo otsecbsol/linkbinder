@@ -834,11 +834,9 @@ public class CorresponEditPage extends AbstractCorresponPage
     }
 
     @Override
-    public void showAttachmentExtractedTextEditDialog(Long attachmentId) {
-        editingAttachment = attachments.stream()
-                .filter(a -> attachmentId.equals(a.getFileId()))
-                .findFirst()
-                .orElse(emptyAttachmentInfo());
+    public String showAttachmentExtractedTextEditDialog(AttachmentInfo attachment) {
+        editingAttachment = attachment;
+        return null;
     }
 
     @Override

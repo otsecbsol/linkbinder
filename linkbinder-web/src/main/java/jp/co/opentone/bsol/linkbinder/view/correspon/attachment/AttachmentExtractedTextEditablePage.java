@@ -26,9 +26,10 @@ public interface AttachmentExtractedTextEditablePage extends Page {
 
     /**
      * 編集ダイアログを表示する.
-     * @param attachmentId 編集対象の添付ファイルID
+     * @param attachment 編集対象の添付ファイル
+     * @return 遷移先
      */
-    void showAttachmentExtractedTextEditDialog(Long attachmentId);
+    String showAttachmentExtractedTextEditDialog(AttachmentInfo attachment);
 
     /**
      * 編集内容を保存する.

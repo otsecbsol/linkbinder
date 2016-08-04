@@ -449,9 +449,9 @@
                             <h:commandLink value="画像テキストを修正する"
                                            id="attachmentEditTextLink"
                                            styleClass="button button-primary"
-                                           action="#{corresponEditPage.showAttachmentExtractedTextEditDialog(attachment.fileId)}">
+                                           action="#{corresponEditPage.showAttachmentExtractedTextEditDialog(attachment)}">
                               <f:ajax
-                                      execute="@none"
+                                      execute="@this"
                                       render=":form:attachmentExtractedTextEditArea"
                                       onevent="AttachmentExtractedTextEdit.onInit" />
                             </h:commandLink>

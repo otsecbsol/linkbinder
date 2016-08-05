@@ -1,6 +1,12 @@
+div#learning {
+    border: 1px solid #d7d7d7;
+    border-radius: 3px;
+    margin-top: 20px;
+}
+
 ul.learning, ul.learning ul {
     list-style-type: disc;
-    margin: 10px 0px 5px 15px;
+    margin: 3px 0px 5px 18px;
     padding: 0px;
 }
 

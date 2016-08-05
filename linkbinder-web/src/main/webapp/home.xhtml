@@ -85,29 +85,29 @@
           <h:inputHidden id="personInChargeSearch" value="#{homePage.personInChargeSearch}" />
           <h:inputHidden id="ccSearch" value="#{homePage.ccSearch}" />
         </div>
-
-        <ul class="learning">
-          <p style="font-weight: bold; margin-bottom: 0px;">学習用文書</p>
-          <li><a href="#" onclick="sublist(this); return false;">基本的事項</a></li>
-          <li><a href="#" onclick="sublist(this); return false;">現場における安全管理事項について</a>
-            <ul style="display:none">
-              <li><a href="#">高所作業時の注意点</a></li>
-              <li><a href="#" onclick="sublist(this); return false;">飛来物・落下物への注意点</a>
-                <ul>
-                  <li><a href="#">事故０運動に関して</a></li>
-                  <li><a href="#">安全色の運用を徹底しましょう（2016/05）</a></li>
-                </ul>
-              </li>
-            </ul>
-          </li>
-
-          <li><a href="#" onclick="sublist(this); return false;">応用事項</a>
-            <ul>
-              <li><a href="#">シールドトンネルの工法について</a></li>
-              <li><a href="#">沈埋トンネルの工法について</a></li>
-            </ul>
-          </li>
-        </ul>
+        <div id="learning">
+          <ul class="learning">
+            <p style="font-weight: bold; margin-bottom: 0px;">学習用文書</p>
+            <li><a href="#" onclick="sublist(this); return false;">基本的事項</a></li>
+            <li><a href="#" onclick="sublist(this); return false;">現場における安全管理事項について</a>
+              <ul style="display:none">
+                <li><a href="#">高所作業時の注意点</a></li>
+                <li><a href="#" onclick="sublist(this); return false;">飛来物・落下物への注意点</a>
+                  <ul>
+                    <li><a href="#">事故０運動に関して</a></li>
+                    <li><a href="#">安全色の運用を徹底しましょう（2016/05）</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li><a href="#" onclick="sublist(this); return false;">応用事項</a>
+              <ul>
+                <li><a href="#">シールドトンネルの工法について</a></li>
+                <li><a href="#">沈埋トンネルの工法について</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
       </h:form>
     </f:view>
   </ui:define>

@@ -60,6 +60,7 @@
     <script type="text/javascript" src="#{contextPath}/resource/#{v}/javascript/dateformat.js"></script>
     <script type="text/javascript" src="${contextPath}/javascript/tinymce/tinymce.min.js"></script>
     <script type="text/javascript" src="${contextPath}/resource/${v}/javascript/addressInput.js"></script>
+    <script type="text/javascript" src="${contextPath}/resource/${v}/javascript/select2.min.js"></script>
     <script type="text/javascript" src="#{contextPath}/resource/#{v}/javascript/fileUpload.js"></script>
     <script type="text/javascript" src="#{contextPath}/resource/#{v}/javascript/page/corresponEdit.js"></script>
   </ui:define>
@@ -69,6 +70,12 @@
     <ui:include src="/include/calendarFunc.xhtml">
       <ui:param name="styleKey" value="form:deadlineForReply" />
     </ui:include>
+    $(document).ready(function() {
+      $('select').select2({
+        width: '100%',
+        tags: 'true'
+      });
+    });
   </ui:define>
 
   <ui:define name="body">
@@ -174,13 +181,25 @@
               </label>
             </div>
             <div class="row">
-              <div class="six columns">
-                <h:outputLabel for="learning_correspon_label" value="学習用文書ラベル" />
-                <h:inputText id="learning_correspon_label" value="" styleClass="u-full-width"/>
+              <div class="twelve columns">
+                <h:outputLabel for="learning_correspon_tag" value="学習用文書ラベル" />
+                <h:selectManyListbox id="learning_correspon_label" multiple="multiple">
+                  <f:selectItem itemValue="基本的事項/" itemLabel="基本的事項/" />
+                  <f:selectItem itemValue="現場における安全管理事項について/" itemLabel="現場における安全管理事項について/" />
+                  <f:selectItem itemValue="現場における安全管理事項について/飛来物・落下物への注意点" itemLabel="現場における安全管理事項について/飛来物・落下物への注意点" />
+                  <f:selectItem itemValue="2" itemLabel="Item 2" />
+                </h:selectManyListbox>
               </div>
-              <div class="six columns">
+            </div>
+            <div class="row">
+              <div class="twelve columns">
                 <h:outputLabel for="learning_correspon_tag" value="学習用文書タグ" />
-                <h:inputText id="learning_correspon_tag" value="" styleClass="u-full-width"/>
+                <h:selectManyListbox id="learning_correspon_tag" multiple="multiple">
+                  <f:selectItem itemValue="基本事項" itemLabel="基本事項" />
+                  <f:selectItem itemValue="参考情報" itemLabel="参考情報" />
+                  <f:selectItem itemValue="注意情報" itemLabel="注意情報" />
+                  <f:selectItem itemValue="行政からの情報" itemLabel="行政からの情報" />
+                </h:selectManyListbox>
               </div>
             </div>
           <ui:fragment rendered="#{corresponEditPage.distributionTemplateList != null}">

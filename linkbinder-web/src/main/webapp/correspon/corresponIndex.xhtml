@@ -715,10 +715,6 @@
                           <h:outputLink id="advancedSearch3" value="#" onclick="changeSearchView(false);" rendered="#{corresponIndexPage.advancedSearchDisplayed}">
                             <h:outputText value=" 高度な検索 "  />
                           </h:outputLink>
-                          <h:outputText value=" | " />
-                          <h:commandLink id="learningCorresponSearch"
-                                         value=" 学習用文書検索 " >
-                          </h:commandLink>
                         </h:panelGroup>
                       </h:panelGrid>
                     </div>
@@ -816,6 +812,30 @@
                     <h:inputHidden id="readStatusValue"
                       value="#{corresponIndexPage.readStatus}" />
                   </h:panelGroup>
+
+                  <h:panelGroup styleClass="label">
+                    <h:outputText value="学習用文書" />
+                  </h:panelGroup>
+                  <h:panelGroup styleClass="label">
+                    <h:outputText value=":" />
+                  </h:panelGroup>
+
+                  <h:panelGroup>
+                    <h:outputText value=" すべて " styleClass="select"/>
+                    <h:outputText value=" | " />
+                    <h:commandLink value=" 学習用文章を含む "
+                                   action="#{corresponIndexPage.search}"
+                                   onclick="">
+                      <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
+                    </h:commandLink>
+                    <h:outputText value=" | " />
+                    <h:commandLink value=" 学習用文章を含まない "
+                                   action="#{corresponIndexPage.search}"
+                                   onclick="">
+                      <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
+                    </h:commandLink>
+                  </h:panelGroup>
+
                 </h:panelGrid>
               </h:panelGroup>
             </div>
@@ -833,11 +853,6 @@
                           </h:outputLink>
                           <h:outputText value=" | " />
                           <h:outputText value=" 高度な検索 " styleClass="select" />
-                          <h:outputText value=" | " />
-                          <h:outputLink id="learningCorresponSearchForAdvancedSearch"
-                                         value="#">
-                            <h:outputText value="学習用文書検索" />
-                          </h:outputLink>
                         </h:panelGroup>
                       </h:panelGrid>
                       </div>
@@ -1245,6 +1260,17 @@
         </div>
 
         <div class="row">
+
+          <div class="three columns">
+            <h:commandLink id="showAddingSearchFilterDialog" value="追加検索条件を指定"
+                           action="#{corresponIndexPage.showFavoriteDialog}"
+                           onclick="preProcess(event);">
+              <f:ajax
+                      render=":form:favoritePanelGroup"
+                      onevent="showFavoriteDialog"/>
+            </h:commandLink>
+          </div>
+
           <div class="three columns u-pull-right">
             <h:commandLink id="showFavoriteFilterDialog" value="お気に入り条件として保存"
               action="#{corresponIndexPage.showFavoriteDialog}"

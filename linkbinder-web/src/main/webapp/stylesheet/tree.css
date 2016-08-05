@@ -13,7 +13,7 @@ ul.learning, ul.learning ul {
 ul.learning li {
     font-size: 15px;
     line-height: 100%;
-    margin: 0px;
+    margin: 0px 0px 0px 15px;
     padding: 0px;
 }
 

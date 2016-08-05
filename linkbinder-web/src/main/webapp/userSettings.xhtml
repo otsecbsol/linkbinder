@@ -46,6 +46,13 @@
               </h:outputText>
             </div>
           </div>
+          <div class="row">
+            <div class="twelve columns">
+              <h:outputLabel value="学習用コンテンツを利用する">
+              <h:selectBooleanCheckbox value="true" style="margin-left: 10px" />
+              </h:outputLabel>
+            </div>
+          </div>
           <f:validateBean validationGroups="#{userSettingsPage.emailAddressValidationGroups}">
           <ui:fragment rendered="#{userSettingsPage.editingProject}">
             <div class="row">

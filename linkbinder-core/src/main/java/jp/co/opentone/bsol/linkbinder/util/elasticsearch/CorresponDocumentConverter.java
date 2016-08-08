@@ -15,13 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.util.elasticsearch;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang.ObjectUtils;
-import org.jsoup.Jsoup;
-
 import jp.co.opentone.bsol.framework.core.config.SystemConfig;
 import jp.co.opentone.bsol.framework.core.elasticsearch.ElasticsearchDocument;
 import jp.co.opentone.bsol.framework.core.util.ConvertUtil;
@@ -29,6 +22,12 @@ import jp.co.opentone.bsol.framework.core.util.DateUtil;
 import jp.co.opentone.bsol.linkbinder.Constants;
 import jp.co.opentone.bsol.linkbinder.dto.Attachment;
 import jp.co.opentone.bsol.linkbinder.dto.Correspon;
+import org.apache.commons.lang.ObjectUtils;
+import org.jsoup.Jsoup;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 文書を全文検索格納形式のオブジェクトに変換するクラス.
@@ -67,7 +66,8 @@ public class CorresponDocumentConverter {
                     new CorresponElasticsearchDocument.Attachment(
                         ObjectUtils.toString(a.getId()),
                         a.getFileName(),
-                        ConvertUtil.toBase64String(a.getContent())))
+                        ConvertUtil.toBase64String(a.getContent()),
+                        a.getExtractedText()))
                 .collect(Collectors.toList());
 
         return result;

@@ -15,12 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.subscriber;
 
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
 import jp.co.opentone.bsol.linkbinder.dto.Attachment;
 import jp.co.opentone.bsol.linkbinder.dto.Correspon;
@@ -32,6 +26,12 @@ import jp.co.opentone.bsol.linkbinder.event.CorresponUpdated;
 import jp.co.opentone.bsol.linkbinder.event.CorresponWorkflowStatusChanged;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponFullTextSearchService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponService;
+import jp.co.opentone.bsol.linkbinder.service.correspon.ImageTextDetectionService;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * @author opentone
@@ -45,6 +45,9 @@ public class ElasticsearchDocumentSubscriber extends Subscriber {
     /** 全文検索サービス. */
     @Autowired
     private CorresponFullTextSearchService service;
+    /** 画像テキスト抽出サービス. */
+    @Autowired
+    private ImageTextDetectionService imageTextDetectionService;
 
     /*
      * (非 Javadoc)
@@ -80,6 +83,8 @@ public class ElasticsearchDocumentSubscriber extends Subscriber {
                 log.info("[{}] ADD to index: {}", getClass().getSimpleName(), correspon.getId());
                 List<Attachment> attachments =
                         corresponService.findAttachments(correspon.getId());
+
+                imageTextDetectionService.detectTextAndFill(attachments);
                 service.addToIndex(correspon, attachments);
             }
 

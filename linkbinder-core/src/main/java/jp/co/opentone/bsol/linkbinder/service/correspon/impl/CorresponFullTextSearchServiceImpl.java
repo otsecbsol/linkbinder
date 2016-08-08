@@ -15,23 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.service.correspon.impl;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.math.NumberUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import jp.co.opentone.bsol.framework.core.config.SystemConfig;
 import jp.co.opentone.bsol.framework.core.elasticsearch.ElasticsearchClient;
 import jp.co.opentone.bsol.framework.core.elasticsearch.ElasticsearchConfiguration;
@@ -52,6 +35,22 @@ import jp.co.opentone.bsol.linkbinder.service.AbstractService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponFullTextSearchService;
 import jp.co.opentone.bsol.linkbinder.util.ResourceUtil;
 import jp.co.opentone.bsol.linkbinder.util.elasticsearch.CorresponDocumentConverter;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.math.NumberUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * このサービスではコレポン文書全文検索に関する処理を提供する.
@@ -195,6 +194,11 @@ public class CorresponFullTextSearchServiceImpl extends AbstractService implemen
             break;
         }
 
+        if (condition.isIncludeImage()) {
+            option.addSearchFields("attachments.extractedText");
+            option.addHighlightFields("attachments.extractedText");
+        }
+
         return option;
     }
 
@@ -252,6 +256,13 @@ public class CorresponFullTextSearchServiceImpl extends AbstractService implemen
                 (t, v) -> t.add(new FullTextSearchSummaryData(v, false)),
                 (t, u) -> t.addAll(u));
 
+        if (condition.isIncludeImage()) {
+            summaryDataList.addAll(
+                    rec.getHighlightedFragments("attachments.extractedText")
+                            .collect(() -> new ArrayList<FullTextSearchSummaryData>(),
+                                    (t, v) -> t.add(new FullTextSearchSummaryData(v, false)),
+                                    (t, u) -> t.addAll(u)));
+        }
         r.setSummaryList(summaryDataList);
     }
 

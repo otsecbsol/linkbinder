@@ -15,17 +15,17 @@
  */
 package jp.co.opentone.bsol.linkbinder.dto;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-
 import jp.co.opentone.bsol.framework.core.dao.Entity;
 import jp.co.opentone.bsol.linkbinder.dto.UpdateMode.ModeHolder;
 import jp.co.opentone.bsol.linkbinder.dto.code.AttachmentFileType;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * テーブル [v_attachment] の1レコードを表すDto.
@@ -191,6 +191,14 @@ public class Attachment extends AbstractDto implements Entity, ModeHolder {
         return ArrayUtils.contains(IMAGE_EXTENSIONS, extension.toLowerCase())
                 ? AttachmentFileType.IMAGE
                 : AttachmentFileType.UNKNOWN;
+    }
+
+    /**
+     * 抽出テキストが変更されている場合はtrueを返す.
+     * @return 判定結果
+     */
+    public boolean isExtractedTextChanged() {
+        return !StringUtils.equals(orgExtractedText, extractedText);
     }
 
     /**

@@ -89,8 +89,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     UPDATE attachment
     SET
     updated_by = #updatedBy.empNo#,
-    updated_at = SYSTIMESTAMP,
-    version_no = (version_no + 1)
+    updated_at = SYSTIMESTAMP
     <dynamic>
       <isNotNull prepend="," property="fileId">
         file_id = #fileId#

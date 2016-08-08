@@ -448,6 +448,7 @@
                           <td>
                             <h:commandLink value="画像テキストを修正する"
                                            id="attachmentEditTextLink"
+                                           rendered="#{not empty attachment.extractedText and attachment.imageFile}"
                                            styleClass="button button-primary"
                                            action="#{corresponEditPage.showAttachmentExtractedTextEditDialog(attachment)}">
                               <f:ajax

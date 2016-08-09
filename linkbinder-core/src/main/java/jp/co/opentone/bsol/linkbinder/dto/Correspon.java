@@ -2318,26 +2318,49 @@ public class Correspon extends AbstractDto implements VersioningEntity {
     }
 
     /**
+     * このオブジェクトが保持するカスタムフィールド情報をリストに変換して返す.
+     * @return 変換後のリスト
+     */
+    public List<CorresponCustomField> getCustomFields() {
+        List<CorresponCustomField> result = new ArrayList<>();
+
+        addCustomField(result, customField1Id, customField1Label, customField1Value);
+        addCustomField(result, customField2Id, customField2Label, customField2Value);
+        addCustomField(result, customField3Id, customField3Label, customField3Value);
+        addCustomField(result, customField4Id, customField4Label, customField4Value);
+        addCustomField(result, customField5Id, customField5Label, customField5Value);
+        addCustomField(result, customField6Id, customField6Label, customField6Value);
+        addCustomField(result, customField7Id, customField7Label, customField7Value);
+        addCustomField(result, customField8Id, customField8Label, customField8Value);
+        addCustomField(result, customField9Id, customField9Label, customField9Value);
+        addCustomField(result, customField10Id, customField10Label, customField10Value);
+
+        return result;
+    }
+
+    private void addCustomField(List<CorresponCustomField> list, Long id, String label, String value) {
+        if (id != null) {
+            CorresponCustomField f = new CorresponCustomField();
+            f.setProjectCustomFieldId(id);
+            f.setLabel(label);
+            f.setLabel(label);
+            list.add(f);
+        }
+    }
+
+    /**
      * このオブジェクトが保持する添付ファイル情報を、Attachmentオブジェクトのリストに変換して返す.
      * @return 添付ファイル情報のリスト
      */
     public List<Attachment> getAttachments() {
         List<Attachment> result = new ArrayList<Attachment>();
-        if (getFile1Id() != null) {
-            addAttachmentTo(result, getFile1Id(), getFile1FileId(), getFile1FileName(), getFile1FileType(), getFile1OrgExtractedText(), getFile1ExtractedText());
-        }
-        if (getFile2Id() != null) {
-            addAttachmentTo(result, getFile2Id(), getFile2FileId(), getFile2FileName(), getFile2FileType(), getFile2OrgExtractedText(), getFile2ExtractedText());
-        }
-        if (getFile3Id() != null) {
-            addAttachmentTo(result, getFile3Id(), getFile3FileId(), getFile3FileName(), getFile3FileType(), getFile3OrgExtractedText(), getFile3ExtractedText());
-        }
-        if (getFile4Id() != null) {
-            addAttachmentTo(result, getFile4Id(), getFile4FileId(), getFile4FileName(), getFile4FileType(), getFile4OrgExtractedText(), getFile4ExtractedText());
-        }
-        if (getFile5Id() != null) {
-            addAttachmentTo(result, getFile5Id(), getFile5FileId(), getFile5FileName(), getFile5FileType(), getFile5OrgExtractedText(), getFile5ExtractedText());
-        }
+
+        addAttachmentTo(result, getFile1Id(), getFile1FileId(), getFile1FileName(), getFile1FileType(), getFile1OrgExtractedText(), getFile1ExtractedText());
+        addAttachmentTo(result, getFile2Id(), getFile2FileId(), getFile2FileName(), getFile2FileType(), getFile2OrgExtractedText(), getFile2ExtractedText());
+        addAttachmentTo(result, getFile3Id(), getFile3FileId(), getFile3FileName(), getFile3FileType(), getFile3OrgExtractedText(), getFile3ExtractedText());
+        addAttachmentTo(result, getFile4Id(), getFile4FileId(), getFile4FileName(), getFile4FileType(), getFile4OrgExtractedText(), getFile4ExtractedText());
+        addAttachmentTo(result, getFile5Id(), getFile5FileId(), getFile5FileName(), getFile5FileType(), getFile5OrgExtractedText(), getFile5ExtractedText());
+
         return result;
     }
 
@@ -2350,16 +2373,18 @@ public class Correspon extends AbstractDto implements VersioningEntity {
                                  AttachmentFileType fileType,
                                  String orgExtractedText,
                                  String extractedText) {
-        Attachment a = new Attachment();
-        a.setId(id);
-        a.setCorresponId(getId());
-        a.setFileId(fileId);
-        a.setFileName(fileName);
-        a.setFileType(fileType);
-        a.setOrgExtractedText(orgExtractedText);
-        a.setExtractedText(extractedText);
+        if (id != null) {
+            Attachment a = new Attachment();
+            a.setId(id);
+            a.setCorresponId(getId());
+            a.setFileId(fileId);
+            a.setFileName(fileName);
+            a.setFileType(fileType);
+            a.setOrgExtractedText(orgExtractedText);
+            a.setExtractedText(extractedText);
 
-        attachments.add(a);
+            attachments.add(a);
+        }
     }
 
     /**

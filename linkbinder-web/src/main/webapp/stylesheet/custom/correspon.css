@@ -338,3 +338,9 @@ span.customField {
     width: 800px;
     height: 600px;
 }
+.customFieldCandidateList {
+    width: 400px;
+}
+.selectAttachment {
+    width: 200px;
+}

@@ -15,9 +15,9 @@
  */
 package jp.co.opentone.bsol.linkbinder.dto;
 
-import java.util.Date;
-
 import jp.co.opentone.bsol.framework.core.dao.Entity;
+
+import java.util.Date;
 
 /**
  * テーブル [correspon_custom_field] の1レコードを表すDto.
@@ -60,6 +60,8 @@ public class CorresponCustomField extends AbstractDto implements Entity {
      * </p>
      */
     private Long projectCustomFieldId;
+
+    private String label;
 
     /**
      * Value.
@@ -337,5 +339,13 @@ public class CorresponCustomField extends AbstractDto implements Entity {
      */
     public void setDeleteNo(Long deleteNo) {
         this.deleteNo = deleteNo;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 }

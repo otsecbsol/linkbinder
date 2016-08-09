@@ -10,15 +10,6 @@ function dataInput(dialogId, keyId, keyValue, id, value) {
     Dialog.close(dialogId);
 }
 
-function setupCustomFields() {
-    for (var i = 1; i <= 10; i++) {
-        var label = document.getElementById('form:groupCustom' + i + 'Label');
-        if (label && label.value != '') {
-            document.getElementById('group_custom' + i).style.display='';
-        }
-    }
-}
-
 /* Attachment */
 function getAttachmentCount() {
     var elem = document.getElementById('form:attachedCount');
@@ -318,7 +309,6 @@ $(document).ready(function() {
 
     if (document.getElementById('form:initialDisplaySuccess').value == 'true') {
         setupAttachmentsForErrorBack();
-        setupCustomFields();
         changeReplyRequired();
     } else {
         document.getElementById('viewArea').style.display = 'none';

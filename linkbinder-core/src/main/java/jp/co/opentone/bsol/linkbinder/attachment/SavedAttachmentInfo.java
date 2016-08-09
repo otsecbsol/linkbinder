@@ -72,7 +72,14 @@ public class SavedAttachmentInfo extends AttachmentInfo {
         if (attachment.getContent() == null) {
             attachment.setContent(getContent());
         }
-        attachment.setMode(UpdateMode.NONE);
+
+        if (isExtractedTextChanged()) {
+            attachment.setExtractedText(getExtractedText());
+            attachment.setOrgExtractedText(getExtractedText());
+            attachment.setMode(UpdateMode.UPDATE);
+        } else {
+            attachment.setMode(UpdateMode.NONE);
+        }
 
         return attachment;
     }

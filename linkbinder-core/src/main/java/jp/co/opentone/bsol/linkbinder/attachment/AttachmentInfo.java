@@ -15,16 +15,15 @@
  */
 package jp.co.opentone.bsol.linkbinder.attachment;
 
-import java.io.File;
-import java.io.Serializable;
-
+import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
+import jp.co.opentone.bsol.linkbinder.dto.Attachment;
 import jp.co.opentone.bsol.linkbinder.dto.code.AttachmentFileType;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
-import jp.co.opentone.bsol.linkbinder.dto.Attachment;
+import java.io.File;
+import java.io.Serializable;
 
 /**
  * 添付ファイル情報.
@@ -161,6 +160,14 @@ public abstract class AttachmentInfo implements Serializable {
      */
     public boolean isImageFile() {
         return fileType != null && AttachmentFileType.IMAGE == fileType;
+    }
+
+    /**
+     * 抽出テキストが変更されている場合はtrueを返す.
+     * @return 判定結果
+     */
+    public boolean isExtractedTextChanged() {
+        return !StringUtils.equals(orgExtractedText, extractedText);
     }
 
     public AttachmentFileType getFileType() {

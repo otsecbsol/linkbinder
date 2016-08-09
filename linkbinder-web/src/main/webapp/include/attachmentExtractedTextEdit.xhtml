@@ -20,7 +20,8 @@
 <ui:component>
   <div id="extracted-text-edit-dialog" style="display:none; position: absolute;" class="dialog">
     <f:validateBean validationGroups="#{page.validationGroups}">
-      <table class="diaTbl" border="0" cellpadding="5" cellspacing="3">
+      <h:outputLabel for="extractedText">■ #{attachment.fileName} から抽出したテキスト</h:outputLabel>
+      <table class="diaTbl" border="0">
         <tr>
           <td>
             <!-- global message -->
@@ -46,10 +47,10 @@
           </td>
         </tr>
         <tr>
-          <!-- action -->
-          <td id="label">
+          <td class="action-edit">
             <h:commandLink id="saveExtractedTextEdit" value="OK"
                            onclick="setActionName(event);preProcess(event, true);"
+                           styleClass="button button-primary"
                            action="#{page.saveExtractedText}">
               <f:ajax
                       execute="actionName extractedText"
@@ -58,6 +59,7 @@
             </h:commandLink>
             <h:commandLink id="cancelExtractedTextEdit" value="キャンセル"
                            action="#{page.cancelExtractedTextEdit}"
+                           styleClass="button"
                            onclick="preProcess(event, true);" >
               <f:ajax
                       execute="actionName"

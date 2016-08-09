@@ -15,14 +15,14 @@
  */
 package jp.co.opentone.bsol.linkbinder.service.correspon;
 
-import java.util.List;
-
 import jp.co.opentone.bsol.framework.core.service.IService;
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
 import jp.co.opentone.bsol.linkbinder.dto.Attachment;
 import jp.co.opentone.bsol.linkbinder.dto.Correspon;
 import jp.co.opentone.bsol.linkbinder.dto.FullTextSearchCorresponsResult;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchFullTextSearchCorresponCondition;
+
+import java.util.List;
 
 /**
  * このサービスではコレポン文書全文検索に関する処理を提供する.
@@ -94,9 +94,11 @@ public interface CorresponFullTextSearchService extends IService {
     /**
      * 指定された文書をインデックスから削除する.
      * @param correspon 文書
+     * @param attachments 添付ファイル
      * @throws ServiceAbortException
      */
-    void deleteFromIndex(Correspon correspon) throws ServiceAbortException;
+    void deleteFromIndex(Correspon correspon, List<Attachment> attachments)
+            throws ServiceAbortException;
 
     /**
      * インデックスを作成する.

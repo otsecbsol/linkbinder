@@ -76,14 +76,14 @@ public class ElasticsearchDocumentSubscriber extends Subscriber {
             setupProcessContext(event.getProjectId());
 
             Correspon correspon = corresponService.find(event.getId());
+            List<Attachment> attachments =
+                    corresponService.findAttachments(correspon.getId());
+
             if (StringUtils.equals(CorresponDeleted.NAME, event.getEventName())) {
                 log.info("[{}] DELETE from index: {}", getClass().getSimpleName(), correspon.getId());
-                service.deleteFromIndex(correspon);
+                service.deleteFromIndex(correspon, attachments);
             } else {
                 log.info("[{}] ADD to index: {}", getClass().getSimpleName(), correspon.getId());
-                List<Attachment> attachments =
-                        corresponService.findAttachments(correspon.getId());
-
                 imageTextDetectionService.detectTextAndFill(attachments);
                 service.addToIndex(correspon, attachments);
             }

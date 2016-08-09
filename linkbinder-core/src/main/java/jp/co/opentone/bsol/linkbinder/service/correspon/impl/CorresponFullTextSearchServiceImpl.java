@@ -18,7 +18,6 @@ package jp.co.opentone.bsol.linkbinder.service.correspon.impl;
 import jp.co.opentone.bsol.framework.core.config.SystemConfig;
 import jp.co.opentone.bsol.framework.core.elasticsearch.ElasticsearchClient;
 import jp.co.opentone.bsol.framework.core.elasticsearch.ElasticsearchConfiguration;
-import jp.co.opentone.bsol.framework.core.elasticsearch.ElasticsearchDocument;
 import jp.co.opentone.bsol.framework.core.elasticsearch.ElasticsearchException;
 import jp.co.opentone.bsol.framework.core.elasticsearch.ElasticsearchSearchOption;
 import jp.co.opentone.bsol.framework.core.elasticsearch.response.ElasticsearchSearchResponse;
@@ -36,6 +35,8 @@ import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponFullTextSearchS
 import jp.co.opentone.bsol.linkbinder.util.ResourceUtil;
 import jp.co.opentone.bsol.linkbinder.util.elasticsearch.CorresponDocumentConverter;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -202,13 +203,23 @@ public class CorresponFullTextSearchServiceImpl extends AbstractService implemen
         return option;
     }
 
+    private Long idToLong(String id) {
+        String str;
+        if (StringUtils.contains(id, '@')) {
+            str = StringUtils.split(id, '@')[1];
+        } else {
+            str = id;
+        }
+        return NumberUtils.toLong(str);
+    }
+
     private void handleResponse(ElasticsearchSearchResponse response,
                     SearchFullTextSearchCorresponCondition condition,
                     Consumer<FullTextSearchCorresponsResult> consumer) {
         response.records().forEach(rec -> {
             FullTextSearchCorresponsResult r = new FullTextSearchCorresponsResult();
 
-            r.setId(NumberUtils.toLong(rec.getId()));
+            r.setId(idToLong(rec.getId()));
             if (rec.getHighlightedFragments("title").count() > 0) {
                 r.setTitle(rec.getHighlightedFragments("title").collect(Collectors.joining()));
             } else {
@@ -218,7 +229,10 @@ public class CorresponFullTextSearchServiceImpl extends AbstractService implemen
             r.setWorkflowStatus(rec.getValueAsString("workflowStatus"));
             Stream<Map<String, Object>> s = rec.getValueAsStream("attachments");
             if (s != null) {
-                s.forEach(a -> r.setAttachmentId(rec.getValueAsString("id")));
+                s.forEach(a -> {
+                    r.setTitle(ObjectUtils.toString(a.get("name")));
+                    r.setAttachmentId(ObjectUtils.toString(a.get("id")));
+                });
             }
 
             setSummaryData(condition, rec, r);
@@ -238,6 +252,9 @@ public class CorresponFullTextSearchServiceImpl extends AbstractService implemen
                     rec.getHighlightedFragments("attachments.name"),
                     rec.getHighlightedFragments("attachments.content.content"))
                 .flatMap(Function.identity());
+            break;
+        case SUBJECT:
+            highlights = rec.getHighlightedFragments("title");
             break;
         case SUBJECT_AND_BODY:
             highlights = rec.getHighlightedFragments("body");
@@ -275,8 +292,9 @@ public class CorresponFullTextSearchServiceImpl extends AbstractService implemen
     @Transactional(readOnly = true)
     public void addToIndex(Correspon correspon, List<Attachment> attachments) throws ServiceAbortException {
         try (ElasticsearchClient client = new ElasticsearchClient(setupConfiguration(getCurrentProjectId()))) {
-            ElasticsearchDocument document = CorresponDocumentConverter.convert(correspon, attachments);
-            client.addToIndex(document);
+            CorresponDocumentConverter
+                    .convert(correspon, attachments)
+                    .forEach(client::addToIndex);
         } catch (Exception e) {
             throw new ApplicationFatalRuntimeException(e);
         }
@@ -289,11 +307,11 @@ public class CorresponFullTextSearchServiceImpl extends AbstractService implemen
      */
     @Override
     @Transactional(readOnly = true)
-    public void deleteFromIndex(Correspon correspon) throws ServiceAbortException {
+    public void deleteFromIndex(Correspon correspon, List<Attachment> attachments) throws ServiceAbortException {
         try (ElasticsearchClient client = new ElasticsearchClient(setupConfiguration(getCurrentProjectId()))) {
-            ElasticsearchDocument document =
-                    CorresponDocumentConverter.convert(correspon);
-            client.deleteFromIndex(document);
+            CorresponDocumentConverter
+                    .convert(correspon, attachments)
+                    .forEach(client::deleteFromIndex);
         } catch (Exception e) {
             throw new ApplicationFatalRuntimeException(e);
         }

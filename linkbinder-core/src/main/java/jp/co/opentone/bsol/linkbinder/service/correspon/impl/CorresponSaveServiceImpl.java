@@ -235,6 +235,24 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
     }
 
     /**
+     * 添付ファイルを更新する.
+     * @param attachment
+     *            添付ファイル
+     * @throws ServiceAbortException
+     */
+    private void updateAttachment(Attachment attachment) throws ServiceAbortException {
+        try {
+            AttachmentDao dao = getDao(AttachmentDao.class);
+            dao.update(attachment);
+        } catch (KeyDuplicateException kde) {
+            throw new ServiceAbortException(kde);
+        } catch (StaleRecordException sre) {
+            throw new ServiceAbortException(
+                    ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
+        }
+    }
+
+    /**
      * 添付ファイルを削除する.
      * @param attachment
      *            添付ファイル
@@ -565,6 +583,9 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
             String fileStoreFileId = saveAttachmentContent(attachment);
             attachment.setFileId(fileStoreFileId);
             createAttachment(attachment);
+            break;
+        case UPDATE:
+            updateAttachment(attachment);
             break;
         case DELETE :
             deleteAttachment(attachment);

@@ -57,7 +57,7 @@ public class GoogleVisionApiClientTest {
                                 .setFeatures(ImmutableList.of(
                                         new Feature()
                                                 .setType("TEXT_DETECTION")
-                                                .setMaxResults(6)
+                                                .setMaxResults(1)
                                 ))
                 );
             } catch (IOException e) {

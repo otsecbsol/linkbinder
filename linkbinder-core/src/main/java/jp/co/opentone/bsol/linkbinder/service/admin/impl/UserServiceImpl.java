@@ -96,13 +96,13 @@ public class UserServiceImpl extends AbstractService implements UserService {
     private static final List<String> HEADER;
     static {
         HEADER = new ArrayList<String>();
-        HEADER.add("ID");
-        HEADER.add("Name");
-        HEADER.add("Role");
-        HEADER.add("Company");
-        HEADER.add("Group");
-        HEADER.add("PA");
-        HEADER.add("GA");
+        HEADER.add("ユーザーID");
+        HEADER.add("ユーザー名");
+        HEADER.add("役割");
+        HEADER.add("会社");
+        HEADER.add("グループ");
+        HEADER.add("プロジェクト管理者");
+        HEADER.add("グループ管理者");
     }
 
     /**

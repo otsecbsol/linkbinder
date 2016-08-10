@@ -15,19 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.service.correspon.impl;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import jp.co.opentone.bsol.framework.core.config.SystemConfig;
 import jp.co.opentone.bsol.framework.core.dao.KeyDuplicateException;
 import jp.co.opentone.bsol.framework.core.dao.RecordNotFoundException;
@@ -66,6 +53,17 @@ import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponSearchService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponService;
 import jp.co.opentone.bsol.linkbinder.util.view.correspon.CorresponPageFormatter;
 import jp.co.opentone.bsol.linkbinder.util.view.correspon.CorresponResponseHistoryModel;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * このサービスではコレポン文書一覧に関する処理を提供する.
@@ -145,24 +143,25 @@ public class CorresponSearchServiceImpl extends AbstractService implements Corre
     private static final List<String> HEADER;
     static {
         HEADER = new ArrayList<String>();
-        HEADER.add("No.");
-        HEADER.add("Correspondence No.");
-        HEADER.add("Previous Revision");
-        HEADER.add("From");
-        HEADER.add("To");
-        HEADER.add("Type");
-        HEADER.add("Subject");
-        HEADER.add("Workfrow Status");
-        HEADER.add("Created on");
-        HEADER.add("Issued on");
-        HEADER.add("Deadline for Reply");
-        HEADER.add("Updated on");
-        HEADER.add("Created by");
-        HEADER.add("Issued by");
-        HEADER.add("Updated by");
-        HEADER.add("Reply Required");
-        HEADER.add("Status");
+        HEADER.add("ID");
+        HEADER.add("文書番号");
+        HEADER.add("改訂前文書番号");
+        HEADER.add("発信元");
+        HEADER.add("宛先");
+        HEADER.add("種類");
+        HEADER.add("件名");
+        HEADER.add("ワークフロー");
+        HEADER.add("作成日");
+        HEADER.add("発行日");
+        HEADER.add("返信期限");
+        HEADER.add("最終更新日");
+        HEADER.add("作成者");
+        HEADER.add("発行者");
+        HEADER.add("最終更新社");
+        HEADER.add("返信要否");
+        HEADER.add("状態");
     }
+    
 
     /**
      * Excel出力する際の出力項目.

@@ -75,8 +75,8 @@ public class ProjectServiceImpl extends AbstractService implements ProjectServic
     private static final List<String> HEADER;
     static {
         HEADER = new ArrayList<String>();
-        HEADER.add("Project ID");
-        HEADER.add("Project Name");
+        HEADER.add("プロジェクトID");
+        HEADER.add("プロジェクト名");
     }
 
     /**

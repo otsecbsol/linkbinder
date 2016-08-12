@@ -188,6 +188,13 @@ public class ProjectHomePage extends AbstractPage {
     private boolean favoriteFilterDisplay;
 
     /**
+     * 学習用コンテンツの項目名（タイトル）.
+     *
+     */
+    @Transfer
+    private String learningContentsTitle;
+
+    /**
      * 空のインスタンスを生成する.
      */
     public ProjectHomePage() {
@@ -537,6 +544,8 @@ public class ProjectHomePage extends AbstractPage {
         }
         // ダイアログ表示初期化
         favoriteFilterDisplay = false;
+
+        setLearningContentsTitle(this.homeService.getLearningContentsTitle());
     }
 
     private String getCorresponIndexUrl() {
@@ -562,6 +571,15 @@ public class ProjectHomePage extends AbstractPage {
      */
     public String goCorresponIndexTrackingAll() {
         setTrackingAllCondition(createCorresponSearchCondition());
+        return getCorresponIndexUrl();
+    }
+
+    /**
+     * 学習用コンテンツを指定してコレポン文書一覧に遷移する.
+     * @return コレポン文書一覧画面
+     */
+    public String goCorresponIndexLearningContents() {
+        //FIXME 検索条件指定
         return getCorresponIndexUrl();
     }
 
@@ -667,6 +685,14 @@ public class ProjectHomePage extends AbstractPage {
             favoriteFilterDisplay = false;
         }
         return null;
+    }
+
+    public void setLearningContentsTitle(String title) {
+        this.learningContentsTitle = title;
+    }
+
+    public String getLearningContentsTitle() {
+        return this.learningContentsTitle;
     }
 
     /**

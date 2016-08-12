@@ -404,6 +404,15 @@
         Dialog.close('input-dialog');
       }
     }
+
+    function checkLearningContents( obj,id ) {
+      if( obj.checked ){
+      document.getElementById(id).style.display = "block";
+    } else {
+      document.getElementById(id).style.display = "none";
+    }
+  }
+
     -->
   </ui:define>
 
@@ -823,13 +832,13 @@
                   <h:panelGroup>
                     <h:outputText value=" すべて " styleClass="select"/>
                     <h:outputText value=" | " />
-                    <h:commandLink value=" 学習用文章を含む "
+                    <h:commandLink value=" 学習用文書を含む "
                                    action="#{corresponIndexPage.search}"
                                    onclick="">
                       <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
                     </h:commandLink>
                     <h:outputText value=" | " />
-                    <h:commandLink value=" 学習用文章を含まない "
+                    <h:commandLink value=" 学習用文書を含まない "
                                    action="#{corresponIndexPage.search}"
                                    onclick="">
                       <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
@@ -1074,6 +1083,22 @@
                             <span class="label-body">未返信</span>
                           </label>
                         </div>
+                      </div>
+                    </div>
+                    <div class="search-block">
+                      <h:outputLabel value="学習用文書"/>
+                      <label>
+                        <h:selectBooleanCheckbox id="containLearningContents"
+                                               value="" style="margin-left: 10px;" onclick="checkLearningContents" />
+                        <span class="label-body">学習用文書を含む</span>
+                      </label>
+                      <div id="learningContents" style="display: none">
+                        <h:outputLabel value="ラベル" />
+                        <h:inputText id="learningLabel" value="" styleClass="u-full-width"/>
+                        <h:outputLabel value="タグ" />
+                        <h:inputText id="learningTag" value="" styleClass="u-full-width"/>
+                        <h:outputLabel value="キーワード" />
+                        <h:inputText id="learningKeyword" value="" styleClass="u-full-width"/>
                       </div>
                     </div>
 

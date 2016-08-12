@@ -176,13 +176,17 @@
               <label>
                 <h:selectBooleanCheckbox id="isCorresponLearning"
                                          value="" />
-                <span class="label-body">この文書を学習用文書として設定する</span>
+                <span class="label-body">
+                  <h:outputText value="この文書を" />
+                  <h:outputText value="#{corresponEditPage.learningTitle}" />
+                  <h:outputText value="として設定する" />
+                </span>
                 <h:message for="corresponNo" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
               </label>
             </div>
             <div class="row">
               <div class="twelve columns">
-                <h:outputLabel for="learning_correspon_tag" value="学習用文書ラベル" />
+                <h:outputLabel for="learning_correspon_tag" value="ラベル" />
                 <h:selectManyListbox id="learning_correspon_label" multiple="multiple">
                   <f:selectItem itemValue="基本的事項/" itemLabel="基本的事項/" />
                   <f:selectItem itemValue="現場における安全管理事項について/" itemLabel="現場における安全管理事項について/" />
@@ -193,7 +197,7 @@
             </div>
             <div class="row">
               <div class="twelve columns">
-                <h:outputLabel for="learning_correspon_tag" value="学習用文書タグ" />
+                <h:outputLabel for="learning_correspon_tag" value="タグ" />
                 <h:selectManyListbox id="learning_correspon_tag" multiple="multiple">
                   <f:selectItem itemValue="基本事項" itemLabel="基本事項" />
                   <f:selectItem itemValue="参考情報" itemLabel="参考情報" />

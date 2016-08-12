@@ -202,6 +202,14 @@
                         <h:commandLink action="#{projectHomePage.goCorresponIndexTracking}" value="Cc" onclick="setActionName(event);setParameters('form:selectedCc', 'true');" />
                         <h:outputText value=" : #{groupSummary.ccCount}" />
                         <h:outputText value=")" />
+                        <br />
+                        <h:commandLink action="#{projectHomePage.goCorresponIndexLearningContents}" value="#{projectHomePage.getLearningContentsTitle()}" onclick="setActionName(event);" />
+                        <h:outputText value="(" style="margin-left: 10px;" />
+                        <h:commandLink action="#{projectHomePage.goCorresponIndexTracking}" value="[Dmy]To" onclick="setActionName(event);setParameters('form:selectedTo', 'true');" />
+                        <h:outputText value=" : #{groupSummary.toCount}, " />
+                        <h:commandLink action="#{projectHomePage.goCorresponIndexTracking}" value="[Dmy]Cc" onclick="setActionName(event);setParameters('form:selectedCc', 'true');" />
+                        <h:outputText value=" : #{groupSummary.ccCount}" />
+                        <h:outputText value=")" />
                       </li>
                     </ui:repeat>
                   </ul>
@@ -212,7 +220,6 @@
                    詳細を表示する
                   </a>
                 </div>
-                <br />
                 <h:commandLink
                   action="#{projectHomePage.goCorresponIndexTrackingAll}"
                   value="すべての文書を見る" />
@@ -318,11 +325,6 @@
                     value="Cc" onclick="setActionName(event);" />
                   <h:outputText
                     value=" : #{projectHomePage.projectDetailsSummary.corresponUserSummary.ccCount}" />
-                  <br />
-                  <h:commandLink action="#{projectHomePage.goCorresponIndexCc}"
-                                 value="学習用文書" onclick="setActionName(event);" />
-                  <h:outputText
-                          value=" : #{projectHomePage.projectDetailsSummary.corresponUserSummary.ccCount}" />
                 </div>
                 <br />
                 <h:commandLink

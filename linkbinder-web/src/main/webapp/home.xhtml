@@ -86,9 +86,11 @@
           <h:inputHidden id="ccSearch" value="#{homePage.ccSearch}" />
         </div>
         <hr />
+        <div class="row learn">
+          <span id="learn"><h:outputText value="#{homePage.learningContentsTitle}" /></span>
+        </div>
         <div id="learning">
           <ul class="learning">
-            <p class="inner-title" style="font-weight: bold; margin-bottom: 0px;">学習用文書</p>
             <li><a href="#" onclick="sublist(this); return false;">基本的事項</a></li>
             <li><a href="#" onclick="sublist(this); return false;">現場における安全管理事項について</a>
               <ul style="display:none">

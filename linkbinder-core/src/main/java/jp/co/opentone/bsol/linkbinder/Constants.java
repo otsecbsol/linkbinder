@@ -252,6 +252,17 @@ public class Constants {
      * @author opentone
      */
     public static final String KEY_CORRESPON_DATA_COUNT = PREFIX + "corresponDataCount";
+
+    /**
+     * 学習用コンテンツ項目名取得キー.
+     */
+    public static final String KEY_LEARNING_TITLE = "learning.title";
+
+    /**
+     * 学習用コンテンツ用PJID取得キー.
+     */
+    public static final String KEY_LEARNING_PJ = "learning.pj";
+
     /**
      * 空のインスタンスを生成する.
      * 外部からのインスタンス化禁止.

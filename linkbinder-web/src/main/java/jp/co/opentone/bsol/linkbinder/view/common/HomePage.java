@@ -87,6 +87,12 @@ public class HomePage extends AbstractPage {
     private boolean ccSearch;
 
     /**
+     * 学習用コンテンツタイトル : learningContentsTitle
+     */
+    @Transfer
+    private String learningContentsTitle = "学習用文書";
+
+    /**
      * 空のインスタンスを生成する.
      */
     public HomePage() {
@@ -185,6 +191,23 @@ public class HomePage extends AbstractPage {
         this.ccSearch = ccSearch;
     }
 
+
+    /**
+     * 学習用コンテンツエリアのタイトルを取得します.
+     * @return the learningContentsTitle
+     */
+    public String getLearningContentsTitle() {
+        return learningContentsTitle;
+    }
+
+
+    /**
+     * 学習用コンテンツエリアのタイトルを設定します.
+     * @param title Learning contents area title
+     */
+    public void setLearningContentsTitle(String title) {
+        this.learningContentsTitle = title;
+    }
 
     /**
      * 画面を初期化する.
@@ -289,6 +312,9 @@ public class HomePage extends AbstractPage {
             if (!StringUtils.isEmpty(page.getCurrentUser().getDefaultProjectId())) {
                 sortProjectSummary();
             }
+
+            //FIXME 外部から値を取得する処理
+            page.learningContentsTitle = page.homeService.getLearningContentsTitle();
         }
 
         private void sortProjectSummary() {

@@ -30,6 +30,8 @@ import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 
+import jp.co.opentone.bsol.framework.core.config.SystemConfig;
+import jp.co.opentone.bsol.linkbinder.Constants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
@@ -405,6 +407,12 @@ public class CorresponEditPage extends AbstractCorresponPage implements Attachme
     @Transfer
     @DateString
     private String deadlineForReply;
+
+    /**
+     * 学習用コンテンツのタイトル.
+     */
+    @Transfer
+    private String learningTitle;
 
     /**
      * 添付ファイル情報表示エリアの表示状態.
@@ -802,6 +810,14 @@ public class CorresponEditPage extends AbstractCorresponPage implements Attachme
      */
     public Long getDistributionTemplate() {
         return distributionTemplate;
+    }
+
+    /**
+     * システム設定の学習用コンテンツタイトルを返す.
+     * @return 学習用コンテンツのタイトル
+     */
+    public String getLearningTitle() {
+        return SystemConfig.getValue(Constants.KEY_LEARNING_TITLE);
     }
 
     /**

@@ -17,6 +17,8 @@ package jp.co.opentone.bsol.linkbinder.service.common.impl;
 
 import java.util.List;
 
+import jp.co.opentone.bsol.framework.core.config.SystemConfig;
+import jp.co.opentone.bsol.linkbinder.Constants;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -78,6 +80,10 @@ public class HomeServiceImpl extends AbstractService implements HomeService {
         // 権限チェック
         checkPermission(projectId);
         return createProjectDetailsSummary(projectId, usePersonInCharge);
+    }
+
+    public String getLearningContentsTitle() {
+        return SystemConfig.getValue(Constants.KEY_LEARNING_TITLE);
     }
 
     /**

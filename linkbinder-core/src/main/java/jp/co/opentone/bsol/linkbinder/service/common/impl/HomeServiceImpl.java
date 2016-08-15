@@ -104,6 +104,7 @@ public class HomeServiceImpl extends AbstractService implements HomeService {
         SearchProjectCondition condition = new SearchProjectCondition();
         condition.setEmpNo(getCurrentUser().getEmpNo());
         condition.setSystemAdmin(isSystemAdmin(getCurrentUser()));
+        condition.setLearningPjId(SystemConfig.getValue(Constants.KEY_LEARNING_PJ));
 
         return condition;
     }

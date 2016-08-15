@@ -75,6 +75,11 @@ public class SearchProjectCondition extends AbstractCondition {
     private String orderBy;
 
     /**
+     * 学習用プロジェクトID.
+     */
+    private String learningPjId;
+
+    /**
      * empNoを取得します.
      * @return the empNo
      */
@@ -271,5 +276,13 @@ public class SearchProjectCondition extends AbstractCondition {
      */
     public String getSanitizedOrderBy() {
         return SQLConvertUtil.encode(orderBy);
+    }
+
+    public String getLearningPjId() {
+        return learningPjId;
+    }
+
+    public void setLearningPjId(String projectId) {
+        this.learningPjId = projectId;
     }
 }

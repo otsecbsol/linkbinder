@@ -23,7 +23,6 @@ ul.learning a {
     padding: 0px;
 }
 
-ul.learning ul {
+input[type=checkbox]:checked ~ #forLearningParts {
     display: none;
-    _display: block;
 }

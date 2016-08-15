@@ -200,15 +200,6 @@ public class HomePage extends AbstractPage {
         return learningContentsTitle;
     }
 
-
-    /**
-     * 学習用コンテンツエリアのタイトルを設定します.
-     * @param title Learning contents area title
-     */
-    public void setLearningContentsTitle(String title) {
-        this.learningContentsTitle = title;
-    }
-
     /**
      * 画面を初期化する.
      * <p>
@@ -313,7 +304,6 @@ public class HomePage extends AbstractPage {
                 sortProjectSummary();
             }
 
-            //FIXME 外部から値を取得する処理
             page.learningContentsTitle = page.homeService.getLearningContentsTitle();
         }
 

@@ -705,6 +705,24 @@ public class CorresponIndexPage extends AbstractPage {
     private boolean ascending;
 
     /**
+     * 学習用コンテンツタイトル
+     */
+    @Transfer
+    private String learningContentsTitle;
+
+    /**
+     * 学習用プロジェクトID
+     */
+    @Transfer
+    private String learningPjId;
+
+    /**
+     * 学習用コンテンツプロジェクトか否か.
+     */
+    @Transfer
+    private boolean learningPj;
+
+    /**
      * リロード時にRecordNotFoundエラーを無視するために使用する.
      */
     private boolean afterAction;
@@ -872,6 +890,15 @@ public class CorresponIndexPage extends AbstractPage {
             loadCorresponIndex();
             loadHelpContent();
             hideAdvancedSearch();
+        }
+
+        this.learningPjId = SystemConfig.getValue(Constants.KEY_LEARNING_PJ);
+        this.learningContentsTitle = SystemConfig.getValue(Constants.KEY_LEARNING_TITLE);
+
+        if(getCurrentProjectId().equals(this.learningPjId)) {
+            setLearningPj(true);
+        } else {
+            setLearningPj(false);
         }
     }
 
@@ -1108,7 +1135,7 @@ public class CorresponIndexPage extends AbstractPage {
     }
 
     /**
-     * シンプルな検索フラグを設定する.
+     * シンプルな検索フラグを返却する.
      * @return シンプルな検索フラグ
      */
     public boolean isSimpleSearch() {
@@ -1116,7 +1143,7 @@ public class CorresponIndexPage extends AbstractPage {
     }
 
     /**
-     * シンプルな検索フラグを返却する.
+     * シンプルな検索フラグを設定する.
      * @param simpleSearch シンプルな検索フラグ
      */
     public void setSimpleSearch(boolean simpleSearch) {
@@ -4284,4 +4311,28 @@ public class CorresponIndexPage extends AbstractPage {
             return list;
         }
     }
+
+    public String getLearningContentsTitle() {
+        return this.learningContentsTitle;
+    }
+
+    public String getLearningPjId() {
+        return this.learningPjId;
+    }
+
+    /**
+     * 学習用プロジェクトか否かを返却する.
+     * @return 学習用プロジェクトであるか否か
+     */
+    public boolean isLearningPj() {
+        return this.learningPj;
+    }
+
+    /**
+     * 学習用プロジェクトか否かを設定する.
+     */
+    public void setLearningPj(boolean learningPj) {
+        this.learningPj = learningPj;
+    }
+
 }

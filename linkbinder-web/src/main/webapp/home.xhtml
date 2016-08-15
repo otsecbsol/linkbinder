@@ -110,6 +110,9 @@
               </ul>
             </li>
           </ul>
+          <h:commandLink id="learningPj"
+                         action="#{homePage.goCorresponIndexForLearning}" value="#{homePage.learningContentsTitle}を検索する"
+                         onclick="setActionName(event); document.getElementById('form:attentionSearch').value = true" />
         </div>
       </h:form>
     </f:view>

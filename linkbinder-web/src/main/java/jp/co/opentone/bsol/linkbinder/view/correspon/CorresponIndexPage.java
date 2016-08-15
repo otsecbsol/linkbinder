@@ -352,6 +352,23 @@ public class CorresponIndexPage extends AbstractPage {
     private Integer readStatus = null;
 
     /**
+     * 学習用コンテンツ検索：ラベル
+     */
+    @Transfer
+    private String learningLabel = null;
+
+    /**
+     * 学習用コンテンツ検索：タグ
+     */
+    @Transfer
+    private String learningTag = null;
+
+    /**
+     * 学習用コンテンツ検索：キーワード
+     */
+    private String learningKeyword = null;
+
+    /**
      * 高度な検索：コレポン文書SequenceNo.
      */
     @Transfer
@@ -1342,6 +1359,51 @@ public class CorresponIndexPage extends AbstractPage {
      */
     public void setReadStatus(Integer readStatus) {
         this.readStatus = readStatus;
+    }
+
+    /**
+     * 学習用コンテンツ検索：ラベルを取得する.
+     * @return ラベル.
+     */
+    public String getLearningLabel() {
+        return learningLabel;
+    }
+
+    /**
+     * 学習用コンテンツ検索：ラベルを設定する.
+     */
+    public void setLearningLabel(String label) {
+        this.learningLabel = label;
+    }
+
+    /**
+     * 学習用コンテンツ検索：タグを取得する.
+     * @return タグ
+     */
+    public String getLearningTag() {
+        return learningTag;
+    }
+
+    /**
+     * 学習用コンテンツ検索：タグを設定する.
+     */
+    public void setLearningTag(String tag) {
+        this.learningTag = tag;
+    }
+
+    /**
+     * 学習用コンテンツ検索：キーワードを取得する.
+     * @return キーワード
+     */
+    public String getLearningKeyword() {
+        return this.learningKeyword;
+    }
+
+    /**
+     * 学習用コンテンツ検索：キーワードを設定する.
+     */
+    public void setLearningKeyword(String keyword) {
+        this.learningKeyword = keyword;
     }
 
     /**

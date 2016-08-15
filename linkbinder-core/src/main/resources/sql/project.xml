@@ -193,8 +193,6 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
             ON pcs.project_id = p.project_id
             AND pcs.delete_no = 0
         )
-    WHERE
-      project_id != #learningPjId#
     GROUP BY
       project_id,
       client_name_e,

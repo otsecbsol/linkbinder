@@ -23,6 +23,8 @@ import javax.annotation.Resource;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 
+import jp.co.opentone.bsol.framework.core.config.SystemConfig;
+import jp.co.opentone.bsol.linkbinder.Constants;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.Scope;
 
@@ -62,6 +64,12 @@ public class HomePage extends AbstractPage {
      */
     @Transfer
     private List<ProjectSummary> projectSummaryList = null;
+
+    /**
+     * 学習用プロジェクトサマリ
+     */
+    @Transfer
+    private ProjectSummary learningProject;
 
     /**
      * データのDataModel.
@@ -200,6 +208,29 @@ public class HomePage extends AbstractPage {
         return learningContentsTitle;
     }
 
+
+    /**
+     * 学習用コンテンツエリアのタイトルを設定します.
+     * @param title Learning contents area title
+     */
+    public void setLearningContentsTitle(String title) {
+        this.learningContentsTitle = title;
+    }
+
+    /**
+     * 学習用プロジェクトサマリを取得します.
+     */
+    public ProjectSummary getLearningProject() {
+        return this.learningProject;
+    }
+
+    /**
+     * 学習用プロジェクトサマリを設定します.
+     */
+    public void setLearningProject(ProjectSummary project) {
+        this.learningProject = project;
+    }
+
     /**
      * 画面を初期化する.
      * <p>
@@ -232,6 +263,17 @@ public class HomePage extends AbstractPage {
     }
 
     /**
+     * コレポン文書一覧画面に遷移する（学習用コンテンツ）.
+     * @return null
+     */
+    public String goCorresponIndexForLearning() {
+        setProjectInfoForLearning();
+        setCorresponSearchConditionForLearning();
+        return toUrl(
+                String.format("correspon/corresponIndex?projectId=%s", SystemConfig.getValue(Constants.KEY_LEARNING_PJ)));
+    }
+
+    /**
      * 選択された行のプロジェクトIDを取得する.
      * @return プロジェクトID
      */
@@ -245,6 +287,14 @@ public class HomePage extends AbstractPage {
     private void setProjectInfo() {
         setCurrentProjectInfo(((ProjectSummary) dataModel.getRowData()).getProject());
     }
+
+    /**
+     * プロジェクト情報をセッションに設定する(学習用コンテンツ用).
+     */
+    private void setProjectInfoForLearning() {
+        setCurrentProjectInfo(this.learningProject.getProject());
+    }
+
 
     /**
      * コレポン文書検索条件を設定する.
@@ -268,6 +318,30 @@ public class HomePage extends AbstractPage {
         condition.setUserCc(ccSearch);
 
         setCurrentSearchCorresponCondition(condition, getSeletedProjectId());
+    }
+
+    /**
+     * コレポン文書検索条件を設定する(学習用コンテンツ用).
+     */
+    private void setCorresponSearchConditionForLearning() {
+        SearchCorresponCondition condition = new SearchCorresponCondition();
+        condition.setProjectId(SystemConfig.getValue(Constants.KEY_LEARNING_PJ));
+        condition.setUserId(getCurrentUser().getUserId());
+        condition.setSystemAdmin(isSystemAdmin());
+        condition.setProjectAdmin(isProjectAdmin(SystemConfig.getValue(Constants.KEY_LEARNING_PJ)));
+
+        //  発行済
+        condition.setWorkflowStatuses(new WorkflowStatus[] {WorkflowStatus.ISSUED});
+
+        User[] users = {getCurrentUser()};
+        condition.setToUsers(users);
+        ReadStatus[] readStatuses = {ReadStatus.NEW};
+        condition.setReadStatuses(readStatuses);
+        condition.setUserAttention(attentionSearch);
+        condition.setUserPic(personInChargeSearch);
+        condition.setUserCc(ccSearch);
+
+        setCurrentSearchCorresponCondition(condition, SystemConfig.getValue(Constants.KEY_LEARNING_PJ));
     }
 
     /**
@@ -298,6 +372,15 @@ public class HomePage extends AbstractPage {
          */
         public void execute() throws ServiceAbortException {
             page.projectSummaryList = page.homeService.findProjects();
+
+            // リストから学習用コンテンツプロジェクトを削除し、別途保持する。
+            for(int i = 0;i < page.projectSummaryList.size();i++) {
+                if(page.projectSummaryList.get(i).getProject().getProjectId()
+                        .equals(SystemConfig.getValue(Constants.KEY_LEARNING_PJ))) {
+                    page.learningProject = page.projectSummaryList.get(i);
+                    page.projectSummaryList.remove(i);
+                }
+            }
 
             // デフォルトプロジェクトがある場合は先頭に並び替え
             if (!StringUtils.isEmpty(page.getCurrentUser().getDefaultProjectId())) {

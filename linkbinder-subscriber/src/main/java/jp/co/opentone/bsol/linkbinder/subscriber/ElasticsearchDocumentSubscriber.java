@@ -18,6 +18,7 @@ package jp.co.opentone.bsol.linkbinder.subscriber;
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
 import jp.co.opentone.bsol.linkbinder.dto.Attachment;
 import jp.co.opentone.bsol.linkbinder.dto.Correspon;
+import jp.co.opentone.bsol.linkbinder.event.CorresponAttachmentChanged;
 import jp.co.opentone.bsol.linkbinder.event.CorresponCreated;
 import jp.co.opentone.bsol.linkbinder.event.CorresponDeleted;
 import jp.co.opentone.bsol.linkbinder.event.CorresponEvent;
@@ -60,6 +61,7 @@ public class ElasticsearchDocumentSubscriber extends Subscriber {
                 CorresponUpdated.NAME,
                 CorresponDeleted.NAME,
                 CorresponIssued.NAME,
+                CorresponAttachmentChanged.NAME,
                 CorresponWorkflowStatusChanged.NAME
         };
     }

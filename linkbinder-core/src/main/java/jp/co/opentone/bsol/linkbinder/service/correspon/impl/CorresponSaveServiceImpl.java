@@ -15,18 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.service.correspon.impl;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.beanutils.PropertyUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import jp.co.opentone.bsol.framework.core.dao.KeyDuplicateException;
 import jp.co.opentone.bsol.framework.core.dao.StaleRecordException;
 import jp.co.opentone.bsol.framework.core.extension.ibatis.DBValue;
@@ -60,6 +48,16 @@ import jp.co.opentone.bsol.linkbinder.service.AbstractService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponSaveService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponService;
 import jp.co.opentone.bsol.linkbinder.service.notice.EmailNoticeService;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 /**
  * このサービスではコレポン文書に関する処理を提供する.
  * @author opentone
@@ -318,6 +316,19 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
             }
         }
         return corresponId;
+    }
+
+    @Override
+    public void saveAttachmentInfo(Correspon correspon, Attachment attachment) throws ServiceAbortException {
+        ArgumentValidator.validateNotNull(correspon);
+        ArgumentValidator.validateNotNull(attachment);
+
+        attachment.setCorresponId(correspon.getId());
+        attachment.setFileType(Attachment.detectFileTypeByFileName(attachment.getFileName()));
+        attachment.setCreatedBy(getCurrentUser());
+        attachment.setUpdatedBy(getCurrentUser());
+
+        updateAttachment(attachment);
     }
 
     /**
@@ -806,7 +817,6 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
      * 宛先ユーザーに設定されたPICの登録処理.
      *
      * @param addressUser 宛先ユーザー
-     * @param personInChargeDao
      * @throws ServiceAbortException
      */
     private void createPersonInCharge(AddressUser addressUser) throws ServiceAbortException {

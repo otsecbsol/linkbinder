@@ -44,10 +44,12 @@ import jp.co.opentone.bsol.linkbinder.dto.code.AddressUserType;
 import jp.co.opentone.bsol.linkbinder.dto.code.CorresponStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.ReplyRequired;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowStatus;
+import jp.co.opentone.bsol.linkbinder.event.CorresponAttachmentChanged;
 import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
 import jp.co.opentone.bsol.linkbinder.service.admin.CorresponGroupService;
 import jp.co.opentone.bsol.linkbinder.service.admin.DistributionTemplateService;
 import jp.co.opentone.bsol.linkbinder.service.admin.UserService;
+import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponSaveService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponValidateService;
 import jp.co.opentone.bsol.linkbinder.util.view.correspon.CorresponPageFormatter;
@@ -177,6 +179,11 @@ public class CorresponEditPage extends AbstractCorresponPage
      */
     @Resource
     private CorresponService corresponService;
+    /**
+     * コレポン文書保存サービス.
+     */
+    @Resource
+    private CorresponSaveService corresponSaveService;
     /**
      * コレポン文書検証サービス.
      */
@@ -847,7 +854,7 @@ public class CorresponEditPage extends AbstractCorresponPage
 
     @Override
     public void saveExtractedText() {
-        // 何もしない
+        handler.handleAction(new SaveAttachmentInfoAction(this));
     }
 
     @Override
@@ -3034,6 +3041,35 @@ public class CorresponEditPage extends AbstractCorresponPage
         }
     }
 
+    /**
+     * 添付ファイル情報を保存する.
+     */
+    static class SaveAttachmentInfoAction extends AbstractAction {
+        /** 入力画面. */
+        private CorresponEditPage page;
+
+        /**
+         * ページを指定してインスタンスを生成する.
+         * @param page このアクションを起動したページ
+         */
+        public SaveAttachmentInfoAction(CorresponEditPage page) {
+            super(page);
+            this.page = page;
+        }
+
+        @Override
+        public void execute() throws ServiceAbortException {
+            page.corresponSaveService.saveAttachmentInfo(
+                    page.correspon,
+                    page.editingAttachment.toAttachment()
+            );
+
+            // イベント発火
+            page.eventBus.raiseEvent(
+                    new CorresponAttachmentChanged(page.correspon.getId(),
+                                                page.correspon.getProjectId()));
+        }
+    }
     /**
      * 入力を検証する.
      *

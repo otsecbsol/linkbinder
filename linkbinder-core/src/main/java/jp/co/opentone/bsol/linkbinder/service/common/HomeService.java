@@ -53,10 +53,4 @@ public interface HomeService extends IService {
      */
     ProjectDetailsSummary findProjectDetails(String projectId, boolean usePersonInCharge)
             throws ServiceAbortException;
-
-    /**
-     * 学習用コンテンツエリアのタイトルを取得して返す.
-     * @return 学習用コンテンツエリアタイトル
-     */
-    String getLearningContentsTitle();
 }

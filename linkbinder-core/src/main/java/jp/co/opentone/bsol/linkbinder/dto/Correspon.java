@@ -199,6 +199,14 @@ public class Correspon extends AbstractDto implements VersioningEntity {
     private WorkflowStatus workflowStatus;
 
     /**
+     * For Learning.
+     * <p>
+     * [v_correspon.for_learning]
+     * </p>
+     */
+    private String forLearning;
+
+    /**
      * Custom field1.
      * <p>
      * [v_correspon.custom_field1_id]
@@ -961,6 +969,24 @@ public class Correspon extends AbstractDto implements VersioningEntity {
     public void setWorkflowStatus(WorkflowStatus workflowStatus) {
         this.workflowStatus = workflowStatus;
     }
+
+    /**
+     * forLearning の値を返す.
+     * <p>
+     * [v_correspon.for_learning]
+     * </p>
+     * @return forLearning
+     */
+    public String getForLearning() { return forLearning; }
+
+    /**
+     * forLearning の値を設定する.
+     * <p>
+     * [v_correspon.for_learning]
+     * </p>
+     *
+     */
+    public void setForLearning(String forLearning) { this.forLearning = forLearning; }
 
     /**
      * customField1Id の値を返す.

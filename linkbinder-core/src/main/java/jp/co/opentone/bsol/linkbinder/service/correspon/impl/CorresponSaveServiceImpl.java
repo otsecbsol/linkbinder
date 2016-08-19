@@ -21,6 +21,8 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import jp.co.opentone.bsol.framework.core.config.SystemConfig;
+import jp.co.opentone.bsol.linkbinder.Constants;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -410,6 +412,7 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
         result.setCorresponType(correspon.getCorresponType());
         result.setSubject(correspon.getSubject());
         result.setBody(correspon.getBody());
+        result.setForLearning(convertLearningValue(correspon.getForLearning()));
         result.setCorresponStatus(correspon.getCorresponStatus());
         result.setReplyRequired(correspon.getReplyRequired());
         result.setDeadlineForReply(correspon.getDeadlineForReply());
@@ -571,6 +574,20 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
         default:
             // 添付ファイルはNEW、DELETEのいずれかしかあり得ない (UPDATEは無し)
             break;
+        }
+    }
+
+    /**
+     * forLearningの値をDBへ記録する値へと変換する.
+     *
+     * @param learning 学習用コンテンツか否か（boolean）
+     * @return 変換結果（true:"X", false:null）
+     */
+    private String convertLearningValue(String learning) {
+        if(learning.equals("true")) {
+            return "X";
+        } else {
+            return null;
         }
     }
 
@@ -784,7 +801,6 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
      * 宛先ユーザーに設定されたPICの登録処理.
      *
      * @param addressUser 宛先ユーザー
-     * @param personInChargeDao
      * @throws ServiceAbortException
      */
     private void createPersonInCharge(AddressUser addressUser) throws ServiceAbortException {

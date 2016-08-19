@@ -175,10 +175,10 @@
           </div>
             <div class="twelve columns">
               <label>
-                <h:selectBooleanCheckbox id="forLearning" />
+                <h:selectBooleanCheckbox id="forLearning" value="#{corresponEditPage.learningContents}" />
                 <span class="label-body">
                   <h:outputText value="この文書を" />
-                  <h:outputText value="#{corresponEditPage.learningTitle}" />
+                  <h:outputText value="#{corresponEditPage.getLearningContentsTitle()}" />
                   <h:outputText value="として設定する" />
                 </span>
                 <h:message for="corresponNo" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />

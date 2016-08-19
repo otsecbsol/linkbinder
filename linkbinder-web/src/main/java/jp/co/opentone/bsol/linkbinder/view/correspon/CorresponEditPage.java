@@ -342,6 +342,12 @@ public class CorresponEditPage extends AbstractCorresponPage implements Attachme
     @Required
     private Long from = 1L;
 
+    /**
+     * 学習用コンテンツとして設定するか否か.
+     */
+    @Transfer
+    private String learningContents;
+
     //CHECKSTYLE:OFF
     /**
      * Toに設定されたかどうかを保持する.
@@ -407,12 +413,6 @@ public class CorresponEditPage extends AbstractCorresponPage implements Attachme
     @Transfer
     @DateString
     private String deadlineForReply;
-
-    /**
-     * 学習用コンテンツのタイトル.
-     */
-    @Transfer
-    private String learningTitle;
 
     /**
      * 添付ファイル情報表示エリアの表示状態.
@@ -813,14 +813,6 @@ public class CorresponEditPage extends AbstractCorresponPage implements Attachme
     }
 
     /**
-     * システム設定の学習用コンテンツタイトルを返す.
-     * @return 学習用コンテンツのタイトル
-     */
-    public String getLearningTitle() {
-        return SystemConfig.getValue(Constants.KEY_LEARNING_TITLE);
-    }
-
-    /**
      * @param distributionTemplate the distributionTemplate to set
      */
     public void setDistributionTemplate(Long distributionTemplate) {
@@ -1095,6 +1087,8 @@ public class CorresponEditPage extends AbstractCorresponPage implements Attachme
         setFromTo(c);
         // コレポン種別設定
         setCorresponTypeTo(c);
+        // 学習用コンテンツ
+        c.setForLearning(getLearningContents());
         // SUBJECT設定
         c.setSubject(getSubject());
         // BODY設定
@@ -1475,6 +1469,35 @@ public class CorresponEditPage extends AbstractCorresponPage implements Attachme
      */
     public Long getFrom() {
         return from;
+    }
+
+    /**
+     * 学習用コンテンツか否かをセットする.
+     * @param learning 学習用コンテンツか否か
+     */
+    public void setLearningContents(String learning) {
+        this.learningContents = learning;
+    }
+
+    /**
+     * 学習用コンテンツか否かを返す.
+     * @return isLearningContents 学習用コンテンツか否か
+     */
+    public String getLearningContents() {
+            return learningContents;
+    }
+
+    /**
+     * 学習用コンテンツであれば"x"を返す.
+     * 学習用コンテンツで無い場合にはnullを返す.
+     */
+    public String isLearningContents() {
+
+        if(getLearningContents() != null && getLearningContents().equals("1")) {
+            return "x";
+        } else {
+            return null;
+        }
     }
 
     /**

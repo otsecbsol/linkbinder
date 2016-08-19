@@ -70,14 +70,14 @@ public class SearchProjectCondition extends AbstractCondition {
     private String nameE;
 
     /**
+     * 学習用プロジェクト.
+     */
+    private String forLearning;
+
+    /**
      * ORDER BY句に渡す並び順の条件.
      */
     private String orderBy;
-
-    /**
-     * 学習用プロジェクトID.
-     */
-    private String learningPjId;
 
     /**
      * empNoを取得します.
@@ -168,6 +168,19 @@ public class SearchProjectCondition extends AbstractCondition {
         this.nameE = name;
     }
 
+    /**
+     * forLearningを取得する.
+     */
+    public String getForLearning() {
+        return forLearning;
+    }
+
+    /**
+     * forLearningを設定する.
+     */
+    public void setForLearning(String learn) {
+        this.forLearning = learn;
+    }
 
     /**
      * コレポン文書の宛先を表すAddressTypeを返却する.
@@ -276,13 +289,5 @@ public class SearchProjectCondition extends AbstractCondition {
      */
     public String getSanitizedOrderBy() {
         return SQLConvertUtil.encode(orderBy);
-    }
-
-    public String getLearningPjId() {
-        return learningPjId;
-    }
-
-    public void setLearningPjId(String projectId) {
-        this.learningPjId = projectId;
     }
 }

@@ -981,6 +981,9 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       <isNotNull prepend="," property="body">
         body                      = #body#
       </isNotNull>
+      <isNotNull prepend="," property="forLearning">
+        for_learning              = #forLearning#
+      </isNotNull>
     </dynamic>
     WHERE
       id = #id#

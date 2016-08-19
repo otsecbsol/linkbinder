@@ -86,6 +86,16 @@ public class Project extends AbstractDto implements LegacyEntity {
     private String nameJ;
 
     /**
+     * For Learning.
+     * <p>
+     * [v_project.for_learning]
+     * </p>
+     */
+    @Length(max = 1)
+    @Alphanumeric
+    private String forLearning;
+
+    /**
      * Use approved flg.
      * <p>
      * [v_project.use_approved_flg]
@@ -229,6 +239,23 @@ public class Project extends AbstractDto implements LegacyEntity {
         this.nameJ = nameJ;
     }
 
+    /**
+     * forLearning の値を返す.
+     * <p>
+     * [v_project.for_learning]
+     * </p>
+     * @return forLearning forLearning
+     */
+    public String getForLearning() { return this.forLearning; }
+
+    /**
+     * forLearning の値を設定する.
+     * <p>
+     * [v_project.for_learning]
+     * </p>
+     * @param forLearning forLearning
+     */
+    public void getForLearning(String forLearning) { this.forLearning = forLearning; }
 
     /**
      * useApprovedFlg の値を返す.

@@ -66,15 +66,20 @@ public class HomePage extends AbstractPage {
     private List<ProjectSummary> projectSummaryList = null;
 
     /**
-     * 学習用プロジェクトサマリ
+     * 学習用プロジェクトサマリリスト.
      */
     @Transfer
-    private ProjectSummary learningProject;
+    private List<ProjectSummary> learningProjectSummaryList = null;
 
     /**
      * データのDataModel.
      */
     private DataModel<?> dataModel = null;
+
+    /**
+     * 学習用文書のDataModel.
+     */
+    private DataModel<?> learningDataModel = null;
 
     /**
      * コレポン文書一覧検索条件：Attention.
@@ -93,12 +98,6 @@ public class HomePage extends AbstractPage {
      */
     @Transfer
     private boolean ccSearch;
-
-    /**
-     * 学習用コンテンツタイトル : learningContentsTitle
-     */
-    @Transfer
-    private String learningContentsTitle = "学習用文書";
 
     /**
      * 空のインスタンスを生成する.
@@ -199,36 +198,18 @@ public class HomePage extends AbstractPage {
         this.ccSearch = ccSearch;
     }
 
-
     /**
-     * 学習用コンテンツエリアのタイトルを取得します.
-     * @return the learningContentsTitle
+     * 学習用プロジェクトサマリリストを取得します.
      */
-    public String getLearningContentsTitle() {
-        return learningContentsTitle;
-    }
-
-
-    /**
-     * 学習用コンテンツエリアのタイトルを設定します.
-     * @param title Learning contents area title
-     */
-    public void setLearningContentsTitle(String title) {
-        this.learningContentsTitle = title;
-    }
-
-    /**
-     * 学習用プロジェクトサマリを取得します.
-     */
-    public ProjectSummary getLearningProject() {
-        return this.learningProject;
+    public List<ProjectSummary> getLearningProjectSummaryList() {
+        return this.learningProjectSummaryList;
     }
 
     /**
      * 学習用プロジェクトサマリを設定します.
      */
-    public void setLearningProject(ProjectSummary project) {
-        this.learningProject = project;
+    public void setLearningProjectSummaryList(List projectList) {
+        this.learningProjectSummaryList = projectList;
     }
 
     /**
@@ -262,16 +243,6 @@ public class HomePage extends AbstractPage {
                 String.format("correspon/corresponIndex?projectId=%s", getSeletedProjectId()));
     }
 
-    /**
-     * コレポン文書一覧画面に遷移する（学習用コンテンツ）.
-     * @return null
-     */
-    public String goCorresponIndexForLearning() {
-        setProjectInfoForLearning();
-        setCorresponSearchConditionForLearning();
-        return toUrl(
-                String.format("correspon/corresponIndex?projectId=%s", SystemConfig.getValue(Constants.KEY_LEARNING_PJ)));
-    }
 
     /**
      * 選択された行のプロジェクトIDを取得する.
@@ -289,10 +260,21 @@ public class HomePage extends AbstractPage {
     }
 
     /**
-     * プロジェクト情報をセッションに設定する(学習用コンテンツ用).
+     * 選択された行のプロジェクトIDを取得する（学習用コンテンツ用）.
+     * @return プロジェクトID
      */
-    private void setProjectInfoForLearning() {
-        setCurrentProjectInfo(this.learningProject.getProject());
+        // TODO:選択された項目に対応するプロジェクトIDを取得する処理
+//    private String getSeletedLearningProjectId() {
+//        return ((ProjectSummary) learningDataModel.getRowData()).getProject().getProjectId();
+//    }
+
+
+    /**
+     * プロジェクト情報をセッションに設定する（学習用コンテンツ用）.
+     */
+    private void setLearningProjectInfo() {
+        //TODO:選択された内容に対応したプロジェクト情報を設定する処理
+//        setCurrentProjectInfo(((ProjectSummary) learningDataModel.getRowData()).getProject());
     }
 
 
@@ -374,20 +356,20 @@ public class HomePage extends AbstractPage {
             page.projectSummaryList = page.homeService.findProjects();
 
             // リストから学習用コンテンツプロジェクトを削除し、別途保持する。
+            List<ProjectSummary> newList = new ArrayList<ProjectSummary>();
             for(int i = 0;i < page.projectSummaryList.size();i++) {
-                if(page.projectSummaryList.get(i).getProject().getProjectId()
-                        .equals(SystemConfig.getValue(Constants.KEY_LEARNING_PJ))) {
-                    page.learningProject = page.projectSummaryList.get(i);
+                String flg = page.projectSummaryList.get(i).getProject().getForLearning();
+                if(null != flg && flg.equals("X")) {
+                    newList.add(page.projectSummaryList.get(i));
                     page.projectSummaryList.remove(i);
                 }
             }
+            page.learningProjectSummaryList = newList;
 
             // デフォルトプロジェクトがある場合は先頭に並び替え
             if (!StringUtils.isEmpty(page.getCurrentUser().getDefaultProjectId())) {
                 sortProjectSummary();
             }
-
-            page.learningContentsTitle = page.homeService.getLearningContentsTitle();
         }
 
         private void sortProjectSummary() {

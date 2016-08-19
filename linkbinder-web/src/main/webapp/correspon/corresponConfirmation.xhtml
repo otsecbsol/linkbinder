@@ -126,6 +126,16 @@
             </div>
           </div>
           <div class="row">
+            <h:outputLabel value="#{corresponConfirmationPage.getLearningContentsTitle()}として設定する"/>
+            <!-- TODO:それぞれの表示を追加する -->
+            <ui:fragment rendered="#{corresponConfirmationPage.correspon.forLearning}">
+              true
+            </ui:fragment>
+            <ui:fragment rendered="#{!corresponConfirmationPage.correspon.forLearning}">
+              false
+            </ui:fragment>
+          </div>
+          <div class="row">
             <div class="twelve columns">
               <label>宛先</label>
             </div>

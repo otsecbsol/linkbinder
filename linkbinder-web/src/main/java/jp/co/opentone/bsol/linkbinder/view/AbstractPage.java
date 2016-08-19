@@ -28,6 +28,7 @@ import javax.annotation.Resource;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
+import jp.co.opentone.bsol.framework.core.config.SystemConfig;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -90,6 +91,14 @@ public abstract class AbstractPage implements LinkBinderPage, Serializable {
      * 一覧表示用：「次へ」のリンク表示.
      */
     public static final String NEXT = ">>";
+
+    /**
+     * 学習用コンテンツエリアのタイトルを取得して返す.
+     * @return 学習用コンテンツエリアタイトル
+     */
+    public String getLearningContentsTitle() {
+        return SystemConfig.getValue(Constants.KEY_LEARNING_TITLE);
+    }
 
     /**
      * ログイン情報を保持するManagedBean.
@@ -497,6 +506,16 @@ public abstract class AbstractPage implements LinkBinderPage, Serializable {
             }
         }
         return ProjectCustomSetting.DEFAULT_CORRESPON_STATUS;
+    }
+
+    public Boolean isLearningProject() {
+        Project project = getCurrentProject();
+        if(project != null) {
+            if (project.getForLearning() != null && project.getForLearning().equals("x")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

@@ -82,10 +82,6 @@ public class HomeServiceImpl extends AbstractService implements HomeService {
         return createProjectDetailsSummary(projectId, usePersonInCharge);
     }
 
-    public String getLearningContentsTitle() {
-        return SystemConfig.getValue(Constants.KEY_LEARNING_TITLE);
-    }
-
     /**
      * プロジェクトサマリのリストを取得する.
      * @param condition 検索条件
@@ -104,7 +100,6 @@ public class HomeServiceImpl extends AbstractService implements HomeService {
         SearchProjectCondition condition = new SearchProjectCondition();
         condition.setEmpNo(getCurrentUser().getEmpNo());
         condition.setSystemAdmin(isSystemAdmin(getCurrentUser()));
-        condition.setLearningPjId(SystemConfig.getValue(Constants.KEY_LEARNING_PJ));
 
         return condition;
     }

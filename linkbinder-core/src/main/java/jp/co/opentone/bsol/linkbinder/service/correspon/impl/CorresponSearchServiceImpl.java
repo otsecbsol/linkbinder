@@ -900,14 +900,4 @@ public class CorresponSearchServiceImpl extends AbstractService implements Corre
             throw new ServiceAbortException(ApplicationMessageCode.RETURNED_MORE_THAN_RECORDS, max);
         }
     }
-
-
-    /**
-     * 学習用プロジェクトのプロジェクトIDを返す.
-     * @return 学習用プロジェクトID
-     *
-     */
-    private String getLearningProjectId() {
-        return SystemConfig.getValue(Constants.KEY_LEARNING_PJ);
-    }
 }

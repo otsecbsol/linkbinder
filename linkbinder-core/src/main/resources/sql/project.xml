@@ -27,6 +27,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     <result property="clientNameJ"      column="client_name_j" />
     <result property="nameE"            column="name_e" />
     <result property="nameJ"            column="name_j" />
+    <result property="forLearning"      column="for_learning" />
   </resultMap>
   <resultMap id="projectSummary" class="jp.co.opentone.bsol.linkbinder.dto.ProjectSummary">
     <result property="project.projectId"        column="project_id" />
@@ -34,6 +35,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     <result property="project.clientNameJ"      column="client_name_j" />
     <result property="project.nameE"            column="name_e" />
     <result property="project.nameJ"            column="name_j" />
+    <result property="project.forLearning"      column="for_learning" />
     <result property="attentionCount"           column="attention_count" />
     <result property="personInChargeCount"      column="person_in_charge_count" />
     <result property="ccCount"                  column="cc_count" />
@@ -46,6 +48,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     <result property="clientNameJ"      column="client_name_j" />
     <result property="nameE"            column="name_e" />
     <result property="nameJ"            column="name_j" />
+    <result property="forLearning"      column="for_learning" />
     <result property="useApprovedFlg"   column="use_approved_flg" />
   </resultMap>
 
@@ -109,6 +112,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       client_name_j,
       name_e,
       name_j,
+      for_learning,
       count(DISTINCT attention) as attention_count,
       count(DISTINCT person_in_charge) as person_in_charge_count,
       count(DISTINCT cc) as cc_count,
@@ -199,6 +203,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       client_name_j,
       name_e,
       name_j,
+      for_learning,
       use_person_in_charge
     ORDER BY
       project_id ASC

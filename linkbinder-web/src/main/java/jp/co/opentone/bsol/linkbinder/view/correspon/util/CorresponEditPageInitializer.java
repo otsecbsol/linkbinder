@@ -306,6 +306,16 @@ public class CorresponEditPageInitializer implements Serializable {
         }
 
         /**
+         * 学習用文書か否かを設定する.
+         */
+        private void applyLearningContents() {
+            if(correspon.getForLearning() != null
+                    && correspon.getForLearning().equals("true")) {
+                page.setLearningContents((correspon.getForLearning()));
+            }
+        }
+
+        /**
          * 返信要否・返信期限を設定する.
          */
         private void applyReplyRequired() {

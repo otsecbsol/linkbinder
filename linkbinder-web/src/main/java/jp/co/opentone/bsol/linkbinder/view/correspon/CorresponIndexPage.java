@@ -722,12 +722,6 @@ public class CorresponIndexPage extends AbstractPage {
     private boolean ascending;
 
     /**
-     * 学習用コンテンツタイトル
-     */
-    @Transfer
-    private String learningContentsTitle;
-
-    /**
      * 学習用プロジェクトID
      */
     @Transfer
@@ -909,10 +903,7 @@ public class CorresponIndexPage extends AbstractPage {
             hideAdvancedSearch();
         }
 
-        this.learningPjId = SystemConfig.getValue(Constants.KEY_LEARNING_PJ);
-        this.learningContentsTitle = SystemConfig.getValue(Constants.KEY_LEARNING_TITLE);
-
-        if(getCurrentProjectId().equals(this.learningPjId)) {
+        if(isLearningProject()) {
             setLearningPj(true);
         } else {
             setLearningPj(false);
@@ -4374,9 +4365,6 @@ public class CorresponIndexPage extends AbstractPage {
         }
     }
 
-    public String getLearningContentsTitle() {
-        return this.learningContentsTitle;
-    }
 
     public String getLearningPjId() {
         return this.learningPjId;

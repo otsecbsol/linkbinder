@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import jp.co.opentone.bsol.linkbinder.dto.condition.SearchProjectCondition;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -952,6 +953,9 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
         validateDeleteIssuePermission(correspon);
         // 承認状態の更新
         updateCorresponForIssue(correspon);
+        if (correspon.getForLearning().equals("true")) {
+            copyCorresponForLearning(correspon);
+        }
         // メール通知機能
         sendIssuedNotice(correspon, EmailNoticeEventCd.ISSUED);
     }
@@ -984,6 +988,16 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
 
         // コレポン文書の更新
         updateCorrespon(newCorrespon);
+    }
+
+    /**
+     * 学習用に設定された文書をコピーする.
+     * @param correspon 「学習用コンテンツ」に指定された、対象の文書
+     * @throws ServiceAbortException
+     */
+    private void copyCorresponForLearning(Correspon correspon) throws ServiceAbortException {
+        //TODO: 学習用プロジェクトのリストを取得する処理を追加する
+        //TODO: 「学習用プロジェクト」に指定されたProjectIDの数だけ文書を複製・登録する処理を追加する
     }
 
    /**

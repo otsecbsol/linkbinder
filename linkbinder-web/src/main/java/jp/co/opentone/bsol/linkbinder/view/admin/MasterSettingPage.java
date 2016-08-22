@@ -405,7 +405,7 @@ public class MasterSettingPage extends AbstractPage implements MasterDataImporta
                         //プロジェクト情報
                         fileName +=  "_Project.csv";
 
-                        List<Project> list = page.pjService.findAll();
+                        List<Project> list = page.pjService.findAllWithOutLearning();
                         data = page.pjService.generateCSV(list);
                         break;
                     case USER:

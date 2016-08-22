@@ -289,7 +289,7 @@ public class ProjectServiceImpl extends AbstractService implements ProjectServic
 
     /**
      * 新規登録か更新か判定する.
-     * @param site
+     * @param pjId
      *            拠点情報
      * @return 登録ならtrue / 更新ならfalse
      * @throws ServiceAbortException
@@ -302,6 +302,11 @@ public class ProjectServiceImpl extends AbstractService implements ProjectServic
     public List<Project> findAll() throws ServiceAbortException {
         ProjectDao dao = getDao(ProjectDao.class);
         return dao.findAll();
+    }
+
+    public List<Project> findAllWithOutLearning() throws ServiceAbortException {
+        ProjectDao dao = getDao(ProjectDao.class);
+        return dao.findAllWithOutLearning();
     }
 
     /* (非 Javadoc)
@@ -347,6 +352,9 @@ public class ProjectServiceImpl extends AbstractService implements ProjectServic
         } else {
             //更新
             try {
+                if(dao.findById(project.getProjectId()).getForLearning() != null) {
+                    return;
+                }
                 dao.updateProject(project);
                 project.setImportResultStatus(MasterDataImportResultStatus.UPDATED);
             } catch (RecordNotFoundException e) {
@@ -365,21 +373,25 @@ public class ProjectServiceImpl extends AbstractService implements ProjectServic
         if (!isNew(project.getProjectId())) {
             try {
                 ProjectDao dao = getDao(ProjectDao.class);
-                dao.deleteProject(project);
-                project.setImportResultStatus(MasterDataImportResultStatus.DELETED);
-            } catch (RecordNotFoundException e) {
+                // 学習用プロジェクトは処理しない
+                if (dao.findById(project.getProjectId()).getForLearning() != null) {
+                    return;
+                }
+                    dao.deleteProject(project);
+                    project.setImportResultStatus(MasterDataImportResultStatus.DELETED);
+                } catch(RecordNotFoundException e){
+                    throw new ServiceAbortException("プロジェクトが存在しません",
+                            ApplicationMessageCode.ERROR_PROJECT_NOT_FOUND,
+                            project.getProjectId());
+                } catch(KeyDuplicateException | StaleRecordException e){
+                    throw new ServiceAbortException("プロジェクトの削除に失敗しました",
+                            ApplicationMessageCode.ERROR_PROJECT_FAILED_TO_DELETE,
+                            project.getProjectId());
+                }
+            } else{
                 throw new ServiceAbortException("プロジェクトが存在しません",
                         ApplicationMessageCode.ERROR_PROJECT_NOT_FOUND,
                         project.getProjectId());
-            } catch (KeyDuplicateException | StaleRecordException e) {
-                throw new ServiceAbortException("プロジェクトの削除に失敗しました",
-                        ApplicationMessageCode.ERROR_PROJECT_FAILED_TO_DELETE,
-                        project.getProjectId());
             }
-        } else {
-            throw new ServiceAbortException("プロジェクトが存在しません",
-                    ApplicationMessageCode.ERROR_PROJECT_NOT_FOUND,
-                    project.getProjectId());
         }
-    }
 }

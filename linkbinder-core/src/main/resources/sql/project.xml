@@ -63,6 +63,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       <isNotEmpty property="nameE" prepend="AND">
       name_e like #nameE#  || '%' {escape #escapeChar#}
       </isNotEmpty>
+      for_learning IS NULL
     </dynamic>
   </sql>
 
@@ -217,7 +218,8 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       client_name_e,
       client_name_j,
       name_e,
-      name_j
+      name_j,
+      for_learning
    FROM
       v_system_project
    WHERE
@@ -249,6 +251,24 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     INNER JOIN sys_pj_auth au
       ON pj.pj_id = au.pj_id
   </select>
+
+<select id="findAllSysPJWithOutLearning" resultMap="sysProject">
+    SELECT
+    pj.pj_id as project_id,
+    pj.cl_nm_e as client_name_e,
+    pj.cl_nm_j as client_name_j,
+    pj.pj_nm_e as name_e,
+    pj.pj_nm_j as name_j,
+    pj.for_learning as for_learning,
+    CASE au.apl_sys_aprv_flg
+    WHEN 'X' THEN '○'
+    ELSE apl_sys_aprv_flg
+    END as use_approved_flg
+    FROM sys_pj pj
+    INNER JOIN sys_pj_auth au
+    ON pj.pj_id = au.pj_id
+    WHERE pj.for_learning IS NULL
+</select>
 
   <insert id="createProject">
     INSERT ALL

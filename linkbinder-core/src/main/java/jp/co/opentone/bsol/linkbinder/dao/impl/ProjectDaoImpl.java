@@ -74,6 +74,11 @@ public class ProjectDaoImpl extends AbstractLegacyDao<Project> implements Projec
     private static final String SQL_FIND_ALL = "findAllSysPJ";
 
     /**
+     * SQLID: 学習用プロジェクト以外のプロジェクトを取得する.
+     */
+    private static final String SQL_FIND_ALL_NOT_LEARNING = "findAllSysPJWithOutLearning";
+
+    /**
      * SQLID: 登録されているプロジェクト数(SYS_PJ)を取得する.
      */
     private static final String SQL_FIND_POROJECT_COUNT = "findProjectCount";
@@ -146,6 +151,11 @@ public class ProjectDaoImpl extends AbstractLegacyDao<Project> implements Projec
         // 前方一致検索を行う
          return (List<Project>) getSqlMapClientTemplate()
                                             .queryForList(getSqlId(SQL_FIND_ALL));
+    }
+
+    public List<Project> findAllWithOutLearning() {
+        return (List<Project>) getSqlMapClientTemplate()
+                                            .queryForList(getSqlId(SQL_FIND_ALL_NOT_LEARNING));
     }
 
     /*

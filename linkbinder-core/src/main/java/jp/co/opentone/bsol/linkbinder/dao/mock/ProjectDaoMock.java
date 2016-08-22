@@ -153,6 +153,11 @@ public class ProjectDaoMock extends AbstractLegacyDao<Project> implements Projec
     }
 
     @Override
+    public List<Project> findAllWithOutLearning() {
+        return null;
+    }
+
+    @Override
     public int count() {
         // TODO 自動生成されたメソッド・スタブ
         return 0;

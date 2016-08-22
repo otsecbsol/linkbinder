@@ -82,6 +82,12 @@ public interface ProjectDao extends LegacyGenericDao<Project> {
     List<Project> findAll();
 
     /**
+     * 学習用プロジェクト以外の全プロジェクトを検索する.
+     * @return 検索結果
+     */
+    List<Project> findAllWithOutLearning();
+
+    /**
      * 指定された条件に該当する件数を取得する.
      * @param condition
      *            検索条件

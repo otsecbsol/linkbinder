@@ -72,7 +72,8 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       p.client_name_e,
       p.client_name_j,
       p.name_e,
-      p.name_j
+      p.name_j,
+      for_learning
     FROM
       v_system_project p
       LEFT OUTER JOIN v_project_user u ON
@@ -88,7 +89,8 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       client_name_e,
       client_name_j,
       name_e,
-      name_j
+      name_j,
+      for_learning
     <include refid="findFromWhere"/>
     ORDER BY
     <isEmpty property="sanitizedOrderBy">
@@ -238,6 +240,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     pj.cl_nm_j as client_name_j,
     pj.pj_nm_e as name_e,
     pj.pj_nm_j as name_j,
+    pj.for_learning as for_learning,
     CASE au.apl_sys_aprv_flg
     WHEN 'X' THEN '○'
     ELSE apl_sys_aprv_flg

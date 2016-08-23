@@ -35,6 +35,12 @@ public interface HomeService extends IService {
      */
     List<ProjectSummary> findProjects() throws ServiceAbortException;
 
+    /**
+     * ログインユーザーが利用可能なプロジェクトの一覧を返す.
+     * @return プロジェクトサマリ
+     * @throws ServiceAbortException 検索エラー
+     */
+    List<ProjectSummary> findProjects(int learn) throws ServiceAbortException;
 
     /**
      * 指定されたプロジェクトのサマリ情報を返す.

@@ -200,6 +200,16 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
             ON pcs.project_id = p.project_id
             AND pcs.delete_no = 0
         )
+      <dynamic>
+          <isEqual property="forLearning" compareValue='0'>
+              WHERE
+              for_learning = 0
+          </isEqual>
+          <isEqual property="forLearning" compareValue='1'>
+              WHERE
+              for_learning = 1
+          </isEqual>
+      </dynamic>
     GROUP BY
       project_id,
       client_name_e,
@@ -250,25 +260,19 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
   FROM sys_pj pj
     INNER JOIN sys_pj_auth au
       ON pj.pj_id = au.pj_id
+  <dynamic>
+      <isNotNull property="forLearning">
+          <isEqual property="forLearning" compareValue='0'>
+              WHERE
+              for_learning = 0
+          </isEqual>
+          <isEqual property="forLearning" compareValue='1'>
+              WHERE
+              for_learning = 1
+          </isEqual>
+      </isNotNull>
+  </dynamic>
   </select>
-
-<select id="findAllSysPJWithOutLearning" resultMap="sysProject">
-    SELECT
-    pj.pj_id as project_id,
-    pj.cl_nm_e as client_name_e,
-    pj.cl_nm_j as client_name_j,
-    pj.pj_nm_e as name_e,
-    pj.pj_nm_j as name_j,
-    pj.for_learning as for_learning,
-    CASE au.apl_sys_aprv_flg
-    WHEN 'X' THEN '○'
-    ELSE apl_sys_aprv_flg
-    END as use_approved_flg
-    FROM sys_pj pj
-    INNER JOIN sys_pj_auth au
-    ON pj.pj_id = au.pj_id
-    WHERE pj.for_learning IS NULL
-</select>
 
   <insert id="createProject">
     INSERT ALL

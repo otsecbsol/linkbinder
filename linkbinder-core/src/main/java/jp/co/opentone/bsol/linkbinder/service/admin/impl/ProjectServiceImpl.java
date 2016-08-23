@@ -304,9 +304,10 @@ public class ProjectServiceImpl extends AbstractService implements ProjectServic
         return dao.findAll();
     }
 
-    public List<Project> findAllWithOutLearning() throws ServiceAbortException {
+    @Override
+    public List<Project> findAll(SearchProjectCondition condition) throws ServiceAbortException {
         ProjectDao dao = getDao(ProjectDao.class);
-        return dao.findAllWithOutLearning();
+        return dao.findAll(condition);
     }
 
     /* (非 Javadoc)
@@ -352,9 +353,6 @@ public class ProjectServiceImpl extends AbstractService implements ProjectServic
         } else {
             //更新
             try {
-                if(dao.findById(project.getProjectId()).getForLearning() != null) {
-                    return;
-                }
                 dao.updateProject(project);
                 project.setImportResultStatus(MasterDataImportResultStatus.UPDATED);
             } catch (RecordNotFoundException e) {
@@ -374,9 +372,6 @@ public class ProjectServiceImpl extends AbstractService implements ProjectServic
             try {
                 ProjectDao dao = getDao(ProjectDao.class);
                 // 学習用プロジェクトは処理しない
-                if (dao.findById(project.getProjectId()).getForLearning() != null) {
-                    return;
-                }
                     dao.deleteProject(project);
                     project.setImportResultStatus(MasterDataImportResultStatus.DELETED);
                 } catch(RecordNotFoundException e){

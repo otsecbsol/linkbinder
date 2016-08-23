@@ -72,7 +72,7 @@ public class SearchProjectCondition extends AbstractCondition {
     /**
      * 学習用プロジェクト.
      */
-    private String forLearning;
+    private int forLearning = 0;
 
     /**
      * ORDER BY句に渡す並び順の条件.
@@ -171,14 +171,14 @@ public class SearchProjectCondition extends AbstractCondition {
     /**
      * forLearningを取得する.
      */
-    public String getForLearning() {
+    public int getForLearning() {
         return forLearning;
     }
 
     /**
      * forLearningを設定する.
      */
-    public void setForLearning(String learn) {
+    public void setForLearning(int learn) {
         this.forLearning = learn;
     }
 

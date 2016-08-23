@@ -153,7 +153,7 @@ public class ProjectDaoMock extends AbstractLegacyDao<Project> implements Projec
     }
 
     @Override
-    public List<Project> findAllWithOutLearning() {
+    public  List<Project> findAll(SearchProjectCondition condition) {
         return null;
     }
 

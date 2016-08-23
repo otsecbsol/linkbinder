@@ -357,14 +357,7 @@ public class HomePage extends AbstractPage {
 
             // リストから学習用コンテンツプロジェクトを削除し、別途保持する。
             List<ProjectSummary> newList = new ArrayList<ProjectSummary>();
-            for(int i = 0;i < page.projectSummaryList.size();i++) {
-                String flg = page.projectSummaryList.get(i).getProject().getForLearning();
-                if(null != flg && flg.equals("X")) {
-                    newList.add(page.projectSummaryList.get(i));
-                    page.projectSummaryList.remove(i);
-                }
-            }
-            page.learningProjectSummaryList = newList;
+            page.learningProjectSummaryList = page.homeService.findProjects(1);
 
             // デフォルトプロジェクトがある場合は先頭に並び替え
             if (!StringUtils.isEmpty(page.getCurrentUser().getDefaultProjectId())) {

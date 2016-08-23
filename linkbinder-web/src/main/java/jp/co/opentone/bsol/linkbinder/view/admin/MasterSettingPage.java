@@ -404,8 +404,9 @@ public class MasterSettingPage extends AbstractPage implements MasterDataImporta
                     case PROJECT:
                         //プロジェクト情報
                         fileName +=  "_Project.csv";
+                        SearchProjectCondition condition = createFindProjectsCondition(0);
 
-                        List<Project> list = page.pjService.findAllWithOutLearning();
+                        List<Project> list = page.pjService.findAll(condition);
                         data = page.pjService.generateCSV(list);
                         break;
                     case USER:
@@ -420,7 +421,13 @@ public class MasterSettingPage extends AbstractPage implements MasterDataImporta
                 throw new ServiceAbortException(
                     "Excel Download failed.", e, ApplicationMessageCode.E_DOWNLOAD_FAILED);
             }
+        }
 
+        private SearchProjectCondition createFindProjectsCondition(int learn) {
+            SearchProjectCondition condition = new SearchProjectCondition();
+            condition.setForLearning(learn);
+
+            return condition;
         }
     }
 

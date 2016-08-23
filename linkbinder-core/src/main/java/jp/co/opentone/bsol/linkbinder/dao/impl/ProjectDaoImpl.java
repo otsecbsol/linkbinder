@@ -18,6 +18,7 @@ package jp.co.opentone.bsol.linkbinder.dao.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.elasticsearch.search.SearchHit;
 import org.springframework.stereotype.Repository;
 
 import jp.co.opentone.bsol.framework.core.dao.KeyDuplicateException;
@@ -72,11 +73,6 @@ public class ProjectDaoImpl extends AbstractLegacyDao<Project> implements Projec
      * SQLID: 検索条件を指定してプロジェクト(SYS_PJ)を取得する.
      */
     private static final String SQL_FIND_ALL = "findAllSysPJ";
-
-    /**
-     * SQLID: 学習用プロジェクト以外のプロジェクトを取得する.
-     */
-    private static final String SQL_FIND_ALL_NOT_LEARNING = "findAllSysPJWithOutLearning";
 
     /**
      * SQLID: 登録されているプロジェクト数(SYS_PJ)を取得する.
@@ -153,9 +149,10 @@ public class ProjectDaoImpl extends AbstractLegacyDao<Project> implements Projec
                                             .queryForList(getSqlId(SQL_FIND_ALL));
     }
 
-    public List<Project> findAllWithOutLearning() {
+    public List<Project> findAll(SearchProjectCondition condition) {
+        // 前方一致検索を行う
         return (List<Project>) getSqlMapClientTemplate()
-                                            .queryForList(getSqlId(SQL_FIND_ALL_NOT_LEARNING));
+                .queryForList(getSqlId(SQL_FIND_ALL), condition);
     }
 
     /*

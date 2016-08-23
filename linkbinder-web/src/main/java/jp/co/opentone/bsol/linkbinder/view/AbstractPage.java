@@ -511,7 +511,7 @@ public abstract class AbstractPage implements LinkBinderPage, Serializable {
     public Boolean isLearningProject() {
         Project project = getCurrentProject();
         if(project != null) {
-            if (project.getForLearning() != null && project.getForLearning().equals("x")) {
+            if (project.getForLearning() == 1) {
                 return true;
             }
         }

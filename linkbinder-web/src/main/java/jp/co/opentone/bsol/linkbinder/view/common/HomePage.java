@@ -355,7 +355,7 @@ public class HomePage extends AbstractPage {
         public void execute() throws ServiceAbortException {
             page.projectSummaryList = page.homeService.findProjects();
 
-            // リストから学習用コンテンツプロジェクトを削除し、別途保持する。
+            // 学習用プロジェクトを取得する
             List<ProjectSummary> newList = new ArrayList<ProjectSummary>();
             page.learningProjectSummaryList = page.homeService.findProjects(1);
 

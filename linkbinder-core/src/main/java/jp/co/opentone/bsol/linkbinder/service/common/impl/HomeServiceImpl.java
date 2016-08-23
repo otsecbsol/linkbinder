@@ -112,8 +112,8 @@ public class HomeServiceImpl extends AbstractService implements HomeService {
         return condition;
     }
     /**
-     * Home画面に表示するための検索条件を作成する（学習用pjを指定）
-     * @param learn (0:通常PJを検索,1:学習用PJのみを検索, その他:全てのPJを検索).
+     * Home画面に表示するための検索条件を作成する
+     * @param learn (0:通常PJを検索,1:学習用PJのみを検索, その他数値:全てのPJを検索).
      * @return 検索条件
      */
     private SearchProjectCondition createFindProjectsCondition(int learn) {

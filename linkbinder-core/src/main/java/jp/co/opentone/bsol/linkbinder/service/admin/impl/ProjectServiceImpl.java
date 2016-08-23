@@ -371,7 +371,6 @@ public class ProjectServiceImpl extends AbstractService implements ProjectServic
         if (!isNew(project.getProjectId())) {
             try {
                 ProjectDao dao = getDao(ProjectDao.class);
-                // 学習用プロジェクトは処理しない
                     dao.deleteProject(project);
                     project.setImportResultStatus(MasterDataImportResultStatus.DELETED);
                 } catch(RecordNotFoundException e){

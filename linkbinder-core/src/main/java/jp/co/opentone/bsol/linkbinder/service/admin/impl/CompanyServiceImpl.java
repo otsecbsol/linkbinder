@@ -83,8 +83,8 @@ public class CompanyServiceImpl extends AbstractService implements CompanyServic
     static {
         MASTER_HEADER = new ArrayList<String>();
         MASTER_HEADER.add("ID");
-        MASTER_HEADER.add("Code");
-        MASTER_HEADER.add("Name");
+        MASTER_HEADER.add("会社コード");
+        MASTER_HEADER.add("会社名");
     }
 
     /**
@@ -105,9 +105,9 @@ public class CompanyServiceImpl extends AbstractService implements CompanyServic
     static {
         PROJECT_HEADER = new ArrayList<String>();
         PROJECT_HEADER.add("ID");
-        PROJECT_HEADER.add("Code");
-        PROJECT_HEADER.add("Name");
-        PROJECT_HEADER.add("Role");
+        PROJECT_HEADER.add("会社コード");
+        PROJECT_HEADER.add("会社名");
+        PROJECT_HEADER.add("役割");
     }
 
     /**

@@ -79,8 +79,8 @@ public class CustomFieldServiceImpl extends AbstractService implements CustomFie
     static {
         HEADER = new ArrayList<String>();
         HEADER.add("ID");
-        HEADER.add("Label");
-        HEADER.add("Order No.");
+        HEADER.add("ラベル");
+        HEADER.add("表示順");
     }
 
     /**

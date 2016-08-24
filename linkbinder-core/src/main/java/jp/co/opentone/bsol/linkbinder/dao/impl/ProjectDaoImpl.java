@@ -140,7 +140,7 @@ public class ProjectDaoImpl extends AbstractLegacyDao<Project> implements Projec
     public List<Project> findAll(SearchProjectCondition condition) {
         // 前方一致検索を行う
         return (List<Project>) getSqlMapClientTemplate()
-                .queryForList(getSqlId(SQL_FIND_ALL), condition);
+                                            .queryForList(getSqlId(SQL_FIND_ALL), condition);
     }
 
     /*

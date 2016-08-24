@@ -334,3 +334,13 @@ span.customField {
   background-color: #ffffe0;
   position:absolute;
 }
+.extractedText {
+    width: 800px;
+    height: 600px;
+}
+.customFieldCandidateList {
+    width: 400px;
+}
+.selectAttachment {
+    width: 200px;
+}

@@ -15,15 +15,15 @@
  */
 package jp.co.opentone.bsol.linkbinder.attachment;
 
-import java.io.File;
-import java.io.Serializable;
-
+import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
+import jp.co.opentone.bsol.linkbinder.dto.Attachment;
+import jp.co.opentone.bsol.linkbinder.dto.code.AttachmentFileType;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
-import jp.co.opentone.bsol.linkbinder.dto.Attachment;
+import java.io.File;
+import java.io.Serializable;
 
 /**
  * 添付ファイル情報.
@@ -54,11 +54,34 @@ public abstract class AttachmentInfo implements Serializable {
     private String sourcePath;
 
     /**
+     * ファイル種別.
+     */
+    private AttachmentFileType fileType;
+    /**
+     * システムがファイルから抽出したテキスト.
+     */
+    private String orgExtractedText;
+    /**
+     * ファイルから抽出したテキスト.
+     */
+    private String extractedText;
+    /**
      * 空のインスタンスを生成する.
      */
     public AttachmentInfo() {
     }
 
+    /**
+     * 添付ファイル情報をこのオブジェクトに適用する.
+     * @param attachment 添付ファイル情報
+     */
+    protected void populate(Attachment attachment) {
+        this.fileName = attachment.getFileName();
+        this.fileId = attachment.getId();
+        this.fileType = attachment.getFileType();
+        this.orgExtractedText = attachment.getOrgExtractedText();
+        this.extractedText = attachment.getExtractedText();
+    }
     /**
      * ダウンロードするファイルの内容を返す.
      * @return ファイルの内容
@@ -129,5 +152,45 @@ public abstract class AttachmentInfo implements Serializable {
                 log.warn("A Temporary file {} not deleted.", getSourcePath());
             }
         }
+    }
+
+    /**
+     * 画像ファイルの場合trueを返す.
+     * @return 判定結果
+     */
+    public boolean isImageFile() {
+        return fileType != null && AttachmentFileType.IMAGE == fileType;
+    }
+
+    /**
+     * 抽出テキストが変更されている場合はtrueを返す.
+     * @return 判定結果
+     */
+    public boolean isExtractedTextChanged() {
+        return !StringUtils.equals(orgExtractedText, extractedText);
+    }
+
+    public AttachmentFileType getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(AttachmentFileType fileType) {
+        this.fileType = fileType;
+    }
+
+    public String getOrgExtractedText() {
+        return orgExtractedText;
+    }
+
+    public void setOrgExtractedText(String orgExtractedText) {
+        this.orgExtractedText = orgExtractedText;
+    }
+
+    public String getExtractedText() {
+        return extractedText;
+    }
+
+    public void setExtractedText(String extractedText) {
+        this.extractedText = extractedText;
     }
 }

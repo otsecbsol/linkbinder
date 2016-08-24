@@ -13,5 +13,7 @@
 
   <include file="db/changelog-prod/v1.0.00-106-insert_sample_data.sql"/> 
   <include file="db/changelog-prod/v1.0.00-107-insert_sample_user.sql"/> 
-  <include file="db/changelog-prod/v1.0.00-108-update_sample_user_password.sql"/> 
-</databaseChangeLog> 
+  <include file="db/changelog-prod/v1.0.00-108-update_sample_user_password.sql"/>
+  <include file="db/changelog-prod/v1.1.00-101-modify_attachment.sql"/>
+  <include file="db/changelog-prod/v1.1.00-102-modify_v_correspon_detail.sql"/>
+</databaseChangeLog>

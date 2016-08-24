@@ -62,6 +62,7 @@
     <script type="text/javascript" src="${contextPath}/resource/${v}/javascript/addressInput.js"></script>
     <script type="text/javascript" src="#{contextPath}/resource/#{v}/javascript/fileUpload.js"></script>
     <script type="text/javascript" src="#{contextPath}/resource/#{v}/javascript/page/corresponEdit.js"></script>
+    <script type="text/javascript" src="${contextPath}/resource/${v}/javascript/attachmentExtractedTextEdit.js"></script>
   </ui:define>
   <ui:define name="jsInner">
     history.forward();
@@ -70,7 +71,6 @@
       <ui:param name="styleKey" value="form:deadlineForReply" />
     </ui:include>
   </ui:define>
-
   <ui:define name="body">
     <f:view>
       <h:form id="form" onsubmit="return processSubmit();">
@@ -100,6 +100,14 @@
           value="#{corresponEditPage.corresponGroupId}" />
         <h:inputHidden id="addressUserValues"
           value="#{corresponEditPage.addressUserValues}" />
+
+        <h:panelGroup id="attachmentExtractedTextEditArea">
+          <ui:include src="/include/attachmentExtractedTextEdit.xhtml">
+            <ui:param name="attachment" value="#{corresponEditPage.editingAttachment}" />
+            <ui:param name="page" value="#{corresponEditPage}" />
+          </ui:include>
+        </h:panelGroup>
+
         <div id="corresponEdit">
           <h:inputHidden id="initialDisplaySuccess" value="#{corresponEditPage.initialDisplaySuccess}" />
           <f:validateBean validationGroups="#{corresponEditPage.validationGroups}">
@@ -438,6 +446,18 @@
                               onclick="setFileId('#{attachment.fileId}', #{i.index + 1}); setSkipDisable(true);" />
                           </td>
                           <td>
+                            <h:commandLink value="画像テキストを修正する"
+                                           id="attachmentEditTextLink"
+                                           rendered="#{not empty attachment.extractedText and attachment.imageFile}"
+                                           styleClass="button"
+                                           action="#{corresponEditPage.showAttachmentExtractedTextEditDialog(attachment)}">
+                              <f:ajax
+                                      execute="@this"
+                                      render=":form:attachmentExtractedTextEditArea"
+                                      onevent="AttachmentExtractedTextEdit.onInit" />
+                            </h:commandLink>
+                          </td>
+                          <td>
                             <h:commandLink
                                 id="attachmentDeleteLink"
                                 value="削除"
@@ -458,7 +478,7 @@
                   <h:inputHidden id="attachedCountByDelete" value="#{corresponEditPage.attachedCountByDelete}"/>
                 </h:panelGroup>
                 <div>
-                  <input type="file" id="form:attachment1" name="attachment1" value="" style="width: 50%;display: none;"/>
+                  <input type="file" id="form:attachment1" name="attachment1" value="" class="selectAttachment" style="display: none;"/>
                   <h:inputHidden id="attachmentKey1" value="#{corresponEditPage.attachment1.key}" validator="#{corresponEditPage.validateAttachment}" />
                   <h:inputHidden id="attachmentName1" value="#{corresponEditPage.attachment1.filename}" />
                   <h:inputHidden id="attachmentSize1" value="#{corresponEditPage.attachment1.fileSize}" />
@@ -469,7 +489,7 @@
                   <h:message infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" for="attachmentKey1" />
                 </div>
                 <div>
-                  <input type="file" id="form:attachment2" name="attachment2" value="" style="width: 50%;display: none;"/>
+                  <input type="file" id="form:attachment2" name="attachment2" value="" class="selectAttachment" style="display: none;"/>
                   <h:inputHidden id="attachmentKey2" value="#{corresponEditPage.attachment2.key}" validator="#{corresponEditPage.validateAttachment}" />
                   <h:inputHidden id="attachmentName2" value="#{corresponEditPage.attachment2.filename}" />
                   <h:inputHidden id="attachmentSize2" value="#{corresponEditPage.attachment2.fileSize}" />
@@ -480,7 +500,7 @@
                   <h:message infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" for="attachmentKey2" />
                 </div>
                 <div>
-                  <input type="file" id="form:attachment3" name="attachment3" value="" style="width: 50%;display: none;"/>
+                  <input type="file" id="form:attachment3" name="attachment3" value="" class="selectAttachment" style="display: none;"/>
                   <h:inputHidden id="attachmentKey3" value="#{corresponEditPage.attachment3.key}" validator="#{corresponEditPage.validateAttachment}" />
                   <h:inputHidden id="attachmentName3" value="#{corresponEditPage.attachment3.filename}" />
                   <h:inputHidden id="attachmentSize3" value="#{corresponEditPage.attachment3.fileSize}" />
@@ -490,7 +510,7 @@
                   <h:message infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" for="attachmentKey3" />
                 </div>
                 <div>
-                  <input type="file" id="form:attachment4" name="attachment4" value="" style="width: 50%;display: none;"/>
+                  <input type="file" id="form:attachment4" name="attachment4" value="" class="selectAttachment" style="display: none;"/>
                   <h:inputHidden id="attachmentKey4" value="#{corresponEditPage.attachment4.key}" validator="#{corresponEditPage.validateAttachment}" />
                   <h:inputHidden id="attachmentName4" value="#{corresponEditPage.attachment4.filename}" />
                   <h:inputHidden id="attachmentSize4" value="#{corresponEditPage.attachment4.fileSize}" />
@@ -500,7 +520,7 @@
                   <h:message infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" for="attachmentKey4" />
                 </div>
                 <div>
-                  <input type="file" id="form:attachment5" name="attachment5" value="" style="width: 50%;display: none;"/>
+                  <input type="file" id="form:attachment5" name="attachment5" value="" class="selectAttachment" style="display: none;"/>
                   <h:inputHidden id="attachmentKey5" value="#{corresponEditPage.attachment5.key}" validator="#{corresponEditPage.validateAttachment}" />
                   <h:inputHidden id="attachmentName5" value="#{corresponEditPage.attachment5.filename}" />
                   <h:inputHidden id="attachmentSize5" value="#{corresponEditPage.attachment5.fileSize}" />
@@ -514,495 +534,56 @@
               </div>
             </div>
           </div>
-          <ui:fragment rendered="#{corresponEditPage.correspon.customField1Id != null}">
-          <div class="row">
-            <div class="eight columns">
-              <h:outputLabel for="customField1Value"
-                          value="#{corresponEditPage.correspon.customField1Label}"
-                          rendered="#{corresponEditPage.correspon.customField1Id != null}"/>
-              <h:inputHidden id="groupCustom1Label" value="#{corresponEditPage.correspon.customField1Label}" />
-              <h:inputText id="customField1Value" value="#{corresponEditPage.customField1Value}" maxlength="100"/>
-              <h:message infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" for="customField1Value"/>
-              <h:inputHidden id="customField1Id" value="#{corresponEditPage.customField1Id}" />
-              <span id="group_custom1" style="display: none;">
-                <a href="javascript:void(0);" onclick="Dialog.show('group_custom1_value', this);">選択項目から選ぶ</a>
-              </span>
-              <div id="group_custom1_value" style="display: none;" class="dialog">
-                <table class="diaTbl">
-                  <tr>
-                    <td>
-                      <h:outputLabel value="#{corresponEditPage.correspon.customField1Label}"/>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div style="width: 300px; overflow: auto;">
-                        <h:dataTable id="customFieldValue1"
-                                     value="#{corresponEditPage.customFieldValue1}"
-                                     var="item"
-                                      preserveDataModel="true">
-                          <h:column>
-                            <h:outputLink
-                              value="javascript:dataInput('group_custom1_value', 'form:customField1Id', 'form:customField1Value',#{item.id},'#{item.value}');">
-                              <h:outputText value="#{item.value}"/>
-                            </h:outputLink>
-                          </h:column>
-                        </h:dataTable>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <a href="javascript:void(0);"
-                          onclick="Dialog.close('group_custom1_value');">閉じる</a>
-                    </td>
-                  </tr>
-                </table>
+            <ui:repeat id="customFieldList" value="#{corresponEditPage.correspon.customFields}" var="f" varStatus="loop">
+              <div class="row">
+                <div class="eight columns">
+                  <h:outputLabel for="customFieldValue"
+                                 value="#{f.label}"
+                                 rendered="#{f.projectCustomFieldId != null}"/>
+                  <h:inputHidden id="groupCustomLabel" value="#{f.label}" />
+                  <h:inputText id="customFieldValue" value="#{corresponEditPage.customFieldValues[loop.index]}" maxlength="100"/>
+                  <h:message infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" for="customFieldValue"/>
+                  <h:inputHidden id="customFieldId" value="#{f.projectCustomFieldId}" />
+                <ui:fragment rendered="#{not empty corresponEditPage.customFieldValueCandidateList[loop.index]}">
+                  <a href="javascript:void(0);" onclick="Dialog.show('group_custom#{loop.index + 1}_value', this);">選択項目から選ぶ</a>
+                </ui:fragment>
+                  <div id="group_custom#{loop.index + 1}_value" style="display: none;" class="dialog">
+                    選択してください
+                    <table class="diaTbl customFieldCandidateList">
+                      <tr>
+                        <td>
+                          <h:outputLabel value="#{f.label}"/>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div>
+                            <h:dataTable id="customFieldValueList"
+                                         value="#{corresponEditPage.customFieldValueCandidateList[loop.index]}"
+                                         var="item"
+                                         preserveDataModel="true">
+                              <h:column>
+                                <h:outputLink
+                                        value="javascript:dataInput('group_custom#{loop.index + 1}_value', 'form:customFieldList:#{loop.index}:customFieldId', 'form:customFieldList:#{loop.index}:customFieldValue',#{item.id},'#{item.value}');">
+                                  <h:outputText value="#{item.value}"/>
+                                </h:outputLink>
+                              </h:column>
+                            </h:dataTable>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="action-edit">
+                          <a href="javascript:void(0);"
+                             class="button"
+                             onclick="Dialog.close('group_custom#{loop.index + 1}_value');">閉じる</a>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-          </ui:fragment>
-
-          <ui:fragment rendered="#{corresponEditPage.correspon.customField2Id != null}">
-          <div class="row">
-            <div class="eight columns">
-              <h:outputLabel for="customField2Value"
-                          value="#{corresponEditPage.correspon.customField2Label}"
-                          rendered="#{corresponEditPage.correspon.customField2Id != null}"/>
-              <h:inputHidden id="groupCustom2Label" value="#{corresponEditPage.correspon.customField2Label}" />
-              <h:inputText id="customField2Value" value="#{corresponEditPage.customField2Value}" maxlength="100"/>
-              <h:message infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" for="customField2Value"/>
-              <h:inputHidden id="customField2Id" value="#{corresponEditPage.customField2Id}" />
-              <span id="group_custom2" style="display: none;">
-                <a href="javascript:void(0);" onclick="Dialog.show('group_custom2_value', this);">選択項目から選ぶ</a>
-              </span>
-              <div id="group_custom2_value" style="display: none;" class="dialog">
-                <table class="diaTbl">
-                  <tr>
-                    <td>
-                      <h:outputLabel value="#{corresponEditPage.correspon.customField2Label}"/>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div style="width: 300px; overflow: auto;">
-                        <h:dataTable id="customFieldValue2"
-                                     value="#{corresponEditPage.customFieldValue2}"
-                                     var="item"
-                                      preserveDataModel="true">
-                          <h:column>
-                            <h:outputLink
-                              value="javascript:dataInput('group_custom2_value', 'form:customField2Id', 'form:customField2Value',#{item.id},'#{item.value}');">
-                              <h:outputText value="#{item.value}"/>
-                            </h:outputLink>
-                          </h:column>
-                        </h:dataTable>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <a href="javascript:void(0);"
-                          onclick="Dialog.close('group_custom2_value');">閉じる</a>
-                    </td>
-                  </tr>
-                </table>
-              </div>
-            </div>
-          </div>
-          </ui:fragment>
-
-          <ui:fragment rendered="#{corresponEditPage.correspon.customField3Id != null}">
-          <div class="row">
-            <div class="eight columns">
-              <h:outputLabel for="customField3Value"
-                          value="#{corresponEditPage.correspon.customField3Label}"
-                          rendered="#{corresponEditPage.correspon.customField3Id != null}"/>
-              <h:inputHidden id="groupCustom3Label" value="#{corresponEditPage.correspon.customField3Label}" />
-              <h:inputText id="customField3Value" value="#{corresponEditPage.customField3Value}" maxlength="100"/>
-              <h:message infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" for="customField3Value"/>
-              <h:inputHidden id="customField3Id" value="#{corresponEditPage.customField3Id}" />
-              <span id="group_custom3" style="display: none;">
-                <a href="javascript:void(0);" onclick="Dialog.show('group_custom3_value', this);">選択項目から選ぶ</a>
-              </span>
-              <div id="group_custom3_value" style="display: none;" class="dialog">
-                <table class="diaTbl">
-                  <tr>
-                    <td>
-                      <h:outputLabel value="#{corresponEditPage.correspon.customField3Label}"/>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div style="width: 300px; overflow: auto;">
-                        <h:dataTable id="customFieldValue3"
-                                     value="#{corresponEditPage.customFieldValue3}"
-                                     var="item"
-                                      preserveDataModel="true">
-                          <h:column>
-                            <h:outputLink
-                              value="javascript:dataInput('group_custom3_value', 'form:customField3Id', 'form:customField3Value',#{item.id},'#{item.value}');">
-                              <h:outputText value="#{item.value}"/>
-                            </h:outputLink>
-                          </h:column>
-                        </h:dataTable>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <a href="javascript:void(0);"
-                          onclick="Dialog.close('group_custom3_value');">閉じる</a>
-                    </td>
-                  </tr>
-                </table>
-              </div>
-            </div>
-          </div>
-          </ui:fragment>
-
-          <ui:fragment rendered="#{corresponEditPage.correspon.customField4Id != null}">
-          <div class="row">
-            <div class="eight columns">
-              <h:outputLabel for="customField4Value"
-                          value="#{corresponEditPage.correspon.customField4Label}"
-                          rendered="#{corresponEditPage.correspon.customField4Id != null}"/>
-              <h:inputHidden id="groupCustom4Label" value="#{corresponEditPage.correspon.customField4Label}" />
-              <h:inputText id="customField4Value" value="#{corresponEditPage.customField4Value}" maxlength="100"/>
-              <h:message infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" for="customField4Value"/>
-              <h:inputHidden id="customField4Id" value="#{corresponEditPage.customField4Id}" />
-              <span id="group_custom4" style="display: none;">
-                <a href="javascript:void(0);" onclick="Dialog.show('group_custom4_value', this);">選択項目から選ぶ</a>
-              </span>
-              <div id="group_custom4_value" style="display: none;" class="dialog">
-                <table class="diaTbl">
-                  <tr>
-                    <td>
-                      <h:outputLabel value="#{corresponEditPage.correspon.customField4Label}"/>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div style="width: 300px; overflow: auto;">
-                        <h:dataTable id="customFieldValue4"
-                                     value="#{corresponEditPage.customFieldValue4}"
-                                     var="item"
-                                      preserveDataModel="true">
-                          <h:column>
-                            <h:outputLink
-                              value="javascript:dataInput('group_custom4_value', 'form:customField4Id', 'form:customField4Value',#{item.id},'#{item.value}');">
-                              <h:outputText value="#{item.value}"/>
-                            </h:outputLink>
-                          </h:column>
-                        </h:dataTable>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <a href="javascript:void(0);"
-                          onclick="Dialog.close('group_custom4_value');">閉じる</a>
-                    </td>
-                  </tr>
-                </table>
-              </div>
-            </div>
-          </div>
-          </ui:fragment>
-
-          <ui:fragment rendered="#{corresponEditPage.correspon.customField5Id != null}">
-          <div class="row">
-            <div class="eight columns">
-              <h:outputLabel for="customField5Value"
-                          value="#{corresponEditPage.correspon.customField5Label}"
-                          rendered="#{corresponEditPage.correspon.customField5Id != null}"/>
-              <h:inputHidden id="groupCustom5Label" value="#{corresponEditPage.correspon.customField5Label}" />
-              <h:inputText id="customField5Value" value="#{corresponEditPage.customField5Value}" maxlength="100"/>
-              <h:message infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" for="customField5Value"/>
-              <h:inputHidden id="customField5Id" value="#{corresponEditPage.customField5Id}" />
-              <span id="group_custom5" style="display: none;">
-                <a href="javascript:void(0);" onclick="Dialog.show('group_custom5_value', this);">選択項目から選ぶ</a>
-              </span>
-              <div id="group_custom5_value" style="display: none;" class="dialog">
-                <table class="diaTbl">
-                  <tr>
-                    <td>
-                      <h:outputLabel value="#{corresponEditPage.correspon.customField5Label}"/>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div style="width: 300px; overflow: auto;">
-                        <h:dataTable id="customFieldValue5"
-                                     value="#{corresponEditPage.customFieldValue5}"
-                                     var="item"
-                                      preserveDataModel="true">
-                          <h:column>
-                            <h:outputLink
-                              value="javascript:dataInput('group_custom5_value', 'form:customField5Id', 'form:customField5Value',#{item.id},'#{item.value}');">
-                              <h:outputText value="#{item.value}"/>
-                            </h:outputLink>
-                          </h:column>
-                        </h:dataTable>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <a href="javascript:void(0);"
-                          onclick="Dialog.close('group_custom5_value');">閉じる</a>
-                    </td>
-                  </tr>
-                </table>
-              </div>
-            </div>
-          </div>
-          </ui:fragment>
-
-          <ui:fragment rendered="#{corresponEditPage.correspon.customField6Id != null}">
-          <div class="row">
-            <div class="eight columns">
-              <h:outputLabel for="customField6Value"
-                          value="#{corresponEditPage.correspon.customField6Label}"
-                          rendered="#{corresponEditPage.correspon.customField6Id != null}"/>
-              <h:inputHidden id="groupcustom6Label" value="#{corresponEditPage.correspon.customField6Label}" />
-              <h:inputText id="customField6Value" value="#{corresponEditPage.customField6Value}" maxlength="100"/>
-              <h:message infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" for="customField6Value"/>
-              <h:inputHidden id="customField6Id" value="#{corresponEditPage.customField6Id}" />
-              <span id="group_custom6" style="display: none;">
-                <a href="javascript:void(0);" onclick="Dialog.show('group_custom6_value', this);">選択項目から選ぶ</a>
-              </span>
-              <div id="group_custom6_value" style="display: none;" class="dialog">
-                <table class="diaTbl">
-                  <tr>
-                    <td>
-                      <h:outputLabel value="#{corresponEditPage.correspon.customField6Label}"/>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div style="width: 300px; overflow: auto;">
-                        <h:dataTable id="customFieldValue6"
-                                     value="#{corresponEditPage.customFieldValue6}"
-                                     var="item"
-                                      preserveDataModel="true">
-                          <h:column>
-                            <h:outputLink
-                              value="javascript:dataInput('group_custom6_value', 'form:customField6Id', 'form:customField6Value',#{item.id},'#{item.value}');">
-                              <h:outputText value="#{item.value}"/>
-                            </h:outputLink>
-                          </h:column>
-                        </h:dataTable>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <a href="javascript:void(0);"
-                          onclick="Dialog.close('group_custom6_value');">閉じる</a>
-                    </td>
-                  </tr>
-                </table>
-              </div>
-            </div>
-          </div>
-          </ui:fragment>
-
-          <ui:fragment rendered="#{corresponEditPage.correspon.customField7Id != null}">
-          <div class="row">
-            <div class="eight columns">
-              <h:outputLabel for="customField7Value"
-                          value="#{corresponEditPage.correspon.customField7Label}"
-                          rendered="#{corresponEditPage.correspon.customField7Id != null}"/>
-              <h:inputHidden id="groupcustom7Label" value="#{corresponEditPage.correspon.customField7Label}" />
-              <h:inputText id="customField7Value" value="#{corresponEditPage.customField7Value}" maxlength="100"/>
-              <h:message infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" for="customField7Value"/>
-              <h:inputHidden id="customField7Id" value="#{corresponEditPage.customField7Id}" />
-              <span id="group_custom7" style="display: none;">
-                <a href="javascript:void(0);" onclick="Dialog.show('group_custom7_value', this);">選択項目から選ぶ</a>
-              </span>
-              <div id="group_custom7_value" style="display: none;" class="dialog">
-                <table class="diaTbl">
-                  <tr>
-                    <td>
-                      <h:outputLabel value="#{corresponEditPage.correspon.customField7Label}"/>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div style="width: 300px; overflow: auto;">
-                        <h:dataTable id="customFieldValue7"
-                                     value="#{corresponEditPage.customFieldValue7}"
-                                     var="item"
-                                      preserveDataModel="true">
-                          <h:column>
-                            <h:outputLink
-                              value="javascript:dataInput('group_custom7_value', 'form:customField7Id', 'form:customField7Value',#{item.id},'#{item.value}');">
-                              <h:outputText value="#{item.value}"/>
-                            </h:outputLink>
-                          </h:column>
-                        </h:dataTable>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <a href="javascript:void(0);"
-                          onclick="Dialog.close('group_custom7_value');">閉じる</a>
-                    </td>
-                  </tr>
-                </table>
-              </div>
-            </div>
-          </div>
-          </ui:fragment>
-
-          <ui:fragment rendered="#{corresponEditPage.correspon.customField8Id != null}">
-          <div class="row">
-            <div class="eight columns">
-              <h:outputLabel for="customField8Value"
-                          value="#{corresponEditPage.correspon.customField8Label}"
-                          rendered="#{corresponEditPage.correspon.customField8Id != null}"/>
-              <h:inputHidden id="groupcustom8Label" value="#{corresponEditPage.correspon.customField8Label}" />
-              <h:inputText id="customField8Value" value="#{corresponEditPage.customField8Value}" maxlength="100"/>
-              <h:message infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" for="customField8Value"/>
-              <h:inputHidden id="customField8Id" value="#{corresponEditPage.customField8Id}" />
-              <span id="group_custom8" style="display: none;">
-                <a href="javascript:void(0);" onclick="Dialog.show('group_custom8_value', this);">選択項目から選ぶ</a>
-              </span>
-              <div id="group_custom8_value" style="display: none;" class="dialog">
-                <table class="diaTbl">
-                  <tr>
-                    <td>
-                      <h:outputLabel value="#{corresponEditPage.correspon.customField8Label}"/>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div style="width: 300px; overflow: auto;">
-                        <h:dataTable id="customFieldValue8"
-                                     value="#{corresponEditPage.customFieldValue8}"
-                                     var="item"
-                                      preserveDataModel="true">
-                          <h:column>
-                            <h:outputLink
-                              value="javascript:dataInput('group_custom8_value', 'form:customField8Id', 'form:customField8Value',#{item.id},'#{item.value}');">
-                              <h:outputText value="#{item.value}"/>
-                            </h:outputLink>
-                          </h:column>
-                        </h:dataTable>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <a href="javascript:void(0);"
-                          onclick="Dialog.close('group_custom8_value');">閉じる</a>
-                    </td>
-                  </tr>
-                </table>
-              </div>
-            </div>
-          </div>
-          </ui:fragment>
-
-          <ui:fragment rendered="#{corresponEditPage.correspon.customField9Id != null}">
-          <div class="row">
-            <div class="eight columns">
-              <h:outputLabel for="customField9Value"
-                          value="#{corresponEditPage.correspon.customField9Label}"
-                          rendered="#{corresponEditPage.correspon.customField9Id != null}"/>
-              <h:inputHidden id="groupcustom9Label" value="#{corresponEditPage.correspon.customField9Label}" />
-              <h:inputText id="customField9Value" value="#{corresponEditPage.customField9Value}" maxlength="100"/>
-              <h:message infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" for="customField9Value"/>
-              <h:inputHidden id="customField9Id" value="#{corresponEditPage.customField9Id}" />
-              <span id="group_custom9" style="display: none;">
-                <a href="javascript:void(0);" onclick="Dialog.show('group_custom9_value', this);">選択項目から選ぶ</a>
-              </span>
-              <div id="group_custom9_value" style="display: none;" class="dialog">
-                <table class="diaTbl">
-                  <tr>
-                    <td>
-                      <h:outputLabel value="#{corresponEditPage.correspon.customField9Label}"/>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div style="width: 300px; overflow: auto;">
-                        <h:dataTable id="customFieldValue9"
-                                     value="#{corresponEditPage.customFieldValue9}"
-                                     var="item"
-                                      preserveDataModel="true">
-                          <h:column>
-                            <h:outputLink
-                              value="javascript:dataInput('group_custom9_value', 'form:customField9Id', 'form:customField9Value',#{item.id},'#{item.value}');">
-                              <h:outputText value="#{item.value}"/>
-                            </h:outputLink>
-                          </h:column>
-                        </h:dataTable>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <a href="javascript:void(0);"
-                          onclick="Dialog.close('group_custom9_value');">閉じる</a>
-                    </td>
-                  </tr>
-                </table>
-              </div>
-            </div>
-          </div>
-          </ui:fragment>
-
-          <ui:fragment rendered="#{corresponEditPage.correspon.customField10Id != null}">
-          <div class="row">
-            <div class="eight columns">
-              <h:outputLabel for="customField10Value"
-                          value="#{corresponEditPage.correspon.customField10Label}"
-                          rendered="#{corresponEditPage.correspon.customField10Id != null}"/>
-              <h:inputHidden id="groupCustom10Label" value="#{corresponEditPage.correspon.customField10Label}" />
-              <h:inputText id="customField10Value" value="#{corresponEditPage.customField10Value}" maxlength="100"/>
-              <h:message infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" for="customField10Value"/>
-              <h:inputHidden id="customField10Id" value="#{corresponEditPage.customField10Id}" />
-              <span id="group_custom10" style="display: none;">
-                <a href="javascript:void(0);" onclick="Dialog.show('group_custom10_value', this);">選択項目から選ぶ</a>
-              </span>
-              <div id="group_custom10_value" style="display: none;" class="dialog">
-                <table class="diaTbl">
-                  <tr>
-                    <td>
-                      <h:outputLabel value="#{corresponEditPage.correspon.customField10Label}"/>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div style="width: 300px; overflow: auto;">
-                        <h:dataTable id="customFieldValue10"
-                                     value="#{corresponEditPage.customFieldValue10}"
-                                     var="item"
-                                      preserveDataModel="true">
-                          <h:column>
-                            <h:outputLink
-                              value="javascript:dataInput('group_custom10_value', 'form:customField10Id', 'form:customField10Value',#{item.id},'#{item.value}');">
-                              <h:outputText value="#{item.value}"/>
-                            </h:outputLink>
-                          </h:column>
-                        </h:dataTable>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <a href="javascript:void(0);"
-                          onclick="Dialog.close('group_custom10_value');">閉じる</a>
-                    </td>
-                  </tr>
-                </table>
-              </div>
-            </div>
-          </div>
-          </ui:fragment>
+            </ui:repeat>
         </f:validateBean>
         </div>
 

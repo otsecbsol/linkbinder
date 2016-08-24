@@ -67,6 +67,11 @@
                          warnClass="warn"
                          fatalClass="fatal"
                          for="keyword" />
+              <h:selectOneRadio id="operator"
+                                styleClass="select-group"
+                                layout="pageDirection" value="#{corresponSearchPage.operator}">
+                <f:selectItems value="#{corresponSearchPage.operatorSelectList}" styleClass="label-body"/>
+              </h:selectOneRadio>
             </div>
           </div>
           <div class="row">
@@ -79,8 +84,12 @@
                 <f:selectItems value="#{corresponSearchPage.fullTextSearchModeSelectList}" />
               </h:selectOneMenu>
               <label>
-                  <h:selectBooleanCheckbox id="includeImage" value="#{corresponSearchPage.includeImage}"/>
-                  <span class="label-body">画像内テキストを検索対象に含める</span>
+                <h:selectBooleanCheckbox id="includeImage" value="#{corresponSearchPage.includeImage}"/>
+                <span class="label-body">画像ファイル</span>
+              </label>
+              <label>
+                  <h:selectBooleanCheckbox id="includeNonImage" value="#{corresponSearchPage.includeNonImage}"/>
+                  <span class="label-body">画像ファイル以外</span>
               </label>
             </div>
           </div>

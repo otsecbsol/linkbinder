@@ -174,12 +174,23 @@ public class CorresponFullTextSearchServiceImpl extends AbstractService implemen
         // 検索対象タイプ (インデックス生成時に設定した名前)
         option.setSearchTypeName(SystemConfig.getValue(Constants.KEY_ELASTICSEARCH_TYPE_NAME));
         option.setKeyword(condition.getKeyword());
+        if (condition.getOperator() != null) {
+            option.setOperator((condition.getOperator().toElasticsearchOperator()));
+        }
         // 検索対象とするフィールド
         // この場合、 document.titleやdocument.attachments.name が検索対象となる
         switch (condition.getFullTextSearchMode()) {
         case ALL:
-            option.addSearchFields("title", "body", "attachments.name", "attachments.content.content");
-            option.addHighlightFields("title", "body", "attachments.name", "attachments.content.content");
+            option.addSearchFields("title", "body", "lastModified");
+            option.addHighlightFields("title", "body", "lastModified");
+            if (condition.isIncludeNonImage()) {
+                option.addSearchFields("attachments.name", "attachments.content.content");
+                option.addHighlightFields("attachments.name", "attachments.content.content");
+            }
+            if (condition.isIncludeImage()) {
+                option.addSearchFields("attachments.extractedText");
+                option.addHighlightFields("attachments.extractedText");
+            }
             break;
         case SUBJECT:
             option.addSearchFields("title");
@@ -192,12 +203,11 @@ public class CorresponFullTextSearchServiceImpl extends AbstractService implemen
         case ATTACHED_FILE:
             option.addSearchFields("attachments.name", "attachments.content.content");
             option.addHighlightFields("attachments.name", "attachments.content.content");
+            if (condition.isIncludeImage()) {
+                option.addSearchFields("attachments.extractedText");
+                option.addHighlightFields("attachments.extractedText");
+            }
             break;
-        }
-
-        if (condition.isIncludeImage()) {
-            option.addSearchFields("attachments.extractedText");
-            option.addHighlightFields("attachments.extractedText");
         }
 
         return option;

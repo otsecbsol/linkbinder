@@ -33,6 +33,8 @@ public class ElasticsearchSearchOption implements Serializable {
     private String searchTypeName;
     /** 検索キーワード. */
     private String keyword;
+    /** 検索演算子. */
+    private Operator operator = Operator.OR;
     /** 検索対象フィールド. */
     private List<String> searchFields = new ArrayList<>();
     /** 検索結果をハイライトするフィールド. */
@@ -87,5 +89,21 @@ public class ElasticsearchSearchOption implements Serializable {
     }
     public void setSearchTypeName(String searchTypeName) {
         this.searchTypeName = searchTypeName;
+    }
+
+    public Operator getOperator() {
+        return operator;
+    }
+
+    public void setOperator(Operator operator) {
+        this.operator = operator;
+    }
+
+    /**
+     * 演算子.
+     */
+    public static enum Operator {
+        AND,
+        OR
     }
 }

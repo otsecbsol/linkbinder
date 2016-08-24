@@ -17,8 +17,7 @@ package jp.co.opentone.bsol.linkbinder.service.common.impl;
 
 import java.util.List;
 
-import jp.co.opentone.bsol.framework.core.config.SystemConfig;
-import jp.co.opentone.bsol.linkbinder.Constants;
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,18 +53,10 @@ public class HomeServiceImpl extends AbstractService implements HomeService {
     private static final long serialVersionUID = -8730574042319563347L;
 
     /* (non-Javadoc)
-     * @see jp.co.opentone.bsol.linkbinder.service.common.HomeService#findProjects()
+     * @see jp.co.opentone.bsol.linkbinder.service.common.HomeService#findProjects(ForLearning learn)
      */
     @Transactional(readOnly = true)
-    public List<ProjectSummary> findProjects() throws ServiceAbortException {
-        return findProjectSummarys(createFindProjectsCondition());
-    }
-
-    /* (non-Javadoc)
-     * @see jp.co.opentone.bsol.linkbinder.service.common.HomeService#findProjects()
-     */
-    @Transactional(readOnly = true)
-    public List<ProjectSummary> findProjects(int learn) throws ServiceAbortException {
+    public List<ProjectSummary> findProjects(ForLearning learn) throws ServiceAbortException {
         return findProjectSummarys(createFindProjectsCondition(learn));
     }
 
@@ -116,7 +107,7 @@ public class HomeServiceImpl extends AbstractService implements HomeService {
      * @param learn (0:通常PJを検索,1:学習用PJのみを検索, その他数値:全てのPJを検索).
      * @return 検索条件
      */
-    private SearchProjectCondition createFindProjectsCondition(int learn) {
+    private SearchProjectCondition createFindProjectsCondition(ForLearning learn) {
         SearchProjectCondition condition = new SearchProjectCondition();
         condition.setEmpNo(getCurrentUser().getEmpNo());
         condition.setSystemAdmin(isSystemAdmin(getCurrentUser()));

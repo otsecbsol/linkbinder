@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -147,7 +148,7 @@ public class ProjectSwitchFilter extends AbstractFilter {
 
         try {
             /**プロジェクトの妥当性検査.*/
-            List<ProjectSummary> projectSummaries = homeService.findProjects();
+            List<ProjectSummary> projectSummaries = homeService.findProjects(ForLearning.NORMAL);
             for (ProjectSummary projectSummary : projectSummaries) {
                 if (projectSummary.getProject().getProjectId().equals(projectId)) {
                     // プロジェクトカスタム設定情報をプロジェクトに設定

@@ -18,7 +18,6 @@ package jp.co.opentone.bsol.linkbinder.dao.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.elasticsearch.search.SearchHit;
 import org.springframework.stereotype.Repository;
 
 import jp.co.opentone.bsol.framework.core.dao.KeyDuplicateException;
@@ -136,17 +135,6 @@ public class ProjectDaoImpl extends AbstractLegacyDao<Project> implements Projec
                                                           likeCondition,
                                                           skipResults,
                                                           maxResults);
-    }
-    /*
-     * (non-Javadoc)
-     * @seejp.co.opentone.bsol.linkbinder.dao.ProjectDao#find(jp.co.opentone.bsol.linkbinder.dto.
-     * SearchProjectCondition)
-     */
-    @SuppressWarnings("unchecked")
-    public List<Project> findAll() {
-        // 前方一致検索を行う
-         return (List<Project>) getSqlMapClientTemplate()
-                                            .queryForList(getSqlId(SQL_FIND_ALL));
     }
 
     public List<Project> findAll(SearchProjectCondition condition) {

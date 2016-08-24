@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -104,7 +105,7 @@ public class HomeServiceImplTest  extends AbstractTestCase {
             }
         };
 
-        List<ProjectSummary> actual = service.findProjects();
+        List<ProjectSummary> actual = service.findProjects(ForLearning.NORMAL);
 
         assertArrayEquals(expList.toArray(), actual.toArray());
     }
@@ -128,7 +129,7 @@ public class HomeServiceImplTest  extends AbstractTestCase {
             }
         };
 
-        List<ProjectSummary> actual = service.findProjects();
+        List<ProjectSummary> actual = service.findProjects(ForLearning.NORMAL);
 
         assertArrayEquals(expList.toArray(), actual.toArray());
     }

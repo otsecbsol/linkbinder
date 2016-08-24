@@ -298,11 +298,6 @@ public class ProjectServiceImpl extends AbstractService implements ProjectServic
         return  findSysPj(pjId) == null ;
     }
 
-    @Override
-    public List<Project> findAll() throws ServiceAbortException {
-        ProjectDao dao = getDao(ProjectDao.class);
-        return dao.findAll();
-    }
 
     @Override
     public List<Project> findAll(SearchProjectCondition condition) throws ServiceAbortException {
@@ -371,21 +366,21 @@ public class ProjectServiceImpl extends AbstractService implements ProjectServic
         if (!isNew(project.getProjectId())) {
             try {
                 ProjectDao dao = getDao(ProjectDao.class);
-                    dao.deleteProject(project);
-                    project.setImportResultStatus(MasterDataImportResultStatus.DELETED);
-                } catch(RecordNotFoundException e){
-                    throw new ServiceAbortException("プロジェクトが存在しません",
-                            ApplicationMessageCode.ERROR_PROJECT_NOT_FOUND,
-                            project.getProjectId());
-                } catch(KeyDuplicateException | StaleRecordException e){
-                    throw new ServiceAbortException("プロジェクトの削除に失敗しました",
-                            ApplicationMessageCode.ERROR_PROJECT_FAILED_TO_DELETE,
-                            project.getProjectId());
-                }
-            } else{
+                dao.deleteProject(project);
+                project.setImportResultStatus(MasterDataImportResultStatus.DELETED);
+            } catch (RecordNotFoundException e) {
                 throw new ServiceAbortException("プロジェクトが存在しません",
                         ApplicationMessageCode.ERROR_PROJECT_NOT_FOUND,
                         project.getProjectId());
+            } catch (KeyDuplicateException | StaleRecordException e) {
+                throw new ServiceAbortException("プロジェクトの削除に失敗しました",
+                        ApplicationMessageCode.ERROR_PROJECT_FAILED_TO_DELETE,
+                        project.getProjectId());
             }
+        } else {
+            throw new ServiceAbortException("プロジェクトが存在しません",
+                    ApplicationMessageCode.ERROR_PROJECT_NOT_FOUND,
+                    project.getProjectId());
         }
+    }
 }

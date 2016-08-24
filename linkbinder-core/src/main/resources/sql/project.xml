@@ -63,7 +63,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       <isNotEmpty property="nameE" prepend="AND">
       name_e like #nameE#  || '%' {escape #escapeChar#}
       </isNotEmpty>
-      for_learning IS NULL
+      for_learning = 0
     </dynamic>
   </sql>
 
@@ -201,14 +201,10 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
             AND pcs.delete_no = 0
         )
       <dynamic>
-          <isEqual property="forLearning" compareValue='0'>
+          <isNotNull property="forLearning">
               WHERE
-              for_learning = 0
-          </isEqual>
-          <isEqual property="forLearning" compareValue='1'>
-              WHERE
-              for_learning = 1
-          </isEqual>
+              for_learning = #forLearning#
+          </isNotNull>
       </dynamic>
     GROUP BY
       project_id,
@@ -262,14 +258,8 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       ON pj.pj_id = au.pj_id
   <dynamic>
       <isNotNull property="forLearning">
-          <isEqual property="forLearning" compareValue='0'>
               WHERE
-              for_learning = 0
-          </isEqual>
-          <isEqual property="forLearning" compareValue='1'>
-              WHERE
-              for_learning = 1
-          </isEqual>
+              for_learning = #forLearning#
       </isNotNull>
   </dynamic>
   </select>

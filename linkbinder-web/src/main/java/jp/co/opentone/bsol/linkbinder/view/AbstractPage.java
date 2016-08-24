@@ -29,6 +29,7 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
 import jp.co.opentone.bsol.framework.core.config.SystemConfig;
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -508,10 +509,10 @@ public abstract class AbstractPage implements LinkBinderPage, Serializable {
         return ProjectCustomSetting.DEFAULT_CORRESPON_STATUS;
     }
 
-    public Boolean isLearningProject() {
+    public boolean isLearningProject() {
         Project project = getCurrentProject();
         if(project != null) {
-            if (project.getForLearning() == 1) {
+            if (ForLearning.LEARNING.equals(project.getForLearning())) {
                 return true;
             }
         }

@@ -15,30 +15,29 @@
  */
 package jp.co.opentone.bsol.linkbinder.view.common;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.ManagedBean;
-import javax.annotation.Resource;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
-
 import jp.co.opentone.bsol.framework.core.config.SystemConfig;
-import jp.co.opentone.bsol.linkbinder.Constants;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.context.annotation.Scope;
-
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
 import jp.co.opentone.bsol.framework.web.extension.jsf.annotation.Initialize;
 import jp.co.opentone.bsol.framework.web.extension.jsf.annotation.Transfer;
+import jp.co.opentone.bsol.linkbinder.Constants;
 import jp.co.opentone.bsol.linkbinder.action.AbstractAction;
 import jp.co.opentone.bsol.linkbinder.dto.ProjectSummary;
 import jp.co.opentone.bsol.linkbinder.dto.User;
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import jp.co.opentone.bsol.linkbinder.dto.code.ReadStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowStatus;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchCorresponCondition;
 import jp.co.opentone.bsol.linkbinder.service.common.HomeService;
 import jp.co.opentone.bsol.linkbinder.view.AbstractPage;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.context.annotation.Scope;
+
+import javax.annotation.ManagedBean;
+import javax.annotation.Resource;
+import javax.faces.model.DataModel;
+import javax.faces.model.ListDataModel;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 当システムにログイン後、最初に表示されるホーム画面.
@@ -353,11 +352,10 @@ public class HomePage extends AbstractPage {
          * @see jp.co.opentone.bsol.framework.action.Action#execute()
          */
         public void execute() throws ServiceAbortException {
-            page.projectSummaryList = page.homeService.findProjects();
+            page.projectSummaryList = page.homeService.findProjects(ForLearning.NORMAL);
 
             // 学習用プロジェクトを取得する
-            List<ProjectSummary> newList = new ArrayList<ProjectSummary>();
-            page.learningProjectSummaryList = page.homeService.findProjects(1);
+            page.learningProjectSummaryList = page.homeService.findProjects(ForLearning.LEARNING);
 
             // デフォルトプロジェクトがある場合は先頭に並び替え
             if (!StringUtils.isEmpty(page.getCurrentUser().getDefaultProjectId())) {

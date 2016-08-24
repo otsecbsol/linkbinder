@@ -24,6 +24,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -404,7 +405,7 @@ public class MasterSettingPage extends AbstractPage implements MasterDataImporta
                     case PROJECT:
                         //プロジェクト情報
                         fileName +=  "_Project.csv";
-                        SearchProjectCondition condition = createFindProjectsCondition(0);
+                        SearchProjectCondition condition = createFindProjectsCondition(ForLearning.NORMAL);
 
                         List<Project> list = page.pjService.findAll(condition);
                         data = page.pjService.generateCSV(list);
@@ -423,7 +424,7 @@ public class MasterSettingPage extends AbstractPage implements MasterDataImporta
             }
         }
 
-        private SearchProjectCondition createFindProjectsCondition(int learn) {
+        private SearchProjectCondition createFindProjectsCondition(ForLearning learn) {
             SearchProjectCondition condition = new SearchProjectCondition();
             condition.setForLearning(learn);
 

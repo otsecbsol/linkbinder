@@ -60,6 +60,9 @@
       javaType="jp.co.opentone.bsol.linkbinder.dto.code.RSSCategory"
       callback="jp.co.opentone.bsol.linkbinder.dao.handler.RSSCategoryValueHandler" />
   <typeHandler
+          javaType="jp.co.opentone.bsol.linkbinder.dto.code.ForLearning"
+          callback="jp.co.opentone.bsol.linkbinder.dao.handler.ForLearningValueHandler" />
+  <typeHandler
       javaType="java.lang.String"
       callback="jp.co.opentone.bsol.framework.core.extension.ibatis.StringNullValueHandler" />
   <typeHandler

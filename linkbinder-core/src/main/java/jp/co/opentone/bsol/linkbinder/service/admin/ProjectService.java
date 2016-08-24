@@ -68,21 +68,15 @@ public interface ProjectService extends IService {
      *             検索に失敗
      */
     Project find(String id) throws ServiceAbortException;
+
     /**
-     * 全プロジェクト情報を返す.
+     * 検索条件に一致するプロジェクトを検索する.
      * @return 検索結果。一致結果がない場合はnullを返却する。
      * @throws ServiceAbortException
      *             検索に失敗
      */
     List<Project> findAll(SearchProjectCondition condition) throws ServiceAbortException;
 
-    /**
-     * 全プロジェクト情報を返す.
-     * @return 検索結果。一致結果がない場合はnullを返却する。
-     * @throws ServiceAbortException
-     *             検索に失敗
-     */
-    List<Project> findAll() throws ServiceAbortException;
 
     /**
      * 指定されたプロジェクト情報一覧をCSV形式に変換して返す.

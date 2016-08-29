@@ -15,25 +15,8 @@
  */
 package jp.co.opentone.bsol.linkbinder.view;
 
-import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
-
-import jp.co.opentone.bsol.framework.core.config.SystemConfig;
-import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang.StringUtils;
-
 import jp.co.opentone.bsol.framework.core.ProcessContext;
+import jp.co.opentone.bsol.framework.core.config.SystemConfig;
 import jp.co.opentone.bsol.framework.core.exception.ReflectionRuntimeException;
 import jp.co.opentone.bsol.framework.core.message.Message;
 import jp.co.opentone.bsol.framework.core.message.Messages;
@@ -55,6 +38,7 @@ import jp.co.opentone.bsol.linkbinder.dto.ProjectUser;
 import jp.co.opentone.bsol.linkbinder.dto.User;
 import jp.co.opentone.bsol.linkbinder.dto.Workflow;
 import jp.co.opentone.bsol.linkbinder.dto.code.CorresponStatus;
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import jp.co.opentone.bsol.linkbinder.dto.condition.AbstractCondition;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchCorresponCondition;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchFullTextSearchCorresponCondition;
@@ -66,6 +50,20 @@ import jp.co.opentone.bsol.linkbinder.service.UserRoleHelper;
 import jp.co.opentone.bsol.linkbinder.service.WorkflowHelper;
 import jp.co.opentone.bsol.linkbinder.service.admin.ProjectCustomSettingService;
 import jp.co.opentone.bsol.linkbinder.service.admin.UserService;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.StringUtils;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Pageの親クラス.
@@ -517,6 +515,15 @@ public abstract class AbstractPage implements LinkBinderPage, Serializable {
             }
         }
         return false;
+    }
+
+    /**
+     * ログインユーザーが学習用文書を利用できる場合はtrueを返す.
+     * @return 利用可の場合はtrue
+     */
+    public boolean isUseLearning() {
+        //FIXME 判定
+        return true;
     }
 
     /**

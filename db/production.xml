@@ -19,4 +19,5 @@
   <include file="db/changelog-prod/v1.1.00-103-create_learning.sql"/>
   <include file="db/changelog-prod/v1.1.00-104-modify_for_learning.sql"/>
   <include file="db/changelog-prod/v1.1.00-105-modify_trigger_for_learning.sql"/>
+  <include file="db/changelog-prod/v1.1.00-106-insert_learning_project.sql"/>
 </databaseChangeLog>

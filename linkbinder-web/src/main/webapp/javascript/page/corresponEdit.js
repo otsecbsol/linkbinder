@@ -10,15 +10,6 @@ function dataInput(dialogId, keyId, keyValue, id, value) {
     Dialog.close(dialogId);
 }
 
-function setupCustomFields() {
-    for (var i = 1; i <= 10; i++) {
-        var label = document.getElementById('form:groupCustom' + i + 'Label');
-        if (label && label.value != '') {
-            document.getElementById('group_custom' + i).style.display='';
-        }
-    }
-}
-
 /* Attachment */
 function getAttachmentCount() {
     var elem = document.getElementById('form:attachedCount');
@@ -312,12 +303,12 @@ $(document).ready(function() {
         ],
         toolbar1: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | preview media | forecolor backcolor emoticons',
         image_advtab: true,
-        content_css : "../stylesheet/content.css"
+        content_css : "../stylesheet/content.css",
+        editor_deselector: "ignoreTinyEditor"
     });
 
     if (document.getElementById('form:initialDisplaySuccess').value == 'true') {
         setupAttachmentsForErrorBack();
-        setupCustomFields();
         changeReplyRequired();
     } else {
         document.getElementById('viewArea').style.display = 'none';

@@ -15,16 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.view.correspon.util;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
 import jp.co.opentone.bsol.framework.core.config.SystemConfig;
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
 import jp.co.opentone.bsol.framework.core.util.ArgumentValidator;
@@ -57,6 +47,14 @@ import jp.co.opentone.bsol.linkbinder.service.admin.UserService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponService;
 import jp.co.opentone.bsol.linkbinder.view.correspon.CorresponEditPage;
 import jp.co.opentone.bsol.linkbinder.view.correspon.strategy.CorresponSetupStrategy;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * コレポン編集画面の初期表示に必要な処理を行うクラス.
@@ -340,6 +338,7 @@ public class CorresponEditPageInitializer implements Serializable {
                 String p = String.format(property, i);
                 PropertyGetUtil.setProperty(page, p, PropertyGetUtil.getProperty(correspon, p));
             }
+            page.initCustomFieldValues();
         }
     }
 
@@ -545,6 +544,8 @@ public class CorresponEditPageInitializer implements Serializable {
                     String.format(pageProperty, i),
                     null);
             }
+
+            page.initCustomFieldValueCandidateList();
         }
 
         private List<ProjectUser> getProjectUsers() throws ServiceAbortException {

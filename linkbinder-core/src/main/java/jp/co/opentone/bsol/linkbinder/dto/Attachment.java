@@ -15,13 +15,17 @@
  */
 package jp.co.opentone.bsol.linkbinder.dto;
 
+import jp.co.opentone.bsol.framework.core.dao.Entity;
+import jp.co.opentone.bsol.linkbinder.dto.UpdateMode.ModeHolder;
+import jp.co.opentone.bsol.linkbinder.dto.code.AttachmentFileType;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
+
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
-import jp.co.opentone.bsol.framework.core.dao.Entity;
-import jp.co.opentone.bsol.linkbinder.dto.UpdateMode.ModeHolder;
 
 /**
  * テーブル [v_attachment] の1レコードを表すDto.
@@ -30,9 +34,6 @@ import jp.co.opentone.bsol.linkbinder.dto.UpdateMode.ModeHolder;
  * </p>
  * @author db2sgen
  * <p>
- * $Date: 2011-05-17 15:46:33 +0900 (火, 17  5 2011) $
- * $Rev: 3923 $
- * $Author: nemoto $
  */
 public class Attachment extends AbstractDto implements Entity, ModeHolder {
 
@@ -95,6 +96,21 @@ public class Attachment extends AbstractDto implements Entity, ModeHolder {
     private String fileName;
 
     /**
+     * file type.
+     */
+    private AttachmentFileType fileType;
+
+    /**
+     * システムがファイルから抽出したテキスト.
+     */
+    private String orgExtractedText;
+
+    /**
+     * ファイルから抽出したテキスト.
+     */
+    private String extractedText;
+
+    /**
      * Created by.
      * <p>
      * </p>
@@ -142,10 +158,47 @@ public class Attachment extends AbstractDto implements Entity, ModeHolder {
      */
     private String sourcePath;
 
+    /** 画像ファイルの拡張子. */
+    public static final String[] IMAGE_EXTENSIONS = {
+        "png",
+        "gif",
+        "jpg", "jpeg", "jpe",
+        "tif", "tiff",
+        "bmp"
+    };
+
     /**
      * 空のインスタンスを生成する.
      */
     public Attachment() {
+    }
+
+    /**
+     * ファイル名からファイル種別を特定する.
+     * @param fileName ファイル名
+     * @return ファイル種別
+     */
+    public static AttachmentFileType detectFileTypeByFileName(String fileName) {
+        if (StringUtils.isEmpty(fileName)) {
+            return AttachmentFileType.UNKNOWN;
+        }
+
+        String extension = FilenameUtils.getExtension(fileName);
+        if (StringUtils.isEmpty(extension)) {
+            return AttachmentFileType.UNKNOWN;
+        }
+
+        return ArrayUtils.contains(IMAGE_EXTENSIONS, extension.toLowerCase())
+                ? AttachmentFileType.IMAGE
+                : AttachmentFileType.UNKNOWN;
+    }
+
+    /**
+     * 抽出テキストが変更されている場合はtrueを返す.
+     * @return 判定結果
+     */
+    public boolean isExtractedTextChanged() {
+        return !StringUtils.equals(orgExtractedText, extractedText);
     }
 
     /**
@@ -428,4 +481,51 @@ public class Attachment extends AbstractDto implements Entity, ModeHolder {
                 || TO_STRING_IGNORE_FIELDS.contains(fieldName);
     }
 
+    /**
+     * ファイル種別を返す.
+     * @return ファイル種別
+     */
+    public AttachmentFileType getFileType() {
+        return fileType;
+    }
+
+    /**
+     * ファイル種別を設定する.
+     * @param fileType ファイル種別
+     */
+    public void setFileType(AttachmentFileType fileType) {
+        this.fileType = fileType;
+    }
+
+    /**
+     * システムがファイルから抽出したテキストを返す.
+     * @return テキスト
+     */
+    public String getOrgExtractedText() {
+        return orgExtractedText;
+    }
+
+    /**
+     * システムがファイルから抽出したテキストを設定する.
+     * @param orgExtractedText テキスト
+     */
+    public void setOrgExtractedText(String orgExtractedText) {
+        this.orgExtractedText = orgExtractedText;
+    }
+
+    /**
+     * ファイルから抽出したテキストを返す.
+     * @return テキスト
+     */
+    public String getExtractedText() {
+        return extractedText;
+    }
+
+    /**
+     * ファイルから抽出したテキストを設定する.
+     * @param extractedText テキスト
+     */
+    public void setExtractedText(String extractedText) {
+        this.extractedText = extractedText;
+    }
 }

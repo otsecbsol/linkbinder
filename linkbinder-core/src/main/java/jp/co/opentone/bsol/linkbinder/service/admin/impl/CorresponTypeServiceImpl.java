@@ -74,11 +74,11 @@ public class CorresponTypeServiceImpl extends AbstractService implements Corresp
     static {
         HEADER = new ArrayList<String>();
         HEADER.add("ID");
-        HEADER.add("Type");
-        HEADER.add("Name");
-        HEADER.add("WorkflowPattern");
-        HEADER.add("Allow\nApprover");
-        HEADER.add("Use\nworkflow");
+        HEADER.add("文書種類");
+        HEADER.add("文書種類名");
+        HEADER.add("ワークフローパターン");
+        HEADER.add("承認者閲覧許可");
+        HEADER.add("ワークフロー利用強制");
     }
 
     /**

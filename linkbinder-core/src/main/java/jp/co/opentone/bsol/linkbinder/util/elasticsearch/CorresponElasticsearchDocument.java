@@ -15,10 +15,10 @@
  */
 package jp.co.opentone.bsol.linkbinder.util.elasticsearch;
 
+import jp.co.opentone.bsol.framework.core.elasticsearch.ElasticsearchDocument;
+
 import java.io.Serializable;
 import java.util.List;
-
-import jp.co.opentone.bsol.framework.core.elasticsearch.ElasticsearchDocument;
 
 /**
  * @author opentone
@@ -36,11 +36,13 @@ public class CorresponElasticsearchDocument extends ElasticsearchDocument implem
         public String id;
         public String name;
         public String content;
+        public String extractedText;
 
-        public Attachment(String id, String name, String content) {
+        public Attachment(String id, String name, String content, String extractedText) {
             this.id = id;
             this.name = name;
             this.content = content;
+            this.extractedText = extractedText;
         }
     }
 }

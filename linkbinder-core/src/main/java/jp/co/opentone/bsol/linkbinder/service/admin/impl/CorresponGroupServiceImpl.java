@@ -105,9 +105,9 @@ public class CorresponGroupServiceImpl extends AbstractService implements Corres
     private static final List<String> HEADER;
     static {
         HEADER = new ArrayList<String>();
-        HEADER.add("ID");
-        HEADER.add("Discipline");
-        HEADER.add("Group");
+        HEADER.add("No.");
+        HEADER.add("部門");
+        HEADER.add("グループ");
     }
 
     /**

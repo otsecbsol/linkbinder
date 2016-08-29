@@ -15,6 +15,7 @@
  */
 package jp.co.opentone.bsol.linkbinder.dto.condition;
 
+import jp.co.opentone.bsol.linkbinder.dto.code.FullTextSearchOperator;
 import jp.co.opentone.bsol.linkbinder.dto.code.FullTextSearchMode;
 
 /**
@@ -36,6 +37,11 @@ public class SearchFullTextSearchCorresponCondition extends AbstractCondition {
     private String keyword;
 
     /**
+     * 検索条件演算子.
+     */
+    private FullTextSearchOperator operator;
+
+    /**
      * 検索対象.
      */
     private FullTextSearchMode fullTextSearchMode;
@@ -44,6 +50,11 @@ public class SearchFullTextSearchCorresponCondition extends AbstractCondition {
      * 画像検索要否.
      */
     private boolean includeImage;
+
+    /**
+     * 画像ファイル以外検索要否.
+     */
+    private boolean includeNonImage;
 
     /**
      * 空のインスタンスを生成する.
@@ -97,5 +108,37 @@ public class SearchFullTextSearchCorresponCondition extends AbstractCondition {
      */
     public void setIncludeImage(boolean includeImage) {
         this.includeImage = includeImage;
+    }
+
+    /**
+     * 画像ファイル以外検索要否を返す.
+     * @return 画像検索要否
+     */
+    public boolean isIncludeNonImage() {
+        return includeNonImage;
+    }
+
+    /**
+     * 画像ファイル以外検索要否を設定する
+     * @param includeNonImage 画像検索要否
+     */
+    public void setIncludeNonImage(boolean includeNonImage) {
+        this.includeNonImage = includeNonImage;
+    }
+
+    /**
+     * 検索条件演算子を返す.
+     * @return 演算子
+     */
+    public FullTextSearchOperator getOperator() {
+        return operator;
+    }
+
+    /**
+     * 検索条件演算子を設定する.
+     * @param operator 演算子
+     */
+    public void setOperator(FullTextSearchOperator operator) {
+        this.operator = operator;
     }
 }

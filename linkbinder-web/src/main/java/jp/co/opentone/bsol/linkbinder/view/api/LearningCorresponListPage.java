@@ -19,9 +19,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.co.opentone.bsol.framework.core.exception.ApplicationFatalRuntimeException;
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
-import jp.co.opentone.bsol.framework.web.extension.jsf.annotation.Initialize;
 import jp.co.opentone.bsol.linkbinder.action.AbstractAction;
-import jp.co.opentone.bsol.linkbinder.service.common.HomeService;
+import jp.co.opentone.bsol.linkbinder.dto.LearningLabelCorrespon;
+import jp.co.opentone.bsol.linkbinder.service.correspon.LearningCorresponService;
 import jp.co.opentone.bsol.linkbinder.view.AbstractPage;
 import org.springframework.context.annotation.Scope;
 
@@ -45,10 +45,10 @@ public class LearningCorresponListPage extends AbstractPage {
     private static final long serialVersionUID = -1911947820084637576L;
 
     /**
-     * ホームサービス.
+     * 学習用文書サービス.
      */
     @Resource
-    private HomeService homeService;
+    private LearningCorresponService service;
 
     private String learningCorresponListJson;
 
@@ -58,26 +58,16 @@ public class LearningCorresponListPage extends AbstractPage {
     public LearningCorresponListPage() {
     }
 
-    /**
-     * 画面を初期化する.
-     * <p>
-     * 他画面から遷移した時に起動される. ページの初期化に必要な情報を準備する.
-     * </p>
-     */
-    @Initialize
-    public void initialize() {
-        handler.handleAction(new InitializeAction(this));
-    }
-
     public String getList() {
+        handler.handleAction(new ListAction(this));
         return learningCorresponListJson;
     }
 
     /**
-     * 画面初期化アクション.
+     * 検索アクション.
      * @author opentone
      */
-    static class InitializeAction extends AbstractAction {
+    static class ListAction extends AbstractAction {
         /**
          * serialVersionUID.
          */
@@ -90,7 +80,7 @@ public class LearningCorresponListPage extends AbstractPage {
          * @param page
          *            ページ
          */
-        public InitializeAction(LearningCorresponListPage page) {
+        public ListAction(LearningCorresponListPage page) {
             super(page);
             this.page = page;
         }
@@ -100,13 +90,23 @@ public class LearningCorresponListPage extends AbstractPage {
          * @see jp.co.opentone.bsol.framework.action.Action#execute()
          */
         public void execute() throws ServiceAbortException {
-            //FIXME 検索結果をJSON化
+            List<LearningCorresponNode> list =
+                    convertLearningCorresponNode(page.service.findAll());
+            page.learningCorresponListJson = toJson(list);
+        }
+
+        private List<LearningCorresponNode> convertLearningCorresponNode(
+                        List<LearningLabelCorrespon> learningLabelCorresponList) {
             List<LearningCorresponNode> list = new ArrayList<>();
             createDummyData(list);
 
+            return list;
+        }
+
+        private String toJson(List<LearningCorresponNode> list) {
             ObjectMapper m = new ObjectMapper();
             try {
-                page.learningCorresponListJson = m.writeValueAsString(list);
+                return m.writeValueAsString(list);
             } catch (JsonProcessingException e) {
                 throw new ApplicationFatalRuntimeException(e);
             }

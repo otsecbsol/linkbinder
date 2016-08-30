@@ -1334,264 +1334,272 @@
           </f:validateBean>
         </div>
 
-        <div class="row">
-
-          <div class="three columns u-pull-right">
-            <h:commandLink id="showFavoriteFilterDialog" value="お気に入り条件として保存"
-              action="#{corresponIndexPage.showFavoriteDialog}"
-              onclick="preProcess(event);">
-              <f:ajax
-                render=":form:favoritePanelGroup"
-                onevent="showFavoriteDialog"/>
-            </h:commandLink>
+        <ui:fragment rendered="#{not corresponIndexPage.learningProject}">
+          <div class="row">
+            <div class="three columns u-pull-right">
+              <h:commandLink id="showFavoriteFilterDialog" value="お気に入り条件として保存"
+                             action="#{corresponIndexPage.showFavoriteDialog}"
+                             onclick="preProcess(event);">
+                <f:ajax
+                        render=":form:favoritePanelGroup"
+                        onevent="showFavoriteDialog"/>
+              </h:commandLink>
+            </div>
           </div>
-        </div>
 
-        <hr/>
+          <hr/>
+        </ui:fragment>
 
         <h:panelGroup id="viewArea">
-          <div id="dialog" style="display: none; position: absolute;" class="dialog list-item-selection">
-            <h:outputText id="dialogTitle" styleClass="inner-title"
-                          value="表示項目選択" />
-            <div class="row">
-              <div class="six columns">
-                <label>
-                  <h:selectBooleanCheckbox id="sel_no"
-                          value="#{corresponIndexPage.header.no}"
-                          onclick="changeSelect('sel_no', #{corresponIndexPage.header.numNo});"/>
-                  <span class="label-body">ID</span>
-                </label>
+          <ui:fragment rendered="#{not corresponIndexPage.learningProject}">
+            <div id="dialog" style="display: none; position: absolute;" class="dialog list-item-selection">
+              <h:outputText id="dialogTitle" styleClass="inner-title"
+                            value="表示項目選択" />
+              <div class="row">
+                <div class="six columns">
+                  <label>
+                    <h:selectBooleanCheckbox id="sel_no"
+                                             value="#{corresponIndexPage.header.no}"
+                                             onclick="changeSelect('sel_no', #{corresponIndexPage.header.numNo});"/>
+                    <span class="label-body">ID</span>
+                  </label>
+                </div>
+                <div class="six columns">
+                  <label>
+                    <h:selectBooleanCheckbox id="sel_issuedOn"
+                                             value="#{corresponIndexPage.header.issuedOn}"
+                                             onclick="changeSelect('sel_issuedOn', #{corresponIndexPage.header.numIssuedOn});"/>
+                    <span class="label-body">発行日</span>
+                  </label>
+                </div>
               </div>
-              <div class="six columns">
-                <label>
-                  <h:selectBooleanCheckbox id="sel_issuedOn"
-                      value="#{corresponIndexPage.header.issuedOn}"
-                      onclick="changeSelect('sel_issuedOn', #{corresponIndexPage.header.numIssuedOn});"/>
-                  <span class="label-body">発行日</span>
-                </label>
+              <div class="row">
+                <div class="six columns">
+                  <label>
+                    <h:selectBooleanCheckbox id="sel_corresponNo"
+                                             value="#{corresponIndexPage.header.corresponNo}"
+                                             onclick="changeSelect('sel_corresponNo', #{corresponIndexPage.header.numCorresponNo});"
+                            />
+                    <span class="label-body">文書番号</span>
+                  </label>
+                </div>
+                <div class="six columns">
+                  <label>
+                    <h:selectBooleanCheckbox id="sel_deadline"
+                                             value="#{corresponIndexPage.header.deadline}"
+                                             onclick="changeSelect('sel_deadline', #{corresponIndexPage.header.numDeadline});"
+                            />
+                    <span class="label-body">返信期限</span>
+                  </label>
+                </div>
               </div>
-            </div>
-            <div class="row">
-              <div class="six columns">
-                <label>
-                  <h:selectBooleanCheckbox id="sel_corresponNo"
-                      value="#{corresponIndexPage.header.corresponNo}"
-                      onclick="changeSelect('sel_corresponNo', #{corresponIndexPage.header.numCorresponNo});"
-                       />
-                  <span class="label-body">文書番号</span>
-                </label>
-              </div>
-              <div class="six columns">
-                <label>
-                  <h:selectBooleanCheckbox id="sel_deadline"
-                      value="#{corresponIndexPage.header.deadline}"
-                      onclick="changeSelect('sel_deadline', #{corresponIndexPage.header.numDeadline});"
-                       />
-                  <span class="label-body">返信期限</span>
-                </label>
-              </div>
-            </div>
-            <div class="row">
-              <div class="six columns">
-                <label>
-                  <h:selectBooleanCheckbox id="sel_previousRevision"
-                      value="#{corresponIndexPage.header.previousRevision}"
-                      onclick="changeSelect('sel_previousRevision', #{corresponIndexPage.header.numPreviousRevision});"
-                       />
-                  <span class="label-body">改訂前文書番号</span>
-                </label>
-              </div>
-              <div class="six columns">
-                <label>
+              <div class="row">
+                <div class="six columns">
+                  <label>
+                    <h:selectBooleanCheckbox id="sel_previousRevision"
+                                             value="#{corresponIndexPage.header.previousRevision}"
+                                             onclick="changeSelect('sel_previousRevision', #{corresponIndexPage.header.numPreviousRevision});"
+                            />
+                    <span class="label-body">改訂前文書番号</span>
+                  </label>
+                </div>
+                <div class="six columns">
+                  <label>
                     <h:selectBooleanCheckbox id="sel_updatedOn"
-                      value="#{corresponIndexPage.header.updatedOn}"
-                      onclick="changeSelect('sel_updatedOn', #{corresponIndexPage.header.numUpdatedOn});"
-                       />
-                  <span class="label-body">最終更新日</span>
-                </label>
+                                             value="#{corresponIndexPage.header.updatedOn}"
+                                             onclick="changeSelect('sel_updatedOn', #{corresponIndexPage.header.numUpdatedOn});"
+                            />
+                    <span class="label-body">最終更新日</span>
+                  </label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="six columns">
+                  <label>
+                    <h:selectBooleanCheckbox id="sel_from"
+                                             value="#{corresponIndexPage.header.from}"
+                                             onclick="changeSelect('sel_from', #{corresponIndexPage.header.numFrom});"
+                            />
+                    <span class="label-body">発信元</span>
+                  </label>
+                </div>
+                <div class="six columns">
+                  <label>
+                    <h:selectBooleanCheckbox id="sel_createdBy"
+                                             value="#{corresponIndexPage.header.createdBy}"
+                                             onclick="changeSelect('sel_createdBy', #{corresponIndexPage.header.numCreatedBy});"
+                            />
+                    <span class="label-body">作成者</span>
+                  </label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="six columns">
+                  <label>
+                    <h:selectBooleanCheckbox id="sel_to"
+                                             value="#{corresponIndexPage.header.to}"
+                                             onclick="changeSelect('sel_to', #{corresponIndexPage.header.numTo});"
+                            />
+                    <span class="label-body">宛先</span>
+                  </label>
+                </div>
+                <div class="six columns">
+                  <label>
+                    <h:selectBooleanCheckbox id="sel_issuedBy"
+                                             value="#{corresponIndexPage.header.issuedBy}"
+                                             onclick="changeSelect('sel_issuedBy', #{corresponIndexPage.header.numIssuedBy});"
+                            />
+                    <span class="label-body">発行者</span>
+                  </label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="six columns">
+                  <label>
+                    <h:selectBooleanCheckbox id="sel_type"
+                                             value="#{corresponIndexPage.header.type}"
+                                             onclick="changeSelect('sel_type', #{corresponIndexPage.header.numType});"
+                            />
+                    <span class="label-body">種類</span>
+                  </label>
+                </div>
+                <div class="six columns">
+                  <label>
+                    <h:selectBooleanCheckbox id="sel_updatedBy"
+                                             value="#{corresponIndexPage.header.updatedBy}"
+                                             onclick="changeSelect('sel_updatedBy', #{corresponIndexPage.header.numUpdatedBy});"
+                            />
+                    <span class="label-body">最終更新者</span>
+                  </label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="six columns">
+                  <label>
+                    <h:selectBooleanCheckbox id="sel_subject"
+                                             value="#{corresponIndexPage.header.subject}"
+                                             onclick="changeSelect('sel_subject', #{corresponIndexPage.header.numSubject});"
+                            />
+                    <span class="label-body">件名</span>
+                  </label>
+                </div>
+                <div class="six columns">
+                  <label>
+                    <h:selectBooleanCheckbox id="sel_replyRequired"
+                                             value="#{corresponIndexPage.header.replyRequired}"
+                                             onclick="changeSelect('sel_replyRequired', #{corresponIndexPage.header.numReplyRequired});"
+                            />
+                    <span class="label-body">返信要否</span>
+                  </label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="six columns">
+                  <label>
+                    <h:selectBooleanCheckbox id="sel_workflow"
+                                             value="#{corresponIndexPage.header.workflow}"
+                                             onclick="changeSelect('sel_workflow', #{corresponIndexPage.header.numWorkflow});"
+                            />
+                    <span class="label-body">ワークフロー</span>
+                  </label>
+                </div>
+                <div class="six columns">
+                  <label>
+                    <h:selectBooleanCheckbox id="sel_status"
+                                             value="#{corresponIndexPage.header.status}"
+                                             onclick="changeSelect('sel_status', #{corresponIndexPage.header.numStatus});"
+                            />
+                    <span class="label-body">状態</span>
+                  </label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="six columns">
+                  <label>
+                    <h:selectBooleanCheckbox id="sel_createdOn"
+                                             value="#{corresponIndexPage.header.createdOn}"
+                                             onclick="changeSelect('sel_createdOn', #{corresponIndexPage.header.numCreatedOn});"
+                            />
+                    <span class="label-body">作成日</span>
+                  </label>
+                </div>
+              </div>
+              <div class="action-edit">
+                <a href="javascript:void(0);" onclick="Dialog.close('dialog');window.scroll(0,0);" style="margin-right:15px;">閉じる</a>
               </div>
             </div>
+          </ui:fragment>
+
+          <ui:fragment rendered="#{not corresponIndexPage.learningProject}">
             <div class="row">
-              <div class="six columns">
-                <label>
-                  <h:selectBooleanCheckbox id="sel_from"
-                      value="#{corresponIndexPage.header.from}"
-                      onclick="changeSelect('sel_from', #{corresponIndexPage.header.numFrom});"
-                       />
-                  <span class="label-body">発信元</span>
-                </label>
-              </div>
-              <div class="six columns">
-                <label>
-                  <h:selectBooleanCheckbox id="sel_createdBy"
-                      value="#{corresponIndexPage.header.createdBy}"
-                      onclick="changeSelect('sel_createdBy', #{corresponIndexPage.header.numCreatedBy});"
-                       />
-                  <span class="label-body">作成者</span>
-                </label>
+              <div class="four columns u-pull-right">
+                出力形式:
+                <h:commandLink id="printHTML" value="Print"
+                               action="#{corresponIndexPage.printHTML}"
+                               onclick="setActionName(event)" target="print" />
+                <h:commandLink
+                        id="downloadCsv" value="CSV"
+                        action="#{corresponIndexPage.downloadCsv}"
+                        onclick="setActionName(event)" />
+                <h:commandLink
+                        id="downloadExcel" value="Excel"
+                        action="#{corresponIndexPage.downloadExcel}"
+                        onclick="setActionName(event)" />
+                <h:commandLink
+                        id="downloadZip" value="ZIP"
+                        action="#{corresponIndexPage.downloadZip}"
+                        onclick="setActionName(event)" />
               </div>
             </div>
+
             <div class="row">
-              <div class="six columns">
-                <label>
-                  <h:selectBooleanCheckbox id="sel_to"
-                      value="#{corresponIndexPage.header.to}"
-                      onclick="changeSelect('sel_to', #{corresponIndexPage.header.numTo});"
-                       />
-                  <span class="label-body">宛先</span>
-                </label>
-              </div>
-              <div class="six columns">
-                <label>
-                  <h:selectBooleanCheckbox id="sel_issuedBy"
-                      value="#{corresponIndexPage.header.issuedBy}"
-                      onclick="changeSelect('sel_issuedBy', #{corresponIndexPage.header.numIssuedBy});"
-                       />
-                  <span class="label-body">発行者</span>
-                </label>
-              </div>
-            </div>
-            <div class="row">
-              <div class="six columns">
-                <label>
-                  <h:selectBooleanCheckbox id="sel_type"
-                      value="#{corresponIndexPage.header.type}"
-                      onclick="changeSelect('sel_type', #{corresponIndexPage.header.numType});"
-                       />
-                  <span class="label-body">種類</span>
-                </label>
-              </div>
-              <div class="six columns">
-                <label>
-                  <h:selectBooleanCheckbox id="sel_updatedBy"
-                      value="#{corresponIndexPage.header.updatedBy}"
-                      onclick="changeSelect('sel_updatedBy', #{corresponIndexPage.header.numUpdatedBy});"
-                       />
-                  <span class="label-body">最終更新者</span>
-                </label>
-              </div>
-            </div>
-            <div class="row">
-              <div class="six columns">
-                <label>
-                  <h:selectBooleanCheckbox id="sel_subject"
-                      value="#{corresponIndexPage.header.subject}"
-                      onclick="changeSelect('sel_subject', #{corresponIndexPage.header.numSubject});"
-                       />
-                  <span class="label-body">件名</span>
-                </label>
-              </div>
-              <div class="six columns">
-                <label>
-                  <h:selectBooleanCheckbox id="sel_replyRequired"
-                      value="#{corresponIndexPage.header.replyRequired}"
-                      onclick="changeSelect('sel_replyRequired', #{corresponIndexPage.header.numReplyRequired});"
-                       />
-                  <span class="label-body">返信要否</span>
-                </label>
-              </div>
-            </div>
-            <div class="row">
-              <div class="six columns">
-                <label>
-                  <h:selectBooleanCheckbox id="sel_workflow"
-                      value="#{corresponIndexPage.header.workflow}"
-                      onclick="changeSelect('sel_workflow', #{corresponIndexPage.header.numWorkflow});"
-                       />
-                  <span class="label-body">ワークフロー</span>
-                </label>
-              </div>
-              <div class="six columns">
-                <label>
-                  <h:selectBooleanCheckbox id="sel_status"
-                      value="#{corresponIndexPage.header.status}"
-                      onclick="changeSelect('sel_status', #{corresponIndexPage.header.numStatus});"
-                       />
-                  <span class="label-body">状態</span>
-                </label>
-              </div>
-            </div>
-            <div class="row">
-              <div class="six columns">
-                <label>
-                  <h:selectBooleanCheckbox id="sel_createdOn"
-                      value="#{corresponIndexPage.header.createdOn}"
-                      onclick="changeSelect('sel_createdOn', #{corresponIndexPage.header.numCreatedOn});"
-                       />
-                  <span class="label-body">作成日</span>
-                </label>
-              </div>
-            </div>
-            <div class="action-edit">
-              <a href="javascript:void(0);" onclick="Dialog.close('dialog');window.scroll(0,0);" style="margin-right:15px;">閉じる</a>
-            </div>
-          </div>
-          <div class="row">
-            <div class="four columns u-pull-right">
-              出力形式:
-              <h:commandLink id="printHTML" value="Print"
-                action="#{corresponIndexPage.printHTML}"
-                onclick="setActionName(event)" target="print" />
-              <h:commandLink
-                id="downloadCsv" value="CSV"
-                action="#{corresponIndexPage.downloadCsv}"
-                onclick="setActionName(event)" />
-              <h:commandLink
-                id="downloadExcel" value="Excel"
-                action="#{corresponIndexPage.downloadExcel}"
-                onclick="setActionName(event)" />
-              <h:commandLink
-                id="downloadZip" value="ZIP"
-                action="#{corresponIndexPage.downloadZip}"
-                onclick="setActionName(event)" />
-            </div>
-          </div>
-          <div class="row">
-            <div class="nine columns u-pull-right">
-               <a href="javascript:void(0);" id="listItemSelection" onclick="Dialog.show('dialog')">表示項目選択</a>
+              <div class="nine columns u-pull-right">
+                <a href="javascript:void(0);" id="listItemSelection" onclick="Dialog.show('dialog')">表示項目選択</a>
                <span>
                  既読状態操作:
                  <h:commandLink
-                      id="read"
-                      value="既読"
-                      action="#{corresponIndexPage.read}"
-                      onclick="preProcess(event);">
-                      <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
+                         id="read"
+                         value="既読"
+                         action="#{corresponIndexPage.read}"
+                         onclick="preProcess(event);">
+                   <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
                  </h:commandLink>
                  <h:commandLink
-                      id="unread"
-                      value="未読"
-                      action="#{corresponIndexPage.unread}"
-                      onclick="preProcess(event);">
-                      <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
+                         id="unread"
+                         value="未読"
+                         action="#{corresponIndexPage.unread}"
+                         onclick="preProcess(event);">
+                   <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
                  </h:commandLink>
                </span>
                <span>
                  状態操作:
                  <h:commandLink
-                      id="open"
-                      value="オープン"
-                      action="#{corresponIndexPage.open}"
-                      onclick="preProcess(event);">
-                      <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
-                  </h:commandLink>
+                         id="open"
+                         value="オープン"
+                         action="#{corresponIndexPage.open}"
+                         onclick="preProcess(event);">
+                   <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
+                 </h:commandLink>
                   <h:commandLink
-                      id="close"
-                      value="クローズ"
-                      action="#{corresponIndexPage.close}"
-                      onclick="preProcess(event);">
-                      <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
+                          id="close"
+                          value="クローズ"
+                          action="#{corresponIndexPage.close}"
+                          onclick="preProcess(event);">
+                    <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
                   </h:commandLink>
                 </span>
                 <h:commandButton
-                      id="delete"
-                      value="選択した文書を削除"
-                      action="#{corresponIndexPage.delete}"
-                      onclick="return confirmAction(event)">
+                        id="delete"
+                        value="選択した文書を削除"
+                        action="#{corresponIndexPage.delete}"
+                        onclick="return confirmAction(event)">
                   <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
                 </h:commandButton>
+              </div>
             </div>
-          </div>
+          </ui:fragment>
+
           <div class="row">
             <div class="six columns">
              <h:panelGroup id="pagePanel" styleClass="correspon-paging-panel">
@@ -1711,7 +1719,7 @@
                 columnClasses="check,number,text,text,text,text,text,text-subject,text,text,text,text,text,text,text,text,text,text,text"
                 rowClasses="#{corresponIndexPage.rowClasses}" cellpadding="5" >
 
-            <h:column headerClass="border-right-0">
+            <h:column headerClass="border-right-0" rendered="#{not corresponIndexPage.learningProject}">
               <f:facet name="header">
                 <a id="allCheck" onclick="checkAll();"><i class="fa fa-check" aria-hidden="true"></i></a>
               </f:facet>

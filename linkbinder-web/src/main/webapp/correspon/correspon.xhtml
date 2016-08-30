@@ -94,31 +94,33 @@
   <h:inputHidden id="targetAddressType" value="#{corresponPage.targetAddressType}"/>
   <div class="correspon-paging-panel row">
     <div class="four columns">
-      <div>
-        <h:commandLink id="linkPrev"
-                        rendered="#{corresponPage.previousLink and !corresponPage.displayReplied}"
-                        onclick="setFixedActionName('Prev');"
-                        action="#{corresponPage.movePrevious}">
-          <h:outputText id="linkPrevLabelLt" escape="false" value="&lt;" />
-          <h:outputText id="linkPrevLabel" value=" 前へ" />
-        </h:commandLink>
-        <h:outputText id="prevLabelLt" escape="false" value="&lt;" rendered="#{!corresponPage.previousLink and !corresponPage.displayReplied}" />
-        <h:outputText id="prevLabel" value=" 前へ" rendered="#{!corresponPage.previousLink and !corresponPage.displayReplied}" />
+      <ui:fragment rendered="#{not corresponPage.learningProject}">
+        <div>
+          <h:commandLink id="linkPrev"
+                         rendered="#{corresponPage.previousLink and !corresponPage.displayReplied}"
+                         onclick="setFixedActionName('Prev');"
+                         action="#{corresponPage.movePrevious}">
+            <h:outputText id="linkPrevLabelLt" escape="false" value="&lt;" />
+            <h:outputText id="linkPrevLabel" value=" 前へ" />
+          </h:commandLink>
+          <h:outputText id="prevLabelLt" escape="false" value="&lt;" rendered="#{!corresponPage.previousLink and !corresponPage.displayReplied}" />
+          <h:outputText id="prevLabel" value=" 前へ" rendered="#{!corresponPage.previousLink and !corresponPage.displayReplied}" />
 
-        <h:outputText id="ListCount" value=" #{corresponPage.displayPositionNo}/#{corresponPage.displayTotalCount} "
-                       rendered="#{!corresponPage.displayReplied}"/>
+          <h:outputText id="ListCount" value=" #{corresponPage.displayPositionNo}/#{corresponPage.displayTotalCount} "
+                        rendered="#{!corresponPage.displayReplied}"/>
 
-        <h:commandLink id="linkNext"
-                        rendered="#{corresponPage.nextLink and !corresponPage.displayReplied}"
-                        onclick="setFixedActionName('Next');"
-                        action="#{corresponPage.moveNext}">
-          <h:outputText id="linkNextLabel" value="次へ " />
-          <h:outputText id="linkNextLabelGt" escape="false" value="&gt;" />
-        </h:commandLink>
-        <h:outputText id="nextLabel" value="次へ " rendered="#{!corresponPage.nextLink and !corresponPage.displayReplied}" />
-        <h:outputText id="nextLabelGt" escape="false" value="&gt;" rendered="#{!corresponPage.nextLink and !corresponPage.displayReplied}" />
-        <h:inputHidden id="displayIndex" value="#{corresponPage.displayIndex}"/>
-      </div>
+          <h:commandLink id="linkNext"
+                         rendered="#{corresponPage.nextLink and !corresponPage.displayReplied}"
+                         onclick="setFixedActionName('Next');"
+                         action="#{corresponPage.moveNext}">
+            <h:outputText id="linkNextLabel" value="次へ " />
+            <h:outputText id="linkNextLabelGt" escape="false" value="&gt;" />
+          </h:commandLink>
+          <h:outputText id="nextLabel" value="次へ " rendered="#{!corresponPage.nextLink and !corresponPage.displayReplied}" />
+          <h:outputText id="nextLabelGt" escape="false" value="&gt;" rendered="#{!corresponPage.nextLink and !corresponPage.displayReplied}" />
+          <h:inputHidden id="displayIndex" value="#{corresponPage.displayIndex}"/>
+        </div>
+      </ui:fragment>
     </div>
     <div class="eight columns correspon-command-panel">
       <ui:fragment rendered="#{not corresponPage.learningProject}">
@@ -1355,28 +1357,30 @@
   </div>
   <div class="correspon-paging-panel row">
     <div class="four columns">
-      <div>
-        <h:commandLink id="linkPrev-bottom"
-                        rendered="#{corresponPage.previousLink and !corresponPage.displayReplied}"
-                        onclick="setFixedActionName('Prev');"
-                        action="#{corresponPage.movePrevious}">
-          <h:outputText id="linkPrevLabelLt-bottom" escape="false" value="&lt;" />
-          <h:outputText id="linkPrevLabel-bottom" value=" 前へ" />
-        </h:commandLink>
-        <h:outputText id="prevLabelLt-bottom" escape="false" value="&lt;" rendered="#{!corresponPage.previousLink and !corresponPage.displayReplied}" />
-        <h:outputText id="prevLabel-bottom" value=" 前へ" rendered="#{!corresponPage.previousLink and !corresponPage.displayReplied}" />
-        <h:outputText id="ListCount-bottom" value=" #{corresponPage.displayPositionNo}/#{corresponPage.displayTotalCount} "
-                       rendered="#{!corresponPage.displayReplied}"/>
-        <h:commandLink id="linkNext-bottom"
-                        rendered="#{corresponPage.nextLink and !corresponPage.displayReplied}"
-                        onclick="setFixedActionName('Next');"
-                        action="#{corresponPage.moveNext}">
-          <h:outputText id="linkNextLabel-bottom" value="次へ " />
-          <h:outputText id="linkNextLabelGt-bottom" escape="false" value="&gt;" />
-        </h:commandLink>
-        <h:outputText id="nextLabel-bottom" value="次へ " rendered="#{!corresponPage.nextLink and !corresponPage.displayReplied}" />
-        <h:outputText id="nextLabelGt-bottom" escape="false" value="&gt;" rendered="#{!corresponPage.nextLink and !corresponPage.displayReplied}" />
-      </div>
+      <ui:fragment rendered="#{not corresponPage.learningProject}">
+        <div>
+          <h:commandLink id="linkPrev-bottom"
+                         rendered="#{corresponPage.previousLink and !corresponPage.displayReplied}"
+                         onclick="setFixedActionName('Prev');"
+                         action="#{corresponPage.movePrevious}">
+            <h:outputText id="linkPrevLabelLt-bottom" escape="false" value="&lt;" />
+            <h:outputText id="linkPrevLabel-bottom" value=" 前へ" />
+          </h:commandLink>
+          <h:outputText id="prevLabelLt-bottom" escape="false" value="&lt;" rendered="#{!corresponPage.previousLink and !corresponPage.displayReplied}" />
+          <h:outputText id="prevLabel-bottom" value=" 前へ" rendered="#{!corresponPage.previousLink and !corresponPage.displayReplied}" />
+          <h:outputText id="ListCount-bottom" value=" #{corresponPage.displayPositionNo}/#{corresponPage.displayTotalCount} "
+                        rendered="#{!corresponPage.displayReplied}"/>
+          <h:commandLink id="linkNext-bottom"
+                         rendered="#{corresponPage.nextLink and !corresponPage.displayReplied}"
+                         onclick="setFixedActionName('Next');"
+                         action="#{corresponPage.moveNext}">
+            <h:outputText id="linkNextLabel-bottom" value="次へ " />
+            <h:outputText id="linkNextLabelGt-bottom" escape="false" value="&gt;" />
+          </h:commandLink>
+          <h:outputText id="nextLabel-bottom" value="次へ " rendered="#{!corresponPage.nextLink and !corresponPage.displayReplied}" />
+          <h:outputText id="nextLabelGt-bottom" escape="false" value="&gt;" rendered="#{!corresponPage.nextLink and !corresponPage.displayReplied}" />
+        </div>
+      </ui:fragment>
     </div>
     <div class="eight columns correspon-command-panel">
       <ui:fragment rendered="#{not corresponPage.learningProject}">

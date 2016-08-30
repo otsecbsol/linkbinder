@@ -108,14 +108,13 @@ public class LearningCorresponListPage extends AbstractPage {
 
                 list.add(n);
             }
-//            createDummyData(list);
 
             return list;
         }
 
         private String toCorresponUrl(Correspon c) {
-            //TODO コンテキストパス
-            return String.format("/correspon/correspon.jsf?id=%d&projectId=%s", c.getId(), c.getProjectId());
+            return String.format(page.viewHelper.getContextPath()
+                    + "/correspon/correspon.jsf?id=%d&projectId=%s", c.getId(), c.getProjectId());
         }
 
         private void add(List<LearningCorresponNode> list, LearningLabelCorrespon lc) {

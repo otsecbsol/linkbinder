@@ -45,6 +45,9 @@
       javaType="jp.co.opentone.bsol.linkbinder.dto.code.ReplyRequired"
       callback="jp.co.opentone.bsol.linkbinder.dao.handler.ReplyRequiredValueHandler" />
   <typeHandler
+          javaType="jp.co.opentone.bsol.linkbinder.dto.code.UseLearning"
+          callback="jp.co.opentone.bsol.linkbinder.dao.handler.UseLearningValueHandler" />
+  <typeHandler
       javaType="jp.co.opentone.bsol.linkbinder.dto.code.UseWhole"
       callback="jp.co.opentone.bsol.linkbinder.dao.handler.UseWholeValueHandler" />
   <typeHandler
@@ -89,6 +92,9 @@
   <typeHandler
       javaType="jp.co.opentone.bsol.linkbinder.dto.code.DistributionType"
       callback="jp.co.opentone.bsol.linkbinder.dao.handler.DistributionTypeValueHandler" />
+    <typeHandler
+            javaType="jp.co.opentone.bsol.linkbinder.dto.code.AttachmentFileType"
+            callback="jp.co.opentone.bsol.linkbinder.dao.handler.AttachmentFileTypeValueHandler" />
 
   <sqlMap resource="sql/addressCorresponGroup.xml" />
   <sqlMap resource="sql/addressUser.xml" />
@@ -127,4 +133,5 @@
   <sqlMap resource="sql/distTemplateHeader.xml" />
   <sqlMap resource="sql/distTemplateGroup.xml" />
   <sqlMap resource="sql/distTemplateUser.xml" />
+  <sqlMap resource="sql/learningLabel.xml" />
 </sqlMapConfig>

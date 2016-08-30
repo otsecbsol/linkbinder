@@ -15,17 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.view.correspon;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.ManagedBean;
-import javax.annotation.Resource;
-import javax.faces.model.SelectItem;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.context.annotation.Scope;
-
 import jp.co.opentone.bsol.framework.core.config.SystemConfig;
 import jp.co.opentone.bsol.framework.core.exception.ApplicationFatalRuntimeException;
 import jp.co.opentone.bsol.framework.core.message.MessageCode;
@@ -39,6 +28,7 @@ import jp.co.opentone.bsol.linkbinder.action.AbstractAction;
 import jp.co.opentone.bsol.linkbinder.dto.Attachment;
 import jp.co.opentone.bsol.linkbinder.dto.FullTextSearchCorresponsResult;
 import jp.co.opentone.bsol.linkbinder.dto.code.FullTextSearchMode;
+import jp.co.opentone.bsol.linkbinder.dto.code.FullTextSearchOperator;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchFullTextSearchCorresponCondition;
 import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponFullTextSearchService;
@@ -46,6 +36,15 @@ import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponService;
 import jp.co.opentone.bsol.linkbinder.view.AbstractPage;
 import jp.co.opentone.bsol.linkbinder.view.util.help.HelpContent;
 import jp.co.opentone.bsol.linkbinder.view.util.help.HelpContentLoader;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.context.annotation.Scope;
+
+import javax.annotation.ManagedBean;
+import javax.annotation.Resource;
+import javax.faces.model.SelectItem;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * コレポン文書全文検索画面.
@@ -135,6 +134,16 @@ public class CorresponSearchPage extends AbstractPage {
     @Transfer
     private FullTextSearchMode[] fullTextSearchModeList = null;
     /**
+     * 演算子選択肢.
+     */
+    @Transfer
+    private List<SelectItem> operatorSelectList = new ArrayList<SelectItem>();
+    /**
+     * 演算子.
+     */
+    @Transfer
+    private FullTextSearchOperator[] operatorList = null;
+    /**
      * 検索キーワード.
      */
     @Transfer
@@ -144,12 +153,22 @@ public class CorresponSearchPage extends AbstractPage {
      */
     @Transfer
     private Integer fullTextSearchMode = null;
+    /**
+     * 選択された演算子.
+     */
+    @Transfer
+    private Integer operator = null;
 
     /**
-     * 画像を検索対象に含むか否か.
+     * 画像ファイルを検索対象に含むか否か.
      */
     @Transfer
     private boolean includeImage;
+    /**
+     * 画像ファイル以外を検索対象に含むか否か.
+     */
+    @Transfer
+    private boolean includeNonImage;
 
     /**
      * 学習用文書のみを檢索対象とするか否か
@@ -258,7 +277,23 @@ public class CorresponSearchPage extends AbstractPage {
     }
 
     /**
-     * 画像を検索対象に含む場合はtrueを返す.
+     * 選択された演算子を設定する.
+     * @return 選択された演算子
+     */
+    public Integer getOperator() {
+        return operator;
+    }
+
+    /**
+     * 選択された検索対象を返却する.
+     * @param operator 選択された検索対象
+     */
+    public void setOperator(Integer operator) {
+        this.operator = operator;
+    }
+
+    /**
+     * 画像ファイルを検索対象に含む場合はtrueを返す.
      * @return 結果
      */
     public boolean isIncludeImage() {
@@ -266,11 +301,26 @@ public class CorresponSearchPage extends AbstractPage {
     }
 
     /**
-     * 画像を検索対象に含むか否かを設定する
+     * 画像ファイルを検索対象に含むか否かを設定する
      * @param includeImage 設定値
      */
     public void setIncludeImage(boolean includeImage) {
         this.includeImage = includeImage;
+    }
+    /**
+     * 画像ファイル以外を検索対象に含む場合はtrueを返す.
+     * @return 結果
+     */
+    public boolean isIncludeNonImage() {
+        return includeNonImage;
+    }
+
+    /**
+     * 画像ファイル以外を検索対象に含むか否かを設定する
+     * @param includeNonImage 設定値
+     */
+    public void setIncludeNonImage(boolean includeNonImage) {
+        this.includeNonImage = includeNonImage;
     }
 
     /**
@@ -340,6 +390,60 @@ public class CorresponSearchPage extends AbstractPage {
             }
         }
         return FullTextSearchMode.ALL;
+    }
+
+
+    /**
+     * 演算子選択肢を返却する.
+     * @return 演算子選択肢
+     */
+    public List<SelectItem> getOperatorSelectList() {
+        if (this.operatorSelectList != null
+                && !this.operatorSelectList.isEmpty()) {
+            return this.operatorSelectList;
+        }
+
+        this.operatorSelectList = viewHelper.createSelectItem(
+                operatorList);
+        return operatorSelectList;
+    }
+
+    /**
+     * 演算子選択肢を設定する.
+     * @param operatorSelectList 演算子選択肢
+     */
+    public void setOperatorSelectList(List<SelectItem> operatorSelectList) {
+        this.operatorSelectList = operatorSelectList;
+    }
+
+    /**
+     * 演算子リストを設定する.
+     * @return 検索対象リスト
+     */
+    public FullTextSearchOperator[] getOperatorList() {
+        return CloneUtil.cloneArray(FullTextSearchOperator.class, operatorList);
+    }
+
+    /**
+     * 演算子リストを返却する.
+     * @param operatorList 検索対象リスト
+     */
+    public void setOperatorList(FullTextSearchOperator[] operatorList) {
+        this.operatorList =
+                CloneUtil.cloneArray(FullTextSearchOperator.class, operatorList);
+    }
+
+    /**
+     * 選択された検索対象演算子を取得する.
+     * @return 検索対象の演算子
+     */
+    public FullTextSearchOperator getSelectedOperator() {
+        for (FullTextSearchOperator op : operatorList) {
+            if (op.getValue().equals(operator)) {
+                return op;
+            }
+        }
+        return FullTextSearchOperator.AND;
     }
 
     /**
@@ -630,7 +734,9 @@ public class CorresponSearchPage extends AbstractPage {
     private void setSearchCondition() {
         condition.setKeyword(keyword);
         condition.setFullTextSearchMode(getSelectedFullTextSearchMode());
+        condition.setOperator(getSelectedOperator());
         condition.setIncludeImage(includeImage);
+        condition.setIncludeNonImage(includeNonImage);
     }
 
     /**
@@ -710,6 +816,7 @@ public class CorresponSearchPage extends AbstractPage {
             page.dataCount = 0;
             page.keyword = null;
             page.fullTextSearchMode = FullTextSearchMode.ALL.getValue();
+            page.operator = FullTextSearchOperator.OR.getValue();
             page.fullTextSearchCorresponsResultList = null;
             String strPageRow = SystemConfig.getValue(KEY_PAGE_ROW);
             if (StringUtils.isNotEmpty(strPageRow)) {
@@ -729,6 +836,7 @@ public class CorresponSearchPage extends AbstractPage {
          */
         private void setSelectList() {
             page.fullTextSearchModeList = FullTextSearchMode.values();
+            page.operatorList = FullTextSearchOperator.values();
         }
 
         private void loadHelpContent() {
@@ -767,7 +875,14 @@ public class CorresponSearchPage extends AbstractPage {
                 } else {
                     page.fullTextSearchMode = FullTextSearchMode.ALL.getValue();
                 }
+                FullTextSearchOperator op = page.condition.getOperator();
+                if (op != null) {
+                    page.operator = op.getValue();
+                } else {
+                    page.operator = FullTextSearchOperator.OR.getValue();
+                }
                 page.includeImage = page.condition.isIncludeImage();
+                page.includeNonImage = page.condition.isIncludeNonImage();
             } else {
                 page.condition = new SearchFullTextSearchCorresponCondition();
             }

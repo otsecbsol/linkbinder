@@ -66,10 +66,12 @@ import jp.co.opentone.bsol.linkbinder.dto.code.AddressUserType;
 import jp.co.opentone.bsol.linkbinder.dto.code.CorresponStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.ReplyRequired;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowStatus;
+import jp.co.opentone.bsol.linkbinder.event.CorresponAttachmentChanged;
 import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
 import jp.co.opentone.bsol.linkbinder.service.admin.CorresponGroupService;
 import jp.co.opentone.bsol.linkbinder.service.admin.DistributionTemplateService;
 import jp.co.opentone.bsol.linkbinder.service.admin.UserService;
+import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponSaveService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponValidateService;
 import jp.co.opentone.bsol.linkbinder.util.view.correspon.CorresponPageFormatter;
@@ -77,10 +79,12 @@ import jp.co.opentone.bsol.linkbinder.validation.groups.ValidationGroupBuilder;
 import jp.co.opentone.bsol.linkbinder.view.action.control.CorresponEditPageElementControl;
 import jp.co.opentone.bsol.linkbinder.view.correspon.attachment.AttachmentDownloadAction;
 import jp.co.opentone.bsol.linkbinder.view.correspon.attachment.AttachmentDownloadablePage;
+import jp.co.opentone.bsol.linkbinder.view.correspon.attachment.AttachmentExtractedTextEditablePage;
 import jp.co.opentone.bsol.linkbinder.view.correspon.attachment.AttachmentUploadAction;
 import jp.co.opentone.bsol.linkbinder.view.correspon.util.CorresponDataSource;
 import jp.co.opentone.bsol.linkbinder.view.correspon.util.CorresponEditPageInitializer;
 import jp.co.opentone.bsol.linkbinder.view.validator.AttachmentValidator;
+
 
 /**
  * コレポン文書入力画面.
@@ -88,7 +92,8 @@ import jp.co.opentone.bsol.linkbinder.view.validator.AttachmentValidator;
  */
 @ManagedBean
 @Scope("view")
-public class CorresponEditPage extends AbstractCorresponPage implements AttachmentDownloadablePage {
+public class CorresponEditPage extends AbstractCorresponPage
+        implements AttachmentDownloadablePage, AttachmentExtractedTextEditablePage {
     /**
      * SerialVersionUID.
      */
@@ -178,6 +183,11 @@ public class CorresponEditPage extends AbstractCorresponPage implements Attachme
      */
     @Resource
     private CorresponService corresponService;
+    /**
+     * コレポン文書保存サービス.
+     */
+    @Resource
+    private CorresponSaveService corresponSaveService;
     /**
      * コレポン文書検証サービス.
      */
@@ -448,6 +458,20 @@ public class CorresponEditPage extends AbstractCorresponPage implements Attachme
      * </p>
      */
     private UploadedFile attachment5;
+
+    /**
+     * 編集中の添付ファイル情報.
+     */
+    private AttachmentInfo editingAttachment;
+
+    /**
+     * カスタムフィールド入力値.
+     */
+    private List<String> customFieldValues = new ArrayList<>();
+    /**
+     * カスタムフィールド選択リスト.
+     */
+    private List<List<CustomFieldValue>> customFieldValueCandidateList = new ArrayList<>();
 
     /**
      * ダウンロード対象ファイルのID.
@@ -832,6 +856,43 @@ public class CorresponEditPage extends AbstractCorresponPage implements Attachme
         this.distributionTemplateList = distributionTemplateList;
     }
 
+    @Override
+    public String showAttachmentExtractedTextEditDialog(AttachmentInfo attachment) {
+        editingAttachment = attachment;
+        return null;
+    }
+
+    @Override
+    public void saveExtractedText() {
+        handler.handleAction(new SaveAttachmentInfoAction(this));
+    }
+
+    @Override
+    public void cancelExtractedTextEdit() {
+        editingAttachment = emptyAttachmentInfo();
+    }
+
+    private AttachmentInfo emptyAttachmentInfo() {
+        return new AttachmentInfo() {
+            @Override
+            public byte[] getContent() throws ServiceAbortException {
+                return null;
+            }
+
+            @Override
+            public Attachment toAttachment() throws ServiceAbortException {
+                return null;
+            }
+        };
+    }
+
+    @Override
+    public AttachmentInfo getEditingAttachment() {
+        return editingAttachment != null
+                ? editingAttachment
+                : emptyAttachmentInfo();
+    }
+
     /**
      * 入力検証グループ名を返す.
      * @return 入力検証グループ名
@@ -1056,6 +1117,18 @@ public class CorresponEditPage extends AbstractCorresponPage implements Attachme
      * @param c コレポン文書オブジェクト
      */
     private void setCustomFieldsTo(Correspon c) {
+        List<String> values = getCustomFieldValues();
+        setCustomField1Value(values.get(0));
+        setCustomField2Value(values.get(1));
+        setCustomField3Value(values.get(2));
+        setCustomField4Value(values.get(3));
+        setCustomField5Value(values.get(4));
+        setCustomField6Value(values.get(5));
+        setCustomField7Value(values.get(6));
+        setCustomField8Value(values.get(7));
+        setCustomField9Value(values.get(8));
+        setCustomField10Value(values.get(9));
+
         c.setCustomField1Value(getCustomField1Value());
         c.setCustomField2Value(getCustomField2Value());
         c.setCustomField3Value(getCustomField3Value());
@@ -2693,6 +2766,46 @@ public class CorresponEditPage extends AbstractCorresponPage implements Attachme
     }
 
     /**
+     * カスタムフィールド入力値に値を設定する.
+     */
+    public void initCustomFieldValues() {
+        customFieldValues.add(getCustomField1Value());
+        customFieldValues.add(getCustomField2Value());
+        customFieldValues.add(getCustomField3Value());
+        customFieldValues.add(getCustomField4Value());
+        customFieldValues.add(getCustomField5Value());
+        customFieldValues.add(getCustomField6Value());
+        customFieldValues.add(getCustomField7Value());
+        customFieldValues.add(getCustomField8Value());
+        customFieldValues.add(getCustomField9Value());
+        customFieldValues.add(getCustomField10Value());
+    }
+
+    /**
+     * カスタムフィールド選択候補に値を設定する.
+     */
+    public void initCustomFieldValueCandidateList() {
+        customFieldValueCandidateList.add(getCustomFieldValue1());
+        customFieldValueCandidateList.add(getCustomFieldValue2());
+        customFieldValueCandidateList.add(getCustomFieldValue3());
+        customFieldValueCandidateList.add(getCustomFieldValue4());
+        customFieldValueCandidateList.add(getCustomFieldValue5());
+        customFieldValueCandidateList.add(getCustomFieldValue6());
+        customFieldValueCandidateList.add(getCustomFieldValue7());
+        customFieldValueCandidateList.add(getCustomFieldValue8());
+        customFieldValueCandidateList.add(getCustomFieldValue9());
+        customFieldValueCandidateList.add(getCustomFieldValue10());
+    }
+
+    public List<String> getCustomFieldValues() {
+        return customFieldValues;
+    }
+
+    public List<List<CustomFieldValue>> getCustomFieldValueCandidateList() {
+        return customFieldValueCandidateList;
+    }
+
+    /**
      * 画面初期化アクション.
      * @author opentone
      */
@@ -2972,6 +3085,35 @@ public class CorresponEditPage extends AbstractCorresponPage implements Attachme
         }
     }
 
+    /**
+     * 添付ファイル情報を保存する.
+     */
+    static class SaveAttachmentInfoAction extends AbstractAction {
+        /** 入力画面. */
+        private CorresponEditPage page;
+
+        /**
+         * ページを指定してインスタンスを生成する.
+         * @param page このアクションを起動したページ
+         */
+        public SaveAttachmentInfoAction(CorresponEditPage page) {
+            super(page);
+            this.page = page;
+        }
+
+        @Override
+        public void execute() throws ServiceAbortException {
+            page.corresponSaveService.saveAttachmentInfo(
+                    page.correspon,
+                    page.editingAttachment.toAttachment()
+            );
+
+            // イベント発火
+            page.eventBus.raiseEvent(
+                    new CorresponAttachmentChanged(page.correspon.getId(),
+                                                page.correspon.getProjectId()));
+        }
+    }
     /**
      * 入力を検証する.
      *

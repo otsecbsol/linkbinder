@@ -15,27 +15,9 @@
  */
 package jp.co.opentone.bsol.linkbinder.service.correspon.impl;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.math.NumberUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import jp.co.opentone.bsol.framework.core.config.SystemConfig;
 import jp.co.opentone.bsol.framework.core.elasticsearch.ElasticsearchClient;
 import jp.co.opentone.bsol.framework.core.elasticsearch.ElasticsearchConfiguration;
-import jp.co.opentone.bsol.framework.core.elasticsearch.ElasticsearchDocument;
 import jp.co.opentone.bsol.framework.core.elasticsearch.ElasticsearchException;
 import jp.co.opentone.bsol.framework.core.elasticsearch.ElasticsearchSearchOption;
 import jp.co.opentone.bsol.framework.core.elasticsearch.response.ElasticsearchSearchResponse;
@@ -52,6 +34,24 @@ import jp.co.opentone.bsol.linkbinder.service.AbstractService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponFullTextSearchService;
 import jp.co.opentone.bsol.linkbinder.util.ResourceUtil;
 import jp.co.opentone.bsol.linkbinder.util.elasticsearch.CorresponDocumentConverter;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * このサービスではコレポン文書全文検索に関する処理を提供する.
@@ -174,12 +174,23 @@ public class CorresponFullTextSearchServiceImpl extends AbstractService implemen
         // 検索対象タイプ (インデックス生成時に設定した名前)
         option.setSearchTypeName(SystemConfig.getValue(Constants.KEY_ELASTICSEARCH_TYPE_NAME));
         option.setKeyword(condition.getKeyword());
+        if (condition.getOperator() != null) {
+            option.setOperator((condition.getOperator().toElasticsearchOperator()));
+        }
         // 検索対象とするフィールド
         // この場合、 document.titleやdocument.attachments.name が検索対象となる
         switch (condition.getFullTextSearchMode()) {
         case ALL:
-            option.addSearchFields("title", "body", "attachments.name", "attachments.content.content");
-            option.addHighlightFields("title", "body", "attachments.name", "attachments.content.content");
+            option.addSearchFields("title", "body", "lastModified");
+            option.addHighlightFields("title", "body", "lastModified");
+            if (condition.isIncludeNonImage()) {
+                option.addSearchFields("attachments.name", "attachments.content.content");
+                option.addHighlightFields("attachments.name", "attachments.content.content");
+            }
+            if (condition.isIncludeImage()) {
+                option.addSearchFields("attachments.extractedText");
+                option.addHighlightFields("attachments.extractedText");
+            }
             break;
         case SUBJECT:
             option.addSearchFields("title");
@@ -192,10 +203,24 @@ public class CorresponFullTextSearchServiceImpl extends AbstractService implemen
         case ATTACHED_FILE:
             option.addSearchFields("attachments.name", "attachments.content.content");
             option.addHighlightFields("attachments.name", "attachments.content.content");
+            if (condition.isIncludeImage()) {
+                option.addSearchFields("attachments.extractedText");
+                option.addHighlightFields("attachments.extractedText");
+            }
             break;
         }
 
         return option;
+    }
+
+    private Long idToLong(String id) {
+        String str;
+        if (StringUtils.contains(id, '@')) {
+            str = StringUtils.split(id, '@')[1];
+        } else {
+            str = id;
+        }
+        return NumberUtils.toLong(str);
     }
 
     private void handleResponse(ElasticsearchSearchResponse response,
@@ -204,7 +229,7 @@ public class CorresponFullTextSearchServiceImpl extends AbstractService implemen
         response.records().forEach(rec -> {
             FullTextSearchCorresponsResult r = new FullTextSearchCorresponsResult();
 
-            r.setId(NumberUtils.toLong(rec.getId()));
+            r.setId(idToLong(rec.getId()));
             if (rec.getHighlightedFragments("title").count() > 0) {
                 r.setTitle(rec.getHighlightedFragments("title").collect(Collectors.joining()));
             } else {
@@ -214,7 +239,10 @@ public class CorresponFullTextSearchServiceImpl extends AbstractService implemen
             r.setWorkflowStatus(rec.getValueAsString("workflowStatus"));
             Stream<Map<String, Object>> s = rec.getValueAsStream("attachments");
             if (s != null) {
-                s.forEach(a -> r.setAttachmentId(rec.getValueAsString("id")));
+                s.forEach(a -> {
+                    r.setTitle(ObjectUtils.toString(a.get("name")));
+                    r.setAttachmentId(ObjectUtils.toString(a.get("id")));
+                });
             }
 
             setSummaryData(condition, rec, r);
@@ -235,6 +263,9 @@ public class CorresponFullTextSearchServiceImpl extends AbstractService implemen
                     rec.getHighlightedFragments("attachments.content.content"))
                 .flatMap(Function.identity());
             break;
+        case SUBJECT:
+            highlights = rec.getHighlightedFragments("title");
+            break;
         case SUBJECT_AND_BODY:
             highlights = rec.getHighlightedFragments("body");
             break;
@@ -252,6 +283,13 @@ public class CorresponFullTextSearchServiceImpl extends AbstractService implemen
                 (t, v) -> t.add(new FullTextSearchSummaryData(v, false)),
                 (t, u) -> t.addAll(u));
 
+        if (condition.isIncludeImage()) {
+            summaryDataList.addAll(
+                    rec.getHighlightedFragments("attachments.extractedText")
+                            .collect(() -> new ArrayList<FullTextSearchSummaryData>(),
+                                    (t, v) -> t.add(new FullTextSearchSummaryData(v, false)),
+                                    (t, u) -> t.addAll(u)));
+        }
         r.setSummaryList(summaryDataList);
     }
 
@@ -264,8 +302,9 @@ public class CorresponFullTextSearchServiceImpl extends AbstractService implemen
     @Transactional(readOnly = true)
     public void addToIndex(Correspon correspon, List<Attachment> attachments) throws ServiceAbortException {
         try (ElasticsearchClient client = new ElasticsearchClient(setupConfiguration(getCurrentProjectId()))) {
-            ElasticsearchDocument document = CorresponDocumentConverter.convert(correspon, attachments);
-            client.addToIndex(document);
+            CorresponDocumentConverter
+                    .convert(correspon, attachments)
+                    .forEach(client::addToIndex);
         } catch (Exception e) {
             throw new ApplicationFatalRuntimeException(e);
         }
@@ -278,11 +317,11 @@ public class CorresponFullTextSearchServiceImpl extends AbstractService implemen
      */
     @Override
     @Transactional(readOnly = true)
-    public void deleteFromIndex(Correspon correspon) throws ServiceAbortException {
+    public void deleteFromIndex(Correspon correspon, List<Attachment> attachments) throws ServiceAbortException {
         try (ElasticsearchClient client = new ElasticsearchClient(setupConfiguration(getCurrentProjectId()))) {
-            ElasticsearchDocument document =
-                    CorresponDocumentConverter.convert(correspon);
-            client.deleteFromIndex(document);
+            CorresponDocumentConverter
+                    .convert(correspon, attachments)
+                    .forEach(client::deleteFromIndex);
         } catch (Exception e) {
             throw new ApplicationFatalRuntimeException(e);
         }

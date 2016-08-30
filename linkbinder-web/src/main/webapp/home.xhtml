@@ -23,16 +23,22 @@
   <ui:define name="jsInner">
     $(document).ready(function() {
       $('#form\\:projectSummary').highlightRows();
-    });
 
-    function sublist( target ) {
-      var TargetList = target.parentNode.getElementsByTagName('ul');
-      if ( TargetList[0].style.display == 'none' ) {
-        TargetList[0].style.display = 'block';
-      } else {
-        TargetList[0].style.display = 'none';
-      }
-    }
+
+      $('#learning').tree({
+        dataUrl: '#{request.contextPath}/api/learningCorresponList.jsf'
+      });
+
+      $('#learning').bind(
+        'tree.click',
+        function(event) {
+          var node = event.node;
+          if (node.url) {
+            location.href = node.url;
+          }
+        }
+      );
+    });
   </ui:define>
 
   <ui:define name="body">
@@ -85,32 +91,14 @@
           <h:inputHidden id="personInChargeSearch" value="#{homePage.personInChargeSearch}" />
           <h:inputHidden id="ccSearch" value="#{homePage.ccSearch}" />
         </div>
+        <ui:fragment rendered="#{homePage.useLearning}">
         <hr />
         <div class="row learn">
           <span id="learn"><h:outputText value="#{homePage.learningContentsTitle}" /></span>
         </div>
         <div id="learning">
-          <ul class="learning">
-            <li><a href="#" onclick="sublist(this); return false;">基本的事項</a></li>
-            <li><a href="#" onclick="sublist(this); return false;">現場における安全管理事項について</a>
-              <ul style="display:none">
-                <li><a href="#">高所作業時の注意点</a></li>
-                <li><a href="#" onclick="sublist(this); return false;">飛来物・落下物への注意点</a>
-                  <ul style="display:none">
-                    <li><a href="#">事故０運動に関して</a></li>
-                    <li><a href="#">安全色の運用を徹底しましょう（2016/05）</a></li>
-                  </ul>
-                </li>
-              </ul>
-            </li>
-            <li><a href="#" onclick="sublist(this); return false;">応用事項</a>
-              <ul style="display:none">
-                <li><a href="#">シールドトンネルの工法について</a></li>
-                <li><a href="#">沈埋トンネルの工法について</a></li>
-              </ul>
-            </li>
-          </ul>
         </div>
+        </ui:fragment>
       </h:form>
     </f:view>
   </ui:define>

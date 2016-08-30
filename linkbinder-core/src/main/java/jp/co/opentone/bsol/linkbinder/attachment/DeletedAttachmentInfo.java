@@ -38,8 +38,7 @@ public class DeletedAttachmentInfo extends AttachmentInfo {
      * @param attachment 添付ファイル
      */
     public DeletedAttachmentInfo(Attachment attachment) {
-        setFileName(attachment.getFileName());
-        setFileId(attachment.getId());
+        populate(attachment);
         this.attachment = attachment;
     }
 

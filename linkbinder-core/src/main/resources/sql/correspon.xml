@@ -83,18 +83,33 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     <result property="file1Id"                                  column="file1_id" />
     <result property="file1FileId"                              column="file1_file_id" />
     <result property="file1FileName"                            column="file1_file_name" />
+    <result property="file1FileType"                            column="file1_file_type" />
+    <result property="file1OrgExtractedText"                    column="file1_org_extracted_text" />
+    <result property="file1ExtractedText"                       column="file1_extracted_text" />
     <result property="file2Id"                                  column="file2_id" />
     <result property="file2FileId"                              column="file2_file_id" />
     <result property="file2FileName"                            column="file2_file_name" />
+    <result property="file2FileType"                            column="file2_file_type" />
+    <result property="file2OrgExtractedText"                    column="file2_org_extracted_text" />
+    <result property="file2ExtractedText"                       column="file2_extracted_text" />
     <result property="file3Id"                                  column="file3_id" />
     <result property="file3FileId"                              column="file3_file_id" />
     <result property="file3FileName"                            column="file3_file_name" />
+    <result property="file3FileType"                            column="file3_file_type" />
+    <result property="file3OrgExtractedText"                    column="file3_org_extracted_text" />
+    <result property="file3ExtractedText"                       column="file3_extracted_text" />
     <result property="file4Id"                                  column="file4_id" />
     <result property="file4FileId"                              column="file4_file_id" />
     <result property="file4FileName"                            column="file4_file_name" />
+    <result property="file4FileType"                            column="file4_file_type" />
+    <result property="file4OrgExtractedText"                    column="file4_org_extracted_text" />
+    <result property="file4ExtractedText"                       column="file4_extracted_text" />
     <result property="file5Id"                                  column="file5_id" />
     <result property="file5FileId"                              column="file5_file_id" />
     <result property="file5FileName"                            column="file5_file_name" />
+    <result property="file5FileType"                            column="file5_file_type" />
+    <result property="file5OrgExtractedText"                    column="file5_org_extracted_text" />
+    <result property="file5ExtractedText"                       column="file5_extracted_text" />
     <result property="createdBy.empNo"                          column="created_by" />
     <result property="createdBy.nameE"                          column="created_by_name" />
     <result property="createdBy.role"                           column="created_by_role" />
@@ -389,18 +404,33 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       file1_id,
       file1_file_id,
       file1_file_name,
+      file1_file_type,
+      file1_org_extracted_text,
+      file1_extracted_text,
       file2_id,
       file2_file_id,
       file2_file_name,
+      file2_file_type,
+      file2_org_extracted_text,
+      file2_extracted_text,
       file3_id,
       file3_file_id,
       file3_file_name,
+      file3_file_type,
+      file3_org_extracted_text,
+      file3_extracted_text,
       file4_id,
       file4_file_id,
       file4_file_name,
+      file4_file_type,
+      file4_org_extracted_text,
+      file4_extracted_text,
       file5_id,
       file5_file_id,
       file5_file_name,
+      file5_file_type,
+      file5_org_extracted_text,
+      file5_extracted_text,
       created_by,
       created_by_name,
       (SELECT p.role

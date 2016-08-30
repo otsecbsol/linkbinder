@@ -341,6 +341,7 @@ public class CorresponEditPageInitializer implements Serializable {
                 String p = String.format(property, i);
                 PropertyGetUtil.setProperty(page, p, PropertyGetUtil.getProperty(correspon, p));
             }
+            page.initCustomFieldValues();
         }
     }
 
@@ -546,6 +547,7 @@ public class CorresponEditPageInitializer implements Serializable {
                     String.format(pageProperty, i),
                     null);
             }
+            page.initCustomFieldValueCandidateList();
         }
 
         private List<ProjectUser> getProjectUsers() throws ServiceAbortException {

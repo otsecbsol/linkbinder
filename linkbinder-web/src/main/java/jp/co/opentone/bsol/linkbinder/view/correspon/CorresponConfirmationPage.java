@@ -20,6 +20,7 @@ import java.util.List;
 import javax.annotation.ManagedBean;
 import javax.annotation.Resource;
 
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -567,6 +568,14 @@ public class CorresponConfirmationPage extends AbstractCorresponPage
                     info.delete();
                 }
             }
+        }
+    }
+
+    public boolean isLearningContents() {
+        if (correspon.getForLearning() == ForLearning.LEARNING) {
+            return true;
+        } else {
+            return false;
         }
     }
 }

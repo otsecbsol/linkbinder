@@ -24,17 +24,17 @@ import jp.co.opentone.bsol.framework.core.dto.Code;
 public enum ForLearning implements Code {
 
     /**
-     * 通常プロジェクト.
+     * 通常プロジェクト/文章.
      */
-    NORMAL(0, "通常プロジェクト"),
+    NORMAL(0, "通常プロジェクト/文書"),
     /**
-     * 学習用プロジェクト.
+     * 学習用プロジェクト/文書.
      */
-    LEARNING(1, "学習用プロジェクト"),
+    LEARNING(1, "学習用プロジェクト/文章"),
     /**
-     * 全てのプロジェクト.
+     * 全てのプロジェクト/文書.
      */
-    ALL(2, "全てのプロジェクト");
+    ALL(2, "全てのプロジェクト/文書");
 
     /**
      * このコードの値.

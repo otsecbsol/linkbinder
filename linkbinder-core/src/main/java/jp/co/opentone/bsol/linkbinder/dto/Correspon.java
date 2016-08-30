@@ -24,10 +24,7 @@ import java.util.Set;
 
 import jp.co.opentone.bsol.framework.core.dao.VersioningEntity;
 import jp.co.opentone.bsol.framework.core.util.CloneUtil;
-import jp.co.opentone.bsol.linkbinder.dto.code.AddressType;
-import jp.co.opentone.bsol.linkbinder.dto.code.CorresponStatus;
-import jp.co.opentone.bsol.linkbinder.dto.code.ReplyRequired;
-import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowStatus;
+import jp.co.opentone.bsol.linkbinder.dto.code.*;
 
 /**
  * テーブル [v_correspon] の1レコードを表すDto.
@@ -204,7 +201,7 @@ public class Correspon extends AbstractDto implements VersioningEntity {
      * [v_correspon.for_learning]
      * </p>
      */
-    private String forLearning;
+    private ForLearning forLearning;
 
     /**
      * Custom field1.
@@ -977,7 +974,7 @@ public class Correspon extends AbstractDto implements VersioningEntity {
      * </p>
      * @return forLearning
      */
-    public String getForLearning() { return forLearning; }
+    public ForLearning getForLearning() { return forLearning; }
 
     /**
      * forLearning の値を設定する.
@@ -986,7 +983,7 @@ public class Correspon extends AbstractDto implements VersioningEntity {
      * </p>
      *
      */
-    public void setForLearning(String forLearning) { this.forLearning = forLearning; }
+    public void setForLearning(ForLearning forLearning) { this.forLearning = forLearning; }
 
     /**
      * customField1Id の値を返す.

@@ -30,8 +30,7 @@ import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 
-import jp.co.opentone.bsol.framework.core.config.SystemConfig;
-import jp.co.opentone.bsol.linkbinder.Constants;
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
@@ -346,7 +345,7 @@ public class CorresponEditPage extends AbstractCorresponPage implements Attachme
      * 学習用コンテンツとして設定するか否か.
      */
     @Transfer
-    private String learningContents;
+    private ForLearning learningContents;
 
     //CHECKSTYLE:OFF
     /**
@@ -1475,28 +1474,31 @@ public class CorresponEditPage extends AbstractCorresponPage implements Attachme
      * 学習用コンテンツか否かをセットする.
      * @param learning 学習用コンテンツか否か
      */
-    public void setLearningContents(String learning) {
-        this.learningContents = learning;
+    public void setLearningContents(boolean learning) {
+        if(learning) {
+            this.learningContents = ForLearning.LEARNING;
+        } else {
+            this.learningContents = ForLearning.NORMAL;
+        }
     }
 
     /**
      * 学習用コンテンツか否かを返す.
      * @return isLearningContents 学習用コンテンツか否か
      */
-    public String getLearningContents() {
-            return learningContents;
+    public ForLearning getLearningContents() {
+        return this.learningContents;
     }
 
     /**
-     * 学習用コンテンツであれば"x"を返す.
-     * 学習用コンテンツで無い場合にはnullを返す.
+     * 学習用コンテンツか否かを返す.
+     * @return isLearningContents 学習用コンテンツか否か
      */
-    public String isLearningContents() {
-
-        if(getLearningContents() != null && getLearningContents().equals("1")) {
-            return "x";
+    public boolean isLearningContents() {
+        if (this.learningContents == ForLearning.LEARNING) {
+            return true;
         } else {
-            return null;
+            return false;
         }
     }
 

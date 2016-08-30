@@ -128,10 +128,10 @@
           <div class="row">
             <h:outputLabel value="#{corresponConfirmationPage.getLearningContentsTitle()}として設定する"/>
             <!-- TODO:それぞれの表示を追加する -->
-            <ui:fragment rendered="#{corresponConfirmationPage.correspon.forLearning}">
+            <ui:fragment rendered="#{corresponConfirmationPage.learningContents}">
               true
             </ui:fragment>
-            <ui:fragment rendered="#{!corresponConfirmationPage.correspon.forLearning}">
+            <ui:fragment rendered="#{!corresponConfirmationPage.learningContents}">
               false
             </ui:fragment>
           </div>

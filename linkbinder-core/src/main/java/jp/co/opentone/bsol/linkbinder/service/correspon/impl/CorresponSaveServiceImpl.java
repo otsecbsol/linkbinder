@@ -386,6 +386,7 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
         updateAddressCorresponGroup(clone);                  // 宛先 活動単位
         updateAddressUser(clone);                            // 宛先 ユーザー
 
+
         return clone.getId();
     }
 
@@ -412,7 +413,7 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
         result.setCorresponType(correspon.getCorresponType());
         result.setSubject(correspon.getSubject());
         result.setBody(correspon.getBody());
-        result.setForLearning(convertLearningValue(correspon.getForLearning()));
+        result.setForLearning(correspon.getForLearning());
         result.setCorresponStatus(correspon.getCorresponStatus());
         result.setReplyRequired(correspon.getReplyRequired());
         result.setDeadlineForReply(correspon.getDeadlineForReply());

@@ -21,6 +21,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import jp.co.opentone.bsol.linkbinder.dto.code.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -310,8 +311,8 @@ public class CorresponEditPageInitializer implements Serializable {
          */
         private void applyLearningContents() {
             if(correspon.getForLearning() != null
-                    && correspon.getForLearning().equals("true")) {
-                page.setLearningContents((correspon.getForLearning()));
+                    && correspon.getForLearning() == ForLearning.LEARNING) {
+                page.setLearningContents(true);
             }
         }
 

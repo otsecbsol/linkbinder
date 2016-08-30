@@ -24,16 +24,20 @@
     $(document).ready(function() {
       $('#form\\:projectSummary').highlightRows();
 
-      $.ajax({
-        url:  '#{request.contextPath}/api/learningCorresponList.jsf',
-        type: 'GET',
-        dataType: 'json',
-        success: function(data) {
-          $('#learning').tree({
-            data: data
-          });
-        }
+
+      $('#learning').tree({
+        dataUrl: '#{request.contextPath}/api/learningCorresponList.jsf'
       });
+
+      $('#learning').bind(
+        'tree.click',
+        function(event) {
+          var node = event.node;
+          if (node.url) {
+            location.href = node.url;
+          }
+        }
+      );
     });
   </ui:define>
 

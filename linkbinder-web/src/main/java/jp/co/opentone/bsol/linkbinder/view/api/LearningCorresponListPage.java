@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package jp.co.opentone.bsol.linkbinder.view.common;
+package jp.co.opentone.bsol.linkbinder.view.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -113,10 +113,10 @@ public class LearningCorresponListPage extends AbstractPage {
         }
 
         private void createDummyData(List<LearningCorresponNode> list) {
-            list.add(new LearningCorresponNode(null, "基本的事項"));
+            list.add(new LearningCorresponNode(null, "基本的事項", null));
 
-            LearningCorresponNode p = new LearningCorresponNode(null, "現場における安全管理事項について");
-            p.addChild(new LearningCorresponNode(2L, "飛来物・落下物への注意点"));
+            LearningCorresponNode p = new LearningCorresponNode(null, "現場における安全管理事項について", null);
+            p.addChild(new LearningCorresponNode(2L, "飛来物・落下物への注意点", "/correspon/correspon.jsf?id=115&projectId=A0000000001"));
             list.add(p);
         }
     }
@@ -127,14 +127,16 @@ public class LearningCorresponListPage extends AbstractPage {
     public static class LearningCorresponNode implements Serializable {
         private Long id;
         private String name;
+        private String url;
         private List<LearningCorresponNode> children = new ArrayList<>();
 
         public LearningCorresponNode() {
         }
 
-        public LearningCorresponNode(Long id, String name) {
+        public LearningCorresponNode(Long id, String name, String url) {
             this.id = id;
             this.name = name;
+            this.url = url;
         }
 
         public void addChild(LearningCorresponNode child) {
@@ -163,6 +165,14 @@ public class LearningCorresponListPage extends AbstractPage {
 
         public void setChildren(List<LearningCorresponNode> children) {
             this.children = children;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
         }
     }
 }

@@ -15,20 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.view.correspon;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.ManagedBean;
-import javax.annotation.Resource;
-import javax.faces.model.SelectItem;
-
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.validator.constraints.Length;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-
 import jp.co.opentone.bsol.framework.core.config.SystemConfig;
 import jp.co.opentone.bsol.framework.core.exception.ApplicationFatalRuntimeException;
 import jp.co.opentone.bsol.framework.core.message.MessageCode;
@@ -55,6 +41,7 @@ import jp.co.opentone.bsol.linkbinder.dto.ProjectUser;
 import jp.co.opentone.bsol.linkbinder.dto.SearchCorresponResult;
 import jp.co.opentone.bsol.linkbinder.dto.User;
 import jp.co.opentone.bsol.linkbinder.dto.code.CorresponStatus;
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import jp.co.opentone.bsol.linkbinder.dto.code.FullTextSearchMode;
 import jp.co.opentone.bsol.linkbinder.dto.code.ReadStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowProcessStatus;
@@ -76,6 +63,20 @@ import jp.co.opentone.bsol.linkbinder.validation.groups.ValidationGroupBuilder;
 import jp.co.opentone.bsol.linkbinder.view.AbstractPage;
 import jp.co.opentone.bsol.linkbinder.view.util.help.HelpContent;
 import jp.co.opentone.bsol.linkbinder.view.util.help.HelpContentLoader;
+import org.apache.commons.lang.StringUtils;
+import org.hibernate.validator.constraints.Length;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+
+import javax.annotation.ManagedBean;
+import javax.annotation.Resource;
+import javax.faces.model.SelectItem;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * コレポン文書一覧画面.
@@ -110,6 +111,10 @@ public class CorresponIndexPage extends AbstractPage {
      * 検索条件のALL（既読／未読状態）.
      */
     private static final Integer ALL_READ_STATUS = -1;
+    /**
+     * 検索条件のALL（学習用プロジェクト）.
+     */
+    private static final Integer ALL_FOR_LEARNING = -1;
 
     /**
      * 高度検索のリストボックスのデフォルト値.
@@ -304,6 +309,12 @@ public class CorresponIndexPage extends AbstractPage {
     private ReadStatus[] readStatusList = null;
 
     /**
+     * 学習用文書可否リスト.
+     */
+    @Transfer
+    private ForLearning[] forLearningList = null;
+
+    /**
      * 文書状態リスト.
      */
     @Transfer
@@ -350,6 +361,12 @@ public class CorresponIndexPage extends AbstractPage {
      */
     @Transfer
     private Integer readStatus = null;
+
+    /**
+     * シンプルな検索：学習用文書.
+     */
+    @Transfer
+    private Integer forLearning = null;
 
     /**
      * 学習用コンテンツ検索：ラベル
@@ -760,12 +777,16 @@ public class CorresponIndexPage extends AbstractPage {
     private static final int SIMPLESEARCH_SELECTED_READSTATUS = 3;
 
     /**
+     * Simple SearchでForLearningを選択したことを示す値.
+     */
+    private static final int SIMPLESEARCH_SELECTED_FORLEARNING = 4;
+    /**
      * Simple Searchで何も選択していないことを示す値.
      */
     private static final int SIMPLESEARCH_SELECTED_NONE = 0;
 
     /**
-     * Simple SearchでType, WorkflowStatus, ReadStatusの
+     * Simple SearchでType, WorkflowStatus, ReadStatus, ForLearningの
      * どれを選択したのか判別するために使用する.
      * corresponIndex.jspにより値が設定される.
      */
@@ -1224,6 +1245,22 @@ public class CorresponIndexPage extends AbstractPage {
     }
 
     /**
+     * 学習用文書可否リストを返却する.
+     * @return 未読／既読状態リスト
+     */
+    public ForLearning[] getForLearningList() {
+        return CloneUtil.cloneArray(ForLearning.class, forLearningList);
+    }
+
+    /**
+     * 学習用文書可否リストを設定する.
+     * @param forLearningList 学習用文書可否リスト
+     */
+    public void setForLearningList(ForLearning[] forLearningList) {
+        this.forLearningList = CloneUtil.cloneArray(ForLearning.class, forLearningList);
+    }
+
+    /**
      * 文書状態リストを設定する.
      * @return 文書状態リスト
      */
@@ -1350,6 +1387,21 @@ public class CorresponIndexPage extends AbstractPage {
      */
     public void setReadStatus(Integer readStatus) {
         this.readStatus = readStatus;
+    }
+    /**
+     * シンプルな検索：学習用文書種類を返却する.
+     * @return シンプルな検索：学習用文書種類
+     */
+    public Integer getForLearning() {
+        return forLearning;
+    }
+
+    /**
+     * シンプルな検索：学習用文書種類を設定する.
+     * @param forLearning シンプルな検索：学習用文書種類
+     */
+    public void setForLearning(Integer forLearning) {
+        this.forLearning = forLearning;
     }
 
     /**
@@ -2217,6 +2269,14 @@ public class CorresponIndexPage extends AbstractPage {
         return ALL_READ_STATUS;
     }
 
+    /**
+     * シンプルな検索：学習用文書を含むか否かのAllを表す値.
+     * @return 既読／未読状態のAll
+     */
+    public Integer getForLearningAll() {
+        return ALL_FOR_LEARNING;
+    }
+
     public Integer getDefaultSelectItemValue() {
         return DEFAULT_SELECT_ITEM_VALUE;
     }
@@ -2674,6 +2734,9 @@ public class CorresponIndexPage extends AbstractPage {
         case SIMPLESEARCH_SELECTED_READSTATUS:
             condition.setReadStatuses(getSelectReadStatus());
             break;
+            case SIMPLESEARCH_SELECTED_FORLEARNING:
+                condition.setForLearnings(getSelectForLearning());
+                break;
         case SIMPLESEARCH_SELECTED_NONE:
         default:
             condition.setCorresponTypes(getSelectType());
@@ -2752,6 +2815,29 @@ public class CorresponIndexPage extends AbstractPage {
     }
 
     /**
+     * シンプルな検索：選択された学習用文書であるか否かの条件を取得する.
+     * @return 既読／未読状態の検索条件
+     */
+    private ForLearning[] getSelectForLearning() {
+        ForLearning[] selected = null;
+        if (forLearning == null) {
+            forLearning = ForLearning.ALL.getValue();
+        }
+
+        if (!forLearning.equals(ALL_FOR_LEARNING)) {
+            for (ForLearning status : forLearningList) {
+                if (status.getValue().equals(forLearning)) {
+                    selected = new ForLearning[1];
+                    selected[0] = status;
+                    break;
+                }
+            }
+        }
+
+        return selected;
+    }
+
+    /**
      * 高度な検索実行時、シンプルな検索の検索条件をクリアする.
      */
     private void clearSimpleSearchParameter() {
@@ -2759,6 +2845,7 @@ public class CorresponIndexPage extends AbstractPage {
             condition.setCorresponTypes(null);
             condition.setWorkflowStatuses(null);
             condition.setReadStatuses(null);
+            condition.setForLearnings(null);
         }
     }
 
@@ -3052,7 +3139,7 @@ public class CorresponIndexPage extends AbstractPage {
         }
         if (condition.getReadStatuses().length > 0) {
             if (getReadStatusSelectList() != null
-                && getReadStatusSelectList().size() != condition.getReadStatuses().length) {
+                    && getReadStatusSelectList().size() != condition.getReadStatuses().length) {
                 ReadStatus rStatus = condition.getReadStatuses()[0];
                 setReadStatus(rStatus.getValue());
             } else {
@@ -3060,6 +3147,11 @@ public class CorresponIndexPage extends AbstractPage {
             }
         } else {
             setReadStatus(Integer.valueOf(-1));
+        }
+        if (condition.getForLearnings().length > 0) {
+            setForLearning(condition.getForLearnings()[0].getValue());
+        } else {
+            setForLearning(Integer.valueOf(-1));
         }
     }
 
@@ -3702,6 +3794,10 @@ public class CorresponIndexPage extends AbstractPage {
 
             page.workflowList = WorkflowStatus.values();
             page.readStatusList = ReadStatus.values();
+            page.forLearningList = Arrays.stream(ForLearning.values())
+                        .filter(e -> {return ForLearning.ALL != e;})
+                        .collect(Collectors.toList())
+                        .toArray(new ForLearning[0]);
             page.statusList = CorresponStatus.values();
             page.workflowProcessesList = WorkflowProcessStatus.values();
             page.fullTextSearchModeList = FullTextSearchMode.values();

@@ -15,16 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.dto.condition;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang.time.DateUtils;
-
 import jp.co.opentone.bsol.framework.core.config.SystemConfig;
 import jp.co.opentone.bsol.framework.core.util.CloneUtil;
 import jp.co.opentone.bsol.framework.core.util.SQLConvertUtil;
@@ -36,12 +26,22 @@ import jp.co.opentone.bsol.linkbinder.dto.code.AddressType;
 import jp.co.opentone.bsol.linkbinder.dto.code.AddressUserType;
 import jp.co.opentone.bsol.linkbinder.dto.code.AllowApproverToBrowse;
 import jp.co.opentone.bsol.linkbinder.dto.code.CorresponStatus;
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import jp.co.opentone.bsol.linkbinder.dto.code.FullTextSearchMode;
 import jp.co.opentone.bsol.linkbinder.dto.code.ReadStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.ReplyRequired;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowProcessStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowType;
+import org.apache.commons.lang.time.DateUtils;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * テーブル [v_correspon] の検索条件を表すDto.
@@ -122,6 +122,11 @@ public class SearchCorresponCondition extends AbstractCondition {
      * 未読／既読状態.
      */
     private ReadStatus[] readStatuses;
+
+    /**
+     * 学習用文書であるか否か.
+     */
+    private ForLearning[] forLearnings;
 
     /**
      * 文書状態.
@@ -490,6 +495,22 @@ public class SearchCorresponCondition extends AbstractCondition {
      */
     public void setReadStatuses(ReadStatus[] readStatuses) {
         this.readStatuses = CloneUtil.cloneArray(ReadStatus.class, readStatuses);
+    }
+
+    /**
+     * forLearningsを取得します.
+     * @return the forLearnings
+     */
+    public ForLearning[] getForLearnings() {
+        return CloneUtil.cloneArray(ForLearning.class, forLearnings);
+    }
+
+    /**
+     * forLearningssを設定します.
+     * @param forLearnings the forLearnings to set
+     */
+    public void setForLearnings(ForLearning[] forLearnings) {
+        this.forLearnings = CloneUtil.cloneArray(ForLearning.class, forLearnings);
     }
 
     /**

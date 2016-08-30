@@ -837,19 +837,27 @@
                     </h:panelGroup>
 
                     <h:panelGroup>
-                      <h:outputText value=" すべて " styleClass="select"/>
-                      <h:outputText value=" | " />
-                      <h:commandLink value=" 学習用文書を含む "
+                      <h:commandLink value=" すべて "
                                      action="#{corresponIndexPage.search}"
-                                     onclick="">
+                                     rendered="#{corresponIndexPage.forLearning != corresponIndexPage.forLearningAll}"
+                                     onclick="setSearchValue('form:forLearningValue', #{corresponIndexPage.forLearningAll});setSearchValue('form:simpleSearchSelectedItem', 4);preProcess(event);">
                         <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
                       </h:commandLink>
-                      <h:outputText value=" | " />
-                      <h:commandLink value=" 学習用文書を含まない "
-                                     action="#{corresponIndexPage.search}"
-                                     onclick="">
-                        <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
-                      </h:commandLink>
+                      <h:outputText value=" すべて " styleClass="select"
+                                    rendered="#{corresponIndexPage.forLearning == corresponIndexPage.forLearningAll}"/>
+                      <ui:repeat id="simpleForLearning" var="simpleForLearning" value="#{corresponIndexPage.forLearningList}" >
+                        <h:outputText value=" | " />
+                        <h:commandLink value=" #{simpleForLearning.label} "
+                                       action="#{corresponIndexPage.search}"
+                                       rendered="#{simpleForLearning.value != corresponIndexPage.forLearning}"
+                                       onclick="setSearchValue('form:forLearningValue', '#{simpleForLearning.value}');setSearchValue('form:simpleSearchSelectedItem', 4);preProcess(event);">
+                          <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
+                        </h:commandLink>
+                        <h:outputText value=" #{simpleForLearning.label} " styleClass="select"
+                                      rendered="#{simpleForLearning.value == corresponIndexPage.forLearning}"/>
+                      </ui:repeat>
+                      <h:inputHidden id="forLearningValue"
+                                     value="#{corresponIndexPage.forLearning}" />
                     </h:panelGroup>
 
                   </h:panelGrid>

@@ -531,6 +531,13 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
           </isEqual>
           )
         </isNotEmpty>
+        <isNotEmpty prepend="AND" property="forLearnings">
+          for_learning in
+          <iterate property="forLearnings" conjunction=","
+                   open="(" close=")">
+            #forLearnings[]#
+          </iterate>
+        </isNotEmpty>
         <isNotEmpty prepend="AND" property="corresponStatuses">
           correspon_status in
           <iterate property="corresponStatuses" conjunction=","

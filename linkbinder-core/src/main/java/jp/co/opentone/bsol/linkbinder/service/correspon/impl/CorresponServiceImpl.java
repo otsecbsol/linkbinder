@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchProjectCondition;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
@@ -996,8 +997,13 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
      * @throws ServiceAbortException
      */
     private void copyCorresponForLearning(Correspon correspon) throws ServiceAbortException {
-        //TODO: 学習用プロジェクトのリストを取得する処理を追加する
         //TODO: 「学習用プロジェクト」に指定されたProjectIDの数だけ文書を複製・登録する処理を追加する
+
+        List<Project> learningPjList = findLearningProject();
+        for(Project project : learningPjList) {
+
+            // ここでリストのIDに紐づく文書としてコピーする処理
+        }
     }
 
    /**
@@ -1611,5 +1617,16 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
         } catch (FileStoreException e) {
             throw new ServiceAbortException(ApplicationMessageCode.ERROR_UPLOADING_FILE);
         }
+    }
+
+    private List<Project> findLearningProject() {
+        SearchProjectCondition condition = new SearchProjectCondition();
+        condition.setForLearning(ForLearning.LEARNING);
+
+        ProjectDao dao = getDao(ProjectDao.class);
+        List<Project> learningPjList = new ArrayList<Project>();
+        learningPjList = dao.find(condition);
+
+        return learningPjList;
     }
 }

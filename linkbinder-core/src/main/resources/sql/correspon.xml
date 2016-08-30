@@ -50,6 +50,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     <result property="deadlineForReply"                         column="deadline_for_reply" />
     <result property="requestedApprovalAt"                      column="requested_approval_at" />
     <result property="workflowStatus"                           column="workflow_status" />
+    <result property="forLearning"                              column="for_learning" />
     <result property="customField1Id"                           column="custom_field1_id" />
     <result property="customField1Label"                        column="custom_field1_label" />
     <result property="customField1Value"                        column="custom_field1_value" />
@@ -371,6 +372,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       deadline_for_reply,
       requested_approval_at,
       workflow_status,
+      for_learning,
       custom_field1_id,
       custom_field1_label,
       custom_field1_value,
@@ -868,6 +870,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       reply_required,
       deadline_for_reply,
       workflow_status,
+      for_learning,
       custom_field1_id,
       custom_field1_label,
       custom_field1_value,

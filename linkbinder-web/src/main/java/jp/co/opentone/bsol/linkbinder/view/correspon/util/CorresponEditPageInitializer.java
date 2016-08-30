@@ -252,6 +252,7 @@ public class CorresponEditPageInitializer implements Serializable {
             applyCorresponType();
             applyCorresponStatus();
             applyReplyRequired();
+            applyLearningContents();
         }
 
         /**
@@ -310,8 +311,7 @@ public class CorresponEditPageInitializer implements Serializable {
          * 学習用文書か否かを設定する.
          */
         private void applyLearningContents() {
-            if(correspon.getForLearning() != null
-                    && correspon.getForLearning() == ForLearning.LEARNING) {
+            if(correspon.getForLearning() == ForLearning.LEARNING) {
                 page.setLearningContents(true);
             }
         }

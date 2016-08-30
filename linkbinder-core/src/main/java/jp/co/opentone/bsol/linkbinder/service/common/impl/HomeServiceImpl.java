@@ -15,12 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.service.common.impl;
 
-import java.util.List;
-
-import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
 import jp.co.opentone.bsol.framework.core.util.ArgumentValidator;
 import jp.co.opentone.bsol.linkbinder.dao.CorresponDao;
@@ -32,11 +26,16 @@ import jp.co.opentone.bsol.linkbinder.dto.CorresponGroupUser;
 import jp.co.opentone.bsol.linkbinder.dto.CorresponUserSummary;
 import jp.co.opentone.bsol.linkbinder.dto.ProjectDetailsSummary;
 import jp.co.opentone.bsol.linkbinder.dto.ProjectSummary;
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchCorresponUserSummaryCondition;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchProjectCondition;
 import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
 import jp.co.opentone.bsol.linkbinder.service.AbstractService;
 import jp.co.opentone.bsol.linkbinder.service.common.HomeService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  *
@@ -111,6 +110,10 @@ public class HomeServiceImpl extends AbstractService implements HomeService {
         SearchProjectCondition condition = new SearchProjectCondition();
         condition.setEmpNo(getCurrentUser().getEmpNo());
         condition.setSystemAdmin(isSystemAdmin(getCurrentUser()));
+        // 学習用プロジェクトは権限に関わらず参照可
+        if (ForLearning.LEARNING == learn) {
+            condition.setSystemAdmin(true);
+        }
         condition.setForLearning(learn);
 
         return condition;

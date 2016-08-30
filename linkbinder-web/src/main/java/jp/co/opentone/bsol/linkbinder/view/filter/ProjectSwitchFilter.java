@@ -15,8 +15,25 @@
  */
 package jp.co.opentone.bsol.linkbinder.view.filter;
 
-import java.io.IOException;
-import java.util.List;
+import jp.co.opentone.bsol.framework.core.exception.ApplicationFatalRuntimeException;
+import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
+import jp.co.opentone.bsol.linkbinder.Constants;
+import jp.co.opentone.bsol.linkbinder.dto.LoginUserInfo;
+import jp.co.opentone.bsol.linkbinder.dto.Project;
+import jp.co.opentone.bsol.linkbinder.dto.ProjectSummary;
+import jp.co.opentone.bsol.linkbinder.dto.ProjectUser;
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
+import jp.co.opentone.bsol.linkbinder.dto.condition.SearchUserCondition;
+import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
+import jp.co.opentone.bsol.linkbinder.service.admin.ProjectCustomSettingService;
+import jp.co.opentone.bsol.linkbinder.service.admin.UserService;
+import jp.co.opentone.bsol.linkbinder.service.common.HomeService;
+import jp.co.opentone.bsol.linkbinder.view.IllegalUserLoginException;
+import jp.co.opentone.bsol.linkbinder.view.LoginUserInfoHolder;
+import jp.co.opentone.bsol.linkbinder.view.common.module.redirect.RedirectProcessParameterKey;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -28,27 +45,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-
-import jp.co.opentone.bsol.framework.core.exception.ApplicationFatalRuntimeException;
-import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
-import jp.co.opentone.bsol.linkbinder.Constants;
-import jp.co.opentone.bsol.linkbinder.dto.LoginUserInfo;
-import jp.co.opentone.bsol.linkbinder.dto.Project;
-import jp.co.opentone.bsol.linkbinder.dto.ProjectSummary;
-import jp.co.opentone.bsol.linkbinder.dto.ProjectUser;
-import jp.co.opentone.bsol.linkbinder.dto.condition.SearchUserCondition;
-import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
-import jp.co.opentone.bsol.linkbinder.service.admin.ProjectCustomSettingService;
-import jp.co.opentone.bsol.linkbinder.service.admin.UserService;
-import jp.co.opentone.bsol.linkbinder.service.common.HomeService;
-import jp.co.opentone.bsol.linkbinder.view.IllegalUserLoginException;
-import jp.co.opentone.bsol.linkbinder.view.LoginUserInfoHolder;
-import jp.co.opentone.bsol.linkbinder.view.common.module.redirect.RedirectProcessParameterKey;
+import java.io.IOException;
+import java.util.List;
 
 
 /**
@@ -149,6 +147,7 @@ public class ProjectSwitchFilter extends AbstractFilter {
         try {
             /**プロジェクトの妥当性検査.*/
             List<ProjectSummary> projectSummaries = homeService.findProjects(ForLearning.NORMAL);
+            projectSummaries.addAll(homeService.findProjects(ForLearning.LEARNING));
             for (ProjectSummary projectSummary : projectSummaries) {
                 if (projectSummary.getProject().getProjectId().equals(projectId)) {
                     // プロジェクトカスタム設定情報をプロジェクトに設定

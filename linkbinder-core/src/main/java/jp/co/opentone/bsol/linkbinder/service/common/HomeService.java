@@ -15,13 +15,13 @@
  */
 package jp.co.opentone.bsol.linkbinder.service.common;
 
-import java.util.List;
-
 import jp.co.opentone.bsol.framework.core.service.IService;
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
 import jp.co.opentone.bsol.linkbinder.dto.ProjectDetailsSummary;
 import jp.co.opentone.bsol.linkbinder.dto.ProjectSummary;
 import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
+
+import java.util.List;
 
 /**
  * ホーム画面に関するサービスを提供する.

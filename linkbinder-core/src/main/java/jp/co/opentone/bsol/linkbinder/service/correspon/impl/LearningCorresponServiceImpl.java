@@ -16,6 +16,7 @@
 package jp.co.opentone.bsol.linkbinder.service.correspon.impl;
 
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
+import jp.co.opentone.bsol.linkbinder.dao.LearningLabelDao;
 import jp.co.opentone.bsol.linkbinder.dto.LearningLabelCorrespon;
 import jp.co.opentone.bsol.linkbinder.service.AbstractService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.LearningCorresponService;
@@ -24,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -52,7 +52,7 @@ public class LearningCorresponServiceImpl extends AbstractService implements Lea
     @Override
     @Transactional(readOnly = true)
     public List<LearningLabelCorrespon> findAll() throws ServiceAbortException {
-        //TODO
-        return new ArrayList<>();
+        LearningLabelDao dao = getDao(LearningLabelDao.class);
+        return dao.findLearningLabelCorrespon();
     }
 }

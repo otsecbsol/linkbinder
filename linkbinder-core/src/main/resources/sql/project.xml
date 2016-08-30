@@ -202,8 +202,10 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
         )
       <dynamic>
           <isNotNull property="forLearning">
+            <isNotEqual property="forLearning" compareValue="0">
               WHERE
               for_learning = #forLearning#
+            </isNotEqual>
           </isNotNull>
       </dynamic>
     GROUP BY

@@ -266,6 +266,10 @@ public class Constants {
      * 学習用コンテンツ項目名取得キー.
      */
     public static final String KEY_LEARNING_TITLE = "learning.title";
+    /**
+     * 学習用ラベル区切り文字取得キー.
+     */
+    public static final String KEY_LEARNING_LABEL_DELIMITER = "learning.label.delimiter";
 
     /**
      * 学習用コンテンツ用PJID取得キー.

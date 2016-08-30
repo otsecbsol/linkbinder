@@ -81,6 +81,8 @@ public interface ProjectDao extends LegacyGenericDao<Project> {
      * @param condition 検索条件
      * @return 検索結果
      */
+    // FIXME: メソッド名を適切な物へ変更する。
+    // CSVDownloadでのみ利用する。
     List<Project> findAll(SearchProjectCondition condition);
 
     /**

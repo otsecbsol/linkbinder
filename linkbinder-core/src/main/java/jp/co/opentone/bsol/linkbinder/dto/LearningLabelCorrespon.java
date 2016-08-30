@@ -44,6 +44,7 @@ public class LearningLabelCorrespon extends AbstractDto {
         TO_STRING_IGNORE_FIELDS = Collections.unmodifiableSet(fields);
     }
 
+    private Long id;
     private String label;
     private List<Correspon> corresponList;
 
@@ -76,5 +77,13 @@ public class LearningLabelCorrespon extends AbstractDto {
 
     public void setCorresponList(List<Correspon> corresponList) {
         this.corresponList = corresponList;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

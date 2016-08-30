@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.co.opentone.bsol.framework.core.exception.ApplicationFatalRuntimeException;
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
 import jp.co.opentone.bsol.linkbinder.action.AbstractAction;
+import jp.co.opentone.bsol.linkbinder.dto.Correspon;
 import jp.co.opentone.bsol.linkbinder.dto.LearningLabelCorrespon;
 import jp.co.opentone.bsol.linkbinder.service.correspon.LearningCorresponService;
 import jp.co.opentone.bsol.linkbinder.view.AbstractPage;
@@ -97,12 +98,33 @@ public class LearningCorresponListPage extends AbstractPage {
 
         private List<LearningCorresponNode> convertLearningCorresponNode(
                         List<LearningLabelCorrespon> learningLabelCorresponList) {
+            //FIXME
             List<LearningCorresponNode> list = new ArrayList<>();
-            createDummyData(list);
+            for (LearningLabelCorrespon lc : learningLabelCorresponList) {
+                LearningCorresponNode n = new LearningCorresponNode(null, lc.getLabel(), null);
+                for (Correspon c : lc.getCorresponList()) {
+                    n.addChild(new LearningCorresponNode(c.getId(), c.getSubject(), toCorresponUrl(c)));
+                }
+
+                list.add(n);
+            }
+//            createDummyData(list);
 
             return list;
         }
 
+        private String toCorresponUrl(Correspon c) {
+            //TODO コンテキストパス
+            return String.format("/correspon/correspon.jsf?id=%d&projectId=%s", c.getId(), c.getProjectId());
+        }
+
+        private void add(List<LearningCorresponNode> list, LearningLabelCorrespon lc) {
+            for (LearningCorresponNode n : list) {
+                if (n.getName().equals(lc.getLabel())) {
+
+                }
+            }
+        }
         private String toJson(List<LearningCorresponNode> list) {
             ObjectMapper m = new ObjectMapper();
             try {
@@ -141,6 +163,10 @@ public class LearningCorresponListPage extends AbstractPage {
 
         public void addChild(LearningCorresponNode child) {
             children.add(child);
+        }
+
+        public void addChildren(List<LearningCorresponNode> children) {
+            children.addAll(children);
         }
 
         public Long getId() {

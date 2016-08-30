@@ -17,20 +17,26 @@ package jp.co.opentone.bsol.linkbinder.view.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jp.co.opentone.bsol.framework.core.config.SystemConfig;
 import jp.co.opentone.bsol.framework.core.exception.ApplicationFatalRuntimeException;
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
+import jp.co.opentone.bsol.linkbinder.Constants;
 import jp.co.opentone.bsol.linkbinder.action.AbstractAction;
 import jp.co.opentone.bsol.linkbinder.dto.Correspon;
 import jp.co.opentone.bsol.linkbinder.dto.LearningLabelCorrespon;
 import jp.co.opentone.bsol.linkbinder.service.correspon.LearningCorresponService;
 import jp.co.opentone.bsol.linkbinder.view.AbstractPage;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.Scope;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Resource;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * ログインユーザーが閲覧可能な学習用文書の一覧.
@@ -98,18 +104,80 @@ public class LearningCorresponListPage extends AbstractPage {
 
         private List<LearningCorresponNode> convertLearningCorresponNode(
                         List<LearningLabelCorrespon> learningLabelCorresponList) {
-            //FIXME
+            // nodeを登録
             List<LearningCorresponNode> list = new ArrayList<>();
-            for (LearningLabelCorrespon lc : learningLabelCorresponList) {
-                LearningCorresponNode n = new LearningCorresponNode(null, lc.getLabel(), null);
-                for (Correspon c : lc.getCorresponList()) {
-                    n.addChild(new LearningCorresponNode(c.getId(), c.getSubject(), toCorresponUrl(c)));
-                }
+            Map<String, LearningCorresponNode> parents = new HashMap<>();
 
-                list.add(n);
+            for (LearningLabelCorrespon lc : learningLabelCorresponList) {
+                String myLabel = getMyLabel(lc.getLabel());
+                String parentLabel = getParentLabel(lc.getLabel());
+                LearningCorresponNode node;
+
+                if (StringUtils.isEmpty(parentLabel)) {
+                    node = new LearningCorresponNode(null, myLabel, null);
+                    node.addChildren(
+                            lc.getCorresponList().stream()
+                                    .map(c -> new LearningCorresponNode(c.getId(), c.getSubject(), toCorresponUrl(c)))
+                                    .collect(Collectors.toList()));
+                    parents.put(lc.getLabel(), node);
+                    list.add(node);
+                } else {
+                    LearningCorresponNode parent = null;
+                    if (parents.containsKey(parentLabel)) {
+                        parent = parents.get(parentLabel);
+                    } else {
+                        // 親階層を追加
+                        String delimiter = SystemConfig.getValue(Constants.KEY_LEARNING_LABEL_DELIMITER);
+                        StringBuilder strPath = new StringBuilder();
+                        String[] path = StringUtils.split(parentLabel, delimiter);
+                        for (int i = 0; i < path.length; i++) {
+                            LearningCorresponNode n = new LearningCorresponNode(null, path[i], null);
+                            if (i == 0) {
+                                list.add(n);
+                            } else {
+                                list.get(list.size() - 1).addChild(n);
+                            }
+                            String label = StringUtils.join(path, delimiter, 0, i);
+                            parents.put(label, n);
+
+                            if (i == path.length - 1) {
+                                parent = n;
+                            }
+                        }
+                    }
+                    LearningCorresponNode me = new LearningCorresponNode(null, myLabel, null);
+                    if (parent != null) {
+                        parent.addChild(me);
+                        me.addChildren(
+                                lc.getCorresponList().stream()
+                                        .map(c -> new LearningCorresponNode(c.getId(), c.getSubject(), toCorresponUrl(c)))
+                                        .collect(Collectors.toList()));
+
+                        parents.put(lc.getLabel(), me);
+                    }
+                }
+            }
+            return list;
+        }
+
+        private String getMyLabel(String label) {
+            String delimiter = SystemConfig.getValue(Constants.KEY_LEARNING_LABEL_DELIMITER);
+            int i = label.lastIndexOf(delimiter);
+            if (i == -1) {
+                return label;
             }
 
-            return list;
+            return label.substring(i + 1);
+        }
+
+        private String getParentLabel(String label) {
+            String delimiter = SystemConfig.getValue(Constants.KEY_LEARNING_LABEL_DELIMITER);
+            int i = label.lastIndexOf(delimiter);
+            if (i == -1) {
+                return null;
+            }
+
+            return label.substring(0, i);
         }
 
         private String toCorresponUrl(Correspon c) {
@@ -117,13 +185,6 @@ public class LearningCorresponListPage extends AbstractPage {
                     + "/correspon/correspon.jsf?id=%d&projectId=%s", c.getId(), c.getProjectId());
         }
 
-        private void add(List<LearningCorresponNode> list, LearningLabelCorrespon lc) {
-            for (LearningCorresponNode n : list) {
-                if (n.getName().equals(lc.getLabel())) {
-
-                }
-            }
-        }
         private String toJson(List<LearningCorresponNode> list) {
             ObjectMapper m = new ObjectMapper();
             try {
@@ -131,14 +192,6 @@ public class LearningCorresponListPage extends AbstractPage {
             } catch (JsonProcessingException e) {
                 throw new ApplicationFatalRuntimeException(e);
             }
-        }
-
-        private void createDummyData(List<LearningCorresponNode> list) {
-            list.add(new LearningCorresponNode(null, "基本的事項", null));
-
-            LearningCorresponNode p = new LearningCorresponNode(null, "現場における安全管理事項について", null);
-            p.addChild(new LearningCorresponNode(2L, "飛来物・落下物への注意点", "/correspon/correspon.jsf?id=115&projectId=A0000000001"));
-            list.add(p);
         }
     }
 
@@ -161,11 +214,11 @@ public class LearningCorresponListPage extends AbstractPage {
         }
 
         public void addChild(LearningCorresponNode child) {
-            children.add(child);
+            this.children.add(child);
         }
 
         public void addChildren(List<LearningCorresponNode> children) {
-            children.addAll(children);
+            this.children.addAll(children);
         }
 
         public Long getId() {

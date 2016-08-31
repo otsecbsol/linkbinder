@@ -38,6 +38,7 @@ import jp.co.opentone.bsol.linkbinder.dto.CorresponType;
 import jp.co.opentone.bsol.linkbinder.dto.CustomField;
 import jp.co.opentone.bsol.linkbinder.dto.FavoriteFilter;
 import jp.co.opentone.bsol.linkbinder.dto.LearningLabel;
+import jp.co.opentone.bsol.linkbinder.dto.LearningTag;
 import jp.co.opentone.bsol.linkbinder.dto.ProjectUser;
 import jp.co.opentone.bsol.linkbinder.dto.SearchCorresponResult;
 import jp.co.opentone.bsol.linkbinder.dto.User;
@@ -61,6 +62,7 @@ import jp.co.opentone.bsol.linkbinder.service.admin.UserService;
 import jp.co.opentone.bsol.linkbinder.service.common.FavoriteFilterService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponSearchService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.LearningLabelService;
+import jp.co.opentone.bsol.linkbinder.service.correspon.LearningTagService;
 import jp.co.opentone.bsol.linkbinder.validation.groups.ValidationGroupBuilder;
 import jp.co.opentone.bsol.linkbinder.view.AbstractPage;
 import jp.co.opentone.bsol.linkbinder.view.util.help.HelpContent;
@@ -263,6 +265,12 @@ public class CorresponIndexPage extends AbstractPage {
     private LearningLabelService learningLabelService;
 
     /**
+     * 学習用タグサービス.
+     */
+    @Resource
+    private LearningTagService learningTagService;
+
+    /**
      * ユーザーサービス.
      */
     @Resource
@@ -309,6 +317,12 @@ public class CorresponIndexPage extends AbstractPage {
      */
     @Transfer
     private List<LearningLabel> learningLabelList = null;
+
+    /**
+     * 学習用タグリスト.
+     */
+    @Transfer
+    private List<LearningTag> learningTagList = null;
 
     /**
      * 承認状態リスト.
@@ -455,6 +469,12 @@ public class CorresponIndexPage extends AbstractPage {
      */
     @Transfer
     private List<SelectItem> learningLabelSelectList = new ArrayList<SelectItem>();
+
+    /**
+     * 高度な検索：学習用タグ選択肢.
+     */
+    @Transfer
+    private List<SelectItem> learningTagSelectList = new ArrayList<SelectItem>();
 
     /**
      * 高度な検索：承認状態選択肢.
@@ -656,6 +676,12 @@ public class CorresponIndexPage extends AbstractPage {
      */
     @Transfer
     private Long[] learningLabels = null;
+
+    /**
+     * 高度な検索：選択された学習用タグ.
+     */
+    @Transfer
+    private Long[] learningTags = null;
 
     /**
      * 高度な検索：選択された承認状態.
@@ -1224,11 +1250,27 @@ public class CorresponIndexPage extends AbstractPage {
     }
 
     /**
-     * コレポン文書種別リストを返却する.
+     * 学習用ラベルリストを返却する.
      * @param learningLabelList 学習用ラベルリスト
      */
     public void setLearningLabelList(List<LearningLabel> learningLabelList) {
         this.learningLabelList = learningLabelList;
+    }
+
+    /**
+     * 学習用タグリストを返却する.
+     * @return 学習用タグリスト
+     */
+    public List<LearningTag> getLearningTagList() {
+        return learningTagList;
+    }
+
+    /**
+     * 学習用タグリストを返却する.
+     * @param learningTagList 学習用タグリスト
+     */
+    public void setLearningTagList(List<LearningTag> learningTagList) {
+        this.learningTagList = learningTagList;
     }
 
     /**
@@ -1614,11 +1656,36 @@ public class CorresponIndexPage extends AbstractPage {
     }
 
     /**
-     * 高度な検索：コレポン文書種別選択肢を返却する.
-     * @param learningLabelSelectList 高度な検索：コレポン文書種別選択肢
+     * 高度な検索：学習用ラベル選択肢を設定する.
+     * @param learningLabelSelectList 高度な検索：学習用ラベル選択肢
      */
     public void setLearningLabelSelectList(List<SelectItem> learningLabelSelectList) {
         this.learningLabelSelectList = learningLabelSelectList;
+    }
+
+    /**
+     * 高度な検索：学習用タグ選択肢を返却する.
+     * @return 高度な検索：学習用タグ選択肢
+     */
+    public List<SelectItem> getLearningTagSelectList() {
+        if (!this.advancedSearchDisplayed) {
+            return new ArrayList<SelectItem>();
+        }
+        if (this.learningTagSelectList != null && !this.learningTagSelectList.isEmpty()) {
+            return this.learningTagSelectList;
+        }
+
+        this.learningTagSelectList = viewHelper.createSelectItem(
+                learningTagList, "id", "name");
+        return learningTagSelectList;
+    }
+
+    /**
+     * 高度な検索：学習用タグ選択肢を設定する.
+     * @param learningTagSelectList 高度な検索：学習用タグ選択肢
+     */
+    public void setLearningTagSelectList(List<SelectItem> learningTagSelectList) {
+        this.learningTagSelectList = learningTagSelectList;
     }
 
     /**
@@ -2035,6 +2102,26 @@ public class CorresponIndexPage extends AbstractPage {
             this.learningLabels = learningLabels.clone();
         } else {
             this.learningLabels = null;
+        }
+    }
+
+    /**
+     * 高度な検索：選択された学習用タグを返却する.
+     * @return 高度な検索：選択された学習用タグ
+     */
+    public Long[] getLearningTags() {
+        return learningTags == null ? null : learningTags.clone();
+    }
+
+    /**
+     * 高度な検索：選択された学習用タグを設定する.
+     * @param learningTags 高度な検索：選択された学習用タグ
+     */
+    public void setLearningTags(Long[] learningTags) {
+        if (learningTags != null) {
+            this.learningTags = learningTags.clone();
+        } else {
+            this.learningTags = null;
         }
     }
 
@@ -2481,6 +2568,32 @@ public class CorresponIndexPage extends AbstractPage {
     }
 
     /**
+     * 検索条件：学習用ラベルの文字列表現を取得する.
+     * @return 検索条件：学習用ラベルの文字列表現
+     */
+    public String getLearningTagConditionText() {
+        if (condition != null) {
+            LearningTag[] learninglabelCondition = condition.getLearningTags();
+            if (learninglabelCondition != null && learninglabelCondition.length > 0) {
+                StringBuilder sb = new StringBuilder();
+
+                for (int i = 0; i < learninglabelCondition.length; i++) {
+                    sb.append(getViewLearningTag(learninglabelCondition[i].getId()));
+                    if (i + 1 < MAX_CONDITION
+                            && i + 1 < learninglabelCondition.length) {
+                        sb.append(DELIM_CONDITION);
+                    } else if (learninglabelCondition.length > MAX_CONDITION) {
+                        sb.append(TEXT_MORE_CONDITION);
+                        break;
+                    }
+                }
+                return sb.toString();
+            }
+        }
+        return null; // ラベルを表示させないためにNULLで返却する
+    }
+
+    /**
      * 検索条件：承認状態の文字列表現を取得する.
      * @return 検索条件：承認状態の文字列表現
      */
@@ -2811,6 +2924,23 @@ public class CorresponIndexPage extends AbstractPage {
     }
 
     /**
+     * LearningTag表示内容を取得する.
+     * @param id id
+     * @return 表示内容
+     */
+    private String getViewLearningTag(Long id) {
+        if (id != null) {
+            for (LearningTag label : learningTagList) {
+                if (id.equals(label.getId())) {
+                    return label.getName();
+                }
+            }
+            return SystemConfig.getValue(KEY_UNKNOWN_TXT);
+        }
+        return null;
+    }
+
+    /**
      * 検索条件を設定する.
      */
     private void setSearchCondition() {
@@ -3061,6 +3191,7 @@ public class CorresponIndexPage extends AbstractPage {
         condition.setCorresponStatuses(getSelectedStatuses());
 
         condition.setLearningLabels(getSelectedLearningLabels());
+        condition.setLearningTags(getSelectedLearningTags());
 
         condition.setFromUsers(getSelectedFromUsers());
         condition.setToUsers(getSelectedToUsers());
@@ -3116,6 +3247,23 @@ public class CorresponIndexPage extends AbstractPage {
             for (LearningLabel learningLabel : learningLabelList) {
                 if (learningLabels[i].equals(learningLabel.getId())) {
                     selected[i] = learningLabel;
+                }
+            }
+        }
+        return selected;
+    }
+
+    /**
+     * 高度な検索：選択された学習用タグの条件を取得する.
+     * @return 学習用タグの検索条件
+     */
+    public LearningTag[] getSelectedLearningTags() {
+        int length = (learningTags == null ? 0 : learningTags.length);
+        LearningTag[] selected = new LearningTag[length];
+        for (int i = 0; i < length; i++) {
+            for (LearningTag learningTag : learningTagList) {
+                if (learningTags[i].equals(learningTag.getId())) {
+                    selected[i] = learningTag;
                 }
             }
         }
@@ -3471,6 +3619,23 @@ public class CorresponIndexPage extends AbstractPage {
      */
     private Long[] getLearningLabelValues() {
         LearningLabel[] array = condition.getLearningLabels();
+        if (array == null) {
+            return new Long[0];
+        }
+        Long[] values = new Long[array.length];
+
+        for (int i = 0; i < array.length; i++) {
+            values[i] = array[i].getId();
+        }
+        return values;
+    }
+
+    /**
+     * 学習用タグの検索条件を取得する.
+     * @return 学習用ラベルの検索条件
+     */
+    private Long[] getLearningTagValues() {
+        LearningTag[] array = condition.getLearningTags();
         if (array == null) {
             return new Long[0];
         }
@@ -4063,6 +4228,7 @@ public class CorresponIndexPage extends AbstractPage {
             typeCondition.setProjectId(page.getCurrentProjectId());
             page.typeList = page.corresponTypeService.search(typeCondition);
             page.learningLabelList = page.learningLabelService.findAll();
+            page.learningTagList = page.learningTagService.findAll();
 
             page.workflowList = WorkflowStatus.values();
             page.readStatusList = ReadStatus.values();

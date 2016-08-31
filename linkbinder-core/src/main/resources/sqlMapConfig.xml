@@ -134,4 +134,5 @@
   <sqlMap resource="sql/distTemplateGroup.xml" />
   <sqlMap resource="sql/distTemplateUser.xml" />
   <sqlMap resource="sql/learningLabel.xml" />
+  <sqlMap resource="sql/learningTag.xml" />
 </sqlMapConfig>

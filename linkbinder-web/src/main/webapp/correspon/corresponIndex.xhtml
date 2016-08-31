@@ -1197,20 +1197,16 @@
                             </div>
                           </div>
                           <div class="row">
-                            <ui:remove>
-
                             <div class="twelve columns">
                               <h:outputLabel for="learningTag" value="タグ"/>
                               <h:selectManyListbox id="learningTag"
                                                    value="#{corresponIndexPage.learningTags}"
-                                                   styleClass="u-full-width"
+                                                   styleClass="u-full-width learning-select"
                                                    rendered="#{corresponIndexPage.learningTagSelectList != null}">
                                 <f:selectItem itemLabel="" itemValue="#{corresponIndexPage.defaultSelectItemValue}" />
                                 <f:selectItems value="#{corresponIndexPage.learningTagSelectList}" />
                               </h:selectManyListbox>
                             </div>
-
-                            </ui:remove>
                           </div>
                         </div>
                       </div>

@@ -21,6 +21,19 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
 
 <sqlMap namespace="learningLabel">
 
+  <resultMap id="result" class="jp.co.opentone.bsol.linkbinder.dto.LearningLabel">
+    <result property="id"              column="id"/>
+    <result property="name"            column="name"/>
+    <result property="createdBy.empNo" column="created_by"/>
+    <result property="createdBy.nameE" column="created_by_name"/>
+    <result property="createdAt"       column="created_at"/>
+    <result property="updatedBy.empNo" column="updated_by"/>
+    <result property="updatedBy.nameE" column="updated_by_name"/>
+    <result property="updatedAt"       column="updated_at"/>
+    <result property="versionNo"       column="version_no"/>
+    <result property="deleteNo"        column="delete_no"/>
+  </resultMap>
+
   <resultMap id="resultLearningLabelCorrespon"
             class="jp.co.opentone.bsol.linkbinder.dto.LearningLabelCorrespon"
             groupBy="id">
@@ -38,6 +51,21 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
   <resultMap id="resultForUpdate" class="jp.co.opentone.bsol.linkbinder.dto.LearningLabel">
     <result property="versionNo" column="version_no" />
   </resultMap>
+
+  <select id="findByProjectId" resultMap="result">
+    SELECT
+      l.*
+    FROM learning_label l
+      INNER JOIN correspon_learning_label cl
+        ON cl.label_id = l.id
+       AND cl.delete_no = 0
+      INNER JOIN correspon c
+        ON c.id = cl.correspon_id
+       AND c.delete_no = 0
+    WHERE l.delete_no = 0
+      AND c.project_id = #value#
+    ORDER BY l.name
+  </select>
 
   <select id="findLearningLabelCorrespon" resultMap="resultLearningLabelCorrespon">
     SELECT

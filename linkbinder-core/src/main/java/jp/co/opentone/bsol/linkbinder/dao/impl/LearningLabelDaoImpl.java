@@ -45,6 +45,10 @@ public class LearningLabelDaoImpl extends AbstractDao<LearningLabel> implements 
      * SQLID: 有効なラベルが設定された文書を検索するID.
      */
     private static final String SQL_FIND_LEARNING_LABEL_CORRESPON = "findLearningLabelCorrespon";
+    /**
+     * SQLID: 指定プロジェクトの学習用ラベルを検索するID.
+     */
+    private static final String SQL_FIND_BY_PROJECT_ID = "findByProjectId";
 
     /**
      * 前方一致検索を行うフィールド名.
@@ -66,5 +70,11 @@ public class LearningLabelDaoImpl extends AbstractDao<LearningLabel> implements 
     public List<LearningLabelCorrespon> findLearningLabelCorrespon() {
         return (List<LearningLabelCorrespon>) getSqlMapClientTemplate()
                     .queryForList(getSqlId(SQL_FIND_LEARNING_LABEL_CORRESPON));
+    }
+
+    @Override
+    public List<LearningLabel> findByProjectId(String projectId) {
+        return (List<LearningLabel>) getSqlMapClientTemplate()
+                .queryForList(getSqlId(SQL_FIND_BY_PROJECT_ID));
     }
 }

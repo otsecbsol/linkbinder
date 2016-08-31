@@ -133,6 +133,9 @@
       for (i = 0; i < document.getElementById('form:readStatus').options.length; i++) {
         document.getElementById('form:readStatus').options[i].selected = false;
       }
+      for (i = 0; i < document.getElementById('form:forLearning').options.length; i++) {
+        document.getElementById('form:forLearning').options[i].selected = false;
+      }
       for (i = 0; i < document.getElementById('form:status').options.length; i++) {
         document.getElementById('form:status').options[i].selected = false;
       }
@@ -195,6 +198,7 @@
         document.getElementById('form:type').options[0].selected = false;
         document.getElementById('form:workflowStatus').options[0].selected = false;
         document.getElementById('form:readStatus').options[0].selected = false;
+        document.getElementById('form:forLearning').options[0].selected = false;
         document.getElementById('form:status').options[0].selected = false;
         document.getElementById('form:fromUsers').options[0].selected = false;
         document.getElementById('form:toUsers').options[0].selected = false;
@@ -357,6 +361,7 @@
       if (isSwitchPageView) {
         switchPageView();
       }
+      $('.learning-select').select2();
     }
 
     function confirmAction(e) {
@@ -415,14 +420,6 @@
       }
     }
 
-    function checkLearningContents( obj,id ) {
-      if( obj.checked ){
-      document.getElementById(id).style.display = "block";
-    } else {
-      document.getElementById(id).style.display = "none";
-    }
-  }
-
     -->
   </ui:define>
 
@@ -434,13 +431,13 @@
         <div id="advancedSearchText" class="row">
           <div class="twelve columns search-condition">
             <h:panelGroup id="conditionPanel">
-              <ui:fragment rendered="#{! corresponIndexPage.learningPj}">
+              <ui:fragment rendered="#{not corresponIndexPage.learningProject}">
                 <h:outputText value="プロジェクトID=" styleClass="label"
                               rendered="#{corresponIndexPage.condition.projectId != null}" />
                 <h:outputText value="#{corresponIndexPage.condition.projectId}"
                               rendered="#{!corresponIndexPage.condition.projectId != null}" />
               </ui:fragment>
-              <ui:fragment rendered="#{corresponIndexPage.learningPj}">
+              <ui:fragment rendered="#{corresponIndexPage.learningProject}">
                 <h:outputText value="#{corresponIndexPage.learningContentsTitle}" styleClass="label"
                               rendered="#{corresponIndexPage.learningContentsTitle != null}" />
               </ui:fragment>
@@ -494,6 +491,14 @@
               <h:outputText
                       value="#{corresponIndexPage.readStatusConditionText}"
                       rendered="#{corresponIndexPage.readStatusConditionText != null}" />
+
+              <h:outputText value=","
+                            rendered="#{corresponIndexPage.forLearningConditionText != null}" />
+              <h:outputText value="学習用文書=" styleClass="label"
+                            rendered="#{corresponIndexPage.forLearningConditionText != null}" />
+              <h:outputText
+                      value="#{corresponIndexPage.forLearningConditionText}"
+                      rendered="#{corresponIndexPage.forLearningConditionText != null}" />
 
               <h:outputText value=","
                             rendered="#{corresponIndexPage.statusConditionText != null}" />
@@ -721,174 +726,189 @@
             <div id="simpleSearch">
               <h:panelGroup id="simplePanel">
                 <h:panelGroup id="advancedLinkPanel">
-                  <div class="row">
-                    <div class="five columns u-pull-right">
-                      <h:panelGrid columns="1" styleClass="u-right">
-                        <h:panelGroup styleClass="searchActionLink">
-                          <h:outputText value=" シンプルな検索 " styleClass="select" />
-                          <h:outputText value=" | " />
-                          <h:commandLink id="advancedSearch2"
-                            value=" 高度な検索 "
-                            action="#{corresponIndexPage.showAdvancedSearch}"
-                            rendered="#{!corresponIndexPage.advancedSearchDisplayed}"
-                            onclick="preProcess(event);">
-                            <f:ajax render=":form:advancedSearchPanel" execute="@all" onevent="advancedSearch2" />
-                          </h:commandLink>
-                          <h:outputLink id="advancedSearch" value="#" onclick="changeSearchView(false);" style="display:none;">
-                            <h:outputText value=" 高度な検索 "  />
-                          </h:outputLink>
-                          <h:outputLink id="advancedSearch3" value="#" onclick="changeSearchView(false);" rendered="#{corresponIndexPage.advancedSearchDisplayed}">
-                            <h:outputText value=" 高度な検索 "  />
-                          </h:outputLink>
-                        </h:panelGroup>
-                      </h:panelGrid>
+                  <ui:fragment rendered="#{not corresponIndexPage.learningProject}">
+                    <div class="row">
+                      <div class="five columns u-pull-right">
+                        <h:panelGrid columns="1" styleClass="u-right">
+                          <h:panelGroup styleClass="searchActionLink">
+                            <h:outputText value=" シンプルな検索 " styleClass="select" />
+                            <h:outputText value=" | " />
+                            <h:commandLink id="advancedSearch2"
+                                           value=" 高度な検索 "
+                                           action="#{corresponIndexPage.showAdvancedSearch}"
+                                           rendered="#{!corresponIndexPage.advancedSearchDisplayed}"
+                                           onclick="preProcess(event);">
+                              <f:ajax render=":form:advancedSearchPanel" execute="@all" onevent="advancedSearch2" />
+                            </h:commandLink>
+                            <h:outputLink id="advancedSearch" value="#" onclick="changeSearchView(false);" style="display:none;">
+                              <h:outputText value=" 高度な検索 "  />
+                            </h:outputLink>
+                            <h:outputLink id="advancedSearch3" value="#" onclick="changeSearchView(false);" rendered="#{corresponIndexPage.advancedSearchDisplayed}">
+                              <h:outputText value=" 高度な検索 "  />
+                            </h:outputLink>
+                          </h:panelGroup>
+                        </h:panelGrid>
+                      </div>
                     </div>
-                  </div>
+                  </ui:fragment>
                 </h:panelGroup>
 
-                <ui:fragment rendered="#{!corresponIndexPage.learningPj}">
-                  <h:panelGrid columns="3" columnClasses="simple-type,simple-workflowstatus,">
-                    <h:panelGroup styleClass="label">
-                      <h:outputText value="文書種類" />
-                    </h:panelGroup>
-                    <h:panelGroup styleClass="label">
-                      <h:outputText value=":" />
-                    </h:panelGroup>
+                <h:panelGrid columns="3" columnClasses="simple-type,simple-workflowstatus,">
+                  <h:panelGroup styleClass="label" rendered="#{not corresponIndexPage.learningProject}">
+                    <h:outputText value="文書種類" />
+                  </h:panelGroup>
+                  <h:panelGroup styleClass="label" rendered="#{not corresponIndexPage.learningProject}">
+                    <h:outputText value=":" />
+                  </h:panelGroup>
 
-                    <h:panelGroup>
-                      <h:commandLink value=" すべて "
-                                action="#{corresponIndexPage.search}"
-                                rendered="#{corresponIndexPage.type != corresponIndexPage.typeAll}"
-                                onclick="setSearchValue('form:typeValue', #{corresponIndexPage.typeAll});setSearchValue('form:simpleSearchSelectedItem', 1);preProcess(event);">
-                        <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
-                      </h:commandLink>
-                      <h:outputText value=" すべて " styleClass="select"
-                              rendered="#{corresponIndexPage.type == corresponIndexPage.typeAll}"/>
-                      <ui:repeat id="simpleType" var="simpleType" value="#{corresponIndexPage.typeList}">
-                        <h:outputText value=" | " />
-                        <h:commandLink value="  #{simpleType.corresponType}  "
-                                    action="#{corresponIndexPage.search}"
-                                    rendered="#{simpleType.projectCorresponTypeId != corresponIndexPage.type}"
-                                    onclick="setSearchValue('form:typeValue', '#{simpleType.projectCorresponTypeId}');setSearchValue('form:simpleSearchSelectedItem', 1);preProcess(event);">
-                          <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
-                        </h:commandLink>
-                        <h:outputText value=" #{simpleType.corresponType} " styleClass="select"
-                                  rendered="#{simpleType.projectCorresponTypeId == corresponIndexPage.type}"/>
-                      </ui:repeat>
-                      <h:inputHidden id="typeValue" value="#{corresponIndexPage.type}" />
-                    </h:panelGroup>
-
-                    <h:panelGroup styleClass="label">
-                      <h:outputText value="ワークフロー" />
-                    </h:panelGroup>
-                    <h:panelGroup styleClass="label">
-                      <h:outputText value=":" />
-                    </h:panelGroup>
-
-                    <h:panelGroup>
-                      <h:commandLink value=" すべて "
-                                action="#{corresponIndexPage.search}"
-                                rendered="#{corresponIndexPage.workflow != corresponIndexPage.workflowAll}"
-                                onclick="setSearchValue('form:workflowValue', #{corresponIndexPage.workflowAll});setSearchValue('form:simpleSearchSelectedItem', 2);preProcess(event);">
-                        <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
-                      </h:commandLink>
-                      <h:outputText value=" すべて " styleClass="select"
-                                rendered="#{corresponIndexPage.workflow == corresponIndexPage.workflowAll}"/>
-                      <ui:repeat id="simpleWorkFlow" var="simpleWorkFlow" value="#{corresponIndexPage.workflowList}" >
-                        <h:outputText value=" | " />
-                        <h:commandLink value=" #{simpleWorkFlow.label} "
-                                    action="#{corresponIndexPage.search}"
-                                    rendered="#{simpleWorkFlow.value != corresponIndexPage.workflow}"
-                                    onclick="setSearchValue('form:workflowValue', '#{simpleWorkFlow.value}');setSearchValue('form:simpleSearchSelectedItem', 2);preProcess(event);">
-                          <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
-                        </h:commandLink>
-                        <h:outputText value=" #{simpleWorkFlow.label} " styleClass="select"
-                                  rendered="#{simpleWorkFlow.value == corresponIndexPage.workflow}"/>
-                      </ui:repeat>
-                      <h:inputHidden id="workflowValue" value="#{corresponIndexPage.workflow}" />
-                    </h:panelGroup>
-
-                    <h:panelGroup styleClass="label">
-                      <h:outputText value="既読状態" />
-                    </h:panelGroup>
-                    <h:panelGroup styleClass="label">
-                      <h:outputText value=":" />
-                    </h:panelGroup>
-
-                    <h:panelGroup>
-                      <h:commandLink value=" すべて "
-                                  action="#{corresponIndexPage.search}"
-                                  rendered="#{corresponIndexPage.readStatus != corresponIndexPage.readStatusAll}"
-                                  onclick="setSearchValue('form:readStatusValue', #{corresponIndexPage.readStatusAll});setSearchValue('form:simpleSearchSelectedItem', 3);preProcess(event);">
-                        <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
-                      </h:commandLink>
-                      <h:outputText value=" すべて " styleClass="select"
-                        rendered="#{corresponIndexPage.readStatus == corresponIndexPage.readStatusAll}"/>
-                      <ui:repeat id="simpleReadStatus" var="simpleReadStatus" value="#{corresponIndexPage.readStatusList}" >
-                        <h:outputText value=" | " />
-                        <h:commandLink value=" #{simpleReadStatus.label} "
-                                    action="#{corresponIndexPage.search}"
-                                    rendered="#{simpleReadStatus.value != corresponIndexPage.readStatus}"
-                                    onclick="setSearchValue('form:readStatusValue', '#{simpleReadStatus.value}');setSearchValue('form:simpleSearchSelectedItem', 3);preProcess(event);">
-                          <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
-                        </h:commandLink>
-                        <h:outputText value=" #{simpleReadStatus.label} " styleClass="select"
-                                  rendered="#{simpleReadStatus.value == corresponIndexPage.readStatus}"/>
-                      </ui:repeat>
-                      <h:inputHidden id="readStatusValue"
-                        value="#{corresponIndexPage.readStatus}" />
-                    </h:panelGroup>
-
-                    <h:panelGroup styleClass="label">
-                      <h:outputText value="学習用文書" />
-                    </h:panelGroup>
-                    <h:panelGroup styleClass="label">
-                      <h:outputText value=":" />
-                    </h:panelGroup>
-
-                    <h:panelGroup>
-                      <h:commandLink value=" すべて "
+                  <h:panelGroup rendered="#{not corresponIndexPage.learningProject}">
+                    <h:commandLink value=" すべて "
+                                   action="#{corresponIndexPage.search}"
+                                   rendered="#{corresponIndexPage.type != corresponIndexPage.typeAll}"
+                                   onclick="setSearchValue('form:typeValue', #{corresponIndexPage.typeAll});setSearchValue('form:simpleSearchSelectedItem', 1);preProcess(event);">
+                      <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
+                    </h:commandLink>
+                    <h:outputText value=" すべて " styleClass="select"
+                                  rendered="#{corresponIndexPage.type == corresponIndexPage.typeAll}"/>
+                    <ui:repeat id="simpleType" var="simpleType" value="#{corresponIndexPage.typeList}">
+                      <h:outputText value=" | " />
+                      <h:commandLink value="  #{simpleType.corresponType}  "
                                      action="#{corresponIndexPage.search}"
-                                     rendered="#{corresponIndexPage.forLearning != corresponIndexPage.forLearningAll}"
-                                     onclick="setSearchValue('form:forLearningValue', #{corresponIndexPage.forLearningAll});setSearchValue('form:simpleSearchSelectedItem', 4);preProcess(event);">
+                                     rendered="#{simpleType.projectCorresponTypeId != corresponIndexPage.type}"
+                                     onclick="setSearchValue('form:typeValue', '#{simpleType.projectCorresponTypeId}');setSearchValue('form:simpleSearchSelectedItem', 1);preProcess(event);">
                         <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
                       </h:commandLink>
-                      <h:outputText value=" すべて " styleClass="select"
-                                    rendered="#{corresponIndexPage.forLearning == corresponIndexPage.forLearningAll}"/>
-                      <ui:repeat id="simpleForLearning" var="simpleForLearning" value="#{corresponIndexPage.forLearningList}" >
-                        <h:outputText value=" | " />
-                        <h:commandLink value=" #{simpleForLearning.label} "
-                                       action="#{corresponIndexPage.search}"
-                                       rendered="#{simpleForLearning.value != corresponIndexPage.forLearning}"
-                                       onclick="setSearchValue('form:forLearningValue', '#{simpleForLearning.value}');setSearchValue('form:simpleSearchSelectedItem', 4);preProcess(event);">
-                          <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
-                        </h:commandLink>
-                        <h:outputText value=" #{simpleForLearning.label} " styleClass="select"
-                                      rendered="#{simpleForLearning.value == corresponIndexPage.forLearning}"/>
-                      </ui:repeat>
-                      <h:inputHidden id="forLearningValue"
-                                     value="#{corresponIndexPage.forLearning}" />
-                    </h:panelGroup>
+                      <h:outputText value=" #{simpleType.corresponType} " styleClass="select"
+                                    rendered="#{simpleType.projectCorresponTypeId == corresponIndexPage.type}"/>
+                    </ui:repeat>
+                    <h:inputHidden id="typeValue" value="#{corresponIndexPage.type}" />
+                  </h:panelGroup>
 
-                  </h:panelGrid>
-                </ui:fragment>
-                <ui:fragment rendered="#{corresponIndexPage.learningPj}">
-                  <h:panelGrid columns="3" columnClasses="simple-type,simple-workflowstatus">
-                      <div class="six columns">
-                        <h:outputLabel for="learning_label" value="ラベル"/>
-                        <h:inputText id="learning_label" value="#{corresponIndexPage.learningLabel}" styleClass="u-full-width"/>
-                      </div>
-                    <div class="six columns">
-                      <h:outputLabel for="learning_tag" value="タグ"/>
-                      <h:inputText id="learning_tag" value="#{corresponIndexPage.learningTag}" styleClass="u-full-width"/>
-                    </div>
-                    <div class="six columns">
-                      <h:outputLabel for="learning_keyword" value="キーワード"/>
-                      <h:inputText id="learning_keyword" value="#{corresponIndexPage.learningKeyword}" styleClass="u-full-width"/>
-                    </div>
-                  </h:panelGrid>
-                </ui:fragment>
-                <ui:fragment rendered="#{corresponIndexPage.learningPj}">
+                  <h:panelGroup styleClass="label" rendered="#{not corresponIndexPage.learningProject}">
+                    <h:outputText value="ワークフロー" />
+                  </h:panelGroup>
+                  <h:panelGroup styleClass="label" rendered="#{not corresponIndexPage.learningProject}">
+                    <h:outputText value=":" />
+                  </h:panelGroup>
+
+                  <h:panelGroup rendered="#{not corresponIndexPage.learningProject}">
+                    <h:commandLink value=" すべて "
+                                   action="#{corresponIndexPage.search}"
+                                   rendered="#{corresponIndexPage.workflow != corresponIndexPage.workflowAll}"
+                                   onclick="setSearchValue('form:workflowValue', #{corresponIndexPage.workflowAll});setSearchValue('form:simpleSearchSelectedItem', 2);preProcess(event);">
+                      <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
+                    </h:commandLink>
+                    <h:outputText value=" すべて " styleClass="select"
+                                  rendered="#{corresponIndexPage.workflow == corresponIndexPage.workflowAll}"/>
+                    <ui:repeat id="simpleWorkFlow" var="simpleWorkFlow" value="#{corresponIndexPage.workflowList}" >
+                      <h:outputText value=" | " />
+                      <h:commandLink value=" #{simpleWorkFlow.label} "
+                                     action="#{corresponIndexPage.search}"
+                                     rendered="#{simpleWorkFlow.value != corresponIndexPage.workflow}"
+                                     onclick="setSearchValue('form:workflowValue', '#{simpleWorkFlow.value}');setSearchValue('form:simpleSearchSelectedItem', 2);preProcess(event);">
+                        <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
+                      </h:commandLink>
+                      <h:outputText value=" #{simpleWorkFlow.label} " styleClass="select"
+                                    rendered="#{simpleWorkFlow.value == corresponIndexPage.workflow}"/>
+                    </ui:repeat>
+                    <h:inputHidden id="workflowValue" value="#{corresponIndexPage.workflow}" />
+                  </h:panelGroup>
+
+                  <h:panelGroup styleClass="label">
+                    <h:outputText value="既読状態" />
+                  </h:panelGroup>
+                  <h:panelGroup styleClass="label">
+                    <h:outputText value=":" />
+                  </h:panelGroup>
+
+                  <h:panelGroup>
+                    <h:commandLink value=" すべて "
+                                   action="#{corresponIndexPage.search}"
+                                   rendered="#{corresponIndexPage.readStatus != corresponIndexPage.readStatusAll}"
+                                   onclick="setSearchValue('form:readStatusValue', #{corresponIndexPage.readStatusAll});setSearchValue('form:simpleSearchSelectedItem', 3);preProcess(event);">
+                      <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
+                    </h:commandLink>
+                    <h:outputText value=" すべて " styleClass="select"
+                                  rendered="#{corresponIndexPage.readStatus == corresponIndexPage.readStatusAll}"/>
+                    <ui:repeat id="simpleReadStatus" var="simpleReadStatus" value="#{corresponIndexPage.readStatusList}" >
+                      <h:outputText value=" | " />
+                      <h:commandLink value=" #{simpleReadStatus.label} "
+                                     action="#{corresponIndexPage.search}"
+                                     rendered="#{simpleReadStatus.value != corresponIndexPage.readStatus}"
+                                     onclick="setSearchValue('form:readStatusValue', '#{simpleReadStatus.value}');setSearchValue('form:simpleSearchSelectedItem', 3);preProcess(event);">
+                        <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
+                      </h:commandLink>
+                      <h:outputText value=" #{simpleReadStatus.label} " styleClass="select"
+                                    rendered="#{simpleReadStatus.value == corresponIndexPage.readStatus}"/>
+                    </ui:repeat>
+                    <h:inputHidden id="readStatusValue"
+                                   value="#{corresponIndexPage.readStatus}" />
+                  </h:panelGroup>
+
+                  <h:panelGroup styleClass="label" rendered="#{not corresponIndexPage.learningProject}">
+                    <h:outputText value="学習用文書" />
+                  </h:panelGroup>
+                  <h:panelGroup styleClass="label" rendered="#{not corresponIndexPage.learningProject}">
+                    <h:outputText value=":" />
+                  </h:panelGroup>
+
+                  <h:panelGroup rendered="#{not corresponIndexPage.learningProject}">
+                    <h:commandLink value=" すべて "
+                                   action="#{corresponIndexPage.search}"
+                                   rendered="#{corresponIndexPage.forLearning != corresponIndexPage.forLearningAll}"
+                                   onclick="setSearchValue('form:forLearningValue', #{corresponIndexPage.forLearningAll});setSearchValue('form:simpleSearchSelectedItem', 4);preProcess(event);">
+                      <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
+                    </h:commandLink>
+                    <h:outputText value=" すべて " styleClass="select"
+                                  rendered="#{corresponIndexPage.forLearning == corresponIndexPage.forLearningAll}"/>
+                    <ui:repeat id="simpleForLearning" var="simpleForLearning" value="#{corresponIndexPage.forLearningList}" >
+                      <h:outputText value=" | " />
+                      <h:commandLink value=" #{simpleForLearning.label} "
+                                     action="#{corresponIndexPage.search}"
+                                     rendered="#{simpleForLearning.value != corresponIndexPage.forLearning}"
+                                     onclick="setSearchValue('form:forLearningValue', '#{simpleForLearning.value}');setSearchValue('form:simpleSearchSelectedItem', 4);preProcess(event);">
+                        <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
+                      </h:commandLink>
+                      <h:outputText value=" #{simpleForLearning.label} " styleClass="select"
+                                    rendered="#{simpleForLearning.value == corresponIndexPage.forLearning}"/>
+                    </ui:repeat>
+                    <h:inputHidden id="forLearningValue"
+                                   value="#{corresponIndexPage.forLearning}" />
+                  </h:panelGroup>
+
+                  <h:panelGroup styleClass="label" rendered="#{corresponIndexPage.learningProject}">
+                    <h:outputText value="ラベル" />
+                  </h:panelGroup>
+                  <h:panelGroup styleClass="label" rendered="#{corresponIndexPage.learningProject}">
+                    <h:outputText value=":" />
+                  </h:panelGroup>
+                  <h:panelGroup rendered="#{corresponIndexPage.learningProject}">
+                    <h:inputText id="learning_label" value="#{corresponIndexPage.learningLabel}"/>
+                  </h:panelGroup>
+
+                  <h:panelGroup styleClass="label" rendered="#{corresponIndexPage.learningProject}">
+                    <h:outputText value="タグ" />
+                  </h:panelGroup>
+                  <h:panelGroup styleClass="label" rendered="#{corresponIndexPage.learningProject}">
+                    <h:outputText value=":" />
+                  </h:panelGroup>
+                  <h:panelGroup rendered="#{corresponIndexPage.learningProject}">
+                    <h:inputText id="learning_tag" value="#{corresponIndexPage.learningTag}"/>
+                  </h:panelGroup>
+
+                  <h:panelGroup styleClass="label" rendered="#{corresponIndexPage.learningProject}">
+                    <h:outputText value="キーワード" />
+                  </h:panelGroup>
+                  <h:panelGroup styleClass="label" rendered="#{corresponIndexPage.learningProject}">
+                    <h:outputText value=":" />
+                  </h:panelGroup>
+
+                  <h:panelGroup styleClass="label" rendered="#{corresponIndexPage.learningProject}">
+                    <h:inputText id="learning_keyword" value="#{corresponIndexPage.learningKeyword}"/>
+                  </h:panelGroup>
+                </h:panelGrid>
+
+                <ui:fragment rendered="#{corresponIndexPage.learningProject}">
                   <div class="action">
                     <h:commandButton id="learningSearch"
                                      value="検索"
@@ -1146,19 +1166,53 @@
                       </div>
                     </div>
                     <div class="search-block">
-                      <h:outputLabel value="学習用文書"/>
-                      <label>
-                        <h:selectBooleanCheckbox id="containLearningContents"
-                                               value="" style="margin-left: 10px;" onclick="checkLearningContents" />
-                        <span class="label-body">学習用文書を含む</span>
-                      </label>
-                      <div id="learningContents" style="display: none">
-                        <h:outputLabel value="ラベル" />
-                        <h:inputText id="learningLabel" value="" styleClass="u-full-width"/>
-                        <h:outputLabel value="タグ" />
-                        <h:inputText id="learningTag" value="" styleClass="u-full-width"/>
-                        <h:outputLabel value="キーワード" />
-                        <h:inputText id="learningKeyword" value="" styleClass="u-full-width"/>
+                      <div class="row">
+                        <div class="twelve columns">
+                          <h:outputText styleClass="label" value="学習用文書" />
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="three columns">
+                          <h:outputLabel for="forLearning" value="種類"/>
+                          <h:selectManyListbox id="forLearning"
+                                               value="#{corresponIndexPage.forLearnings}" size="6"
+                                               styleClass="u-full-width"
+                                               rendered="#{corresponIndexPage.forLearningSelectList != null}">
+                            <f:selectItem itemLabel="" itemValue="#{corresponIndexPage.defaultSelectItemValue}" />
+                            <f:selectItems
+                                    value="#{corresponIndexPage.forLearningSelectList}" />
+                          </h:selectManyListbox>
+                        </div>
+                        <div class="nine columns">
+                          <div class="row">
+                            <div class="twelve columns">
+                              <h:outputLabel for="learningLabel" value="ラベル"/>
+                              <h:selectManyListbox id="learningLabel"
+                                                   value="#{corresponIndexPage.learningLabels}"
+                                                   styleClass="u-full-width learning-select"
+                                                   rendered="#{corresponIndexPage.learningLabelSelectList != null}">
+                                <f:selectItem itemLabel="" itemValue="#{corresponIndexPage.defaultSelectItemValue}" />
+                                <f:selectItems value="#{corresponIndexPage.learningLabelSelectList}" />
+                              </h:selectManyListbox>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <ui:remove>
+
+                            <div class="twelve columns">
+                              <h:outputLabel for="learningTag" value="タグ"/>
+                              <h:selectManyListbox id="learningTag"
+                                                   value="#{corresponIndexPage.learningTags}"
+                                                   styleClass="u-full-width"
+                                                   rendered="#{corresponIndexPage.learningTagSelectList != null}">
+                                <f:selectItem itemLabel="" itemValue="#{corresponIndexPage.defaultSelectItemValue}" />
+                                <f:selectItems value="#{corresponIndexPage.learningTagSelectList}" />
+                              </h:selectManyListbox>
+                            </div>
+
+                            </ui:remove>
+                          </div>
+                        </div>
                       </div>
                     </div>
 

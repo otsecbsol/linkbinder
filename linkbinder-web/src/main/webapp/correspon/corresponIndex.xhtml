@@ -136,6 +136,12 @@
       for (i = 0; i < document.getElementById('form:forLearning').options.length; i++) {
         document.getElementById('form:forLearning').options[i].selected = false;
       }
+      for (i = 0; i < document.getElementById('form:learningLabel').options.length; i++) {
+        document.getElementById('form:learningLabel').options[i].selected = false;
+      }
+      for (i = 0; i < document.getElementById('form:learningTag').options.length; i++) {
+        document.getElementById('form:learningTag').options[i].selected = false;
+      }
       for (i = 0; i < document.getElementById('form:status').options.length; i++) {
         document.getElementById('form:status').options[i].selected = false;
       }
@@ -199,6 +205,8 @@
         document.getElementById('form:workflowStatus').options[0].selected = false;
         document.getElementById('form:readStatus').options[0].selected = false;
         document.getElementById('form:forLearning').options[0].selected = false;
+        document.getElementById('form:learningLabel').options[0].selected = false;
+        document.getElementById('form:learningTag').options[0].selected = false;
         document.getElementById('form:status').options[0].selected = false;
         document.getElementById('form:fromUsers').options[0].selected = false;
         document.getElementById('form:toUsers').options[0].selected = false;
@@ -499,6 +507,22 @@
               <h:outputText
                       value="#{corresponIndexPage.forLearningConditionText}"
                       rendered="#{corresponIndexPage.forLearningConditionText != null}" />
+
+              <h:outputText value=","
+                            rendered="#{corresponIndexPage.learningLabelConditionText != null}" />
+              <h:outputText value="学習ラベル=" styleClass="label"
+                            rendered="#{corresponIndexPage.learningLabelConditionText != null}" />
+              <h:outputText
+                      value="#{corresponIndexPage.learningLabelConditionText}"
+                      rendered="#{corresponIndexPage.learningLabelConditionText != null}" />
+
+              <h:outputText value=","
+                            rendered="#{corresponIndexPage.learningTagConditionText != null}" />
+              <h:outputText value="学習タグ=" styleClass="label"
+                            rendered="#{corresponIndexPage.learningTagConditionText != null}" />
+              <h:outputText
+                      value="#{corresponIndexPage.learningTagConditionText}"
+                      rendered="#{corresponIndexPage.learningTagConditionText != null}" />
 
               <h:outputText value=","
                             rendered="#{corresponIndexPage.statusConditionText != null}" />
@@ -882,18 +906,58 @@
                   <h:panelGroup styleClass="label" rendered="#{corresponIndexPage.learningProject}">
                     <h:outputText value=":" />
                   </h:panelGroup>
+
                   <h:panelGroup rendered="#{corresponIndexPage.learningProject}">
-                    <h:inputText id="learning_label" value="#{corresponIndexPage.learningLabel}"/>
+                    <h:commandLink value=" すべて "
+                                   action="#{corresponIndexPage.search}"
+                                   rendered="#{corresponIndexPage.learningLabel != corresponIndexPage.learningLabelAll}"
+                                   onclick="setSearchValue('form:learningLabelValue', #{corresponIndexPage.learningLabelAll});setSearchValue('form:simpleSearchSelectedItem', 5);preProcess(event);">
+                      <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
+                    </h:commandLink>
+                    <h:outputText value=" すべて " styleClass="select"
+                                  rendered="#{corresponIndexPage.learningLabel == corresponIndexPage.learningLabelAll}"/>
+                    <ui:repeat id="simpleLearningLabel" var="simpleLearningLabel" value="#{corresponIndexPage.learningLabelList}">
+                      <h:outputText value=" | " />
+                      <h:commandLink value="  #{simpleLearningLabel.name}  "
+                                     action="#{corresponIndexPage.search}"
+                                     rendered="#{simpleLearningLabel.id != corresponIndexPage.learningLabel}"
+                                     onclick="setSearchValue('form:learningLabelValue', '#{simpleLearningLabel.id}');setSearchValue('form:simpleSearchSelectedItem', 5);preProcess(event);">
+                        <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
+                      </h:commandLink>
+                      <h:outputText value=" #{simpleLearningLabel.name} " styleClass="select"
+                                    rendered="#{simpleLearningLabel.id == corresponIndexPage.learningLabel}"/>
+                    </ui:repeat>
+                    <h:inputHidden id="learningLabelValue" value="#{corresponIndexPage.learningLabel}" />
                   </h:panelGroup>
 
                   <h:panelGroup styleClass="label" rendered="#{corresponIndexPage.learningProject}">
-                    <h:outputText value="タグ" />
+                    <h:outputText value="ラベル" />
                   </h:panelGroup>
                   <h:panelGroup styleClass="label" rendered="#{corresponIndexPage.learningProject}">
                     <h:outputText value=":" />
                   </h:panelGroup>
+
                   <h:panelGroup rendered="#{corresponIndexPage.learningProject}">
-                    <h:inputText id="learning_tag" value="#{corresponIndexPage.learningTag}"/>
+                    <h:commandLink value=" すべて "
+                                   action="#{corresponIndexPage.search}"
+                                   rendered="#{corresponIndexPage.learningTag != corresponIndexPage.learningTagAll}"
+                                   onclick="setSearchValue('form:learningTagValue', #{corresponIndexPage.learningTagAll});setSearchValue('form:simpleSearchSelectedItem', 5);preProcess(event);">
+                      <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
+                    </h:commandLink>
+                    <h:outputText value=" すべて " styleClass="select"
+                                  rendered="#{corresponIndexPage.learningTag == corresponIndexPage.learningTagAll}"/>
+                    <ui:repeat id="simpleLearningTag" var="simpleLearningTag" value="#{corresponIndexPage.learningTagList}">
+                      <h:outputText value=" | " />
+                      <h:commandLink value="  #{simpleLearningTag.name}  "
+                                     action="#{corresponIndexPage.search}"
+                                     rendered="#{simpleLearningTag.id != corresponIndexPage.learningTag}"
+                                     onclick="setSearchValue('form:learningTagValue', '#{simpleLearningTag.id}');setSearchValue('form:simpleSearchSelectedItem', 5);preProcess(event);">
+                        <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
+                      </h:commandLink>
+                      <h:outputText value=" #{simpleLearningTag.name} " styleClass="select"
+                                    rendered="#{simpleLearningTag.id == corresponIndexPage.learningTag}"/>
+                    </ui:repeat>
+                    <h:inputHidden id="learningTagValue" value="#{corresponIndexPage.learningTag}" />
                   </h:panelGroup>
 
                   <h:panelGroup styleClass="label" rendered="#{corresponIndexPage.learningProject}">
@@ -903,13 +967,13 @@
                     <h:outputText value=":" />
                   </h:panelGroup>
 
-                  <h:panelGroup styleClass="label" rendered="#{corresponIndexPage.learningProject}">
-                    <h:inputText id="learning_keyword" value="#{corresponIndexPage.learningKeyword}"/>
-                  </h:panelGroup>
-                </h:panelGrid>
-
-                <ui:fragment rendered="#{corresponIndexPage.learningProject}">
-                  <div class="action">
+                  <h:panelGroup rendered="#{corresponIndexPage.learningProject}">
+                    <h:inputText id="simpleKeyword" value="#{corresponIndexPage.keyword}"/>
+                    <h:selectOneMenu id="simpleFullTextSearchMode"
+                                     value="#{corresponIndexPage.fullTextSearchMode}"
+                                     rendered="#{corresponIndexPage.fullTextSearchModeSelectList != null}">
+                      <f:selectItems value="#{corresponIndexPage.fullTextSearchModeSelectList}" />
+                    </h:selectOneMenu>
                     <h:commandButton id="learningSearch"
                                      value="検索"
                                      styleClass="button-primary"
@@ -918,14 +982,8 @@
                       <f:ajax render=":messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel :form:conditionPanel :form:simplePanel :form:advancedSearchPanel"
                               execute="@all" onevent="oncompletePostProcess" />
                     </h:commandButton>
-                    <h:outputLink id="learningClear"
-                                  value="javascript:void(0)"
-                                  styleClass="button"
-                                  onclick="clearCondition();window.scroll(0,0);">
-                      <h:outputText value="検索条件クリア"  />
-                    </h:outputLink>
-                  </div>
-                </ui:fragment>
+                  </h:panelGroup>
+                </h:panelGrid>
               </h:panelGroup>
             </div>
 

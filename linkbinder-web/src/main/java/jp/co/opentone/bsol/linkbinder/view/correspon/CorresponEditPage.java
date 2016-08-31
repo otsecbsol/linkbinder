@@ -355,7 +355,7 @@ public class CorresponEditPage extends AbstractCorresponPage
      * 学習用コンテンツとして設定するか否か.
      */
     @Transfer
-    private ForLearning learningContents;
+    private ForLearning forLearning;
 
     //CHECKSTYLE:OFF
     /**
@@ -1547,28 +1547,28 @@ public class CorresponEditPage extends AbstractCorresponPage
      * 学習用コンテンツか否かをセットする.
      * @param learning 学習用コンテンツか否か
      */
-    public void setLearningContents(boolean learning) {
+    public void setForLearning(boolean learning) {
         if(learning) {
-            this.learningContents = ForLearning.LEARNING;
+            this.forLearning = ForLearning.LEARNING;
         } else {
-            this.learningContents = ForLearning.NORMAL;
+            this.forLearning = ForLearning.NORMAL;
         }
     }
 
     /**
      * 学習用コンテンツか否かを返す.
-     * @return isLearningContents 学習用コンテンツか否か
+     * @return getForLearning 学習用コンテンツか否か
      */
     public ForLearning getLearningContents() {
-        return this.learningContents;
+        return this.forLearning;
     }
 
     /**
      * 学習用コンテンツか否かを返す.
-     * @return isLearningContents 学習用コンテンツか否か
+     * @return getForLearning 学習用コンテンツか否か
      */
-    public boolean isLearningContents() {
-        if (this.learningContents == ForLearning.LEARNING) {
+    public boolean getForLearning() {
+        if (this.forLearning == ForLearning.LEARNING) {
             return true;
         } else {
             return false;

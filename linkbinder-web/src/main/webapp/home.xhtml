@@ -25,7 +25,11 @@
       $('#form\\:projectSummary').highlightRows();
 
 
-      $('#learning').tree();
+      $('#learning').tree({
+        dataUrl:  '#{request.contextPath}/api/learningCorresponList.jsf',
+        autoOpen: true,
+        saveState: true
+      });
       $('#learning').bind(
         'tree.click',
         function(event) {
@@ -93,7 +97,7 @@
         <div class="row learn">
           <span id="learn"><h:outputText value="#{homePage.learningContentsTitle}" /></span>
         </div>
-        <div id="learning" data-url="#{request.contextPath}/api/learningCorresponList.jsf">
+        <div id="learning">
         </div>
         </ui:fragment>
       </h:form>

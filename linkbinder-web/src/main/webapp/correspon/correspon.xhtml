@@ -94,108 +94,113 @@
   <h:inputHidden id="targetAddressType" value="#{corresponPage.targetAddressType}"/>
   <div class="correspon-paging-panel row">
     <div class="four columns">
-      <div>
-        <h:commandLink id="linkPrev"
-                        rendered="#{corresponPage.previousLink and !corresponPage.displayReplied}"
-                        onclick="setFixedActionName('Prev');"
-                        action="#{corresponPage.movePrevious}">
-          <h:outputText id="linkPrevLabelLt" escape="false" value="&lt;" />
-          <h:outputText id="linkPrevLabel" value=" 前へ" />
-        </h:commandLink>
-        <h:outputText id="prevLabelLt" escape="false" value="&lt;" rendered="#{!corresponPage.previousLink and !corresponPage.displayReplied}" />
-        <h:outputText id="prevLabel" value=" 前へ" rendered="#{!corresponPage.previousLink and !corresponPage.displayReplied}" />
+      <ui:fragment rendered="#{not corresponPage.learningProject}">
+        <div>
+          <h:commandLink id="linkPrev"
+                         rendered="#{corresponPage.previousLink and !corresponPage.displayReplied}"
+                         onclick="setFixedActionName('Prev');"
+                         action="#{corresponPage.movePrevious}">
+            <h:outputText id="linkPrevLabelLt" escape="false" value="&lt;" />
+            <h:outputText id="linkPrevLabel" value=" 前へ" />
+          </h:commandLink>
+          <h:outputText id="prevLabelLt" escape="false" value="&lt;" rendered="#{!corresponPage.previousLink and !corresponPage.displayReplied}" />
+          <h:outputText id="prevLabel" value=" 前へ" rendered="#{!corresponPage.previousLink and !corresponPage.displayReplied}" />
 
-        <h:outputText id="ListCount" value=" #{corresponPage.displayPositionNo}/#{corresponPage.displayTotalCount} "
-                       rendered="#{!corresponPage.displayReplied}"/>
+          <h:outputText id="ListCount" value=" #{corresponPage.displayPositionNo}/#{corresponPage.displayTotalCount} "
+                        rendered="#{!corresponPage.displayReplied}"/>
 
-        <h:commandLink id="linkNext"
-                        rendered="#{corresponPage.nextLink and !corresponPage.displayReplied}"
-                        onclick="setFixedActionName('Next');"
-                        action="#{corresponPage.moveNext}">
-          <h:outputText id="linkNextLabel" value="次へ " />
-          <h:outputText id="linkNextLabelGt" escape="false" value="&gt;" />
-        </h:commandLink>
-        <h:outputText id="nextLabel" value="次へ " rendered="#{!corresponPage.nextLink and !corresponPage.displayReplied}" />
-        <h:outputText id="nextLabelGt" escape="false" value="&gt;" rendered="#{!corresponPage.nextLink and !corresponPage.displayReplied}" />
-        <h:inputHidden id="displayIndex" value="#{corresponPage.displayIndex}"/>
-      </div>
+          <h:commandLink id="linkNext"
+                         rendered="#{corresponPage.nextLink and !corresponPage.displayReplied}"
+                         onclick="setFixedActionName('Next');"
+                         action="#{corresponPage.moveNext}">
+            <h:outputText id="linkNextLabel" value="次へ " />
+            <h:outputText id="linkNextLabelGt" escape="false" value="&gt;" />
+          </h:commandLink>
+          <h:outputText id="nextLabel" value="次へ " rendered="#{!corresponPage.nextLink and !corresponPage.displayReplied}" />
+          <h:outputText id="nextLabelGt" escape="false" value="&gt;" rendered="#{!corresponPage.nextLink and !corresponPage.displayReplied}" />
+          <h:inputHidden id="displayIndex" value="#{corresponPage.displayIndex}"/>
+        </div>
+      </ui:fragment>
     </div>
     <div class="eight columns correspon-command-panel">
-      <ul>
-        <li>
-          <h:commandLink id="reply" value="返信"
-                         onclick="setActionName(event);"
-                         action="#{corresponPage.reply}"
-                         rendered="#{corresponPage.elemControl.replyLink and !corresponPage.displayReplied}"/>
-        </li>
-        <li>
-          <h:outputLink id="linkForward" value="#"
-                        onclick="javascript:showDialog('confirm-dialog', 'forward'); return false;"
-                        rendered="#{corresponPage.elemControl.forwardLink and !corresponPage.displayReplied}"
-                         >
-              <h:outputText value="転送" />
-          </h:outputLink>
-        </li>
-        <li>
-          <h:commandLink id="revise" value="改訂"
-                         onclick="setActionName(event);"
-                         action="#{corresponPage.revise}"
-                         rendered="#{corresponPage.elemControl.reviseLink and !corresponPage.displayReplied}"/>
-        </li>
-        <li>
-          <h:outputLink id="linkCopy" value="#"
-                        onclick="javascript:showDialog('confirm-dialog', 'copy'); return false;"
-                        rendered="#{corresponPage.elemControl.copyLink and !corresponPage.displayReplied}"
-                         >
-              <h:outputText value="コピー" />
-          </h:outputLink>
-        </li>
-        <li>
-          <h:commandLink id="update" value="修正"
-                         onclick="setActionName(event);"
-                         action="#{corresponPage.update}"
-                         rendered="#{corresponPage.elemControl.updateLink and !corresponPage.displayReplied}"/>
-        </li>
-        <li>
-          <h:commandLink id="print" value="印刷画面" target="print"
-                         onclick="setActionName(event);"
-                         action="#{corresponPage.print}"
-                         rendered="#{corresponPage.elemControl.printLink and !corresponPage.displayReplied}"/>
-        </li>
-        <li>
-          <h:commandLink id="zip" value="ZIP"
-                         onclick="setActionName(event);"
-                         action="#{corresponPage.downloadZip}"
-                         rendered="#{corresponPage.elemControl.zipLink and !corresponPage.displayReplied}"/>
-        </li>
-        <li>
-          <h:outputLink id="replyWithPreviousCorrespon" value="javascript:void(0);"
-                        rendered="#{corresponPage.elemControl.replyWithPreviousCorresponLink and corresponPage.displayReplied}"
-                        onclick="replyWithPreviousCorrespon();">
-              <h:outputText id="replyWithPreviousCorresponLabel" value="この文書をコピーして返信"/>
-          </h:outputLink>
-        </li>
-        <li>
-          <h:outputLink id="closeWindow" value="javascript:void(0);"
-                        rendered="#{corresponPage.displayReplied}"
-                        onclick="closeWindow();">
-              <h:outputText id="closeWindowLabel" value="閉じる"/>
-          </h:outputLink>
-        </li>
-        <li>
-          <h:commandButton id="dummyReplyWithPreviousCorrespon" value="この文書をコピーして返信"
-                           rendered="#{!corresponPage.displayReplied}"
+      <ui:fragment rendered="#{not corresponPage.learningProject}">
+        <ul>
+          <li>
+            <h:commandLink id="reply" value="返信"
                            onclick="setActionName(event);"
-                           style="display:none;"
-                           action="#{corresponPage.replyWithPreviousCorrespon}"/>
-        </li>
-        <li>
-          <h:commandLink id="back" value="戻る"
-                         onclick="setActionName(event);"
-                         action="#{corresponPage.back}"
-                         rendered="#{!corresponPage.displayReplied}"/>
-        </li>
-      </ul>
+                           action="#{corresponPage.reply}"
+                           rendered="#{corresponPage.elemControl.replyLink and !corresponPage.displayReplied}"/>
+          </li>
+          <li>
+            <h:outputLink id="linkForward" value="#"
+                          onclick="javascript:showDialog('confirm-dialog', 'forward'); return false;"
+                          rendered="#{corresponPage.elemControl.forwardLink and !corresponPage.displayReplied}"
+                    >
+              <h:outputText value="転送" />
+            </h:outputLink>
+          </li>
+          <li>
+            <h:commandLink id="revise" value="改訂"
+                           onclick="setActionName(event);"
+                           action="#{corresponPage.revise}"
+                           rendered="#{corresponPage.elemControl.reviseLink and !corresponPage.displayReplied}"/>
+          </li>
+          <li>
+            <h:outputLink id="linkCopy" value="#"
+                          onclick="javascript:showDialog('confirm-dialog', 'copy'); return false;"
+                          rendered="#{corresponPage.elemControl.copyLink and !corresponPage.displayReplied}"
+                    >
+              <h:outputText value="コピー" />
+            </h:outputLink>
+          </li>
+          <li>
+            <h:commandLink id="update" value="修正"
+                           onclick="setActionName(event);"
+                           action="#{corresponPage.update}"
+                           rendered="#{corresponPage.elemControl.updateLink and !corresponPage.displayReplied}"/>
+          </li>
+          <li>
+            <h:commandLink id="print" value="印刷画面" target="print"
+                           onclick="setActionName(event);"
+                           action="#{corresponPage.print}"
+                           rendered="#{corresponPage.elemControl.printLink and !corresponPage.displayReplied}"/>
+          </li>
+          <li>
+            <h:commandLink id="zip" value="ZIP"
+                           onclick="setActionName(event);"
+                           action="#{corresponPage.downloadZip}"
+                           rendered="#{corresponPage.elemControl.zipLink and !corresponPage.displayReplied}"/>
+          </li>
+          <li>
+            <h:outputLink id="replyWithPreviousCorrespon" value="javascript:void(0);"
+                          rendered="#{corresponPage.elemControl.replyWithPreviousCorresponLink and corresponPage.displayReplied}"
+                          onclick="replyWithPreviousCorrespon();">
+              <h:outputText id="replyWithPreviousCorresponLabel" value="この文書をコピーして返信"/>
+            </h:outputLink>
+          </li>
+          <li>
+            <h:outputLink id="closeWindow" value="javascript:void(0);"
+                          rendered="#{corresponPage.displayReplied}"
+                          onclick="closeWindow();">
+              <h:outputText id="closeWindowLabel" value="閉じる"/>
+            </h:outputLink>
+          </li>
+          <li>
+            <h:commandButton id="dummyReplyWithPreviousCorrespon" value="この文書をコピーして返信"
+                             rendered="#{!corresponPage.displayReplied}"
+                             onclick="setActionName(event);"
+                             style="display:none;"
+                             action="#{corresponPage.replyWithPreviousCorrespon}"/>
+          </li>
+          <li>
+            <h:commandLink id="back" value="戻る"
+                           onclick="setActionName(event);"
+                           action="#{corresponPage.back}"
+                           rendered="#{!corresponPage.displayReplied}"/>
+          </li>
+        </ul>
+
+      </ui:fragment>
     </div>
   </div>
 
@@ -325,11 +330,13 @@
                       rendered="#{corresponPage.displayReplied}"/>
       </div>
       <div class="four columns">
-        <label>ワークフロー</label>
-        <h:outputText id="workflowStatus" value="#{corresponPage.correspon.workflowStatus.label}"
-                      rendered="#{!corresponPage.displayReplied}"/>
-        <h:outputText id="repliedWorkflowStatus" value="#{corresponPage.replied.workflowStatus.label}"
-                      rendered="#{corresponPage.displayReplied}"/>
+        <ui:fragment rendered="#{not corresponPage.learningProject}">
+          <label>ワークフロー</label>
+          <h:outputText id="workflowStatus" value="#{corresponPage.correspon.workflowStatus.label}"
+                        rendered="#{!corresponPage.displayReplied}"/>
+          <h:outputText id="repliedWorkflowStatus" value="#{corresponPage.replied.workflowStatus.label}"
+                        rendered="#{corresponPage.displayReplied}"/>
+        </ui:fragment>
       </div>
       <div class="four columns">
         <label>最終更新</label>
@@ -370,225 +377,226 @@
 
     <hr/>
 
-    <div class="row">
-      <div class="six columns">
-        <label>文書種類</label>
-        <h:outputText id="corresponType" value="#{corresponPage.correspon.corresponType.label}"
-                      rendered="#{!corresponPage.displayReplied}"/>
-        <h:outputText id="repliedCorresponType" value="#{corresponPage.replied.corresponType.label}"
-                      rendered="#{corresponPage.displayReplied}"/>
+    <ui:fragment rendered="#{not corresponPage.learningProject}">
+      <div class="row">
+        <div class="six columns">
+          <label>文書種類</label>
+          <h:outputText id="corresponType" value="#{corresponPage.correspon.corresponType.label}"
+                        rendered="#{!corresponPage.displayReplied}"/>
+          <h:outputText id="repliedCorresponType" value="#{corresponPage.replied.corresponType.label}"
+                        rendered="#{corresponPage.displayReplied}"/>
+        </div>
+        <div class="six columns">
+          <label>状態</label>
+          <h:outputText id="corresponStatus" value="#{corresponPage.correspon.corresponStatus.label}"
+                        rendered="#{!corresponPage.displayReplied}"/>
+          <h:outputText id="repliedCorresponStatus" value="#{corresponPage.replied.corresponStatus.label}"
+                        rendered="#{corresponPage.displayReplied}"/>
+        </div>
       </div>
-      <div class="six columns">
-        <label>状態</label>
-        <h:outputText id="corresponStatus" value="#{corresponPage.correspon.corresponStatus.label}"
-                      rendered="#{!corresponPage.displayReplied}"/>
-        <h:outputText id="repliedCorresponStatus" value="#{corresponPage.replied.corresponStatus.label}"
-                      rendered="#{corresponPage.displayReplied}"/>
+      <div class="row">
+        <div class="six columns">
+          <label>返信</label>
+          <h:commandLink id="replyTo" value="#{corresponPage.correspon.parentCorresponNo}"
+                         onclick="setId('#{corresponPage.correspon.parentCorresponId}');setActionName(event);"
+                         action="#{corresponPage.changeCorrespon}"
+                         rendered="#{!corresponPage.displayReplied}"/>
+          <h:outputText id="repliedParentCorrespon" value="#{corresponPage.replied.parentCorresponNo}"
+                        rendered="#{corresponPage.displayReplied}"/>
+        </div>
+        <div class="six columns">
+          <label>改訂元</label>
+          <h:commandLink id="previousRevision" value="#{corresponPage.correspon.previousRevCorresponNo}"
+                         onclick="setId('#{corresponPage.correspon.previousRevCorresponId}');setActionName(event);"
+                         action="#{corresponPage.changeCorrespon}"
+                         rendered="#{!corresponPage.displayReplied}"/>
+          <h:outputText id="repliedPreviousRevision" value="#{corresponPage.replied.previousRevCorresponNo}"
+                        rendered="#{corresponPage.displayReplied}"/>
+        </div>
       </div>
-    </div>
-    <div class="row">
-      <div class="six columns">
-        <label>返信</label>
-        <h:commandLink id="replyTo" value="#{corresponPage.correspon.parentCorresponNo}"
-                       onclick="setId('#{corresponPage.correspon.parentCorresponId}');setActionName(event);"
-                       action="#{corresponPage.changeCorrespon}"
-                       rendered="#{!corresponPage.displayReplied}"/>
-        <h:outputText id="repliedParentCorrespon" value="#{corresponPage.replied.parentCorresponNo}"
-                      rendered="#{corresponPage.displayReplied}"/>
-      </div>
-      <div class="six columns">
-        <label>改訂元</label>
-        <h:commandLink id="previousRevision" value="#{corresponPage.correspon.previousRevCorresponNo}"
-                       onclick="setId('#{corresponPage.correspon.previousRevCorresponId}');setActionName(event);"
-                       action="#{corresponPage.changeCorrespon}"
-                       rendered="#{!corresponPage.displayReplied}"/>
-        <h:outputText id="repliedPreviousRevision" value="#{corresponPage.replied.previousRevCorresponNo}"
-                      rendered="#{corresponPage.displayReplied}"/>
-      </div>
-    </div>
-    <div class="row">
-      <div class="twelve columns">
-        <label>宛先</label>
-        <a href="javascript:void(0);" onclick="switchDisplay('tos', this, 'form:tosDisplay')">
-          <h:outputText value="#{corresponPage.tosDetail}"/>
-        </a>
-        <h:inputHidden id="detectedAddressUserId" value="#{corresponPage.detectedAddressUserId}"/>
-        <h:inputHidden id="tosDisplay" value="#{corresponPage.tosDisplay}"/>
-      </div>
-    </div>
-    <div id="tos" class="detail">
       <div class="row">
         <div class="twelve columns">
-          <label>To</label>
-          <div id="toGroup">
-            <!-- Address (To) -->
-            <h:panelGroup id="toAddress">
-            <h:dataTable id="toGroup" var="address" value="#{corresponPage.toAddresses}"
-                         rendered="#{corresponPage.toAddresses.rowCount != -1 and !corresponPage.displayReplied}"
-                         styleClass="list"
-                         columnClasses="address-group,address-text,address-text,address-reply-status"
-                         rowClasses="odd,even">
-              <h:column headerClass="width-120">
-                <f:facet name="header">
-                  <h:outputText value="グループ"/>
-                </f:facet>
-                  <h:outputText id="toGroupName" value="#{address.corresponGroup.name}"
-                      rendered="#{address.to}" />
-              </h:column>
-              <h:column headerClass="text-center padding-0">
-                <f:facet name="header">
-                  <h:outputText value="To"/>
-                </f:facet>
-                <h:panelGrid id="attention" class="inner">
-                  <ui:repeat var="attention" value="#{address.users}" varStatus="j">
-                    <tr>
-                      <td class="address-blank">
-                        <h:outputText value="&lt;div &gt;" escape="false" rendered="#{!attention.assignPersonInCharge || !corresponPage.usePersonInCharge}"/>
-                        <h:outputText value="&lt;div &gt;" escape="false" rendered="#{attention.assignPersonInCharge and corresponPage.usePersonInCharge}"/>
-                        <h:outputText id="attentionName" value="#{attention.user.labelWithRole}" rendered="#{attention.attention}"/>
-                        <h:outputText value="&lt;/div&gt;" escape="false"/>
-                      </td>
-                    </tr>
-                  </ui:repeat>
-                </h:panelGrid>
-              </h:column>
-              <h:column headerClass="text-center padding-0" rendered="#{corresponPage.usePersonInCharge}">
-                <f:facet name="header">
-                  <h:outputText value="担当"/>
-                </f:facet>
-                <h:panelGrid id="addressUser" class="inner" rendered="#{corresponPage.usePersonInCharge}">
-                  <ui:repeat var="addressUser" value="#{address.users}" varStatus="j">
-                    <tr>
-                      <ui:fragment rendered="#{corresponPage.usePersonInCharge}">
-                        <td class="address-blank">
-                          <h:outputText value="&lt;div id='picNames#{corresponPage.toAddrIndex}-#{j.index}' &gt;" escape="false" rendered="#{!addressUser.assignPersonInCharge}"/>
-                          <h:outputText value="&lt;div id='picNames#{corresponPage.toAddrIndex}-#{j.index}' &gt;" escape="false" rendered="#{addressUser.assignPersonInCharge}"/>
-                          <h:dataTable id="pic" var="pic" value="#{addressUser.personInCharges}"
-                                       border="0"
-                                       cellspacing="0"
-                                       cellpadding="0"
-                                       styleClass="inner"
-                                       columnClasses="address-pic"
-                                       rendered="#{addressUser.personInCharges.rowCount != 0}"
-                                       >
-                            <h:column>
-                              <h:outputText id="picName" value="#{pic.user.label}" rendered="#{pic.user.label != ''}"/>
-                            </h:column>
-                          </h:dataTable>
-                          <h:outputText value="&nbsp;" escape="false" rendered="#{addressUser.personInCharges.rowCount == 0}"/>
-                          <h:outputText id="noPicAssigned" value="(担当未設定)" rendered="#{addressUser.editPersonInCharge and addressUser.personInCharges.rowCount == 0}"/>
-                          <h:outputText value="&lt;/div&gt;" escape="false"/>
-                        </td>
-                        <td class="address-edit">
-                            <h:outputLink id="editPic" value="javascript:void(0);"
-                                          rendered="#{addressUser.editPersonInCharge and corresponPage.jsonValuesLoaded}"
-                                          onclick="PersonInChargeInput.showDialog(this, '#{corresponPage.toAddrIndex}-#{j.index}');">
-                              <h:outputText id="editPicLabel" value="編集"/>
-                            </h:outputLink>
-                            <h:commandLink
-                              value="編集"
-                              action="#{corresponPage.loadJsonValues}"
-                              rendered="#{addressUser.editPersonInCharge and !corresponPage.jsonValuesLoaded}"
-                              onclick="preProcess(event);setIdx('#{corresponPage.toAddrIndex}', '#{j.index}');"
-                              >
-                              <f:ajax render=":form:jsonValues :form:toAddress" execute="@all" onevent="oncompleteEdit" />
-                            </h:commandLink>
-                           <h:inputHidden id="editPicValues" value="#{addressUser.personInChargeValues}"/>
-                        </td>
-                        <td class="address-delete">
-                          <h:outputLink id="deletePic" value="javascript:void(0);"
-                                        rendered="#{addressUser.deletePersonInCharge}"
-                                        onclick="PersonInChargeInput.deletePic(this, '#{corresponPage.toAddrIndex}-#{j.index}')">
-                            <h:outputText id="deletePicLabel" value="削除"/>
-                          </h:outputLink>
-                        </td>
-                        <td class="address-assign-to">
-                          <h:commandButton id="assignTo" value="保存"
-                                            styleClass="button-primary"
-                                            rendered="#{addressUser.assignPersonInCharge}"
-                                            onclick="setTargetAddressType(1);detectAddressUser('#{addressUser.addressUser.id}');setActionName(event);"
-                                            action="#{corresponPage.assignTo}"/>
-                        </td>
-                      </ui:fragment>
-                      <ui:fragment rendered="#{!corresponPage.usePersonInCharge}">
-                        <td class="address-blank">
-                          <div id="picNames#{corresponPage.toAddrIndex}-#{j.index}">
-                            <h:outputText id="notUsePersonInCharge" value="(この機能は利用できません)" rendered="#{addressUser.editPersonInCharge}" />
-                          </div>
-                        </td>
-                      </ui:fragment>
-                    </tr>
-                  </ui:repeat>
-                </h:panelGrid>
-              </h:column>
-              <h:column headerClass="width-140">
-                <f:facet name="header">
-                  <h:outputText value="" escape="false"/>
-                </f:facet>
-                <h:commandLink id="replyStatus" value="返信件数: #{address.replyCount}"
-                               rendered="#{address.replyCount > 0 and address.replyCorresponEmpty}"
-                               onclick="setTargetAddressType(1);setActionName(event);"
-                               action="#{corresponPage.replyStatus}"/>
-                <h:outputText id="ccReplyStatusLabel" value="返信件数: #{address.replyCount}"
-                              rendered="#{address.replyCount == 0}"/>
-                <h:outputLink id="replyStatusToggler"
-                              value="javascript:void(0);"
-                              onclick="javascript:toggleReplyStatus(this, 'replyCorrespon#{corresponPage.toAddrIndex}-#{j.index}', #{address.replyCount});"
-                              rendered="#{address.replyCount > 0 and !address.replyCorresponEmpty}">
-                  <h:outputText value="閉じる"/>
-                </h:outputLink>
-                <h:outputText escape="false" value="&lt;div id='replyCorrespon#{corresponPage.toAddrIndex}-#{j.index}'&gt;"/>
-                <h:dataTable var="c" value="#{address.replyCorrespons}" styleClass="inner"
-                             border="0">
-                  <h:column>
-                    <h:commandLink id="quoteReply" target="replied"
-                                   value="#{c.corresponNo}"
-                                   onclick="detectRepliedId('#{c.id}'); setSkipDisable(true); setActionName(event)"
-                                   action="#{corresponPage.showReplied}"
-                                   styleClass="reply-correspon"/>
+          <label>宛先</label>
+          <a href="javascript:void(0);" onclick="switchDisplay('tos', this, 'form:tosDisplay')">
+            <h:outputText value="#{corresponPage.tosDetail}"/>
+          </a>
+          <h:inputHidden id="detectedAddressUserId" value="#{corresponPage.detectedAddressUserId}"/>
+          <h:inputHidden id="tosDisplay" value="#{corresponPage.tosDisplay}"/>
+        </div>
+      </div>
+      <div id="tos" class="detail">
+        <div class="row">
+          <div class="twelve columns">
+            <label>To</label>
+            <div id="toGroup">
+              <!-- Address (To) -->
+              <h:panelGroup id="toAddress">
+                <h:dataTable id="toGroup" var="address" value="#{corresponPage.toAddresses}"
+                             rendered="#{corresponPage.toAddresses.rowCount != -1 and !corresponPage.displayReplied}"
+                             styleClass="list"
+                             columnClasses="address-group,address-text,address-text,address-reply-status"
+                             rowClasses="odd,even">
+                  <h:column headerClass="width-120">
+                    <f:facet name="header">
+                      <h:outputText value="グループ"/>
+                    </f:facet>
+                    <h:outputText id="toGroupName" value="#{address.corresponGroup.name}"
+                                  rendered="#{address.to}" />
+                  </h:column>
+                  <h:column headerClass="text-center padding-0">
+                    <f:facet name="header">
+                      <h:outputText value="To"/>
+                    </f:facet>
+                    <h:panelGrid id="attention" class="inner">
+                      <ui:repeat var="attention" value="#{address.users}" varStatus="j">
+                        <tr>
+                          <td class="address-blank">
+                            <h:outputText value="&lt;div &gt;" escape="false" rendered="#{!attention.assignPersonInCharge || !corresponPage.usePersonInCharge}"/>
+                            <h:outputText value="&lt;div &gt;" escape="false" rendered="#{attention.assignPersonInCharge and corresponPage.usePersonInCharge}"/>
+                            <h:outputText id="attentionName" value="#{attention.user.labelWithRole}" rendered="#{attention.attention}"/>
+                            <h:outputText value="&lt;/div&gt;" escape="false"/>
+                          </td>
+                        </tr>
+                      </ui:repeat>
+                    </h:panelGrid>
+                  </h:column>
+                  <h:column headerClass="text-center padding-0" rendered="#{corresponPage.usePersonInCharge}">
+                    <f:facet name="header">
+                      <h:outputText value="担当"/>
+                    </f:facet>
+                    <h:panelGrid id="addressUser" class="inner" rendered="#{corresponPage.usePersonInCharge}">
+                      <ui:repeat var="addressUser" value="#{address.users}" varStatus="j">
+                        <tr>
+                          <ui:fragment rendered="#{corresponPage.usePersonInCharge}">
+                            <td class="address-blank">
+                              <h:outputText value="&lt;div id='picNames#{corresponPage.toAddrIndex}-#{j.index}' &gt;" escape="false" rendered="#{!addressUser.assignPersonInCharge}"/>
+                              <h:outputText value="&lt;div id='picNames#{corresponPage.toAddrIndex}-#{j.index}' &gt;" escape="false" rendered="#{addressUser.assignPersonInCharge}"/>
+                              <h:dataTable id="pic" var="pic" value="#{addressUser.personInCharges}"
+                                           border="0"
+                                           cellspacing="0"
+                                           cellpadding="0"
+                                           styleClass="inner"
+                                           columnClasses="address-pic"
+                                           rendered="#{addressUser.personInCharges.rowCount != 0}"
+                                      >
+                                <h:column>
+                                  <h:outputText id="picName" value="#{pic.user.label}" rendered="#{pic.user.label != ''}"/>
+                                </h:column>
+                              </h:dataTable>
+                              <h:outputText value="&nbsp;" escape="false" rendered="#{addressUser.personInCharges.rowCount == 0}"/>
+                              <h:outputText id="noPicAssigned" value="(担当未設定)" rendered="#{addressUser.editPersonInCharge and addressUser.personInCharges.rowCount == 0}"/>
+                              <h:outputText value="&lt;/div&gt;" escape="false"/>
+                            </td>
+                            <td class="address-edit">
+                              <h:outputLink id="editPic" value="javascript:void(0);"
+                                            rendered="#{addressUser.editPersonInCharge and corresponPage.jsonValuesLoaded}"
+                                            onclick="PersonInChargeInput.showDialog(this, '#{corresponPage.toAddrIndex}-#{j.index}');">
+                                <h:outputText id="editPicLabel" value="編集"/>
+                              </h:outputLink>
+                              <h:commandLink
+                                      value="編集"
+                                      action="#{corresponPage.loadJsonValues}"
+                                      rendered="#{addressUser.editPersonInCharge and !corresponPage.jsonValuesLoaded}"
+                                      onclick="preProcess(event);setIdx('#{corresponPage.toAddrIndex}', '#{j.index}');"
+                                      >
+                                <f:ajax render=":form:jsonValues :form:toAddress" execute="@all" onevent="oncompleteEdit" />
+                              </h:commandLink>
+                              <h:inputHidden id="editPicValues" value="#{addressUser.personInChargeValues}"/>
+                            </td>
+                            <td class="address-delete">
+                              <h:outputLink id="deletePic" value="javascript:void(0);"
+                                            rendered="#{addressUser.deletePersonInCharge}"
+                                            onclick="PersonInChargeInput.deletePic(this, '#{corresponPage.toAddrIndex}-#{j.index}')">
+                                <h:outputText id="deletePicLabel" value="削除"/>
+                              </h:outputLink>
+                            </td>
+                            <td class="address-assign-to">
+                              <h:commandButton id="assignTo" value="保存"
+                                               styleClass="button-primary"
+                                               rendered="#{addressUser.assignPersonInCharge}"
+                                               onclick="setTargetAddressType(1);detectAddressUser('#{addressUser.addressUser.id}');setActionName(event);"
+                                               action="#{corresponPage.assignTo}"/>
+                            </td>
+                          </ui:fragment>
+                          <ui:fragment rendered="#{!corresponPage.usePersonInCharge}">
+                            <td class="address-blank">
+                              <div id="picNames#{corresponPage.toAddrIndex}-#{j.index}">
+                                <h:outputText id="notUsePersonInCharge" value="(この機能は利用できません)" rendered="#{addressUser.editPersonInCharge}" />
+                              </div>
+                            </td>
+                          </ui:fragment>
+                        </tr>
+                      </ui:repeat>
+                    </h:panelGrid>
+                  </h:column>
+                  <h:column headerClass="width-140">
+                    <f:facet name="header">
+                      <h:outputText value="" escape="false"/>
+                    </f:facet>
+                    <h:commandLink id="replyStatus" value="返信件数: #{address.replyCount}"
+                                   rendered="#{address.replyCount > 0 and address.replyCorresponEmpty}"
+                                   onclick="setTargetAddressType(1);setActionName(event);"
+                                   action="#{corresponPage.replyStatus}"/>
+                    <h:outputText id="ccReplyStatusLabel" value="返信件数: #{address.replyCount}"
+                                  rendered="#{address.replyCount == 0}"/>
+                    <h:outputLink id="replyStatusToggler"
+                                  value="javascript:void(0);"
+                                  onclick="javascript:toggleReplyStatus(this, 'replyCorrespon#{corresponPage.toAddrIndex}-#{j.index}', #{address.replyCount});"
+                                  rendered="#{address.replyCount > 0 and !address.replyCorresponEmpty}">
+                      <h:outputText value="閉じる"/>
+                    </h:outputLink>
+                    <h:outputText escape="false" value="&lt;div id='replyCorrespon#{corresponPage.toAddrIndex}-#{j.index}'&gt;"/>
+                    <h:dataTable var="c" value="#{address.replyCorrespons}" styleClass="inner"
+                                 border="0">
+                      <h:column>
+                        <h:commandLink id="quoteReply" target="replied"
+                                       value="#{c.corresponNo}"
+                                       onclick="detectRepliedId('#{c.id}'); setSkipDisable(true); setActionName(event)"
+                                       action="#{corresponPage.showReplied}"
+                                       styleClass="reply-correspon"/>
+                      </h:column>
+                    </h:dataTable>
+                    <h:outputText escape="false" value="&lt;/div&gt;"/>
                   </h:column>
                 </h:dataTable>
-                <h:outputText escape="false" value="&lt;/div&gt;"/>
-              </h:column>
-            </h:dataTable>
-            </h:panelGroup>
-            <h:outputText value="&lt;table id=&apos;form:toGroup&apos; border=&apos;1&apos; cellpadding=&apos;0&apos; cellspacing=&apos;0&apos; class='list'&gt;&lt;thead&gt;&lt;tr&gt;&lt;th &gt;Group&lt;/th&gt;&lt;th &gt;Attention&lt;/th&gt;&lt;th &gt;&lt;table border=&apos;0&apos; class=&apos;inner&apos;&gt;&lt;tr&gt;&lt;td colspan=&apos;4&apos; &gt;Person in Charge&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/th&gt;&lt;th &gt;&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;/table&gt;"
-                          escape="false"
-                          rendered="#{corresponPage.toAddresses.rowCount == -1 and !corresponPage.displayReplied}"/>
+              </h:panelGroup>
+              <h:outputText value="&lt;table id=&apos;form:toGroup&apos; border=&apos;1&apos; cellpadding=&apos;0&apos; cellspacing=&apos;0&apos; class='list'&gt;&lt;thead&gt;&lt;tr&gt;&lt;th &gt;Group&lt;/th&gt;&lt;th &gt;Attention&lt;/th&gt;&lt;th &gt;&lt;table border=&apos;0&apos; class=&apos;inner&apos;&gt;&lt;tr&gt;&lt;td colspan=&apos;4&apos; &gt;Person in Charge&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/th&gt;&lt;th &gt;&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;/table&gt;"
+                            escape="false"
+                            rendered="#{corresponPage.toAddresses.rowCount == -1 and !corresponPage.displayReplied}"/>
 
-            <!-- Replied correspon address (To) -->
-            <h:dataTable id="repliedToGroup" var="address" value="#{corresponPage.repliedToAddresses}"
-                         rendered="#{corresponPage.displayReplied}" width="100%"
-                         styleClass="list"
-                         columnClasses="address-group,address-text,address-text,address-reply-status"
-                         rowClasses="odd,even">
-              <h:column headerClass="width-120">
-                <f:facet name="header">
-                  <h:outputText value="グループ"/>
-                </f:facet>
+              <!-- Replied correspon address (To) -->
+              <h:dataTable id="repliedToGroup" var="address" value="#{corresponPage.repliedToAddresses}"
+                           rendered="#{corresponPage.displayReplied}" width="100%"
+                           styleClass="list"
+                           columnClasses="address-group,address-text,address-text,address-reply-status"
+                           rowClasses="odd,even">
+                <h:column headerClass="width-120">
+                  <f:facet name="header">
+                    <h:outputText value="グループ"/>
+                  </f:facet>
                   <h:outputText id="toGroupName" value="#{address.corresponGroup.name}"
-                      rendered="#{address.to}" />
-              </h:column>
-              <h:column headerClass="text-center">
-                <f:facet name="header">
-                  <h:outputText value="Attention" escape="false" />
-                </f:facet>
-                <h:dataTable id="attention" var="attention" value="#{address.users}"
-                             border="0"
-                             styleClass="inner"
-                             columnClasses="address-attention"
-                             >
-                  <h:column>
-                    <h:outputText id="attentionName" value="#{attention.user.labelWithRole}" rendered="#{attention.attention}"/>
-                  </h:column>
-                </h:dataTable>
-              </h:column>
-              <h:column rendered="#{corresponPage.usePersonInCharge}">
-                <f:facet name="header">
-                  <h:outputText value="&lt;table border=&apos;0&apos; class=&apos;inner&apos;&gt;&lt;td &gt;&nbsp;&nbsp;&nbsp;&nbsp;Person in Charge&lt;/td&gt;&lt;td class=&apos;address-edit&apos;&gt;&lt;/td&gt;&lt;td class=&apos;address-delete&apos;&gt;&lt;/td&gt;&lt;td class=&apos;address-assign-to&apos;&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;" escape="false"/>
-                </f:facet>
-                <table id="addressUser" border="0" class="inner">
-                  <tbody>
+                                rendered="#{address.to}" />
+                </h:column>
+                <h:column headerClass="text-center">
+                  <f:facet name="header">
+                    <h:outputText value="Attention" escape="false" />
+                  </f:facet>
+                  <h:dataTable id="attention" var="attention" value="#{address.users}"
+                               border="0"
+                               styleClass="inner"
+                               columnClasses="address-attention"
+                          >
+                    <h:column>
+                      <h:outputText id="attentionName" value="#{attention.user.labelWithRole}" rendered="#{attention.attention}"/>
+                    </h:column>
+                  </h:dataTable>
+                </h:column>
+                <h:column rendered="#{corresponPage.usePersonInCharge}">
+                  <f:facet name="header">
+                    <h:outputText value="&lt;table border=&apos;0&apos; class=&apos;inner&apos;&gt;&lt;td &gt;&nbsp;&nbsp;&nbsp;&nbsp;Person in Charge&lt;/td&gt;&lt;td class=&apos;address-edit&apos;&gt;&lt;/td&gt;&lt;td class=&apos;address-delete&apos;&gt;&lt;/td&gt;&lt;td class=&apos;address-assign-to&apos;&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;" escape="false"/>
+                  </f:facet>
+                  <table id="addressUser" border="0" class="inner">
+                    <tbody>
                     <ui:repeat var="addressUser" value="#{address.users}" varStatus="j">
                       <tr>
                         <td class="address-blank">
@@ -598,7 +606,7 @@
                                        styleClass="inner"
                                        columnClasses="address-pic"
                                        rendered="#{corresponPage.usePersonInCharge}"
-                                       >
+                                  >
                             <h:column>
                               <h:outputText id="picName" value="#{pic.user.label}"/>
                             </h:column>
@@ -613,167 +621,168 @@
                         </td>
                       </tr>
                     </ui:repeat>
-                  </tbody>
-                </table>
-              </h:column>
-              <h:column headerClass="width-140">
-                <h:outputText id="ccReplyStatusLabel" value="返信件数: #{address.replyCount}"/>
-              </h:column>
-            </h:dataTable>
+                    </tbody>
+                  </table>
+                </h:column>
+                <h:column headerClass="width-140">
+                  <h:outputText id="ccReplyStatusLabel" value="返信件数: #{address.replyCount}"/>
+                </h:column>
+              </h:dataTable>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="twelve columns">
+            <label>Cc</label>
+            <div id="ccGroup">
+              <!-- Address (Cc) -->
+              <h:dataTable id="ccGroup" var="address" value="#{corresponPage.ccAddresses}"
+                           rendered="#{corresponPage.ccAddresses.rowCount != -1 and !corresponPage.displayReplied}"
+                           styleClass="list"
+                           columnClasses="address-group,address-text,address-reply-status"
+                           rowClasses="odd,even">
+                <h:column headerClass="width-120">
+                  <f:facet name="header">
+                    <h:outputText value="グループ"/>
+                  </f:facet>
+                  <h:outputText id="ccGroupName" value="#{address.corresponGroup.name}"
+                                rendered="#{address.cc}" />
+                </h:column>
+                <h:column headerClass="text-center">
+                  <f:facet name="header">
+                    <h:outputText value="Cc" escape="false"/>
+                  </f:facet>
+                  <h:dataTable id="cc" var="cc" value="#{address.users}"
+                               border="0"
+                               columnClasses="address-cc,address-blank,address-edit,address-delete,address-assign-to"
+                               styleClass="inner">
+                    <h:column>
+                      <h:outputText value="#{cc.user.labelWithRole}" rendered="#{cc.cc}"/>
+                    </h:column>
+                    <h:column>
+                    </h:column>
+                    <h:column>
+                    </h:column>
+                    <h:column>
+                    </h:column>
+                    <h:column>
+                    </h:column>
+                  </h:dataTable>
+                </h:column>
+                <h:column headerClass="width-140">
+                  <f:facet name="header">
+                    <h:outputText value="" escape="false"/>
+                  </f:facet>
+                  <h:commandLink id="ccReplyStatus" value="返信件数: #{address.replyCount}"
+                                 rendered="#{address.replyCount > 0 and address.replyCorresponEmpty}"
+                                 onclick="setTargetAddressType(2);setActionName(event);"
+                                 action="#{corresponPage.replyStatus}"/>
+                  <h:outputText id="ccReplyStatusLabel" value="返信件数: #{address.replyCount}"
+                                rendered="#{address.replyCount == 0}"/>
+                  <h:outputLink id="ccReplyStatusToggler"
+                                value="javascript:void(0);"
+                                onclick="javascript:toggleReplyStatus(this, 'ccReplyCorrespon#{corresponPage.ccAddrIndex}-#{j.index}', #{address.replyCount});"
+                                rendered="#{address.replyCount > 0 and !address.replyCorresponEmpty}">
+                    <h:outputText value="閉じる"/>
+                  </h:outputLink>
+                  <h:outputText escape="false" value="&lt;div id='ccReplyCorrespon#{corresponPage.ccAddrIndex}-#{j.index}'&gt;"/>
+                  <h:dataTable var="c" value="#{address.replyCorrespons}" styleClass="inner">
+                    <h:column>
+                      <h:commandLink id="ccQuoteReply" target="replied"
+                                     value="#{c.corresponNo}"
+                                     onclick="detectRepliedId('#{c.id}'); setSkipDisable(true); setActionName(event);"
+                                     action="#{corresponPage.showReplied}"
+                                     styleClass="reply-correspon"/>
+                    </h:column>
+                  </h:dataTable>
+                  <h:outputText escape="false" value="&lt;/div&gt;"/>
+                </h:column>
+              </h:dataTable>
+              <h:outputText value="&lt;table id=&apos;form:ccGroup&apos; border=&apos;1&apos; cellpadding=&apos;0&apos; cellspacing=&apos;0&apos; class=&apos;list&apos;&gt;&lt;thead&gt;&lt;tr&gt;&lt;th &gt;Group&lt;/th&gt;&lt;th &gt;Cc&lt;/th&gt;&lt;th &gt;&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;/table&gt;"
+                            escape="false"
+                            rendered="#{corresponPage.ccAddresses.rowCount == -1 and !corresponPage.displayReplied}"/>
+
+              <!-- Replied correspondence address (Cc) -->
+              <h:dataTable id="repliedCcGroup" var="address" value="#{corresponPage.repliedCcAddresses}"
+                           rendered="#{corresponPage.displayReplied}"
+                           styleClass="list"
+                           columnClasses="address-group,address-text,address-reply-status"
+                           rowClasses="odd,even">
+                <h:column headerClass="width-120">
+                  <f:facet name="header">
+                    <h:outputText value="グループ"/>
+                  </f:facet>
+                  <h:outputText id="ccGroupName" value="#{address.corresponGroup.name}"
+                                rendered="#{address.cc}" />
+                </h:column>
+                <h:column headerClass="text-center">
+                  <f:facet name="header">
+                    <h:outputText value="Cc" escape="false"/>
+                  </f:facet>
+                  <h:dataTable id="cc" var="cc" value="#{address.users}"
+                               border="0"
+                               columnClasses="address-cc,address-blank,address-edit,address-delete,address-assign-to"
+                               styleClass="inner">
+                    <h:column>
+                      <h:outputText value="#{cc.user.labelWithRole}" rendered="#{cc.cc}"/>
+                    </h:column>
+                    <h:column>
+                    </h:column>
+                    <h:column>
+                    </h:column>
+                    <h:column>
+                    </h:column>
+                    <h:column>
+                    </h:column>
+                  </h:dataTable>
+                </h:column>
+                <h:column headerClass="width-140">
+                  <h:outputText id="ccReplyStatusLabel" value="返信件数: #{address.replyCount}"/>
+                </h:column>
+              </h:dataTable>
+            </div>
           </div>
         </div>
       </div>
       <div class="row">
-        <div class="twelve columns">
-          <label>Cc</label>
-          <div id="ccGroup">
-            <!-- Address (Cc) -->
-            <h:dataTable id="ccGroup" var="address" value="#{corresponPage.ccAddresses}"
-                         rendered="#{corresponPage.ccAddresses.rowCount != -1 and !corresponPage.displayReplied}"
-                         styleClass="list"
-                         columnClasses="address-group,address-text,address-reply-status"
-                         rowClasses="odd,even">
-              <h:column headerClass="width-120">
-                <f:facet name="header">
-                  <h:outputText value="グループ"/>
-                </f:facet>
-                  <h:outputText id="ccGroupName" value="#{address.corresponGroup.name}"
-                      rendered="#{address.cc}" />
-              </h:column>
-              <h:column headerClass="text-center">
-                <f:facet name="header">
-                  <h:outputText value="Cc" escape="false"/>
-                </f:facet>
-                <h:dataTable id="cc" var="cc" value="#{address.users}"
-                             border="0"
-                             columnClasses="address-cc,address-blank,address-edit,address-delete,address-assign-to"
-                             styleClass="inner">
-                  <h:column>
-                    <h:outputText value="#{cc.user.labelWithRole}" rendered="#{cc.cc}"/>
-                  </h:column>
-                  <h:column>
-                  </h:column>
-                  <h:column>
-                  </h:column>
-                  <h:column>
-                  </h:column>
-                  <h:column>
-                  </h:column>
-                </h:dataTable>
-              </h:column>
-              <h:column headerClass="width-140">
-                <f:facet name="header">
-                  <h:outputText value="" escape="false"/>
-                </f:facet>
-                <h:commandLink id="ccReplyStatus" value="返信件数: #{address.replyCount}"
-                               rendered="#{address.replyCount > 0 and address.replyCorresponEmpty}"
-                               onclick="setTargetAddressType(2);setActionName(event);"
-                               action="#{corresponPage.replyStatus}"/>
-                <h:outputText id="ccReplyStatusLabel" value="返信件数: #{address.replyCount}"
-                              rendered="#{address.replyCount == 0}"/>
-                <h:outputLink id="ccReplyStatusToggler"
-                              value="javascript:void(0);"
-                              onclick="javascript:toggleReplyStatus(this, 'ccReplyCorrespon#{corresponPage.ccAddrIndex}-#{j.index}', #{address.replyCount});"
-                              rendered="#{address.replyCount > 0 and !address.replyCorresponEmpty}">
-                      <h:outputText value="閉じる"/>
-                </h:outputLink>
-                <h:outputText escape="false" value="&lt;div id='ccReplyCorrespon#{corresponPage.ccAddrIndex}-#{j.index}'&gt;"/>
-                <h:dataTable var="c" value="#{address.replyCorrespons}" styleClass="inner">
-                  <h:column>
-                    <h:commandLink id="ccQuoteReply" target="replied"
-                                   value="#{c.corresponNo}"
-                                   onclick="detectRepliedId('#{c.id}'); setSkipDisable(true); setActionName(event);"
-                                   action="#{corresponPage.showReplied}"
-                                   styleClass="reply-correspon"/>
-                  </h:column>
-                </h:dataTable>
-                <h:outputText escape="false" value="&lt;/div&gt;"/>
-              </h:column>
-            </h:dataTable>
-            <h:outputText value="&lt;table id=&apos;form:ccGroup&apos; border=&apos;1&apos; cellpadding=&apos;0&apos; cellspacing=&apos;0&apos; class=&apos;list&apos;&gt;&lt;thead&gt;&lt;tr&gt;&lt;th &gt;Group&lt;/th&gt;&lt;th &gt;Cc&lt;/th&gt;&lt;th &gt;&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;/table&gt;"
-                          escape="false"
-                          rendered="#{corresponPage.ccAddresses.rowCount == -1 and !corresponPage.displayReplied}"/>
-
-            <!-- Replied correspondence address (Cc) -->
-            <h:dataTable id="repliedCcGroup" var="address" value="#{corresponPage.repliedCcAddresses}"
-                         rendered="#{corresponPage.displayReplied}"
-                         styleClass="list"
-                         columnClasses="address-group,address-text,address-reply-status"
-                         rowClasses="odd,even">
-              <h:column headerClass="width-120">
-                <f:facet name="header">
-                  <h:outputText value="グループ"/>
-                </f:facet>
-                  <h:outputText id="ccGroupName" value="#{address.corresponGroup.name}"
-                      rendered="#{address.cc}" />
-              </h:column>
-              <h:column headerClass="text-center">
-                <f:facet name="header">
-                  <h:outputText value="Cc" escape="false"/>
-                </f:facet>
-                <h:dataTable id="cc" var="cc" value="#{address.users}"
-                             border="0"
-                             columnClasses="address-cc,address-blank,address-edit,address-delete,address-assign-to"
-                             styleClass="inner">
-                  <h:column>
-                    <h:outputText value="#{cc.user.labelWithRole}" rendered="#{cc.cc}"/>
-                  </h:column>
-                  <h:column>
-                  </h:column>
-                  <h:column>
-                  </h:column>
-                  <h:column>
-                  </h:column>
-                  <h:column>
-                  </h:column>
-                </h:dataTable>
-              </h:column>
-              <h:column headerClass="width-140">
-                <h:outputText id="ccReplyStatusLabel" value="返信件数: #{address.replyCount}"/>
-              </h:column>
-            </h:dataTable>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="six columns">
-        <h:outputLabel for="replyRequired" value="返信要否"/>
-        <h:outputLabel id="replyRequiredLabel" value="#{corresponPage.correspon.replyRequired.label}"
-                      for="replyRequired"
-                      rendered="#{!corresponPage.elemControl.replyRequiredEditable and !corresponPage.displayReplied}"/>
-        <h:outputText id="deadlineForReplyLabel" value="#{corresponPage.correspon.deadlineForReply}"
-                      rendered="#{!corresponPage.elemControl.replyRequiredEditable and !corresponPage.displayReplied}">
-          <f:convertDateTime pattern="yyyy-MM-dd"/>
-        </h:outputText>
-        <h:selectOneMenu id="replyRequired"
-                         value="#{corresponPage.replyRequired}"
-                         onchange="changeReplyRequired();"
-                         rendered="#{corresponPage.selectReplyRequired != null and corresponPage.elemControl.replyRequiredEditable and !corresponPage.displayReplied}">
-          <f:selectItems value="#{corresponPage.selectReplyRequired}"/>
-        </h:selectOneMenu>
-        <f:validateBean validationGroups="#{corresponPage.deadlineForReplyValidationGroups}">
-          <ui:fragment rendered="#{corresponPage.elemControl.replyRequiredEditable and !corresponPage.displayReplied}">
-            <h:inputText id="deadlineForReply" value="#{corresponPage.deadlineForReply}" maxlength="11"/>
-          </ui:fragment>
-          <h:inputHidden id="deadlineForReplyCurrent" value="#{corresponPage.deadlineForReply}"
-                         rendered="#{corresponPage.elemControl.replyRequiredEditable}"/>
-          <h:commandButton id="savePartial" value="保存"
-                           styleClass="button-primary"
-                           action="#{corresponPage.save}"
-                           onclick="setActionName(event);"
-                           rendered="#{corresponPage.elemControl.replyRequiredEditable and !corresponPage.displayReplied}"/>
-          <h:message infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" for="deadlineForReply" />
-          <h:outputText id="repliedReplyRequiredLabel" value="#{corresponPage.replied.replyRequired.label}"
-                        rendered="#{corresponPage.displayReplied}"/>
-          <h:outputText id="repliedDeadlineForReplyLabel" value="#{corresponPage.replied.deadlineForReply}"
-                        rendered="#{corresponPage.displayReplied}">
+        <div class="six columns">
+          <h:outputLabel for="replyRequired" value="返信要否"/>
+          <h:outputLabel id="replyRequiredLabel" value="#{corresponPage.correspon.replyRequired.label}"
+                         for="replyRequired"
+                         rendered="#{!corresponPage.elemControl.replyRequiredEditable and !corresponPage.displayReplied}"/>
+          <h:outputText id="deadlineForReplyLabel" value="#{corresponPage.correspon.deadlineForReply}"
+                        rendered="#{!corresponPage.elemControl.replyRequiredEditable and !corresponPage.displayReplied}">
             <f:convertDateTime pattern="yyyy-MM-dd"/>
           </h:outputText>
-        </f:validateBean>
+          <h:selectOneMenu id="replyRequired"
+                           value="#{corresponPage.replyRequired}"
+                           onchange="changeReplyRequired();"
+                           rendered="#{corresponPage.selectReplyRequired != null and corresponPage.elemControl.replyRequiredEditable and !corresponPage.displayReplied}">
+            <f:selectItems value="#{corresponPage.selectReplyRequired}"/>
+          </h:selectOneMenu>
+          <f:validateBean validationGroups="#{corresponPage.deadlineForReplyValidationGroups}">
+            <ui:fragment rendered="#{corresponPage.elemControl.replyRequiredEditable and !corresponPage.displayReplied}">
+              <h:inputText id="deadlineForReply" value="#{corresponPage.deadlineForReply}" maxlength="11"/>
+            </ui:fragment>
+            <h:inputHidden id="deadlineForReplyCurrent" value="#{corresponPage.deadlineForReply}"
+                           rendered="#{corresponPage.elemControl.replyRequiredEditable}"/>
+            <h:commandButton id="savePartial" value="保存"
+                             styleClass="button-primary"
+                             action="#{corresponPage.save}"
+                             onclick="setActionName(event);"
+                             rendered="#{corresponPage.elemControl.replyRequiredEditable and !corresponPage.displayReplied}"/>
+            <h:message infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" for="deadlineForReply" />
+            <h:outputText id="repliedReplyRequiredLabel" value="#{corresponPage.replied.replyRequired.label}"
+                          rendered="#{corresponPage.displayReplied}"/>
+            <h:outputText id="repliedDeadlineForReplyLabel" value="#{corresponPage.replied.deadlineForReply}"
+                          rendered="#{corresponPage.displayReplied}">
+              <f:convertDateTime pattern="yyyy-MM-dd"/>
+            </h:outputText>
+          </f:validateBean>
+        </div>
       </div>
-    </div>
-    <hr/>
+      <hr/>
+    </ui:fragment>
     <div class="row">
       <div class="twelve columns">
         <label>本文</label>
@@ -1026,44 +1035,46 @@
         </div>
       </div>
     </div>
-    <hr/>
-    <div class="row">
-      <div class="twelve columns">
-        <label>返信履歴</label>
-        <h:commandLink id="showResponseHistory" value="#{corresponPage.responseHistoryDetail}"
-                       rendered="#{corresponPage.correspon != null and corresponPage.corresponResponseHistory == null}"
-                       onclick="setScrollPosition();setDisplay('responseHistoryDisplay', 'block');setActionName(event);"
-                       action="#{corresponPage.showResponseHistory}">
-          <f:ajax execute="@all" render="form" onevent="oncompleteShowResponseHistory"/>
-        </h:commandLink>
 
-        <h:outputLink id="responseHistoryToggler"
-                      value="javascript:void(0);"
-                      onclick="javascript:switchDisplay('responseHistory', this, 'form:responseHistoryDisplay');"
-                      rendered="#{corresponPage.correspon == null || corresponPage.corresponResponseHistory != null}">
-          <h:outputText value="#{corresponPage.responseHistoryDetail}"/>
-        </h:outputLink>
-        <h:inputHidden id="responseHistoryDisplay" value="#{corresponPage.responseHistoryDisplay}"/>
-      </div>
-    </div>
-    <div id="responseHistory" class="detail" >
-      <div id="historyContents">
-        <div id="historyCount" class="row">
-          <div class="twelve columns">
-            <h:outputText id="dataCount" value="#{corresponPage.corresponResponseHistories.rowCount}"
-                          rendered="#{corresponPage.corresponResponseHistories.rowCount != -1}"/>
-          </div>
+    <ui:fragment rendered="#{not corresponPage.learningProject}">
+      <hr/>
+      <div class="row">
+        <div class="twelve columns">
+          <label>返信履歴</label>
+          <h:commandLink id="showResponseHistory" value="#{corresponPage.responseHistoryDetail}"
+                         rendered="#{corresponPage.correspon != null and corresponPage.corresponResponseHistory == null}"
+                         onclick="setScrollPosition();setDisplay('responseHistoryDisplay', 'block');setActionName(event);"
+                         action="#{corresponPage.showResponseHistory}">
+            <f:ajax execute="@all" render="form" onevent="oncompleteShowResponseHistory"/>
+          </h:commandLink>
+
+          <h:outputLink id="responseHistoryToggler"
+                        value="javascript:void(0);"
+                        onclick="javascript:switchDisplay('responseHistory', this, 'form:responseHistoryDisplay');"
+                        rendered="#{corresponPage.correspon == null || corresponPage.corresponResponseHistory != null}">
+            <h:outputText value="#{corresponPage.responseHistoryDetail}"/>
+          </h:outputLink>
+          <h:inputHidden id="responseHistoryDisplay" value="#{corresponPage.responseHistoryDisplay}"/>
         </div>
-        <div class="row">
-          <div class="twelve columns">
-            <h:dataTable id="corresponResponseHistory"
-                var="history"
-                styleClass="list"
-                value="#{corresponPage.corresponResponseHistories}"
-                rendered="#{corresponPage.correspon != null and corresponPage.corresponResponseHistories.rowCount != 0}"
-                columnClasses="history-corresponNo,history-issuedOn,history-from,history-to,history-subject"
-                footerClass="footer"
-                rowClasses="#{corresponPage.rowClasses}">
+      </div>
+      <div id="responseHistory" class="detail" >
+        <div id="historyContents">
+          <div id="historyCount" class="row">
+            <div class="twelve columns">
+              <h:outputText id="dataCount" value="#{corresponPage.corresponResponseHistories.rowCount}"
+                            rendered="#{corresponPage.corresponResponseHistories.rowCount != -1}"/>
+            </div>
+          </div>
+          <div class="row">
+            <div class="twelve columns">
+              <h:dataTable id="corresponResponseHistory"
+                           var="history"
+                           styleClass="list"
+                           value="#{corresponPage.corresponResponseHistories}"
+                           rendered="#{corresponPage.correspon != null and corresponPage.corresponResponseHistories.rowCount != 0}"
+                           columnClasses="history-corresponNo,history-issuedOn,history-from,history-to,history-subject"
+                           footerClass="footer"
+                           rowClasses="#{corresponPage.rowClasses}">
                 <h:column>
                   <f:facet name="header">
                     <h:outputText value="文書番号" />
@@ -1094,9 +1105,9 @@
                     <h:outputText value="宛先" />
                   </f:facet>
                   <h:outputText value="#{history.correspon.addressCorresponGroups[0].corresponGroup.name}..."
-                        rendered="#{history.toCount > 1}" />
+                                rendered="#{history.toCount > 1}" />
                   <h:outputText value="#{history.correspon.addressCorresponGroups[0].corresponGroup.name}"
-                        rendered="#{history.toCount == 1}" />
+                                rendered="#{history.toCount == 1}" />
                 </h:column>
                 <h:column>
                   <f:facet name="header">
@@ -1109,54 +1120,121 @@
                                  rendered="#{!corresponPage.displayReplied}"/>
                   <h:outputText value="#{history.subject}" rendered="#{corresponPage.displayReplied}" />
                 </h:column>
+              </h:dataTable>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr/>
+      <div class="row">
+        <div class="twelve columns">
+          <h:outputLabel id="workflowLabel" value="ワークフロー" styleClass="label"/>
+          <a href="javascript:void(0);" onclick="switchDisplay('workflow', this, 'form:workflowDisplay')">
+            <h:outputText value="#{corresponPage.workflowDetail}"/>
+          </a>
+          <h:inputHidden id="workflowDisplay" value="#{corresponPage.workflowDisplay}"/>
+        </div>
+        <ui:include src="workflowEdit.xhtml" />
+        <ui:include src="verification.xhtml" />
+      </div>
+      <div id="workflow" class="detail" >
+        <div id="workflowDefault">
+          <div id="workflowAction" class="row bottom workflow-action-panel">
+            <div class="twelve columns">
+              <ul>
+                <li>
+                  <h:commandLink id="editWorkflow" value="編集"
+                                 onclick="setScrollPosition();setActionName(event);"
+                                 action="#{corresponPage.editWorkflow}"
+                                 rendered="#{corresponPage.elemControl.workFlowLink and !corresponPage.displayReplied}"/>
+                  <h:outputLabel id="editWorkflowLabel" value="編集"
+                                 rendered="#{!corresponPage.elemControl.workFlowLink || corresponPage.displayReplied}"/>
+                </li>
+                <li>
+                  <h:commandLink id="verify" value="承認/否認"
+                                 onclick="setScrollPosition();setActionName(event);"
+                                 action="#{corresponPage.verify}"
+                                 rendered="#{corresponPage.elemControl.verificationButton}"/>
+                  <h:outputLabel id="verifyLabel" value="承認/否認"
+                                 rendered="#{!corresponPage.elemControl.verificationButton || corresponPage.displayReplied}"/>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <h:panelGroup id="workflowListPanel">
+            <h:dataTable id="workflowList" var="w" value="#{corresponPage.workflowList}"
+                         rendered="#{corresponPage.workflowList != null and !corresponPage.displayReplied}"
+                         styleClass="list"
+                         columnClasses="number,text,text,text,text,text"
+                         rowClasses="odd,even"
+                    >
+              <h:column headerClass="workflow-no">
+                <f:facet name="header">
+                  <h:outputText value="No."/>
+                </f:facet>
+                <h:outputText value="#{w.workflowNo}" />
+              </h:column>
+              <h:column headerClass="workflow-role">
+                <f:facet name="header">
+                  <h:outputText value="役割"/>
+                </f:facet>
+                <h:outputText value="#{w.workflowType.label}" />
+                <h:outputText value="作成者" rendered="#{w.workflowType == null}"/>
+              </h:column>
+              <h:column headerClass="workflow-user">
+                <f:facet name="header">
+                  <h:outputText value="ユーザー"/>
+                </f:facet>
+                <h:outputText value="#{w.corresponGroup.name}"
+                              rendered="#{w.corresponGroup != null}" />
+                <h:outputText value="&lt;br/&gt;" escape="false"
+                              rendered="#{w.corresponGroup != null}" />
+                <h:outputText value="#{w.user.labelWithRole}"
+                              rendered="#{w.user.empNo != null}" />
+              </h:column>
+              <h:column headerClass="workflow-status">
+                <f:facet name="header">
+                  <h:outputText value="状態"/>
+                </f:facet>
+                <h:outputText value="#{w.workflowProcessStatus.label}" />
+              </h:column>
+              <h:column headerClass="workflow-user">
+                <f:facet name="header">
+                  <h:outputText value="最終更新"/>
+                </f:facet>
+                <h:outputText
+                        value="#{w.updatedBy.label} "
+                        rendered="#{w.updatedBy != null}" />
+                <h:outputText value="&lt;br&gt;" escape="false" rendered="#{w.updatedBy != null}"/>
+                <h:outputText value="#{w.updatedAt}">
+                  <f:convertDateTime pattern="yyyy-MM-dd HH:mm:ss"/>
+                </h:outputText>
+                <h:outputText value="&nbsp;" escape="false" />
+              </h:column>
+              <h:column headerClass="workflow-comment">
+                <f:facet name="header">
+                  <h:outputText value="コメント"/>
+                </f:facet>
+                <h:inputTextarea styleClass="comment" readonly="true" value="#{w.commentOn}"
+                                 rendered="#{w.commentOn != null}"/>
+                <h:outputText value="&nbsp;" escape="false" />
+              </h:column>
             </h:dataTable>
-          </div>
-        </div>
-      </div>
-    </div>
-    <hr/>
-    <div class="row">
-      <div class="twelve columns">
-        <h:outputLabel id="workflowLabel" value="ワークフロー" styleClass="label"/>
-        <a href="javascript:void(0);" onclick="switchDisplay('workflow', this, 'form:workflowDisplay')">
-          <h:outputText value="#{corresponPage.workflowDetail}"/>
-        </a>
-        <h:inputHidden id="workflowDisplay" value="#{corresponPage.workflowDisplay}"/>
-      </div>
-      <ui:include src="workflowEdit.xhtml" />
-      <ui:include src="verification.xhtml" />
-    </div>
-    <div id="workflow" class="detail" >
-      <div id="workflowDefault">
-        <div id="workflowAction" class="row bottom workflow-action-panel">
-          <div class="twelve columns">
-            <ul>
-              <li>
-                <h:commandLink id="editWorkflow" value="編集"
-                               onclick="setScrollPosition();setActionName(event);"
-                               action="#{corresponPage.editWorkflow}"
-                               rendered="#{corresponPage.elemControl.workFlowLink and !corresponPage.displayReplied}"/>
-                <h:outputLabel id="editWorkflowLabel" value="編集"
-                               rendered="#{!corresponPage.elemControl.workFlowLink || corresponPage.displayReplied}"/>
-              </li>
-              <li>
-                <h:commandLink id="verify" value="承認/否認"
-                               onclick="setScrollPosition();setActionName(event);"
-                               action="#{corresponPage.verify}"
-                               rendered="#{corresponPage.elemControl.verificationButton}"/>
-                <h:outputLabel id="verifyLabel" value="承認/否認"
-                               rendered="#{!corresponPage.elemControl.verificationButton || corresponPage.displayReplied}"/>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <h:panelGroup id="workflowListPanel">
-          <h:dataTable id="workflowList" var="w" value="#{corresponPage.workflowList}"
-                       rendered="#{corresponPage.workflowList != null and !corresponPage.displayReplied}"
+          </h:panelGroup>
+
+          <h:outputText value="&lt;table border=&apos;1&apos; cellpadding=&apos;0&apos; cellspacing=&apos;0&apos; class=&apos;list&apos;&gt;&lt;thead&gt;&lt;tr&gt;&lt;th class=&apos;workflow-no&apos;&gt;No.&lt;/th&gt;&lt;th class=&apos;workflow-role&apos;&gt;Role&lt;/th&gt;&lt;th class=&apos;workflow-user&apos;&gt;User&lt;/th&gt;&lt;th class=&apos;workflow-status&apos;&gt;Status&lt;/th&gt;&lt;th class=&apos;workflow-user&apos;&gt;Updated&lt;/th&gt;&lt;th class=&apos;workflow-comment&apos;&gt;Comment&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;/table&gt;"
+                        escape="false"
+                        rendered="#{corresponPage.workflowList == null and !corresponPage.displayReplied}"/>
+
+          <h:dataTable id="repliedWorkflow" var="w" value="#{corresponPage.repliedWorkflowList}"
+                       rendered="#{corresponPage.displayReplied}"
+                       border="1"
+                       cellspacing="0"
+                       cellpadding="0"
                        styleClass="list"
                        columnClasses="number,text,text,text,text,text"
                        rowClasses="odd,even"
-                       >
+                  >
             <h:column headerClass="workflow-no">
               <f:facet name="header">
                 <h:outputText value="No."/>
@@ -1176,7 +1254,8 @@
               </f:facet>
               <h:outputText value="#{w.corresponGroup.name}"
                             rendered="#{w.corresponGroup != null}" />
-              <h:outputText value="&lt;br/&gt;" escape="false"
+              <h:outputText value="&lt;br/&gt;"
+                            escape="false"
                             rendered="#{w.corresponGroup != null}" />
               <h:outputText value="#{w.user.labelWithRole}"
                             rendered="#{w.user.empNo != null}" />
@@ -1192,8 +1271,8 @@
                 <h:outputText value="最終更新"/>
               </f:facet>
               <h:outputText
-                            value="#{w.updatedBy.label} "
-                            rendered="#{w.updatedBy != null}" />
+                      value="#{w.updatedBy.label} "
+                      rendered="#{w.updatedBy != null}" />
               <h:outputText value="&lt;br&gt;" escape="false" rendered="#{w.updatedBy != null}"/>
               <h:outputText value="#{w.updatedAt}">
                 <f:convertDateTime pattern="yyyy-MM-dd HH:mm:ss"/>
@@ -1209,239 +1288,178 @@
               <h:outputText value="&nbsp;" escape="false" />
             </h:column>
           </h:dataTable>
-        </h:panelGroup>
-
-        <h:outputText value="&lt;table border=&apos;1&apos; cellpadding=&apos;0&apos; cellspacing=&apos;0&apos; class=&apos;list&apos;&gt;&lt;thead&gt;&lt;tr&gt;&lt;th class=&apos;workflow-no&apos;&gt;No.&lt;/th&gt;&lt;th class=&apos;workflow-role&apos;&gt;Role&lt;/th&gt;&lt;th class=&apos;workflow-user&apos;&gt;User&lt;/th&gt;&lt;th class=&apos;workflow-status&apos;&gt;Status&lt;/th&gt;&lt;th class=&apos;workflow-user&apos;&gt;Updated&lt;/th&gt;&lt;th class=&apos;workflow-comment&apos;&gt;Comment&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;/table&gt;"
-                      escape="false"
-                      rendered="#{corresponPage.workflowList == null and !corresponPage.displayReplied}"/>
-
-        <h:dataTable id="repliedWorkflow" var="w" value="#{corresponPage.repliedWorkflowList}"
-                     rendered="#{corresponPage.displayReplied}"
-                     border="1"
-                     cellspacing="0"
-                     cellpadding="0"
-                     styleClass="list"
-                     columnClasses="number,text,text,text,text,text"
-                     rowClasses="odd,even"
-                     >
-          <h:column headerClass="workflow-no">
-            <f:facet name="header">
-              <h:outputText value="No."/>
-            </f:facet>
-            <h:outputText value="#{w.workflowNo}" />
-          </h:column>
-          <h:column headerClass="workflow-role">
-            <f:facet name="header">
-              <h:outputText value="役割"/>
-            </f:facet>
-            <h:outputText value="#{w.workflowType.label}" />
-            <h:outputText value="作成者" rendered="#{w.workflowType == null}"/>
-          </h:column>
-          <h:column headerClass="workflow-user">
-            <f:facet name="header">
-              <h:outputText value="ユーザー"/>
-            </f:facet>
-            <h:outputText value="#{w.corresponGroup.name}"
-                          rendered="#{w.corresponGroup != null}" />
-            <h:outputText value="&lt;br/&gt;"
-                          escape="false"
-                          rendered="#{w.corresponGroup != null}" />
-            <h:outputText value="#{w.user.labelWithRole}"
-                          rendered="#{w.user.empNo != null}" />
-          </h:column>
-          <h:column headerClass="workflow-status">
-            <f:facet name="header">
-              <h:outputText value="状態"/>
-            </f:facet>
-            <h:outputText value="#{w.workflowProcessStatus.label}" />
-          </h:column>
-          <h:column headerClass="workflow-user">
-            <f:facet name="header">
-              <h:outputText value="最終更新"/>
-            </f:facet>
-            <h:outputText
-                          value="#{w.updatedBy.label} "
-                          rendered="#{w.updatedBy != null}" />
-            <h:outputText value="&lt;br&gt;" escape="false" rendered="#{w.updatedBy != null}"/>
-            <h:outputText value="#{w.updatedAt}">
-              <f:convertDateTime pattern="yyyy-MM-dd HH:mm:ss"/>
-            </h:outputText>
-            <h:outputText value="&nbsp;" escape="false" />
-          </h:column>
-          <h:column headerClass="workflow-comment">
-            <f:facet name="header">
-              <h:outputText value="コメント"/>
-            </f:facet>
-            <h:inputTextarea styleClass="comment" readonly="true" value="#{w.commentOn}"
-                             rendered="#{w.commentOn != null}"/>
-            <h:outputText value="&nbsp;" escape="false" />
-          </h:column>
-        </h:dataTable>
-      </div>
-    </div>
-
-    <h:panelGroup id="action-panel-btn">
-    <div id="action-panel" class="action-panel">
-      <div id="actions" class="row">
-        <div class="three columns correspon-action">
-          <label>ワークフロー操作</label>
-          <h:panelGroup id="workflowActionPanel" styleClass="correspon-action-button">
-            <h:commandButton id="issue" value="発行"
-                             action="#{corresponPage.issue}"
-                             styleClass="button-primary"
-                             onclick="setActionName(event); return confirmButton('発行するとプロジェクト内に文書が公開されます。よろしいですか？');"
-                             disabled="#{!corresponPage.elemControl.issueButton}"/>
-            <h:commandButton id="requestForApproval" value="承認依頼"
-                             action="#{corresponPage.requestForApproval}"
-                             onclick="setActionName(event); return confirmButton();"
-                             disabled="#{!corresponPage.elemControl.requestForApprovalButton}"/>
-          </h:panelGroup>
-        </div>
-        <div class="three columns correspon-action">
-          <label>既読状態操作</label>
-          <div class="correspon-action-button">
-            <h:commandButton id="Read" value="既読"
-                             action="#{corresponPage.read}"
-                             onclick="setActionName(event); return confirmButton();"
-                             disabled="#{!corresponPage.elemControl.readButton}"/>
-            <h:commandButton id="Unread" value="未読"
-                             action="#{corresponPage.unread}"
-                             onclick="setActionName(event); return confirmButton();"
-                             disabled="#{!corresponPage.elemControl.unreadButton}"/>
-          </div>
-        </div>
-        <div class="four columns correspon-action">
-          <label>状態操作</label>
-          <div class="correspon-action-button">
-            <h:commandButton id="open" value="オープン"
-                             action="#{corresponPage.open}"
-                             onclick="setActionName(event); return confirmButton();"
-                             disabled="#{!corresponPage.elemControl.openButton}"/>
-            <h:commandButton id="close" value="クローズ"
-                             action="#{corresponPage.close}"
-                             onclick="setActionName(event); return confirmButton();"
-                             disabled="#{!corresponPage.elemControl.closeButton}"/>
-            <h:commandButton id="cancel" value="キャンセル"
-                             action="#{corresponPage.cancel}"
-                             onclick="setActionName(event);return confirmButton();"
-                             disabled="#{!corresponPage.elemControl.cancelButton}"/>
-          </div>
-        </div>
-        <div class="two columns correspon-action">
-          <label>文書の削除</label>
-          <div class="correspon-action-button">
-            <h:commandButton id="delete" value="削除"
-                             action="#{corresponPage.delete}"
-                             styleClass="button-primary"
-                             onclick="setActionName(event); return confirmButton();"
-                             disabled="#{!corresponPage.elemControl.deleteButton}"/>
-          </div>
         </div>
       </div>
-    </div>
-    </h:panelGroup>
+    </ui:fragment>
+
+    <ui:fragment rendered="#{not corresponPage.learningProject}">
+      <h:panelGroup id="action-panel-btn">
+        <div id="action-panel" class="action-panel">
+          <div id="actions" class="row">
+            <div class="three columns correspon-action">
+              <label>ワークフロー操作</label>
+              <h:panelGroup id="workflowActionPanel" styleClass="correspon-action-button">
+                <h:commandButton id="issue" value="発行"
+                                 action="#{corresponPage.issue}"
+                                 styleClass="button-primary"
+                                 onclick="setActionName(event); return confirmButton('発行するとプロジェクト内に文書が公開されます。よろしいですか？');"
+                                 disabled="#{!corresponPage.elemControl.issueButton}"/>
+                <h:commandButton id="requestForApproval" value="承認依頼"
+                                 action="#{corresponPage.requestForApproval}"
+                                 onclick="setActionName(event); return confirmButton();"
+                                 disabled="#{!corresponPage.elemControl.requestForApprovalButton}"/>
+              </h:panelGroup>
+            </div>
+            <div class="three columns correspon-action">
+              <label>既読状態操作</label>
+              <div class="correspon-action-button">
+                <h:commandButton id="Read" value="既読"
+                                 action="#{corresponPage.read}"
+                                 onclick="setActionName(event); return confirmButton();"
+                                 disabled="#{!corresponPage.elemControl.readButton}"/>
+                <h:commandButton id="Unread" value="未読"
+                                 action="#{corresponPage.unread}"
+                                 onclick="setActionName(event); return confirmButton();"
+                                 disabled="#{!corresponPage.elemControl.unreadButton}"/>
+              </div>
+            </div>
+            <div class="four columns correspon-action">
+              <label>状態操作</label>
+              <div class="correspon-action-button">
+                <h:commandButton id="open" value="オープン"
+                                 action="#{corresponPage.open}"
+                                 onclick="setActionName(event); return confirmButton();"
+                                 disabled="#{!corresponPage.elemControl.openButton}"/>
+                <h:commandButton id="close" value="クローズ"
+                                 action="#{corresponPage.close}"
+                                 onclick="setActionName(event); return confirmButton();"
+                                 disabled="#{!corresponPage.elemControl.closeButton}"/>
+                <h:commandButton id="cancel" value="キャンセル"
+                                 action="#{corresponPage.cancel}"
+                                 onclick="setActionName(event);return confirmButton();"
+                                 disabled="#{!corresponPage.elemControl.cancelButton}"/>
+              </div>
+            </div>
+            <div class="two columns correspon-action">
+              <label>文書の削除</label>
+              <div class="correspon-action-button">
+                <h:commandButton id="delete" value="削除"
+                                 action="#{corresponPage.delete}"
+                                 styleClass="button-primary"
+                                 onclick="setActionName(event); return confirmButton();"
+                                 disabled="#{!corresponPage.elemControl.deleteButton}"/>
+              </div>
+            </div>
+          </div>
+        </div>
+      </h:panelGroup>
+    </ui:fragment>
   </div>
   <div class="correspon-paging-panel row">
     <div class="four columns">
-      <div>
-        <h:commandLink id="linkPrev-bottom"
-                        rendered="#{corresponPage.previousLink and !corresponPage.displayReplied}"
-                        onclick="setFixedActionName('Prev');"
-                        action="#{corresponPage.movePrevious}">
-          <h:outputText id="linkPrevLabelLt-bottom" escape="false" value="&lt;" />
-          <h:outputText id="linkPrevLabel-bottom" value=" 前へ" />
-        </h:commandLink>
-        <h:outputText id="prevLabelLt-bottom" escape="false" value="&lt;" rendered="#{!corresponPage.previousLink and !corresponPage.displayReplied}" />
-        <h:outputText id="prevLabel-bottom" value=" 前へ" rendered="#{!corresponPage.previousLink and !corresponPage.displayReplied}" />
-        <h:outputText id="ListCount-bottom" value=" #{corresponPage.displayPositionNo}/#{corresponPage.displayTotalCount} "
-                       rendered="#{!corresponPage.displayReplied}"/>
-        <h:commandLink id="linkNext-bottom"
-                        rendered="#{corresponPage.nextLink and !corresponPage.displayReplied}"
-                        onclick="setFixedActionName('Next');"
-                        action="#{corresponPage.moveNext}">
-          <h:outputText id="linkNextLabel-bottom" value="次へ " />
-          <h:outputText id="linkNextLabelGt-bottom" escape="false" value="&gt;" />
-        </h:commandLink>
-        <h:outputText id="nextLabel-bottom" value="次へ " rendered="#{!corresponPage.nextLink and !corresponPage.displayReplied}" />
-        <h:outputText id="nextLabelGt-bottom" escape="false" value="&gt;" rendered="#{!corresponPage.nextLink and !corresponPage.displayReplied}" />
-      </div>
+      <ui:fragment rendered="#{not corresponPage.learningProject}">
+        <div>
+          <h:commandLink id="linkPrev-bottom"
+                         rendered="#{corresponPage.previousLink and !corresponPage.displayReplied}"
+                         onclick="setFixedActionName('Prev');"
+                         action="#{corresponPage.movePrevious}">
+            <h:outputText id="linkPrevLabelLt-bottom" escape="false" value="&lt;" />
+            <h:outputText id="linkPrevLabel-bottom" value=" 前へ" />
+          </h:commandLink>
+          <h:outputText id="prevLabelLt-bottom" escape="false" value="&lt;" rendered="#{!corresponPage.previousLink and !corresponPage.displayReplied}" />
+          <h:outputText id="prevLabel-bottom" value=" 前へ" rendered="#{!corresponPage.previousLink and !corresponPage.displayReplied}" />
+          <h:outputText id="ListCount-bottom" value=" #{corresponPage.displayPositionNo}/#{corresponPage.displayTotalCount} "
+                        rendered="#{!corresponPage.displayReplied}"/>
+          <h:commandLink id="linkNext-bottom"
+                         rendered="#{corresponPage.nextLink and !corresponPage.displayReplied}"
+                         onclick="setFixedActionName('Next');"
+                         action="#{corresponPage.moveNext}">
+            <h:outputText id="linkNextLabel-bottom" value="次へ " />
+            <h:outputText id="linkNextLabelGt-bottom" escape="false" value="&gt;" />
+          </h:commandLink>
+          <h:outputText id="nextLabel-bottom" value="次へ " rendered="#{!corresponPage.nextLink and !corresponPage.displayReplied}" />
+          <h:outputText id="nextLabelGt-bottom" escape="false" value="&gt;" rendered="#{!corresponPage.nextLink and !corresponPage.displayReplied}" />
+        </div>
+      </ui:fragment>
     </div>
     <div class="eight columns correspon-command-panel">
-      <ul>
-        <li>
-          <h:commandLink id="reply-bottom" value="返信"
-                         onclick="setActionName(event);"
-                         action="#{corresponPage.reply}"
-                         rendered="#{corresponPage.elemControl.replyLink and !corresponPage.displayReplied}"/>
-        </li>
-        <li>
-          <h:outputLink id="linkForward-bottom" value="#"
-                        onclick="javascript:showDialog('confirm-dialog', 'forward'); return false;"
-                        rendered="#{corresponPage.elemControl.forwardLink and !corresponPage.displayReplied}"
-                         >
-              <h:outputText value="転送" />
-          </h:outputLink>
-        </li>
-        <li>
-          <h:commandLink id="revise-bottom" value="改訂"
-                         onclick="setActionName(event);"
-                         action="#{corresponPage.revise}"
-                         rendered="#{corresponPage.elemControl.reviseLink and !corresponPage.displayReplied}"/>
-        </li>
-        <li>
-          <h:outputLink id="linkCopy-bottom" value="#"
-                        onclick="javascript:showDialog('confirm-dialog', 'copy'); return false;"
-                        rendered="#{corresponPage.elemControl.copyLink and !corresponPage.displayReplied}"
-                         >
-              <h:outputText value="コピー" />
-          </h:outputLink>
-        </li>
-        <li>
-          <h:commandLink id="update-bottom" value="修正"
-                         onclick="setActionName(event);"
-                         action="#{corresponPage.update}"
-                         rendered="#{corresponPage.elemControl.updateLink and !corresponPage.displayReplied}"/>
-        </li>
-        <li>
-          <h:commandLink id="print-bottom" value="印刷画面" target="print"
-                         onclick="setActionName(event);"
-                         action="#{corresponPage.print}"
-                         rendered="#{corresponPage.elemControl.printLink and !corresponPage.displayReplied}"/>
-        </li>
-        <li>
-          <h:commandLink id="zip-bottom" value="ZIP"
-                         onclick="setActionName(event);"
-                         action="#{corresponPage.downloadZip}"
-                         rendered="#{corresponPage.elemControl.zipLink and !corresponPage.displayReplied}"/>
-        </li>
-        <li>
-          <h:outputLink id="replyWithPreviousCorrespon-bottom" value="javascript:void(0);"
-                        rendered="#{corresponPage.elemControl.replyWithPreviousCorresponLink and corresponPage.displayReplied}"
-                        onclick="replyWithPreviousCorrespon()">
-            <h:outputText id="replyWithPreviousCorresponLabel-bottom" value="この文書をコピーして返信"/>
-          </h:outputLink>
-        </li>
-        <li>
-          <h:outputLink id="closeWindow-bottom" value="javascript:void(0);"
-                        rendered="#{corresponPage.displayReplied}"
-                        onclick="closeWindow();">
-            <h:outputText id="closeWindowLabel-bottom" value="閉じる"/>
-          </h:outputLink>
-        </li>
-        <li>
-          <h:commandButton id="dummyReplyWithPreviousCorrespon-bottom" value="この文書をコピーして返信"
-                           rendered="#{!corresponPage.displayReplied}"
+      <ui:fragment rendered="#{not corresponPage.learningProject}">
+        <ul>
+          <li>
+            <h:commandLink id="reply-bottom" value="返信"
                            onclick="setActionName(event);"
-                           style="display:none;"
-                           action="#{corresponPage.replyWithPreviousCorrespon}"/>
-        </li>
-        <li>
-          <h:commandLink id="back-bottom" value="戻る"
-                         onclick="setActionName(event);"
-                         action="#{corresponPage.back}"
-                         rendered="#{!corresponPage.displayReplied}"/>
-        </li>
-      </ul>
+                           action="#{corresponPage.reply}"
+                           rendered="#{corresponPage.elemControl.replyLink and !corresponPage.displayReplied}"/>
+          </li>
+          <li>
+            <h:outputLink id="linkForward-bottom" value="#"
+                          onclick="javascript:showDialog('confirm-dialog', 'forward'); return false;"
+                          rendered="#{corresponPage.elemControl.forwardLink and !corresponPage.displayReplied}"
+                    >
+              <h:outputText value="転送" />
+            </h:outputLink>
+          </li>
+          <li>
+            <h:commandLink id="revise-bottom" value="改訂"
+                           onclick="setActionName(event);"
+                           action="#{corresponPage.revise}"
+                           rendered="#{corresponPage.elemControl.reviseLink and !corresponPage.displayReplied}"/>
+          </li>
+          <li>
+            <h:outputLink id="linkCopy-bottom" value="#"
+                          onclick="javascript:showDialog('confirm-dialog', 'copy'); return false;"
+                          rendered="#{corresponPage.elemControl.copyLink and !corresponPage.displayReplied}"
+                    >
+              <h:outputText value="コピー" />
+            </h:outputLink>
+          </li>
+          <li>
+            <h:commandLink id="update-bottom" value="修正"
+                           onclick="setActionName(event);"
+                           action="#{corresponPage.update}"
+                           rendered="#{corresponPage.elemControl.updateLink and !corresponPage.displayReplied}"/>
+          </li>
+          <li>
+            <h:commandLink id="print-bottom" value="印刷画面" target="print"
+                           onclick="setActionName(event);"
+                           action="#{corresponPage.print}"
+                           rendered="#{corresponPage.elemControl.printLink and !corresponPage.displayReplied}"/>
+          </li>
+          <li>
+            <h:commandLink id="zip-bottom" value="ZIP"
+                           onclick="setActionName(event);"
+                           action="#{corresponPage.downloadZip}"
+                           rendered="#{corresponPage.elemControl.zipLink and !corresponPage.displayReplied}"/>
+          </li>
+          <li>
+            <h:outputLink id="replyWithPreviousCorrespon-bottom" value="javascript:void(0);"
+                          rendered="#{corresponPage.elemControl.replyWithPreviousCorresponLink and corresponPage.displayReplied}"
+                          onclick="replyWithPreviousCorrespon()">
+              <h:outputText id="replyWithPreviousCorresponLabel-bottom" value="この文書をコピーして返信"/>
+            </h:outputLink>
+          </li>
+          <li>
+            <h:outputLink id="closeWindow-bottom" value="javascript:void(0);"
+                          rendered="#{corresponPage.displayReplied}"
+                          onclick="closeWindow();">
+              <h:outputText id="closeWindowLabel-bottom" value="閉じる"/>
+            </h:outputLink>
+          </li>
+          <li>
+            <h:commandButton id="dummyReplyWithPreviousCorrespon-bottom" value="この文書をコピーして返信"
+                             rendered="#{!corresponPage.displayReplied}"
+                             onclick="setActionName(event);"
+                             style="display:none;"
+                             action="#{corresponPage.replyWithPreviousCorrespon}"/>
+          </li>
+          <li>
+            <h:commandLink id="back-bottom" value="戻る"
+                           onclick="setActionName(event);"
+                           action="#{corresponPage.back}"
+                           rendered="#{!corresponPage.displayReplied}"/>
+          </li>
+        </ul>
+      </ui:fragment>
     </div>
   </div>
   </h:form>

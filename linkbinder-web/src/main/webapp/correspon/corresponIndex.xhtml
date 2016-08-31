@@ -332,6 +332,16 @@
           }
         }
       }
+
+      if (#{corresponIndexPage.learningProject}) {
+        var hideColumns = [3, 5, 6, 8, 11, 16, 17];
+        for (var i = 0; i < hideColumns.length; i++) {
+          table.tHead.rows[0].cells[hideColumns[i]].style.display = 'none';
+          for (var j = 0; j <= (table.tBodies[0].rows.length - 1); j++) {
+            table.tBodies[0].rows[j].cells[hideColumns[i]].style.display = 'none';
+          }
+        }
+      }
     }
 
     function preProcess(e) {
@@ -1551,10 +1561,13 @@
                         onclick="setActionName(event)" />
               </div>
             </div>
+          </ui:fragment>
 
-            <div class="row">
-              <div class="nine columns u-pull-right">
+          <div class="row">
+            <div class="nine columns u-pull-right">
+              <ui:fragment rendered="#{not corresponIndexPage.learningProject}">
                 <a href="javascript:void(0);" id="listItemSelection" onclick="Dialog.show('dialog')">表示項目選択</a>
+              </ui:fragment>
                <span>
                  既読状態操作:
                  <h:commandLink
@@ -1572,6 +1585,7 @@
                    <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
                  </h:commandLink>
                </span>
+              <ui:fragment rendered="#{not corresponIndexPage.learningProject}">
                <span>
                  状態操作:
                  <h:commandLink
@@ -1589,16 +1603,17 @@
                     <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
                   </h:commandLink>
                 </span>
-                <h:commandButton
-                        id="delete"
-                        value="選択した文書を削除"
-                        action="#{corresponIndexPage.delete}"
-                        onclick="return confirmAction(event)">
-                  <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
-                </h:commandButton>
-              </div>
+              </ui:fragment>
+              <h:commandButton
+                      id="delete"
+                      value="選択した文書を削除"
+                      action="#{corresponIndexPage.delete}"
+                      onclick="return confirmAction(event)">
+                <f:ajax render=":form:advancedLinkPanel :messagePanel :form:pagePanel :form:pagePanel_bottom :form:indexPanel" execute="@all" onevent="oncompletePostProcess" />
+              </h:commandButton>
             </div>
-          </ui:fragment>
+          </div>
+
 
           <div class="row">
             <div class="six columns">
@@ -1719,7 +1734,7 @@
                 columnClasses="check,number,text,text,text,text,text,text-subject,text,text,text,text,text,text,text,text,text,text,text"
                 rowClasses="#{corresponIndexPage.rowClasses}" cellpadding="5" >
 
-            <h:column headerClass="border-right-0" rendered="#{not corresponIndexPage.learningProject}">
+            <h:column headerClass="border-right-0">
               <f:facet name="header">
                 <a id="allCheck" onclick="checkAll();"><i class="fa fa-check" aria-hidden="true"></i></a>
               </f:facet>

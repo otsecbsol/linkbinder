@@ -429,10 +429,12 @@ public class UserServiceImpl extends AbstractService implements UserService {
         UserProfile p = findUserProfile(settings.getUser().getEmpNo());
         if (p == null) {
             User u = findUser(settings.getUser().getEmpNo());
+            u.setUseLearning(settings.getUser().getUseLearning());
             createUserProfile(u, settings.getDefaultProjectId());
         } else {
             //  更新前のバージョンNoを再設定して更新
             p.setVersionNo(settings.getUserProfileVersionNo());
+            p.setUseLearning(settings.getUser().getUseLearning());
             updateUserProfile(p, settings.getDefaultProjectId());
         }
     }
@@ -446,6 +448,7 @@ public class UserServiceImpl extends AbstractService implements UserService {
         UserProfile profile = new UserProfile();
         profile.setUser(user);
         profile.setDefaultProjectId(projectId);
+        profile.setUseLearning(user.getUseLearning());
         profile.setCreatedBy(getCurrentUser());
         profile.setUpdatedBy(getCurrentUser());
 
@@ -463,6 +466,7 @@ public class UserServiceImpl extends AbstractService implements UserService {
         profile.setId(old.getId());
         profile.setVersionNo(old.getVersionNo());
         profile.setDefaultProjectId(projectId);
+        profile.setUseLearning(old.getUseLearning());
         profile.setUpdatedBy(getCurrentUser());
 
         UserProfileDao dao = getDao(UserProfileDao.class);

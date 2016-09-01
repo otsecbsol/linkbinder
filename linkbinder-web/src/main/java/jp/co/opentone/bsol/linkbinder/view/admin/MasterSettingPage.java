@@ -407,7 +407,7 @@ public class MasterSettingPage extends AbstractPage implements MasterDataImporta
                         fileName +=  "_Project.csv";
                         SearchProjectCondition condition = createFindProjectsCondition(ForLearning.NORMAL);
 
-                        List<Project> list = page.pjService.findAll(condition);
+                        List<Project> list = page.pjService.findForCsvDownload(condition);
                         data = page.pjService.generateCSV(list);
                         break;
                     case USER:

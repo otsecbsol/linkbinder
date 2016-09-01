@@ -300,9 +300,9 @@ public class ProjectServiceImpl extends AbstractService implements ProjectServic
 
 
     @Override
-    public List<Project> findAll(SearchProjectCondition condition) throws ServiceAbortException {
+    public List<Project> findForCsvDownload(SearchProjectCondition condition) throws ServiceAbortException {
         ProjectDao dao = getDao(ProjectDao.class);
-        return dao.findAll(condition);
+        return dao.findForCsvDownload(condition);
     }
 
     /* (非 Javadoc)

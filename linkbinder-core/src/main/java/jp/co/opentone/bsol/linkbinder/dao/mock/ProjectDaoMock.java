@@ -155,7 +155,7 @@ public class ProjectDaoMock extends AbstractLegacyDao<Project> implements Projec
     }
 
     @Override
-    public  List<Project> findAll(SearchProjectCondition condition) {
+    public  List<Project> findForCsvDownload(SearchProjectCondition condition) {
         return null;
     }
 

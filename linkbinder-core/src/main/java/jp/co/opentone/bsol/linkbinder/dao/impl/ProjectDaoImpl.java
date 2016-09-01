@@ -161,7 +161,7 @@ public class ProjectDaoImpl extends AbstractLegacyDao<Project> implements Projec
                         maxResults);
     }
 
-    public List<Project> findAll(SearchProjectCondition condition) {
+    public List<Project> findForCsvDownload(SearchProjectCondition condition) {
         // 前方一致検索を行う
         return (List<Project>) getSqlMapClientTemplate()
                                             .queryForList(getSqlId(SQL_FIND_ALL), condition);

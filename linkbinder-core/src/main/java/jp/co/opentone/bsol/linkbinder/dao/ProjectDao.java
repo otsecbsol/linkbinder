@@ -86,12 +86,13 @@ public interface ProjectDao extends LegacyGenericDao<Project> {
 
     /**
      * 検索条件に一致するプロジェクトを検索する.
+     *
+     * 2016/09/01現在、CsvDownloadでのみ利用。
+     * apl_sys_aprv_flgの値が○☓で返される。
      * @param condition 検索条件
      * @return 検索結果
      */
-    // FIXME: メソッド名を適切な物へ変更する。
-    // CSVDownloadでのみ利用する。
-    List<Project> findAll(SearchProjectCondition condition);
+    List<Project> findForCsvDownload(SearchProjectCondition condition);
 
     /**
      * 指定された条件に該当する件数を取得する.

@@ -26,7 +26,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletResponse;
 
-import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.Length;
@@ -1000,7 +999,7 @@ public class SetupPage extends AbstractPage implements MasterDataImportablePage 
                         //プロジェクト情報
                         fileName +=  "_Project.csv";
                         SearchProjectCondition empty = new SearchProjectCondition();
-                        List<Project> list = page.projectService.findAll(empty);
+                        List<Project> list = page.projectService.findForCsvDownload(empty);
                         data = page.projectService.generateCSV(list);
                         break;
                     case USER:

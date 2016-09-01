@@ -75,7 +75,7 @@ public interface ProjectService extends IService {
      * @throws ServiceAbortException
      *             検索に失敗
      */
-    List<Project> findAll(SearchProjectCondition condition) throws ServiceAbortException;
+    List<Project> findForCsvDownload(SearchProjectCondition condition) throws ServiceAbortException;
 
 
     /**

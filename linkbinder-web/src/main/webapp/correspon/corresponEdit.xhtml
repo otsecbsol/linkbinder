@@ -193,12 +193,9 @@
             <div id="forLearningParts">
               <div class="row">
                 <div class="twelve columns">
-                  <h:outputLabel for="learning_correspon_tag" value="ラベル" />
-                  <h:selectManyListbox id="learning_correspon_label" multiple="multiple">
-                    <f:selectItem itemValue="基本的事項/" itemLabel="基本的事項/" />
-                    <f:selectItem itemValue="現場における安全管理事項について/" itemLabel="現場における安全管理事項について/" />
-                    <f:selectItem itemValue="現場における安全管理事項について/飛来物・落下物への注意点" itemLabel="現場における安全管理事項について/飛来物・落下物への注意点" />
-                    <f:selectItem itemValue="2" itemLabel="Item 2" />
+                  <h:outputLabel for="learning_correspon_label" value="ラベル" />
+                  <h:selectManyListbox id="learning_correspon_label" multiple="multiple" >
+                    <f:selectItems value="#{corresponEditPage.projectLabel}" />
                   </h:selectManyListbox>
                 </div>
               </div>
@@ -206,10 +203,7 @@
                 <div class="twelve columns">
                   <h:outputLabel for="learning_correspon_tag" value="タグ" />
                   <h:selectManyListbox id="learning_correspon_tag" multiple="multiple">
-                    <f:selectItem itemValue="基本事項" itemLabel="基本事項" />
-                    <f:selectItem itemValue="参考情報" itemLabel="参考情報" />
-                    <f:selectItem itemValue="注意情報" itemLabel="注意情報" />
-                    <f:selectItem itemValue="行政からの情報" itemLabel="行政からの情報" />
+                    <f:selectItems value="#{corresponEditPage.projectTag}" />
                   </h:selectManyListbox>
                 </div>
               </div>

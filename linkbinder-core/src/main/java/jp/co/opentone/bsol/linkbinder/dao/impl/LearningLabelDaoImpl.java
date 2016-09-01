@@ -75,6 +75,6 @@ public class LearningLabelDaoImpl extends AbstractDao<LearningLabel> implements 
     @Override
     public List<LearningLabel> findByProjectId(String projectId) {
         return (List<LearningLabel>) getSqlMapClientTemplate()
-                .queryForList(getSqlId(SQL_FIND_BY_PROJECT_ID));
+                .queryForList(getSqlId(SQL_FIND_BY_PROJECT_ID),projectId);
     }
 }

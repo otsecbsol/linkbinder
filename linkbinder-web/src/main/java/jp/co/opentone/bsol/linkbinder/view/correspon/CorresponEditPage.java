@@ -30,7 +30,9 @@ import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 
+import jp.co.opentone.bsol.linkbinder.dto.*;
 import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
+import jp.co.opentone.bsol.linkbinder.service.correspon.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
@@ -48,19 +50,6 @@ import jp.co.opentone.bsol.linkbinder.action.AbstractAction;
 import jp.co.opentone.bsol.linkbinder.action.AbstractCorresponEditPageAction;
 import jp.co.opentone.bsol.linkbinder.attachment.AttachmentInfo;
 import jp.co.opentone.bsol.linkbinder.attachment.UploadedFile;
-import jp.co.opentone.bsol.linkbinder.dto.AddressCorresponGroup;
-import jp.co.opentone.bsol.linkbinder.dto.AddressUser;
-import jp.co.opentone.bsol.linkbinder.dto.Attachment;
-import jp.co.opentone.bsol.linkbinder.dto.Correspon;
-import jp.co.opentone.bsol.linkbinder.dto.CorresponGroup;
-import jp.co.opentone.bsol.linkbinder.dto.CorresponType;
-import jp.co.opentone.bsol.linkbinder.dto.CustomField;
-import jp.co.opentone.bsol.linkbinder.dto.CustomFieldValue;
-import jp.co.opentone.bsol.linkbinder.dto.DistTemplateGroup;
-import jp.co.opentone.bsol.linkbinder.dto.DistTemplateHeader;
-import jp.co.opentone.bsol.linkbinder.dto.DistTemplateUser;
-import jp.co.opentone.bsol.linkbinder.dto.UpdateMode;
-import jp.co.opentone.bsol.linkbinder.dto.User;
 import jp.co.opentone.bsol.linkbinder.dto.code.AddressType;
 import jp.co.opentone.bsol.linkbinder.dto.code.AddressUserType;
 import jp.co.opentone.bsol.linkbinder.dto.code.CorresponStatus;
@@ -71,9 +60,6 @@ import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
 import jp.co.opentone.bsol.linkbinder.service.admin.CorresponGroupService;
 import jp.co.opentone.bsol.linkbinder.service.admin.DistributionTemplateService;
 import jp.co.opentone.bsol.linkbinder.service.admin.UserService;
-import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponSaveService;
-import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponService;
-import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponValidateService;
 import jp.co.opentone.bsol.linkbinder.util.view.correspon.CorresponPageFormatter;
 import jp.co.opentone.bsol.linkbinder.validation.groups.ValidationGroupBuilder;
 import jp.co.opentone.bsol.linkbinder.view.action.control.CorresponEditPageElementControl;
@@ -203,6 +189,16 @@ public class CorresponEditPage extends AbstractCorresponPage
      */
     @Resource
     private UserService userService;
+    /**
+     * 学習用ラベルサービス
+     */
+    @Resource
+    private LearningLabelService learningLabelService;
+    /**
+     * 学習用タグサービス
+     */
+    @Resource
+    private LearningTagService learningTagService;
     /**
      * Distribution templateサービス.
      */
@@ -806,6 +802,19 @@ public class CorresponEditPage extends AbstractCorresponPage
      */
     @Transfer
     private List<DistTemplateHeader> distributionTemplateList;
+
+    /**
+     * プロジェクトに登録されている学習用ラベル一覧.
+     */
+    @Transfer
+    private List<String> projectLabel;
+
+    /**
+     * プロジェクトに登録されている学習用タグ一覧.
+     */
+    @Transfer
+    private List<String> projectTag;
+
     //*****END
 
     /**
@@ -2448,6 +2457,10 @@ public class CorresponEditPage extends AbstractCorresponPage
     }
 
     /**
+     * @return the LearningLabelService
+     */
+    public LearningLabelService getLearningLabelService() { return learningLabelService;}
+    /**
      * @param repliedId the repliedId to set
      */
     public void setRepliedId(Long repliedId) {
@@ -2516,6 +2529,30 @@ public class CorresponEditPage extends AbstractCorresponPage
     public boolean isJsonValuesLoaded() {
         return jsonValuesLoaded;
     }
+
+    /**
+     * @return the projectLabel.
+     */
+    public List<String> getProjectLabel() {
+        return this.projectLabel;
+    }
+
+    /**
+     * @param projectLabel the projectLabel to set.
+     */
+    public void setProjectLabel(List<String> projectLabel) {
+        this.projectLabel = projectLabel;
+    }
+
+    /**
+     * @return the projectTag.
+     */
+    public List<String> getProjectTag() { return this.projectTag;}
+
+    /**
+     * @param projectTag the projectTag to set.
+     */
+    public void setProjectTag(List<String> projectTag) { this.projectTag = projectTag; }
 
     /**
      * 添付ファイルを検証する.
@@ -2816,6 +2853,7 @@ public class CorresponEditPage extends AbstractCorresponPage
         private static final long serialVersionUID = -9114746457687637142L;
         /** アクション発生元ページ. */
         private CorresponEditPage page;
+
         /**
          * このアクションの発生元ページを指定してインスタンス化する.
          * @param page
@@ -2837,6 +2875,8 @@ public class CorresponEditPage extends AbstractCorresponPage
             }
             page.initializer.initialize(page);
             page.elemControl.setUp(page);
+            page.prepareLabel(page.learningLabelService.findAll());
+            page.prepareTag(page.learningTagService.findAll());
 
             page.setInitialDisplaySuccess(true);
         }
@@ -3300,5 +3340,21 @@ public class CorresponEditPage extends AbstractCorresponPage
         public void execute() throws ServiceAbortException {
             throw new ServiceAbortException(ApplicationMessageCode.ERROR_UPLOADING_IMPORT_FILE);
         }
+    }
+
+    private void prepareLabel(List<LearningLabel> labelList) {
+        List<String> learningLabel = new ArrayList<String>();
+        for(LearningLabel label : labelList) {
+            learningLabel.add(label.getName());
+        }
+        setProjectLabel(learningLabel);
+    }
+
+    private void prepareTag(List<LearningTag> tagList) {
+        List<String> learningTag = new ArrayList<String>();
+        for(LearningTag tag : tagList) {
+            learningTag.add(tag.getName());
+        }
+        setProjectTag(learningTag);
     }
 }

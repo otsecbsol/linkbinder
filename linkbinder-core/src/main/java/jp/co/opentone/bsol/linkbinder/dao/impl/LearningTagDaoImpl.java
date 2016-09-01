@@ -64,6 +64,6 @@ public class LearningTagDaoImpl extends AbstractDao<LearningTag> implements Lear
     @Override
     public List<LearningTag> findByProjectId(String projectId) {
         return (List<LearningTag>) getSqlMapClientTemplate()
-                .queryForList(getSqlId(SQL_FIND_BY_PROJECT_ID));
+                .queryForList(getSqlId(SQL_FIND_BY_PROJECT_ID),projectId);
     }
 }

@@ -25,10 +25,8 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     <result property="id"              column="id"/>
     <result property="name"            column="name"/>
     <result property="createdBy.empNo" column="created_by"/>
-    <result property="createdBy.nameE" column="created_by_name"/>
     <result property="createdAt"       column="created_at"/>
     <result property="updatedBy.empNo" column="updated_by"/>
-    <result property="updatedBy.nameE" column="updated_by_name"/>
     <result property="updatedAt"       column="updated_at"/>
     <result property="versionNo"       column="version_no"/>
     <result property="deleteNo"        column="delete_no"/>

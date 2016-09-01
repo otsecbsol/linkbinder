@@ -50,13 +50,6 @@ public class LearningTag extends AbstractDto implements VersioningEntity {
     private String name;
 
     /**
-     * Created by.
-     * <p>
-     * </p>
-     */
-    private User createdBy;
-
-    /**
      * Created at.
      * <p>
      * [learning_label.created_at]
@@ -145,27 +138,6 @@ public class LearningTag extends AbstractDto implements VersioningEntity {
      */
     public void setName(String name) {
         this.name = name;
-    }
-
-    /**
-     * 作成者を返す.
-     * <p>
-     * </p>
-     * @return createdBy
-     */
-    public User getCreatedBy() {
-        return createdBy;
-    }
-
-    /**
-     * 作成者を設定する.
-     * <p>
-     * </p>
-     * @param createdBy
-     *            作成者
-     */
-    public void setCreatedBy(User createdBy) {
-        this.createdBy = createdBy;
     }
 
     /**

@@ -45,9 +45,6 @@
       javaType="jp.co.opentone.bsol.linkbinder.dto.code.ReplyRequired"
       callback="jp.co.opentone.bsol.linkbinder.dao.handler.ReplyRequiredValueHandler" />
   <typeHandler
-          javaType="jp.co.opentone.bsol.linkbinder.dto.code.UseLearning"
-          callback="jp.co.opentone.bsol.linkbinder.dao.handler.UseLearningValueHandler" />
-  <typeHandler
       javaType="jp.co.opentone.bsol.linkbinder.dto.code.UseWhole"
       callback="jp.co.opentone.bsol.linkbinder.dao.handler.UseWholeValueHandler" />
   <typeHandler

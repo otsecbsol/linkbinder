@@ -869,14 +869,14 @@
                                    value="#{corresponIndexPage.readStatus}" />
                   </h:panelGroup>
 
-                  <h:panelGroup styleClass="label" rendered="#{not corresponIndexPage.learningProject}">
+                  <h:panelGroup styleClass="label" rendered="#{(not corresponIndexPage.learningProject) and corresponIndexPage.projectUseLearning}">
                     <h:outputText value="学習用文書" />
                   </h:panelGroup>
-                  <h:panelGroup styleClass="label" rendered="#{not corresponIndexPage.learningProject}">
+                  <h:panelGroup styleClass="label" rendered="#{(not corresponIndexPage.learningProject) and corresponIndexPage.projectUseLearning}">
                     <h:outputText value=":" />
                   </h:panelGroup>
 
-                  <h:panelGroup rendered="#{not corresponIndexPage.learningProject}">
+                  <h:panelGroup rendered="#{(not corresponIndexPage.learningProject) and corresponIndexPage.projectUseLearning}">
                     <h:commandLink value=" すべて "
                                    action="#{corresponIndexPage.search}"
                                    rendered="#{corresponIndexPage.forLearning != corresponIndexPage.forLearningAll}"
@@ -1223,52 +1223,55 @@
                         </div>
                       </div>
                     </div>
-                    <div class="search-block">
-                      <div class="row">
-                        <div class="twelve columns">
-                          <h:outputText styleClass="label" value="学習用文書" />
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="three columns">
-                          <h:outputLabel for="forLearning" value="種類"/>
-                          <h:selectManyListbox id="forLearning"
-                                               value="#{corresponIndexPage.forLearnings}" size="6"
-                                               styleClass="u-full-width"
-                                               rendered="#{corresponIndexPage.forLearningSelectList != null}">
-                            <f:selectItem itemLabel="" itemValue="#{corresponIndexPage.defaultSelectItemValue}" />
-                            <f:selectItems
-                                    value="#{corresponIndexPage.forLearningSelectList}" />
-                          </h:selectManyListbox>
-                        </div>
-                        <div class="nine columns">
-                          <div class="row">
-                            <div class="twelve columns">
-                              <h:outputLabel for="learningLabel" value="ラベル"/>
-                              <h:selectManyListbox id="learningLabel"
-                                                   value="#{corresponIndexPage.learningLabels}"
-                                                   styleClass="u-full-width learning-select"
-                                                   rendered="#{corresponIndexPage.learningLabelSelectList != null}">
-                                <f:selectItem itemLabel="" itemValue="#{corresponIndexPage.defaultSelectItemValue}" />
-                                <f:selectItems value="#{corresponIndexPage.learningLabelSelectList}" />
-                              </h:selectManyListbox>
-                            </div>
-                          </div>
-                          <div class="row">
-                            <div class="twelve columns">
-                              <h:outputLabel for="learningTag" value="タグ"/>
-                              <h:selectManyListbox id="learningTag"
-                                                   value="#{corresponIndexPage.learningTags}"
-                                                   styleClass="u-full-width learning-select"
-                                                   rendered="#{corresponIndexPage.learningTagSelectList != null}">
-                                <f:selectItem itemLabel="" itemValue="#{corresponIndexPage.defaultSelectItemValue}" />
-                                <f:selectItems value="#{corresponIndexPage.learningTagSelectList}" />
-                              </h:selectManyListbox>
-                            </div>
+
+                    <ui:fragment rendered="#{corresponIndexPage.projectUseLearning}">
+                      <div class="search-block">
+                        <div class="row">
+                          <div class="twelve columns">
+                            <h:outputText styleClass="label" value="学習用文書" />
                           </div>
                         </div>
+                        <div class="row">
+                          <div class="three columns">
+                            <h:outputLabel for="forLearning" value="種類"/>
+                            <h:selectManyListbox id="forLearning"
+                                                 value="#{corresponIndexPage.forLearnings}" size="6"
+                                                 styleClass="u-full-width"
+                                                 rendered="#{corresponIndexPage.forLearningSelectList != null}">
+                              <f:selectItem itemLabel="" itemValue="#{corresponIndexPage.defaultSelectItemValue}" />
+                              <f:selectItems
+                                      value="#{corresponIndexPage.forLearningSelectList}" />
+                            </h:selectManyListbox>
+                          </div>
+                          <div class="nine columns">
+                            <div class="row">
+                              <div class="twelve columns">
+                                <h:outputLabel for="learningLabel" value="ラベル"/>
+                                <h:selectManyListbox id="learningLabel"
+                                                     value="#{corresponIndexPage.learningLabels}"
+                                                     styleClass="u-full-width learning-select"
+                                                     rendered="#{corresponIndexPage.learningLabelSelectList != null}">
+                                  <f:selectItem itemLabel="" itemValue="#{corresponIndexPage.defaultSelectItemValue}" />
+                                  <f:selectItems value="#{corresponIndexPage.learningLabelSelectList}" />
+                                </h:selectManyListbox>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="twelve columns">
+                                <h:outputLabel for="learningTag" value="タグ"/>
+                                <h:selectManyListbox id="learningTag"
+                                                     value="#{corresponIndexPage.learningTags}"
+                                                     styleClass="u-full-width learning-select"
+                                                     rendered="#{corresponIndexPage.learningTagSelectList != null}">
+                                  <f:selectItem itemLabel="" itemValue="#{corresponIndexPage.defaultSelectItemValue}" />
+                                  <f:selectItems value="#{corresponIndexPage.learningTagSelectList}" />
+                                </h:selectManyListbox>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                    </div>
+                    </ui:fragment>
 
                     <h:panelGroup id="calenderScript">
                       <script type="text/javascript">

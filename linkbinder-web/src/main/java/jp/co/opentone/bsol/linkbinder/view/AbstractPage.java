@@ -39,7 +39,6 @@ import jp.co.opentone.bsol.linkbinder.dto.User;
 import jp.co.opentone.bsol.linkbinder.dto.Workflow;
 import jp.co.opentone.bsol.linkbinder.dto.code.CorresponStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
-import jp.co.opentone.bsol.linkbinder.dto.code.UseLearning;
 import jp.co.opentone.bsol.linkbinder.dto.condition.AbstractCondition;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchCorresponCondition;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchFullTextSearchCorresponCondition;
@@ -523,8 +522,20 @@ public abstract class AbstractPage implements LinkBinderPage, Serializable {
      * @return 利用可の場合はtrue
      */
     public boolean isUseLearning() {
-        UseLearning ul = getCurrentUser().getUseLearning();
-        return ul != null && UseLearning.USE == ul;
+        return getCurrentUser().isUseLearning();
+    }
+
+    /**
+     * 現在のプロジェクトが学習用文書機能を利用できる場合はtrueを返す.
+     * @return
+     */
+    public boolean isProjectUseLearning() {
+        Project p = getCurrentProject();
+        if (p != null && p.getProjectCustomSetting() != null) {
+            return p.getProjectCustomSetting().isUseLearning();
+        }
+
+        return false;
     }
 
     /**

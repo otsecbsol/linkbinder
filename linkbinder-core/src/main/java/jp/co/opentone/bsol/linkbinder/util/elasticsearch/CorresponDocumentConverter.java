@@ -61,6 +61,7 @@ public class CorresponDocumentConverter {
         doc.body = Jsoup.parse(correspon.getBody()).text();
         doc.lastModified = DateUtil.convertDateToString(correspon.getUpdatedAt());
         doc.workflowStatus = String.valueOf(correspon.getWorkflowStatus().getValue());
+        doc.forLearning = String.valueOf(correspon.getForLearning().getValue());
 
         result.add(doc);
 
@@ -72,6 +73,7 @@ public class CorresponDocumentConverter {
             attachmentDoc.body = StringUtils.EMPTY;
             attachmentDoc.lastModified = doc.lastModified;
             attachmentDoc.workflowStatus = doc.workflowStatus;
+            attachmentDoc.workflowStatus = doc.forLearning;
 
             attachmentDoc.attachments = Lists.newArrayList(
                     new CorresponElasticsearchDocument.Attachment(

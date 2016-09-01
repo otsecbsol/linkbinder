@@ -53,7 +53,6 @@ public class LearningLabelServiceImpl extends AbstractService implements Learnin
     @Transactional(readOnly = true)
     public List<LearningLabel> findAll() throws ServiceAbortException {
         LearningLabelDao dao = getDao(LearningLabelDao.class);
-        List<LearningLabel> tmp =dao.findByProjectId(getCurrentProjectId());
-        return tmp;
+        return dao.findByProjectId(getCurrentProjectId());
     }
 }

@@ -82,6 +82,10 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
         ON c.id = cl.correspon_id
        AND c.delete_no = 0
     WHERE l.delete_no = 0
+      AND c.project_id IN (
+        SELECT project_id FROM sys_pj
+        WHERE for_learning = 1
+      )
     ORDER BY l.name, c.id
   </select>
 

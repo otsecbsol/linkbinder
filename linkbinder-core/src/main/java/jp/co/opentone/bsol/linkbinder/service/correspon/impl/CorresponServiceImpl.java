@@ -27,6 +27,7 @@ import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchProjectCondition;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.hssf.record.Record;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -954,8 +955,23 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
         validateDeleteIssuePermission(correspon);
         // 承認状態の更新
         updateCorresponForIssue(correspon);
-        if (correspon.getForLearning().equals("true")) {
-            copyCorresponForLearning(correspon);
+
+        if (correspon.getForLearning() == ForLearning.LEARNING) {
+            Correspon clone = new Correspon();
+            try {
+                CorresponDao dao = getDao(CorresponDao.class);
+                Correspon originalCorrespon = dao.findById(correspon.getId());
+                PropertyUtils.copyProperties(clone, originalCorrespon);
+            } catch(NoSuchMethodException e) {
+                throw new ServiceAbortException(e.getMessage());
+            } catch (InvocationTargetException e) {
+                throw new ServiceAbortException(e.getMessage());
+            } catch (IllegalAccessException e) {
+                throw new ServiceAbortException(e.getMessage());
+            } catch (RecordNotFoundException e) {
+
+            }
+            copyCorresponForLearning(clone);
         }
         // メール通知機能
         sendIssuedNotice(correspon, EmailNoticeEventCd.ISSUED);
@@ -998,11 +1014,16 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
      */
     private void copyCorresponForLearning(Correspon correspon) throws ServiceAbortException {
         //TODO: 「学習用プロジェクト」に指定されたProjectIDの数だけ文書を複製・登録する処理を追加する
+        // ここでリストのIDに紐づく文書としてコピーする処理
+        List<Project> learningProjectList = findLearningProject();
+        for(Project learningProject : learningProjectList) {
+            correspon.setProjectId(learningProject.getProjectId());
+            try {
+                saveLearningCorrespon(correspon);
+            } catch (KeyDuplicateException e) {
+                continue;
+            }
 
-        List<Project> learningPjList = findLearningProject();
-        for(Project project : learningPjList) {
-
-            // ここでリストのIDに紐づく文書としてコピーする処理
         }
     }
 
@@ -1624,9 +1645,13 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
         condition.setForLearning(ForLearning.LEARNING);
 
         ProjectDao dao = getDao(ProjectDao.class);
-        List<Project> learningPjList = new ArrayList<Project>();
-        learningPjList = dao.find(condition);
+        List<Project> learningPjList = dao.findLearningPj(condition);
 
         return learningPjList;
+    }
+
+    private void saveLearningCorrespon(Correspon correspon) throws KeyDuplicateException {
+        CorresponDao dao = getDao(CorresponDao.class);
+        Long copyLearningCorresponId = dao.create(correspon);
     }
 }

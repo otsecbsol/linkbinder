@@ -675,6 +675,11 @@ public class Correspon extends AbstractDto implements VersioningEntity {
     private List<Attachment> updateAttachments;
 
     /**
+     * 学習用プロジェクトID.
+     */
+    private String learningProjectId;
+
+    /**
      * 空のインスタンスを生成する.
      */
     public Correspon() {
@@ -2581,4 +2586,8 @@ public class Correspon extends AbstractDto implements VersioningEntity {
     public void setFile5FileType(AttachmentFileType file5FileType) {
         this.file5FileType = file5FileType;
     }
+
+    public String getLearningProjectId() { return learningProjectId; }
+
+    public void setLearningProjectId(String learningProjectId) { this.learningProjectId = learningProjectId; }
 }

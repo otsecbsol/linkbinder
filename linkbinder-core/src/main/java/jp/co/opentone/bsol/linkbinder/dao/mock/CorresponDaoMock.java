@@ -343,4 +343,7 @@ public class CorresponDaoMock extends AbstractDao<Correspon> implements Correspo
     public List<Long> findIdInPage(SearchCorresponCondition condition) {
         return null;
     }
+
+    @Override
+    public Long insertLearningCorrespon(Correspon correspon) { return null; }
 }

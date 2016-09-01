@@ -77,6 +77,14 @@ public interface ProjectDao extends LegacyGenericDao<Project> {
     List<Project> find(SearchProjectCondition condition);
 
     /**
+     * 指定された条件に該当する学習用プロジェクトを検索する.
+     * @param condition
+     *            検索条件
+     * @return 検索結果
+     */
+    List<Project> findLearningPj(SearchProjectCondition condition);
+
+    /**
      * 検索条件に一致するプロジェクトを検索する.
      * @param condition 検索条件
      * @return 検索結果

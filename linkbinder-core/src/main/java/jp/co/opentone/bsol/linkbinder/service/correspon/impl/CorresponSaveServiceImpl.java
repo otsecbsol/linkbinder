@@ -41,6 +41,7 @@ import jp.co.opentone.bsol.linkbinder.dto.UpdateMode;
 import jp.co.opentone.bsol.linkbinder.dto.User;
 import jp.co.opentone.bsol.linkbinder.dto.Workflow;
 import jp.co.opentone.bsol.linkbinder.dto.code.EmailNoticeEventCd;
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowProcessStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowStatus;
 import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
@@ -309,7 +310,7 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
             corresponId = doUpdateCorrespon(correspon);
 
             // 追加のAddresUserに対しメール通知 (発行済みの場合のみ)
-            if (correspon.isIssued()) {
+            if (correspon.isIssued() && correspon.getForLearning() != ForLearning.LEARNING) {
                 sendIssuedNoticeToAddtionalAddressUser(correspon,
                         oldAddressCorresponGroupList,
                         EmailNoticeEventCd.ATTENTION_CC_ADDED);

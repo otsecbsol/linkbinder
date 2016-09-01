@@ -91,6 +91,14 @@ public class ProjectDaoMock extends AbstractLegacyDao<Project> implements Projec
         return projects;
     }
 
+    public List<Project> findLearningPj(SearchProjectCondition condition) {
+        return null;
+    }
+
+    public List<Project> findLearningProject(SearchProjectCondition condition) {
+        return null;
+    }
+
     /* (non-Javadoc)
      * @see jp.co.opentone.bsol.linkbinder.dao.ProjectDao#findProjectSummary(java.lang.String)
      */

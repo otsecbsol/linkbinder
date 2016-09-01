@@ -126,6 +126,12 @@ public class CorresponDaoImpl extends AbstractDao<Correspon> implements Correspo
             "findId";
 
     /**
+     * 学習用プロジェクトへ学習用文書を登録する.
+     */
+    private static final String SQL_INSERT_LEARNING =
+            "copyToLearningProject";
+
+    /**
      * 前方一致検索を行うフィールド名.
      */
     private static final List<String> FIELDS;
@@ -341,6 +347,11 @@ public class CorresponDaoImpl extends AbstractDao<Correspon> implements Correspo
             likeCondition,
             skipResults,
             maxResults);
+    }
+
+    @Override
+    public Long insertLearningCorrespon(Correspon correspon) {
+        return (Long) getSqlMapClientTemplate().insert(getSqlId(SQL_INSERT_LEARNING), correspon);
     }
 
     /**

@@ -1035,6 +1035,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     </selectKey>
     INSERT INTO correspon (
       id,
+      correspon_no,
       project_id,
       from_correspon_group_id,
       previous_rev_correspon_id,
@@ -1046,9 +1047,11 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       deadline_for_reply,
       workflow_status,
       created_by,
-      updated_by
+      updated_by,
+      for_learning
     ) VALUES (
       #id#,
+      #corresponNo#,
       #projectId#,
       #fromCorresponGroup.id#,
       #previousRevCorresponId#,
@@ -1060,9 +1063,67 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       #deadlineForReply#,
       #workflowStatus#,
       #createdBy.empNo#,
-      #updatedBy.empNo#
+      #updatedBy.empNo#,
+      #forLearning#
     )
   </insert>
+
+  <insert id="copyToLearningProject">
+  <selectKey resultClass="long" keyProperty="id">
+    SELECT s_correspon_id.NEXTVAL AS id FROM dual
+  </selectKey>
+  INSERT INTO correspon (
+    id,
+    correspon_no,
+    project_id,
+    from_correspon_group_id,
+    previous_rev_correspon_id,
+    project_correspon_type_id,
+    subject,
+    body,
+    issued_by,
+    issued_at,
+    correspon_status,
+    reply_required,
+    deadline_for_reply,
+    requested_approval_at,
+    workflow_status,
+    created_by,
+    created_at,
+    updated_by,
+    updated_at,
+    version_no,
+    delete_no,
+    for_learning
+  )
+  SELECT
+    #id#,
+    correspon_no,
+    #learningProjectId# AS project_id,
+    from_correspon_group_id,
+    previous_rev_correspon_id,
+    project_correspon_type_id,
+    subject,
+    body,
+    issued_by,
+    issued_at,
+    correspon_status,
+    reply_required,
+    deadline_for_reply,
+    requested_approval_at,
+    workflow_status,
+    created_by,
+    created_at,
+    updated_by,
+    updated_at,
+    version_no,
+    delete_no,
+    for_learning
+  FROM correspon
+  WHERE
+    delete_no = 0 AND
+    id = #id#
+</insert>
 
   <update id="delete">
     UPDATE correspon

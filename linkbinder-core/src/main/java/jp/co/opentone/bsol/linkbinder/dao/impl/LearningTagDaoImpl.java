@@ -16,22 +16,21 @@
 package jp.co.opentone.bsol.linkbinder.dao.impl;
 
 import jp.co.opentone.bsol.linkbinder.dao.AbstractDao;
-import jp.co.opentone.bsol.linkbinder.dao.LearningLabelDao;
-import jp.co.opentone.bsol.linkbinder.dto.LearningLabel;
-import jp.co.opentone.bsol.linkbinder.dto.LearningLabelCorrespon;
+import jp.co.opentone.bsol.linkbinder.dao.LearningTagDao;
+import jp.co.opentone.bsol.linkbinder.dto.LearningTag;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * learning_label を操作するDao.
+ * learning_tag を操作するDao.
  *
  * @author opentone
  *
  */
 @Repository
-public class LearningLabelDaoImpl extends AbstractDao<LearningLabel> implements LearningLabelDao {
+public class LearningTagDaoImpl extends AbstractDao<LearningTag> implements LearningTagDao {
     /**
      * SerialVersionUID.
      */
@@ -39,14 +38,10 @@ public class LearningLabelDaoImpl extends AbstractDao<LearningLabel> implements 
     /**
      * このクラスが利用するsqlMap.xmlのnamespace.
      */
-    private static final String NAMESPACE = "learningLabel";
+    private static final String NAMESPACE = "learningTag";
 
     /**
-     * SQLID: 有効なラベルが設定された文書を検索するID.
-     */
-    private static final String SQL_FIND_LEARNING_LABEL_CORRESPON = "findLearningLabelCorrespon";
-    /**
-     * SQLID: 指定プロジェクトの学習用ラベルを検索するID.
+     * SQLID: 指定プロジェクトの学習用タグを検索するID.
      */
     private static final String SQL_FIND_BY_PROJECT_ID = "findByProjectId";
 
@@ -62,19 +57,13 @@ public class LearningLabelDaoImpl extends AbstractDao<LearningLabel> implements 
     /**
      * 空のインスタンスを生成する.
      */
-    public LearningLabelDaoImpl() {
+    public LearningTagDaoImpl() {
         super(NAMESPACE);
     }
 
     @Override
-    public List<LearningLabelCorrespon> findLearningLabelCorrespon() {
-        return (List<LearningLabelCorrespon>) getSqlMapClientTemplate()
-                    .queryForList(getSqlId(SQL_FIND_LEARNING_LABEL_CORRESPON));
-    }
-
-    @Override
-    public List<LearningLabel> findByProjectId(String projectId) {
-        return (List<LearningLabel>) getSqlMapClientTemplate()
+    public List<LearningTag> findByProjectId(String projectId) {
+        return (List<LearningTag>) getSqlMapClientTemplate()
                 .queryForList(getSqlId(SQL_FIND_BY_PROJECT_ID));
     }
 }

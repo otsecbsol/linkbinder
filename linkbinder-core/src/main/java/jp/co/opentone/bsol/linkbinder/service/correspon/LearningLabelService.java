@@ -13,31 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package jp.co.opentone.bsol.linkbinder.dao;
+package jp.co.opentone.bsol.linkbinder.service.correspon;
 
-import jp.co.opentone.bsol.framework.core.dao.GenericDao;
+import jp.co.opentone.bsol.framework.core.service.IService;
+import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
 import jp.co.opentone.bsol.linkbinder.dto.LearningLabel;
-import jp.co.opentone.bsol.linkbinder.dto.LearningLabelCorrespon;
 
 import java.util.List;
 
 /**
- * learning_labelを操作するDao.
- *
+ * このサービスでは学習用ラベルに関する処理を提供する.
  * @author opentone
- *
  */
-public interface LearningLabelDao extends GenericDao<LearningLabel> {
+public interface LearningLabelService extends IService {
 
     /**
-     * 有効なラベルが設定された学習用文書を返す.
+     * 現在のプロジェクトに登録済みのすべての学習用ラベルを返す.
      * @return 検索結果
+     * @throws ServiceAbortException 検索に失敗
      */
-    List<LearningLabelCorrespon> findLearningLabelCorrespon();
-
-    /**
-     * 指定されたプロジェクトのすべての学習ラベルを返す.
-     * @return 検索結果
-     */
-    List<LearningLabel> findByProjectId(String projectId);
+    List<LearningLabel> findAll() throws ServiceAbortException;
 }

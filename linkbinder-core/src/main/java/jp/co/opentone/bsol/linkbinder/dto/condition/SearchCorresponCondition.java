@@ -21,6 +21,8 @@ import jp.co.opentone.bsol.framework.core.util.SQLConvertUtil;
 import jp.co.opentone.bsol.linkbinder.dto.CorresponGroup;
 import jp.co.opentone.bsol.linkbinder.dto.CorresponGroupUser;
 import jp.co.opentone.bsol.linkbinder.dto.CorresponType;
+import jp.co.opentone.bsol.linkbinder.dto.LearningLabel;
+import jp.co.opentone.bsol.linkbinder.dto.LearningTag;
 import jp.co.opentone.bsol.linkbinder.dto.User;
 import jp.co.opentone.bsol.linkbinder.dto.code.AddressType;
 import jp.co.opentone.bsol.linkbinder.dto.code.AddressUserType;
@@ -112,6 +114,16 @@ public class SearchCorresponCondition extends AbstractCondition {
      * コレポン文書種別.
      */
     private CorresponType[] corresponTypes;
+
+    /**
+     * 学習用ラベル.
+     */
+    private LearningLabel[] learningLabels;
+
+    /**
+     * 学習用タグ.
+     */
+    private LearningTag[] learningTags;
 
     /**
      * 承認状態.
@@ -463,6 +475,38 @@ public class SearchCorresponCondition extends AbstractCondition {
      */
     public void setCorresponTypes(CorresponType[] corresponTypes) {
         this.corresponTypes = CloneUtil.cloneArray(CorresponType.class, corresponTypes);
+    }
+
+    /**
+     * learningLabelsを取得します.
+     * @return the learningLabels
+     */
+    public LearningLabel[] getLearningLabels() {
+        return CloneUtil.cloneArray(LearningLabel.class, learningLabels);
+    }
+
+    /**
+     * learingLabelsを設定します.
+     * @param learningLabels the learningLabels to set
+     */
+    public void setLearningLabels(LearningLabel[] learningLabels) {
+        this.learningLabels = CloneUtil.cloneArray(LearningLabel.class, learningLabels);
+    }
+
+    /**
+     * learningTagsを取得します.
+     * @return the learningTags
+     */
+    public LearningTag[] getLearningTags() {
+        return CloneUtil.cloneArray(LearningTag.class, learningTags);
+    }
+
+    /**
+     * learingTagsを設定します.
+     * @param learningTags the learningTags to set
+     */
+    public void setLearningTags(LearningTag[] learningTags) {
+        this.learningTags = CloneUtil.cloneArray(LearningTag.class, learningTags);
     }
 
     /**

@@ -540,6 +540,36 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
             #forLearnings[]#
           </iterate>
         </isNotEmpty>
+        <isNotEmpty prepend="AND" property="learningLabels">
+          EXISTS (
+            SELECT l.id FROM correspon_learning_label cl
+              INNER JOIN learning_label l
+                 ON l.id = cl.label_id
+               AND l.delete_no = 0
+            WHERE cl.correspon_id = c.id
+              AND cl.delete_no = 0
+              AND l.id IN
+          <iterate property="learningLabels" conjunction=","
+                   open="(" close=")">
+            #learningLabels[].id#
+          </iterate>
+          )
+        </isNotEmpty>
+        <isNotEmpty prepend="AND" property="learningTags">
+          EXISTS (
+            SELECT t.id FROM correspon_learning_tag ct
+              INNER JOIN learning_tag t
+                 ON t.id = ct.tag_id
+              AND t.delete_no = 0
+            WHERE ct.correspon_id = c.id
+              AND ct.delete_no = 0
+              AND t.id IN
+          <iterate property="learningTags" conjunction=","
+                   open="(" close=")">
+            #learningTags[].id#
+          </iterate>
+          )
+        </isNotEmpty>
         <isNotEmpty prepend="AND" property="corresponStatuses">
           correspon_status in
           <iterate property="corresponStatuses" conjunction=","

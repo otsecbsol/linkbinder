@@ -53,7 +53,7 @@
   </div>
   <div class="row">
     <div id="project" class="seven columns">
-      <ui:fragment rendered="#{!empty flash.projectId}">
+      <ui:fragment rendered="#{!empty flash.projectId and not menuPage.learningProject}">
         <h:outputText value="#{flash.projectId}" />
         <h:outputText value=" : " />
         <h:outputText value="#{flash.projectNameE}" />
@@ -70,10 +70,14 @@
       <ul>
         <li><a id="home" href="${contextPath}/home.jsf">ホーム</a></li>
         <ui:fragment rendered="#{!empty flash.projectId}">
-          <li><a id="projectHome" href="#{contextPath}/projectHome.jsf?projectId=#{flash.projectId}">プロジェクトホーム</a></li>
+          <ui:fragment rendered="#{not menuPage.learningProject}">
+            <li><a id="projectHome" href="#{contextPath}/projectHome.jsf?projectId=#{flash.projectId}">プロジェクトホーム</a></li>
+          </ui:fragment>
           <li><a id="correspon" href="#{contextPath}/correspon/corresponIndex.jsf?sessionSort=1&amp;sessionPageNo=1&amp;projectId=#{flash.projectId}">文書</a></li>
-          <li><a id="newCorrespon" href="#{contextPath}/correspon/corresponEdit.jsf?newEdit=1&amp;projectId=#{flash.projectId}">新規文書</a></li>
-          <li><a id="fullText" href="#{contextPath}/correspon/corresponSearch.jsf?sessionPageNo=1&amp;projectId=#{flash.projectId}">全文検索</a></li>
+          <ui:fragment rendered="#{not menuPage.learningProject}">
+            <li><a id="newCorrespon" href="#{contextPath}/correspon/corresponEdit.jsf?newEdit=1&amp;projectId=#{flash.projectId}">新規文書</a></li>
+            <li><a id="fullText" href="#{contextPath}/correspon/corresponSearch.jsf?sessionPageNo=1&amp;projectId=#{flash.projectId}">全文検索</a></li>
+          </ui:fragment>
         </ui:fragment>
       </ul>
     </ui:fragment>

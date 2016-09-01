@@ -22,7 +22,6 @@ import javax.annotation.ManagedBean;
 import javax.annotation.Resource;
 import javax.faces.model.SelectItem;
 
-import jp.co.opentone.bsol.linkbinder.dto.code.UseLearning;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.Length;
@@ -631,7 +630,7 @@ public class UserSettingsPage extends AbstractPage {
                                                 MessageCode.E_INVALID_PARAMETER);
             }
             page.userSettings = page.userService.findUserSettings(page.id);
-            page.editUseLearning = page.userSettings.getUser().getUseLearning() == UseLearning.USE;
+            page.editUseLearning = page.userSettings.getUser().isUseLearning();
 
             validate();
             // 現在のプロジェクトのユーザー設定を抜き出し
@@ -872,10 +871,7 @@ public class UserSettingsPage extends AbstractPage {
 
             page.userSettings.setDefaultEmailAddress(page.getDefaultEmailAddress());
             page.userSettings.setPassword(page.getPassword());
-            page.userSettings.getUser().setUseLearning(
-                    page.isEditUseLearning()
-                        ? UseLearning.USE
-                        : UseLearning.NOT_USE);
+            page.userSettings.getUser().setUseLearning(page.isEditUseLearning());
 
             page.userService.save(page.userSettings);
 

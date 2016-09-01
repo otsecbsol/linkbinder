@@ -21,7 +21,6 @@ import jp.co.opentone.bsol.framework.core.dao.LegacyEntity;
 import jp.co.opentone.bsol.framework.core.exception.ApplicationFatalRuntimeException;
 import jp.co.opentone.bsol.framework.core.util.CloneUtil;
 import jp.co.opentone.bsol.linkbinder.Constants;
-import jp.co.opentone.bsol.linkbinder.dto.code.UseLearning;
 import jp.co.opentone.bsol.linkbinder.util.ValueFormatter;
 import org.apache.commons.lang.StringUtils;
 
@@ -160,7 +159,7 @@ public class User extends AbstractDto implements LegacyEntity, UserHolder {
     /**
      * use_learning.
      */
-    private UseLearning useLearning;
+    private boolean useLearning;
 
     /**
      * 空のインスタンスを生成する.
@@ -531,15 +530,6 @@ public class User extends AbstractDto implements LegacyEntity, UserHolder {
     public void setRole(String role) {
         this.role = role;
     }
-
-    public UseLearning getUseLearning() {
-        return useLearning;
-    }
-
-    public void setUseLearning(UseLearning useLearning) {
-        this.useLearning = useLearning;
-    }
-
     /*
      * (non-Javadoc)
      * @see jp.co.opentone.bsol.framework.auth.UserHolder#getUserId()
@@ -581,6 +571,14 @@ public class User extends AbstractDto implements LegacyEntity, UserHolder {
         userProfileVersionNo = null;
         defaultProjectNameE = null;
         remarks = null;
-        useLearning = null;
+        useLearning = false;
+    }
+
+    public boolean isUseLearning() {
+        return useLearning;
+    }
+
+    public void setUseLearning(boolean useLearning) {
+        this.useLearning = useLearning;
     }
 }

@@ -29,6 +29,7 @@ import jp.co.opentone.bsol.linkbinder.dto.Attachment;
 import jp.co.opentone.bsol.linkbinder.dto.Correspon;
 import jp.co.opentone.bsol.linkbinder.dto.FullTextSearchCorresponsResult;
 import jp.co.opentone.bsol.linkbinder.dto.FullTextSearchSummaryData;
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchFullTextSearchCorresponCondition;
 import jp.co.opentone.bsol.linkbinder.service.AbstractService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponFullTextSearchService;
@@ -208,6 +209,11 @@ public class CorresponFullTextSearchServiceImpl extends AbstractService implemen
                 option.addHighlightFields("attachments.extractedText");
             }
             break;
+        }
+
+        if (condition.isOnlyLearningCorrespon()) {
+            option.addOptionalSearchCondition("forLearning",
+                    String.valueOf(ForLearning.LEARNING.getValue()));
         }
 
         return option;

@@ -734,6 +734,7 @@ public class CorresponSearchPage extends AbstractPage {
     private void setSearchCondition() {
         condition.setKeyword(keyword);
         condition.setFullTextSearchMode(getSelectedFullTextSearchMode());
+        condition.setOnlyLearningCorrespon(onlyLearningCorrespon);
         condition.setOperator(getSelectedOperator());
         condition.setIncludeImage(includeImage);
         condition.setIncludeNonImage(includeNonImage);

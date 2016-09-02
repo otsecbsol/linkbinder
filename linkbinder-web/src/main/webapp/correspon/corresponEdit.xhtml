@@ -195,7 +195,7 @@
                 <div class="twelve columns">
                   <h:outputLabel for="learning_correspon_label" value="ラベル" />
                   <h:selectManyListbox id="learning_correspon_label" multiple="multiple" >
-                    <f:selectItems value="#{corresponEditPage.projectLabel}" />
+                    <f:selectItems value="#{corresponEditPage.learningLabelSelectList}" />
                   </h:selectManyListbox>
                 </div>
               </div>
@@ -203,7 +203,7 @@
                 <div class="twelve columns">
                   <h:outputLabel for="learning_correspon_tag" value="タグ" />
                   <h:selectManyListbox id="learning_correspon_tag" multiple="multiple">
-                    <f:selectItems value="#{corresponEditPage.projectTag}" />
+                    <f:selectItems value="#{corresponEditPage.learningTagSelectList}" />
                   </h:selectManyListbox>
                 </div>
               </div>

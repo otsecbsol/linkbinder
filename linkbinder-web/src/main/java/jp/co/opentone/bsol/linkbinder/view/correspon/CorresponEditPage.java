@@ -15,30 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.view.correspon;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.ManagedBean;
-import javax.annotation.Resource;
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
-import javax.faces.event.ComponentSystemEvent;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
-import javax.faces.model.SelectItem;
-
-import jp.co.opentone.bsol.linkbinder.dto.*;
-import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
-import jp.co.opentone.bsol.linkbinder.service.correspon.*;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.validator.constraints.Length;
-import org.springframework.context.annotation.Scope;
-
 import jp.co.opentone.bsol.framework.core.message.MessageCode;
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
 import jp.co.opentone.bsol.framework.core.util.DateUtil;
@@ -50,9 +26,25 @@ import jp.co.opentone.bsol.linkbinder.action.AbstractAction;
 import jp.co.opentone.bsol.linkbinder.action.AbstractCorresponEditPageAction;
 import jp.co.opentone.bsol.linkbinder.attachment.AttachmentInfo;
 import jp.co.opentone.bsol.linkbinder.attachment.UploadedFile;
+import jp.co.opentone.bsol.linkbinder.dto.AddressCorresponGroup;
+import jp.co.opentone.bsol.linkbinder.dto.AddressUser;
+import jp.co.opentone.bsol.linkbinder.dto.Attachment;
+import jp.co.opentone.bsol.linkbinder.dto.Correspon;
+import jp.co.opentone.bsol.linkbinder.dto.CorresponGroup;
+import jp.co.opentone.bsol.linkbinder.dto.CorresponType;
+import jp.co.opentone.bsol.linkbinder.dto.CustomField;
+import jp.co.opentone.bsol.linkbinder.dto.CustomFieldValue;
+import jp.co.opentone.bsol.linkbinder.dto.DistTemplateGroup;
+import jp.co.opentone.bsol.linkbinder.dto.DistTemplateHeader;
+import jp.co.opentone.bsol.linkbinder.dto.DistTemplateUser;
+import jp.co.opentone.bsol.linkbinder.dto.LearningLabel;
+import jp.co.opentone.bsol.linkbinder.dto.LearningTag;
+import jp.co.opentone.bsol.linkbinder.dto.UpdateMode;
+import jp.co.opentone.bsol.linkbinder.dto.User;
 import jp.co.opentone.bsol.linkbinder.dto.code.AddressType;
 import jp.co.opentone.bsol.linkbinder.dto.code.AddressUserType;
 import jp.co.opentone.bsol.linkbinder.dto.code.CorresponStatus;
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import jp.co.opentone.bsol.linkbinder.dto.code.ReplyRequired;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowStatus;
 import jp.co.opentone.bsol.linkbinder.event.CorresponAttachmentChanged;
@@ -60,6 +52,11 @@ import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
 import jp.co.opentone.bsol.linkbinder.service.admin.CorresponGroupService;
 import jp.co.opentone.bsol.linkbinder.service.admin.DistributionTemplateService;
 import jp.co.opentone.bsol.linkbinder.service.admin.UserService;
+import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponSaveService;
+import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponService;
+import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponValidateService;
+import jp.co.opentone.bsol.linkbinder.service.correspon.LearningLabelService;
+import jp.co.opentone.bsol.linkbinder.service.correspon.LearningTagService;
 import jp.co.opentone.bsol.linkbinder.util.view.correspon.CorresponPageFormatter;
 import jp.co.opentone.bsol.linkbinder.validation.groups.ValidationGroupBuilder;
 import jp.co.opentone.bsol.linkbinder.view.action.control.CorresponEditPageElementControl;
@@ -70,6 +67,25 @@ import jp.co.opentone.bsol.linkbinder.view.correspon.attachment.AttachmentUpload
 import jp.co.opentone.bsol.linkbinder.view.correspon.util.CorresponDataSource;
 import jp.co.opentone.bsol.linkbinder.view.correspon.util.CorresponEditPageInitializer;
 import jp.co.opentone.bsol.linkbinder.view.validator.AttachmentValidator;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.lang.StringUtils;
+import org.hibernate.validator.constraints.Length;
+import org.springframework.context.annotation.Scope;
+
+import javax.annotation.ManagedBean;
+import javax.annotation.Resource;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.faces.event.ComponentSystemEvent;
+import javax.faces.model.DataModel;
+import javax.faces.model.ListDataModel;
+import javax.faces.model.SelectItem;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -807,13 +823,26 @@ public class CorresponEditPage extends AbstractCorresponPage
      * プロジェクトに登録されている学習用ラベル一覧.
      */
     @Transfer
-    private List<String> projectLabel;
+    private List<SelectItem> learningLabelSelectList = new ArrayList<SelectItem>();
 
     /**
      * プロジェクトに登録されている学習用タグ一覧.
      */
     @Transfer
-    private List<String> projectTag;
+    private List<SelectItem> learningTagSelectList = new ArrayList<SelectItem>();
+
+    /**
+     * 学習用ラベルリスト.
+     */
+    @Transfer
+    private List<LearningLabel> learningLabelList = null;
+
+    /**
+     * 学習用タグリスト.
+     */
+    @Transfer
+    private List<LearningTag> learningTagList = null;
+
 
     //*****END
 
@@ -2531,28 +2560,63 @@ public class CorresponEditPage extends AbstractCorresponPage
     }
 
     /**
-     * @return the projectLabel.
+     * 学習用ラベルリストを返却する.
+     * @return 学習用ラベルリスト
      */
-    public List<String> getProjectLabel() {
-        return this.projectLabel;
+    public List<LearningLabel> getLearningLabelList() {
+        return learningLabelList;
     }
 
     /**
-     * @param projectLabel the projectLabel to set.
+     * 学習用ラベル選択リストを設定する.
+     * @param learningLabelSelectList 学習用ラベル選択リスト
      */
-    public void setProjectLabel(List<String> projectLabel) {
-        this.projectLabel = projectLabel;
+    public void setLearningLabelSelectList(List<SelectItem> learningLabelSelectList) {
+        this.learningLabelSelectList = learningLabelSelectList;
     }
 
     /**
-     * @return the projectTag.
+     * 学習用ラベル選択肢（既存のラベル）を設定する.
+     * @return learningLabelSelectList 学習用ラベル選択肢
      */
-    public List<String> getProjectTag() { return this.projectTag;}
+    public List<SelectItem> getLearningLabelSelectList() {
+
+        if (this.learningLabelSelectList != null && !this.learningLabelSelectList.isEmpty()) {
+            return this.learningLabelSelectList;
+        }
+
+        this.learningLabelSelectList = viewHelper.createSelectItem(
+                learningLabelList, "id", "name");
+        return learningLabelSelectList;
+    }
 
     /**
-     * @param projectTag the projectTag to set.
+     * 学習用タグ選択リストを設定する.
+     * @param learningTagSelectList 学習用タグ選択リスト
      */
-    public void setProjectTag(List<String> projectTag) { this.projectTag = projectTag; }
+    public void setLearningTagSelectList(List<SelectItem> learningTagSelectList) { this.learningTagSelectList = learningTagSelectList; }
+
+    /**
+     * 学習用タグ選択肢（既存のタグ）を返却する.
+     * @return learningTagSelectList 学習用タグ選択肢.
+     */
+    public List<SelectItem> getLearningTagSelectList() {
+        if (this.learningTagSelectList != null && !this.learningTagSelectList.isEmpty()) {
+            return this.learningTagSelectList;
+        }
+
+        this.learningTagSelectList = viewHelper.createSelectItem(
+                learningTagList, "id", "name");
+        return learningTagSelectList;
+    }
+
+    /**
+     * 学習用タグリストを返却する.
+     * @return 学習用タグリスト
+     */
+    public List<LearningTag> getLearningTagList() {
+        return learningTagList;
+    }
 
     /**
      * 添付ファイルを検証する.
@@ -2875,9 +2939,8 @@ public class CorresponEditPage extends AbstractCorresponPage
             }
             page.initializer.initialize(page);
             page.elemControl.setUp(page);
-            page.prepareLabel(page.learningLabelService.findAll());
-            page.prepareTag(page.learningTagService.findAll());
-
+            page.learningLabelList = page.learningLabelService.findAll();
+            page.learningTagList = page.learningTagService.findAll();
             page.setInitialDisplaySuccess(true);
         }
     }
@@ -3340,21 +3403,5 @@ public class CorresponEditPage extends AbstractCorresponPage
         public void execute() throws ServiceAbortException {
             throw new ServiceAbortException(ApplicationMessageCode.ERROR_UPLOADING_IMPORT_FILE);
         }
-    }
-
-    private void prepareLabel(List<LearningLabel> labelList) {
-        List<String> learningLabel = new ArrayList<String>();
-        for(LearningLabel label : labelList) {
-            learningLabel.add(label.getName());
-        }
-        setProjectLabel(learningLabel);
-    }
-
-    private void prepareTag(List<LearningTag> tagList) {
-        List<String> learningTag = new ArrayList<String>();
-        for(LearningTag tag : tagList) {
-            learningTag.add(tag.getName());
-        }
-        setProjectTag(learningTag);
     }
 }

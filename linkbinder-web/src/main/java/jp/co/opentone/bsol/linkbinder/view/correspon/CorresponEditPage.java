@@ -843,6 +843,18 @@ public class CorresponEditPage extends AbstractCorresponPage
     @Transfer
     private List<LearningTag> learningTagList = null;
 
+    /**
+     * 文書に登録されている学習用ラベル一覧.
+     */
+    @Transfer
+    private List<SelectItem> learningLabel = new ArrayList<SelectItem>();
+
+    /**
+     * 文書に登録されている学習用タグ一覧.
+     */
+    @Transfer
+    private List<SelectItem> learningTag = new ArrayList<SelectItem>();
+
 
     //*****END
 
@@ -1199,6 +1211,9 @@ public class CorresponEditPage extends AbstractCorresponPage
         setCorresponTypeTo(c);
         // 学習用コンテンツ
         c.setForLearning(getLearningContents());
+        // 学習用ラベル
+        c.setLearningLabel(getLearningLabelList());
+        // 学習用タグ
         // SUBJECT設定
         c.setSubject(getSubject());
         // BODY設定
@@ -2609,6 +2624,25 @@ public class CorresponEditPage extends AbstractCorresponPage
                 learningTagList, "id", "name");
         return learningTagSelectList;
     }
+    /**
+     * 学習用ラベルを設定する.
+     * @param learningLabel 学習用ラベル
+     */
+    public void setLearningLabel(List<SelectItem> learningLabel) { this.learningLabel = learningLabel; }
+
+    /**
+     * 学習用ラベルを返却する.
+     * @return learningLabel 学習用ラベル.
+     */
+    public List<SelectItem> getLearningLabel() {
+        if (this.learningLabel != null && !this.learningLabel.isEmpty()) {
+            return this.learningLabel;
+        }
+
+        this.learningLabel = viewHelper.createSelectItem(
+                learningLabelList, "id", "name");
+        return learningLabel;
+    }
 
     /**
      * 学習用タグリストを返却する.
@@ -2939,8 +2973,8 @@ public class CorresponEditPage extends AbstractCorresponPage
             }
             page.initializer.initialize(page);
             page.elemControl.setUp(page);
-            page.learningLabelList = page.learningLabelService.findAll();
-            page.learningTagList = page.learningTagService.findAll();
+            page.learningLabelList = page.learningLabelService.findExsistLabel();
+            page.learningTagList = page.learningTagService.findExsistTag();
             page.setInitialDisplaySuccess(true);
         }
     }

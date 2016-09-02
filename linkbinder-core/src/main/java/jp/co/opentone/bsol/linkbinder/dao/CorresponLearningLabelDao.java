@@ -16,27 +16,27 @@
 package jp.co.opentone.bsol.linkbinder.dao;
 
 import jp.co.opentone.bsol.framework.core.dao.GenericDao;
-import jp.co.opentone.bsol.linkbinder.dto.LearningTag;
+import jp.co.opentone.bsol.linkbinder.dto.CorresponLearningLabel;
 
 import java.util.List;
 
 /**
- * learning_tagを操作するDao.
+ * correspon_learning_labelを操作するDao.
  *
  * @author opentone
  *
  */
-public interface LearningTagDao extends GenericDao<LearningTag> {
+public interface CorresponLearningLabelDao extends GenericDao<CorresponLearningLabel> {
 
     /**
-     * 指定されたプロジェクトのすべての学習タグを返す.
-     * @return 検索結果
+     * ラベルと文書の関連を登録する。
      */
-    List<LearningTag> findByProjectId(String projectId);
+    Long insertLearningLabel(CorresponLearningLabel label);
 
     /**
-     * 指定されたプロジェクトの、利用されている全ての学習用タグを返す.
-     * @return 検索結果
+     * 文書に紐付いたラベルの一覧を返す.
+     * @param corresponId
+     * @return ラベル-文書関連情報.
      */
-    List<LearningTag> findExsistTag();
+    List<CorresponLearningLabel> findByCorresponId(Long corresponId);
 }

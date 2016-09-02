@@ -17,10 +17,10 @@ package jp.co.opentone.bsol.linkbinder.dto;
 
 import jp.co.opentone.bsol.framework.core.dao.VersioningEntity;
 import jp.co.opentone.bsol.framework.core.util.CloneUtil;
-import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import jp.co.opentone.bsol.linkbinder.dto.code.AddressType;
 import jp.co.opentone.bsol.linkbinder.dto.code.AttachmentFileType;
 import jp.co.opentone.bsol.linkbinder.dto.code.CorresponStatus;
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import jp.co.opentone.bsol.linkbinder.dto.code.ReplyRequired;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowStatus;
 
@@ -678,6 +678,16 @@ public class Correspon extends AbstractDto implements VersioningEntity {
      * 学習用プロジェクトID.
      */
     private String learningProjectId;
+
+    /**
+     * 文書に登録されている学習用ラベル一覧.
+     */
+    private List<LearningLabel> learningLabel;
+
+    /**
+     * 文書に登録されている学習用タグ一覧.
+     */
+    private List<LearningTag> learningTag;
 
     /**
      * 空のインスタンスを生成する.
@@ -2587,7 +2597,11 @@ public class Correspon extends AbstractDto implements VersioningEntity {
         this.file5FileType = file5FileType;
     }
 
-    public String getLearningProjectId() { return learningProjectId; }
+    public String getLearningProjectId() { return this.learningProjectId; }
 
     public void setLearningProjectId(String learningProjectId) { this.learningProjectId = learningProjectId; }
+
+    public List<LearningLabel> getLearningLabel() { return this.learningLabel; }
+
+    public void setLearningLabel(List<LearningLabel> labelList) { this.learningLabel = labelList; }
 }

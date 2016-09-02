@@ -19,11 +19,12 @@
 PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
 "http://ibatis.apache.org/dtd/sql-map-2.dtd">
 
-<sqlMap namespace="learningTag">
+<sqlMap namespace="corresponLearningLabel">
 
-  <resultMap id="result" class="jp.co.opentone.bsol.linkbinder.dto.LearningTag">
+  <resultMap id="result" class="jp.co.opentone.bsol.linkbinder.dto.CorresponLearningLabel">
     <result property="id"              column="id"/>
-    <result property="name"            column="name"/>
+    <result property="corresponId"    column="correspon_id"/>
+    <result property="labelId"         column="label_id"/>
     <result property="createdBy.empNo" column="created_by"/>
     <result property="createdAt"       column="created_at"/>
     <result property="updatedBy.empNo" column="updated_by"/>
@@ -32,37 +33,39 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     <result property="deleteNo"        column="delete_no"/>
   </resultMap>
 
-  <resultMap id="resultForUpdate" class="jp.co.opentone.bsol.linkbinder.dto.LearningTag">
-    <result property="versionNo" column="version_no" />
-  </resultMap>
-
-  <select id="findByProjectId" resultMap="result">
-    SELECT
-      t.*
-    FROM learning_tag t
-      INNER JOIN correspon_learning_tag ct
-        ON ct.tag_id = t.id
-       AND ct.delete_no = 0
-      INNER JOIN correspon c
-        ON c.id = ct.correspon_id
-       AND c.delete_no = 0
-    WHERE t.delete_no = 0
-      AND c.project_id = #value#
-    ORDER BY t.name
-  </select>
-
-  <select id="findExsistTag" resultMap="result">
-    SELECT
+  <insert id="insertCorresponLearningLabel">
+    <selectKey resultClass="long" keyProperty="id">
+      SELECT s_correspon_learning_label_id.NEXTVAL AS id FROM dual
+    </selectKey>
+    INSERT INTO correspon_learning_label (
     id,
-    name,
+    correspon_id,
+    label_id,
     created_by,
-    created_at,
-    updated_by,
-    updated_at,
-    version_no,
-    delete_no
-    FROM learning_tag
+    updated_by
+    ) VALUES (
+    #id#,
+    #corresponId#,
+    #labelId#,
+    #createdBy.empNo#,
+    #updatedBy.empNo#
+    )
+  </insert>
+
+  <select id="findByCorresponId" resultMap="result">
+    SELECT
+      id,
+      correspon_id,
+      label_id,
+      created_by,
+      created_at,
+      updated_by,
+      updated_at,
+      version_no,
+      delete_no
+    FROM  correspon_learning_label
     WHERE delete_no = 0
+      AND correspon_id = #value#
   </select>
 
 </sqlMap>

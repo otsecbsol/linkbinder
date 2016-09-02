@@ -611,20 +611,6 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
     }
 
     /**
-     * forLearningの値をDBへ記録する値へと変換する.
-     *
-     * @param learning 学習用コンテンツか否か（boolean）
-     * @return 変換結果（true:"X", false:null）
-     */
-    private String convertLearningValue(String learning) {
-        if(learning.equals("true")) {
-            return "X";
-        } else {
-            return null;
-        }
-    }
-
-    /**
      * List情報に変更があった場合の更新処理.
      * コレポン文書-カスタムフィールド
      *

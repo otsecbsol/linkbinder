@@ -15,17 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.view.correspon;
 
-import java.util.List;
-
-import javax.annotation.ManagedBean;
-import javax.annotation.Resource;
-
-import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-
 import jp.co.opentone.bsol.framework.core.message.MessageCode;
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
 import jp.co.opentone.bsol.framework.web.extension.jsf.annotation.Initialize;
@@ -35,6 +24,9 @@ import jp.co.opentone.bsol.linkbinder.action.AbstractAction;
 import jp.co.opentone.bsol.linkbinder.attachment.AttachmentInfo;
 import jp.co.opentone.bsol.linkbinder.dto.AddressCorresponGroup;
 import jp.co.opentone.bsol.linkbinder.dto.Correspon;
+import jp.co.opentone.bsol.linkbinder.dto.CorresponLearningLabel;
+import jp.co.opentone.bsol.linkbinder.dto.LearningLabel;
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import jp.co.opentone.bsol.linkbinder.event.CorresponCreated;
 import jp.co.opentone.bsol.linkbinder.event.CorresponUpdated;
 import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
@@ -42,12 +34,22 @@ import jp.co.opentone.bsol.linkbinder.service.admin.CorresponGroupService;
 import jp.co.opentone.bsol.linkbinder.service.admin.CorresponTypeService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponSaveService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponValidateService;
+import jp.co.opentone.bsol.linkbinder.service.correspon.LearningLabelService;
 import jp.co.opentone.bsol.linkbinder.util.view.correspon.CorresponPageFormatter;
 import jp.co.opentone.bsol.linkbinder.view.correspon.attachment.AttachmentDownloadAction;
 import jp.co.opentone.bsol.linkbinder.view.correspon.attachment.AttachmentDownloadablePage;
 import jp.co.opentone.bsol.linkbinder.view.correspon.util.CorresponDataSource;
 import jp.co.opentone.bsol.linkbinder.view.correspon.util.CorresponEditMode;
 import jp.co.opentone.bsol.linkbinder.view.util.RichTextUtil;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+
+import javax.annotation.ManagedBean;
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * コレポン文書入力確認画面.
@@ -105,6 +107,11 @@ public class CorresponConfirmationPage extends AbstractCorresponPage
      */
     @Resource
     private CorresponTypeService corresponTypeService;
+    /**
+     * 学習用ラベルサービス.
+     */
+    @Resource
+    private LearningLabelService learningLabelService;
     /**
      * 初期画面表示判定値.
      */
@@ -535,6 +542,12 @@ public class CorresponConfirmationPage extends AbstractCorresponPage
 
             boolean isNew = page.correspon.isNew();
             Long id = page.corresponSaveService.save(page.correspon);
+
+
+            if (page.correspon.getLearningLabel() != null && !page.correspon.getLearningLabel().isEmpty()) {
+                page.saveLearningLabel(page.correspon.getLearningLabel());
+            }
+//            Long labelId = page.learningLabelService.insertLearningLabel()
             if (log.isDebugEnabled()) {
                 log.debug("Save successful.");
             }
@@ -576,6 +589,39 @@ public class CorresponConfirmationPage extends AbstractCorresponPage
             return true;
         } else {
             return false;
+        }
+    }
+
+    private void saveLearningLabel(List<LearningLabel> label) throws ServiceAbortException {
+        //TODO 既に文書へ登録されているラベルの取扱
+        List<LearningLabel> exsistLabelIdList = new ArrayList<LearningLabel>();
+        List<CorresponLearningLabel> corresponLabelList = new ArrayList<CorresponLearningLabel>();
+        exsistLabelIdList = learningLabelService.findAll();
+        corresponLabelList = learningLabelService.findByCorresponId(correspon.getId());
+
+        for(LearningLabel item : label) {
+            boolean isExsistLabel = false;
+            boolean isAlreadyRegistered = false;
+
+            for(CorresponLearningLabel corresponLabel : corresponLabelList) {
+                if (item.getId().equals(corresponLabel.getLabelId())) {
+                    isAlreadyRegistered = true;
+                }
+            }
+            if(!isAlreadyRegistered) {
+                for (LearningLabel exsistLabel : exsistLabelIdList) {
+                    if (item.getId().equals(exsistLabel.getId())) {
+                        isExsistLabel = true;
+                    }
+                }
+                Long labelId = item.getId();
+                // 重複がなければそのまま登録,重複している場合は紐付けのみ登録
+                if(!isExsistLabel) {
+                    labelId = learningLabelService.insertLearningLabel(item);
+                }
+
+                learningLabelService.insertCorresponLearningLabel(item,correspon);
+            }
         }
     }
 }

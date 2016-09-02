@@ -16,21 +16,21 @@
 package jp.co.opentone.bsol.linkbinder.dao.impl;
 
 import jp.co.opentone.bsol.linkbinder.dao.AbstractDao;
-import jp.co.opentone.bsol.linkbinder.dao.LearningTagDao;
-import jp.co.opentone.bsol.linkbinder.dto.LearningTag;
+import jp.co.opentone.bsol.linkbinder.dao.CorresponLearningLabelDao;
+import jp.co.opentone.bsol.linkbinder.dto.CorresponLearningLabel;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * learning_tag を操作するDao.
+ * correspon_learning_label を操作するDao.
  *
  * @author opentone
  *
  */
 @Repository
-public class LearningTagDaoImpl extends AbstractDao<LearningTag> implements LearningTagDao {
+public class CorresponLearningLabelDaoImpl extends AbstractDao<CorresponLearningLabel> implements CorresponLearningLabelDao {
     /**
      * SerialVersionUID.
      */
@@ -38,16 +38,11 @@ public class LearningTagDaoImpl extends AbstractDao<LearningTag> implements Lear
     /**
      * このクラスが利用するsqlMap.xmlのnamespace.
      */
-    private static final String NAMESPACE = "learningTag";
+    private static final String NAMESPACE = "corresponLearningLabel";
 
-    /**
-     * SQLID: 指定プロジェクトの学習用タグを検索するID.
-     */
-    private static final String SQL_FIND_BY_PROJECT_ID = "findByProjectId";
-    /**
-     * SQLID:既に登録されている学習用タグを検索するID.
-     */
-    private static final String SQL_FIND_EXSIST_LABEL = "findExsistTag";
+    private static final String SQL_INSERT_CORRESPON_LEARNING_LABEL = "corresponLearningLabel.insertCorresponLearningLabel";
+
+    private static final String SQL_FIND_BY_CORRESPON_ID = "corresponLearningLabel.findByCorresponId";
 
     /**
      * 前方一致検索を行うフィールド名.
@@ -55,25 +50,25 @@ public class LearningTagDaoImpl extends AbstractDao<LearningTag> implements Lear
     private static final List<String> FIELDS;
     static {
         FIELDS = new ArrayList<String>();
-        FIELDS.add("name");
+        FIELDS.add("label_id");
     }
 
     /**
      * 空のインスタンスを生成する.
      */
-    public LearningTagDaoImpl() {
+    public CorresponLearningLabelDaoImpl() {
         super(NAMESPACE);
     }
 
     @Override
-    public List<LearningTag> findByProjectId(String projectId) {
-        return (List<LearningTag>) getSqlMapClientTemplate()
-                .queryForList(getSqlId(SQL_FIND_BY_PROJECT_ID),projectId);
+    public Long insertLearningLabel(CorresponLearningLabel label) {
+        return (Long)getSqlMapClientTemplate().insert(SQL_INSERT_CORRESPON_LEARNING_LABEL,label);
     }
 
     @Override
-    public List<LearningTag> findExsistTag() {
-        return (List<LearningTag>) getSqlMapClientTemplate()
-                .queryForList(getSqlId(SQL_FIND_EXSIST_LABEL));
+    public List<CorresponLearningLabel> findByCorresponId(Long corresponId) {
+        return (List<CorresponLearningLabel>)getSqlMapClientTemplate().queryForList(SQL_FIND_BY_CORRESPON_ID,corresponId);
     }
+
+
 }

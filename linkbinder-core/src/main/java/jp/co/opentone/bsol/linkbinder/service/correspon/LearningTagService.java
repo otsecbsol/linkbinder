@@ -33,4 +33,10 @@ public interface LearningTagService extends IService {
      * @throws ServiceAbortException 検索に失敗
      */
     List<LearningTag> findAll() throws ServiceAbortException;
+
+    /**
+     * 利用されている学習用ラベルを返す.
+     * @return 検索結果
+     */
+    List<LearningTag> findExsistTag();
 }

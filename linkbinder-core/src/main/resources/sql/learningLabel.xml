@@ -65,6 +65,20 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     ORDER BY l.name
   </select>
 
+  <select id="findExsistLabel" resultMap="result">
+    SELECT
+      id,
+      name,
+      created_by,
+      created_at,
+      updated_by,
+      updated_at,
+      version_no,
+      delete_no
+    FROM learning_label
+    WHERE delete_no = 0
+  </select>
+
   <select id="findLearningLabelCorrespon" resultMap="resultLearningLabelCorrespon">
     SELECT
       l.id,
@@ -82,5 +96,22 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     WHERE l.delete_no = 0
     ORDER BY l.name, c.id
   </select>
+
+  <insert id="insertLearningLabel">
+    <selectKey resultClass="long" keyProperty="id">
+      SELECT s_learning_label_id.NEXTVAL AS id FROM dual
+    </selectKey>
+    INSERT INTO learning_label(
+      id,
+      name,
+      created_by,
+      updated_by
+    ) VALUES (
+      #id#,
+      #name#,
+      #createdBy.empNo#,
+      #updatedBy.empNo#
+    )
+  </insert>
 
 </sqlMap>

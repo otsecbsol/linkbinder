@@ -17,6 +17,8 @@ package jp.co.opentone.bsol.linkbinder.service.correspon;
 
 import jp.co.opentone.bsol.framework.core.service.IService;
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
+import jp.co.opentone.bsol.linkbinder.dto.Correspon;
+import jp.co.opentone.bsol.linkbinder.dto.CorresponLearningLabel;
 import jp.co.opentone.bsol.linkbinder.dto.LearningLabel;
 
 import java.util.List;
@@ -33,4 +35,32 @@ public interface LearningLabelService extends IService {
      * @throws ServiceAbortException 検索に失敗
      */
     List<LearningLabel> findAll() throws ServiceAbortException;
+
+    /**
+     * 利用されている学習用ラベルを返す.
+     * @return 検索結果
+     */
+    List<LearningLabel> findExsistLabel();
+
+    /**
+     * 指定された学習用ラベル１件を登録する.
+     * @param label 学習用ラベル
+     * @return 学習用ラベルId
+     */
+    Long insertLearningLabel(LearningLabel label);
+
+    /**
+     * ラベルと文書の関連を登録する。
+     * @param label 学習用ラベル
+     * @param correspon 文書
+     * @return 紐付けたID
+     */
+    Long insertCorresponLearningLabel(LearningLabel label,Correspon correspon);
+
+    /**
+     *
+     * @param corresponId
+     * @return
+     */
+    List<CorresponLearningLabel> findByCorresponId(Long corresponId);
 }

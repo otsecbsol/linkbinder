@@ -55,4 +55,11 @@ public class LearningTagServiceImpl extends AbstractService implements LearningT
         LearningTagDao dao = getDao(LearningTagDao.class);
         return dao.findByProjectId(getCurrentProjectId());
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<LearningTag> findExsistTag() {
+        LearningTagDao dao = getDao(LearningTagDao.class);
+        return dao.findExsistTag();
+    }
 }

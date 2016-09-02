@@ -16,7 +16,10 @@
 package jp.co.opentone.bsol.linkbinder.service.correspon.impl;
 
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
+import jp.co.opentone.bsol.linkbinder.dao.CorresponLearningLabelDao;
 import jp.co.opentone.bsol.linkbinder.dao.LearningLabelDao;
+import jp.co.opentone.bsol.linkbinder.dto.Correspon;
+import jp.co.opentone.bsol.linkbinder.dto.CorresponLearningLabel;
 import jp.co.opentone.bsol.linkbinder.dto.LearningLabel;
 import jp.co.opentone.bsol.linkbinder.service.AbstractService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.LearningLabelService;
@@ -54,5 +57,37 @@ public class LearningLabelServiceImpl extends AbstractService implements Learnin
     public List<LearningLabel> findAll() throws ServiceAbortException {
         LearningLabelDao dao = getDao(LearningLabelDao.class);
         return dao.findByProjectId(getCurrentProjectId());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<LearningLabel> findExsistLabel() {
+        LearningLabelDao dao = getDao(LearningLabelDao.class);
+        return dao.findExsistLabel();
+    }
+
+    @Override
+    public Long insertLearningLabel(LearningLabel label) {
+        LearningLabelDao dao = getDao(LearningLabelDao.class);
+        return dao.insertLearningLabel(label);
+    }
+
+    @Override
+    public Long insertCorresponLearningLabel(LearningLabel label,Correspon correspon) {
+        CorresponLearningLabelDao dao = getDao(CorresponLearningLabelDao.class);
+        CorresponLearningLabel corresponLearningLabel = new CorresponLearningLabel();
+
+        corresponLearningLabel.setCorresponIdId(correspon.getId());
+        corresponLearningLabel.setLabelId(label.getId());
+        corresponLearningLabel.setCreatedBy(correspon.getCreatedBy());
+        corresponLearningLabel.setUpdatedBy(correspon.getUpdatedBy());
+
+        return dao.insertLearningLabel(corresponLearningLabel);
+    }
+
+    @Override
+    public List<CorresponLearningLabel> findByCorresponId(Long corresponId) {
+        CorresponLearningLabelDao dao = getDao(CorresponLearningLabelDao.class);
+        return dao.findByCorresponId(corresponId);
     }
 }

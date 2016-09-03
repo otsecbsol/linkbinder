@@ -254,22 +254,22 @@ CREATE OR REPLACE VIEW v_project AS
 ;
 CREATE OR REPLACE VIEW v_user AS
   SELECT
-    u.emp_no              AS emp_no,
-    u.emp_last_nm         AS last_name,
-    u.emp_nm_e            AS name_e,
-    u.emp_nm_j            AS name_j,
-    u.sys_adm_flg         AS sys_admin_flg,
-    u.id_created_dt       AS emp_created_at,
-    u.emp_email_addr      AS email_address,
+    u.emp_no                AS emp_no,
+    u.emp_last_nm           AS last_name,
+    u.emp_nm_e              AS name_e,
+    u.emp_nm_j              AS name_j,
+    u.sys_adm_flg           AS sys_admin_flg,
+    u.id_created_dt         AS emp_created_at,
+    u.emp_email_addr        AS email_address,
     --
     -- user profile
-    up.id                 AS user_profile_id,
-    up.default_project_id AS default_project_id,
-    pj.name_e             AS default_project_name_e,
-    up.last_logged_in_at  AS last_logged_in_at,
-    up.feed_key           AS feed_key,
-    up.use_learning       AS use_learning,
-    up.version_no         AS user_profile_version_no
+    up.id                   AS user_profile_id,
+    up.default_project_id   AS default_project_id,
+    pj.name_e               AS default_project_name_e,
+    up.last_logged_in_at    AS last_logged_in_at,
+    up.feed_key             AS feed_key,
+    NVL(up.use_learning, 0) AS use_learning,
+    up.version_no           AS user_profile_version_no
   FROM
     v_sys_users u
       LEFT OUTER JOIN user_profile up

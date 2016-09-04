@@ -70,12 +70,6 @@
     <ui:include src="/include/calendarFunc.xhtml">
       <ui:param name="styleKey" value="form:deadlineForReply" />
     </ui:include>
-    $(document).ready(function() {
-      $('select').select2({
-        width: '100%',
-        tags: 'true'
-      });
-    });
   </ui:define>
   <ui:define name="body">
     <f:view>
@@ -193,16 +187,29 @@
             <div id="forLearningParts">
               <div class="row">
                 <div class="twelve columns">
-                  <h:outputLabel for="learning_correspon_label" value="ラベル" />
-                  <h:selectManyListbox id="learning_correspon_label" multiple="multiple" value="#{corresponEditPage.learningLabel}">
+                  <h:outputLabel for="learningCorresponLabel" value="ラベル" />
+                  <h:selectManyListbox id="learningCorresponLabel" multiple="multiple"
+                                       value="#{corresponEditPage.learningLabels}"
+                                       styleClass="u-full-width selectTagging"
+                                       style="display:none">
                     <f:selectItems value="#{corresponEditPage.learningLabelSelectList}" />
                   </h:selectManyListbox>
+                  <h:inputHidden id="learningCorresponLabelAddedValue" value="#{corresponEditPage.learningCorresponLabelAddedValue}"/>
+                  <h:commandButton id="learningCorresponLabelTrigger"
+                                   action="#{corresponEditPage.appendToLearningLabelSelectList}"
+                                   style="display:none">
+                    <f:ajax execute="learningCorresponLabelAddedValue"
+                            render="learningCorresponLabel"
+                            onevent="reloadSelectTagging"/>
+                  </h:commandButton>
                 </div>
               </div>
               <div class="row">
                 <div class="twelve columns">
-                  <h:outputLabel for="learning_correspon_tag" value="タグ" />
-                  <h:selectManyListbox id="learning_correspon_tag" multiple="multiple">
+                  <h:outputLabel for="learningCorresponTag" value="タグ" />
+                  <h:selectManyListbox id="learningCorresponTag" multiple="multiple"
+                                       value="#{corresponEditPage.learningTags}"
+                                       styleClass="u-full-width selectTagging">
                     <f:selectItems value="#{corresponEditPage.learningTagSelectList}" />
                   </h:selectManyListbox>
                 </div>

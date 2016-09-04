@@ -55,8 +55,6 @@ import jp.co.opentone.bsol.linkbinder.service.admin.UserService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponSaveService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponValidateService;
-import jp.co.opentone.bsol.linkbinder.service.correspon.LearningLabelService;
-import jp.co.opentone.bsol.linkbinder.service.correspon.LearningTagService;
 import jp.co.opentone.bsol.linkbinder.util.view.correspon.CorresponPageFormatter;
 import jp.co.opentone.bsol.linkbinder.validation.groups.ValidationGroupBuilder;
 import jp.co.opentone.bsol.linkbinder.view.action.control.CorresponEditPageElementControl;
@@ -205,16 +203,6 @@ public class CorresponEditPage extends AbstractCorresponPage
      */
     @Resource
     private UserService userService;
-    /**
-     * 学習用ラベルサービス
-     */
-    @Resource
-    private LearningLabelService learningLabelService;
-    /**
-     * 学習用タグサービス
-     */
-    @Resource
-    private LearningTagService learningTagService;
     /**
      * Distribution templateサービス.
      */
@@ -837,6 +825,10 @@ public class CorresponEditPage extends AbstractCorresponPage
     @Transfer
     private List<LearningLabel> learningLabelList = null;
 
+    private String candidateLearningLabels;
+    private String selectedLearningLabels;
+    private String candidateLearningTags;
+    private String selectedLearningTags;
     /**
      * 学習用タグリスト.
      */
@@ -847,14 +839,22 @@ public class CorresponEditPage extends AbstractCorresponPage
      * 文書に登録されている学習用ラベル一覧.
      */
     @Transfer
-    private List<SelectItem> learningLabel = new ArrayList<SelectItem>();
+    private Long[] learningLabels = new Long[0];
 
     /**
      * 文書に登録されている学習用タグ一覧.
      */
     @Transfer
-    private List<SelectItem> learningTag = new ArrayList<SelectItem>();
+    private Long[] learningTags = new Long[0];
 
+    /**
+     * 未定義の学習用ラベルが新たに追加された時にその値を格納するフィールド.
+     */
+    private String learningCorresponLabelAddedValue;
+    /**
+     * 未定義の学習用ラベルが新たに追加された時に割り当てるダミーIDカウンタ.
+     */
+    private long learningCorresponLabelAddedIdCounter = -1L;
 
     //*****END
 
@@ -1212,8 +1212,9 @@ public class CorresponEditPage extends AbstractCorresponPage
         // 学習用コンテンツ
         c.setForLearning(getLearningContents());
         // 学習用ラベル
-        c.setLearningLabel(getLearningLabelList());
+        setLearningLabelsTo(c);
         // 学習用タグ
+        setLearningTagsTo(c);
         // SUBJECT設定
         c.setSubject(getSubject());
         // BODY設定
@@ -1224,6 +1225,44 @@ public class CorresponEditPage extends AbstractCorresponPage
         setAttachmentTo(c);
         // カスタムフィールド設定
         setCustomFieldsTo(c);
+    }
+
+    private void setLearningLabelsTo(Correspon c) {
+        List<LearningLabel> labels = new ArrayList<>();
+        for (Long selectedId : getLearningLabels()) {
+            String strId = String.valueOf(selectedId);
+            labels.add(learningLabelSelectList.stream()
+                    .filter(s -> StringUtils.equals(s.getValue().toString(), strId))
+                    .map(s -> {
+                        LearningLabel l = new LearningLabel();
+                        l.setId(selectedId);
+                        l.setName(s.getLabel());
+
+                        return l;
+                    })
+                    .findFirst()
+                    .get());
+        }
+        c.setLearningLabel(labels);
+    }
+
+    private void setLearningTagsTo(Correspon c) {
+        List<LearningTag> tags = new ArrayList<>();
+        for (Long selectedId : getLearningTags()) {
+            String strId = String.valueOf(selectedId);
+            tags.add(learningTagSelectList.stream()
+                    .filter(s -> StringUtils.equals(s.getValue().toString(), strId))
+                    .map(s -> {
+                        LearningTag l = new LearningTag();
+                        l.setId(selectedId);
+                        l.setName(s.getLabel());
+
+                        return l;
+                    })
+                    .findFirst()
+                    .get());
+        }
+        c.setLearningTag(tags);
     }
 
     /* (non-Javadoc)
@@ -1263,7 +1302,7 @@ public class CorresponEditPage extends AbstractCorresponPage
      */
     public void createSelectCorresponType() {
         selectCorresponType =
-            viewHelper.createSelectItem(corresponType, "projectCorresponTypeId", "label");
+                viewHelper.createSelectItem(corresponType, "projectCorresponTypeId", "label");
     }
 
     /**
@@ -2501,10 +2540,6 @@ public class CorresponEditPage extends AbstractCorresponPage
     }
 
     /**
-     * @return the LearningLabelService
-     */
-    public LearningLabelService getLearningLabelService() { return learningLabelService;}
-    /**
      * @param repliedId the repliedId to set
      */
     public void setRepliedId(Long repliedId) {
@@ -2582,6 +2617,10 @@ public class CorresponEditPage extends AbstractCorresponPage
         return learningLabelList;
     }
 
+    public void setLearningLabelList(List<LearningLabel> learningLabelList) {
+        this.learningLabelList = learningLabelList;
+    }
+
     /**
      * 学習用ラベル選択リストを設定する.
      * @param learningLabelSelectList 学習用ラベル選択リスト
@@ -2623,25 +2662,6 @@ public class CorresponEditPage extends AbstractCorresponPage
         this.learningTagSelectList = viewHelper.createSelectItem(
                 learningTagList, "id", "name");
         return learningTagSelectList;
-    }
-    /**
-     * 学習用ラベルを設定する.
-     * @param learningLabel 学習用ラベル
-     */
-    public void setLearningLabel(List<SelectItem> learningLabel) { this.learningLabel = learningLabel; }
-
-    /**
-     * 学習用ラベルを返却する.
-     * @return learningLabel 学習用ラベル.
-     */
-    public List<SelectItem> getLearningLabel() {
-        if (this.learningLabel != null && !this.learningLabel.isEmpty()) {
-            return this.learningLabel;
-        }
-
-        this.learningLabel = viewHelper.createSelectItem(
-                learningLabelList, "id", "name");
-        return learningLabel;
     }
 
     /**
@@ -2940,6 +2960,54 @@ public class CorresponEditPage extends AbstractCorresponPage
         return customFieldValueCandidateList;
     }
 
+    public void appendToLearningLabelSelectList() {
+        learningLabelSelectList.add(new SelectItem(learningCorresponLabelAddedIdCounter--, learningCorresponLabelAddedValue));
+        Long[] values = new Long[learningLabels.length + 1];
+        System.arraycopy(learningLabels, 0, values, 0, learningLabels.length);
+        values[values.length - 1] = learningCorresponLabelAddedIdCounter;
+
+//        learningLabels.add(learningCorresponLabelAddedIdCounter);
+        /*
+        LearningLabel label = new LearningLabel();
+        label.setName(learningCorresponLabelAddedValue);
+        learningLabelList.add(label);
+
+        learningLabelSelectList.clear();
+        */
+    }
+
+    public String getLearningCorresponLabelAddedValue() {
+        return learningCorresponLabelAddedValue;
+    }
+
+    public void setLearningCorresponLabelAddedValue(String learningCorresponLabelAddedValue) {
+        this.learningCorresponLabelAddedValue = learningCorresponLabelAddedValue;
+    }
+
+    public void setLearningTagList(List<LearningTag> learningTagList) {
+        this.learningTagList = learningTagList;
+    }
+
+    public Long[] getLearningTags() {
+        return learningTags;
+    }
+
+    public void setLearningTags(Long[] learningTags) {
+        this.learningTags = learningTags;
+    }
+
+    public Long[] getLearningLabels() {
+        return learningLabels == null ? null : learningLabels.clone();
+    }
+
+    public void setLearningLabels(Long[] learningLabels) {
+        if (learningLabels != null) {
+            this.learningLabels = learningLabels.clone();
+        } else {
+            this.learningLabels = null;
+        }
+    }
+
     /**
      * 画面初期化アクション.
      * @author opentone
@@ -2973,8 +3041,6 @@ public class CorresponEditPage extends AbstractCorresponPage
             }
             page.initializer.initialize(page);
             page.elemControl.setUp(page);
-            page.learningLabelList = page.learningLabelService.findExsistLabel();
-            page.learningTagList = page.learningTagService.findExsistTag();
             page.setInitialDisplaySuccess(true);
         }
     }

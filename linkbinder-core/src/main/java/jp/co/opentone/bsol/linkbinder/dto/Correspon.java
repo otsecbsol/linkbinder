@@ -2604,4 +2604,12 @@ public class Correspon extends AbstractDto implements VersioningEntity {
     public List<LearningLabel> getLearningLabel() { return this.learningLabel; }
 
     public void setLearningLabel(List<LearningLabel> labelList) { this.learningLabel = labelList; }
+
+    public List<LearningTag> getLearningTag() {
+        return learningTag;
+    }
+
+    public void setLearningTag(List<LearningTag> learningTag) {
+        this.learningTag = learningTag;
+    }
 }

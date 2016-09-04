@@ -335,7 +335,80 @@ $(document).ready(function() {
         document.getElementById("form:importFileName").value = '';
         document.getElementById("form:importFileSize").value = '';
     }
+
+    /*
+    $('.selectTagging').select2({
+        tags: true,
+        createTag: function(params) {
+            console.log(params);
+            var term = $.trim(params.term);
+            if (term === '') return null;
+
+            return {
+                id: -1,
+                text: term,
+                newTag: true
+            };
+        }
+    });
+     */
+    $('.selectTagging').select2({
+        tags: true
+    });
+    //$(document).on('select2:select', '.selectTagging', function(e) {
+    $('.selectTagging').on('select2:select', function(e) {
+        console.log(JSON.stringify(e.params));
+        var data = e.params.data;
+        if (data.id === data.text) {
+            appendToTaggingList(data, this);
+        }
+    });
 });
+
+/*
+$(document).ready(function() {
+    $('.selectTagging').select2({ tags: true }).each(function () {
+        var select = $(this);
+        //var selectTagging = $(select);
+        select.on('select2:select', function (e) {
+            var data = e.params.data;
+            if (data.id === data.text) {
+                appendToTaggingList(data, this);
+            }
+        });
+        select.prop('reload', function(e) {
+            select.select2('destroy');
+            select.select2();
+        });
+    });
+});
+*/
+
+function appendToTaggingList(data, select) {
+    console.log(data);
+    console.log(select)
+
+    var addedValueId = select.id + 'AddedValue';
+    var triggerId = select.id + 'Trigger';
+    console.log(triggerId);
+
+    $('#' + $.escape(addedValueId)).val(data.text);
+    $('#' + $.escape(triggerId)).click();
+}
+
+function reloadSelectTagging(data) {
+    if (data.status === 'success') {
+        var selectId = data.source.id.replace(/Trigger$/, '');
+        //$('#' + $.escape(selectId)).select2({ tags: true });
+        $('#' + $.escape(selectId)).on('select2:select', function(e) {
+            console.log(JSON.stringify(e.params));
+            var data = e.params.data;
+            if (data.id === data.text) {
+                appendToTaggingList(data, this);
+            }
+        });
+    }
+}
 
 function oncompleteAdd(data) {
     Spinner.onStatusChange(data);
@@ -425,4 +498,3 @@ function isApplyTemplate() {
         return true;
     }
 }
-

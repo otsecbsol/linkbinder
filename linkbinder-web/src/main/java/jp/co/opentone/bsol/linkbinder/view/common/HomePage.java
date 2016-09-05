@@ -15,11 +15,9 @@
  */
 package jp.co.opentone.bsol.linkbinder.view.common;
 
-import jp.co.opentone.bsol.framework.core.config.SystemConfig;
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
 import jp.co.opentone.bsol.framework.web.extension.jsf.annotation.Initialize;
 import jp.co.opentone.bsol.framework.web.extension.jsf.annotation.Transfer;
-import jp.co.opentone.bsol.linkbinder.Constants;
 import jp.co.opentone.bsol.linkbinder.action.AbstractAction;
 import jp.co.opentone.bsol.linkbinder.dto.ProjectSummary;
 import jp.co.opentone.bsol.linkbinder.dto.User;
@@ -63,12 +61,6 @@ public class HomePage extends AbstractPage {
      */
     @Transfer
     private List<ProjectSummary> projectSummaryList = null;
-
-    /**
-     * 学習用プロジェクトサマリリスト.
-     */
-    @Transfer
-    private List<ProjectSummary> learningProjectSummaryList = null;
 
     /**
      * データのDataModel.
@@ -198,20 +190,6 @@ public class HomePage extends AbstractPage {
     }
 
     /**
-     * 学習用プロジェクトサマリリストを取得します.
-     */
-    public List<ProjectSummary> getLearningProjectSummaryList() {
-        return this.learningProjectSummaryList;
-    }
-
-    /**
-     * 学習用プロジェクトサマリを設定します.
-     */
-    public void setLearningProjectSummaryList(List projectList) {
-        this.learningProjectSummaryList = projectList;
-    }
-
-    /**
      * 画面を初期化する.
      * <p>
      * 他画面から遷移した時に起動される. ページの初期化に必要な情報を準備する.
@@ -259,25 +237,6 @@ public class HomePage extends AbstractPage {
     }
 
     /**
-     * 選択された行のプロジェクトIDを取得する（学習用コンテンツ用）.
-     * @return プロジェクトID
-     */
-        // TODO:選択された項目に対応するプロジェクトIDを取得する処理
-//    private String getSeletedLearningProjectId() {
-//        return ((ProjectSummary) learningDataModel.getRowData()).getProject().getProjectId();
-//    }
-
-
-    /**
-     * プロジェクト情報をセッションに設定する（学習用コンテンツ用）.
-     */
-    private void setLearningProjectInfo() {
-        //TODO:選択された内容に対応したプロジェクト情報を設定する処理
-//        setCurrentProjectInfo(((ProjectSummary) learningDataModel.getRowData()).getProject());
-    }
-
-
-    /**
      * コレポン文書検索条件を設定する.
      */
     private void setCorresponSearchCondition() {
@@ -299,30 +258,6 @@ public class HomePage extends AbstractPage {
         condition.setUserCc(ccSearch);
 
         setCurrentSearchCorresponCondition(condition, getSeletedProjectId());
-    }
-
-    /**
-     * コレポン文書検索条件を設定する(学習用コンテンツ用).
-     */
-    private void setCorresponSearchConditionForLearning() {
-        SearchCorresponCondition condition = new SearchCorresponCondition();
-        condition.setProjectId(SystemConfig.getValue(Constants.KEY_LEARNING_PJ));
-        condition.setUserId(getCurrentUser().getUserId());
-        condition.setSystemAdmin(isSystemAdmin());
-        condition.setProjectAdmin(isProjectAdmin(SystemConfig.getValue(Constants.KEY_LEARNING_PJ)));
-
-        //  発行済
-        condition.setWorkflowStatuses(new WorkflowStatus[] {WorkflowStatus.ISSUED});
-
-        User[] users = {getCurrentUser()};
-        condition.setToUsers(users);
-        ReadStatus[] readStatuses = {ReadStatus.NEW};
-        condition.setReadStatuses(readStatuses);
-        condition.setUserAttention(attentionSearch);
-        condition.setUserPic(personInChargeSearch);
-        condition.setUserCc(ccSearch);
-
-        setCurrentSearchCorresponCondition(condition, SystemConfig.getValue(Constants.KEY_LEARNING_PJ));
     }
 
     /**
@@ -353,9 +288,6 @@ public class HomePage extends AbstractPage {
          */
         public void execute() throws ServiceAbortException {
             page.projectSummaryList = page.homeService.findProjects(ForLearning.NORMAL);
-
-            // 学習用プロジェクトを取得する
-            page.learningProjectSummaryList = page.homeService.findProjects(ForLearning.LEARNING);
 
             // デフォルトプロジェクトがある場合は先頭に並び替え
             if (!StringUtils.isEmpty(page.getCurrentUser().getDefaultProjectId())) {

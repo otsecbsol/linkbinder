@@ -38,6 +38,7 @@ import jp.co.opentone.bsol.linkbinder.dto.SearchCorresponResult;
 import jp.co.opentone.bsol.linkbinder.dto.User;
 import jp.co.opentone.bsol.linkbinder.dto.Workflow;
 import jp.co.opentone.bsol.linkbinder.dto.code.CorresponStatus;
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import jp.co.opentone.bsol.linkbinder.dto.code.FullTextSearchMode;
 import jp.co.opentone.bsol.linkbinder.dto.code.ReadStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowProcessStatus;
@@ -776,7 +777,7 @@ public class CorresponSearchServiceImpl extends AbstractService implements Corre
      * @throws ServiceAbortException 権限エラー
      */
     private void checkDeletePermission(Correspon correspon) throws ServiceAbortException {
-        if (!WorkflowStatus.DRAFT.equals(correspon.getWorkflowStatus())) {
+        if (!WorkflowStatus.DRAFT.equals(correspon.getWorkflowStatus()) && !correspon.getForLearning().equals(ForLearning.LEARNING)) {
             throw new ServiceAbortException(
                 ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_STATUS_INVALID);
         } else if (!isSystemAdmin(getCurrentUser())

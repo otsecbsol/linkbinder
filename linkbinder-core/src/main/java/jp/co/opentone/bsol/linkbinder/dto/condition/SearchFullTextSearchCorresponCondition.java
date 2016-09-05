@@ -57,6 +57,11 @@ public class SearchFullTextSearchCorresponCondition extends AbstractCondition {
     private boolean includeNonImage;
 
     /**
+     * 学習用文書のみを対象とする.
+     */
+    private boolean onlyLearningCorrespon;
+
+    /**
      * 空のインスタンスを生成する.
      */
     public SearchFullTextSearchCorresponCondition() {
@@ -140,5 +145,13 @@ public class SearchFullTextSearchCorresponCondition extends AbstractCondition {
      */
     public void setOperator(FullTextSearchOperator operator) {
         this.operator = operator;
+    }
+
+    public boolean isOnlyLearningCorrespon() {
+        return onlyLearningCorrespon;
+    }
+
+    public void setOnlyLearningCorrespon(boolean onlyLearningCorrespon) {
+        this.onlyLearningCorrespon = onlyLearningCorrespon;
     }
 }

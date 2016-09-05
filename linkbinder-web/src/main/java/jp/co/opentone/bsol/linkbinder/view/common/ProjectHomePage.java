@@ -15,18 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.view.common;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.ManagedBean;
-import javax.annotation.Resource;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
-
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.validator.constraints.Length;
-import org.springframework.context.annotation.Scope;
-
 import jp.co.opentone.bsol.framework.core.message.MessageCode;
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
 import jp.co.opentone.bsol.framework.core.validation.constraints.Required;
@@ -40,6 +28,7 @@ import jp.co.opentone.bsol.linkbinder.dto.Project;
 import jp.co.opentone.bsol.linkbinder.dto.ProjectDetailsSummary;
 import jp.co.opentone.bsol.linkbinder.dto.User;
 import jp.co.opentone.bsol.linkbinder.dto.code.CorresponStatus;
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import jp.co.opentone.bsol.linkbinder.dto.code.ReadStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowProcessStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowStatus;
@@ -51,6 +40,16 @@ import jp.co.opentone.bsol.linkbinder.service.common.HomeService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponFullTextSearchService;
 import jp.co.opentone.bsol.linkbinder.validation.groups.ValidationGroupBuilder;
 import jp.co.opentone.bsol.linkbinder.view.AbstractPage;
+import org.apache.commons.lang.StringUtils;
+import org.hibernate.validator.constraints.Length;
+import org.springframework.context.annotation.Scope;
+
+import javax.annotation.ManagedBean;
+import javax.annotation.Resource;
+import javax.faces.model.DataModel;
+import javax.faces.model.ListDataModel;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * プロジェクトホーム画面.
@@ -570,7 +569,7 @@ public class ProjectHomePage extends AbstractPage {
      * @return コレポン文書一覧画面
      */
     public String goCorresponIndexLearningContents() {
-        //FIXME 検索条件指定
+        setLearningCondition(createCorresponSearchCondition());
         return getCorresponIndexUrl();
     }
 
@@ -729,6 +728,13 @@ public class ProjectHomePage extends AbstractPage {
         setCurrentSearchCorresponCondition(condition);
     }
 
+    /**
+     * 学習用文書の検索条件を設定する.
+     */
+    private void setLearningCondition(SearchCorresponCondition condition) {
+        condition.setForLearnings(new ForLearning[]{ ForLearning.LEARNING });
+        setCurrentSearchCorresponCondition(condition);
+    }
     /**
      * My correspondence の承認状態の検索条件を設定する.
      */

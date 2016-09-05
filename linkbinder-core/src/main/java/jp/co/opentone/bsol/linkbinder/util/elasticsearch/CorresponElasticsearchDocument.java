@@ -29,6 +29,7 @@ public class CorresponElasticsearchDocument extends ElasticsearchDocument implem
     public String body;
     public String lastModified;
     public String workflowStatus;
+    public String forLearning;
 
     public List<Attachment> attachments;
 

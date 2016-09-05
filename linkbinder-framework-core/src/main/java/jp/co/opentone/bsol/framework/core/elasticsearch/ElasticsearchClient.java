@@ -31,6 +31,7 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -39,7 +40,7 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
+import static org.elasticsearch.index.query.QueryBuilders.*;
 
 /**
  * Elasticsearch Clientのラッパークラス.
@@ -125,8 +126,15 @@ public class ElasticsearchClient implements Serializable, AutoCloseable {
         if (op != null && ElasticsearchSearchOption.Operator.AND == op) {
             query = query.operator(MatchQueryBuilder.Operator.AND);
         }
-
-        return query;
+        if (option.getOptionalSearchConditions().isEmpty()) {
+            return query;
+        } else {
+            BoolQueryBuilder q = boolQuery().must(query);
+            option.getOptionalSearchConditions().forEach((k, v) -> {
+                q.must(matchQuery(k, v));
+            });
+            return q;
+        }
     }
 
     public void createIndexIfNotExists(String index, String settingJson, Map<String, String> mappingJson) {

@@ -126,13 +126,12 @@
             </div>
           </div>
           <div class="row">
-            <h:outputLabel value="#{corresponConfirmationPage.getLearningContentsTitle()}として設定する"/>
-            <!-- TODO:それぞれの表示を追加する -->
+            <h:outputLabel value="#{corresponConfirmationPage.getLearningCorresponLabel()}として設定する"/>
             <ui:fragment rendered="#{corresponConfirmationPage.learningContents}">
-              true
+              はい
             </ui:fragment>
             <ui:fragment rendered="#{!corresponConfirmationPage.learningContents}">
-              false
+              いいえ
             </ui:fragment>
           </div>
           <div class="row">

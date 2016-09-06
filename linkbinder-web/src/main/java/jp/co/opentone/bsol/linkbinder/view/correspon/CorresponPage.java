@@ -27,6 +27,7 @@ import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.Length;
@@ -3445,5 +3446,17 @@ public class CorresponPage extends AbstractCorresponPage implements AttachmentDo
      */
     public CorresponPageController getCorresponPageController() {
         return corresponPageController;
+    }
+
+    public boolean isLearningContents() {
+        if (correspon.getForLearning() == ForLearning.LEARNING) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void copyCorresponForLearning(Correspon correspon) {
+        corresponService.copyCorresponForLearning(correspon);
     }
 }

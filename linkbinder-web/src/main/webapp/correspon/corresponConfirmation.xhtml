@@ -126,13 +126,19 @@
             </div>
           </div>
           <div class="row">
-            <h:outputLabel value="#{corresponConfirmationPage.getLearningCorresponLabel()}として設定する"/>
+            <h:outputLabel value="#{corresponConfirmationPage.learningCorresponTitleLabel}として設定する"/>
             <ui:fragment rendered="#{corresponConfirmationPage.learningContents}">
               はい
             </ui:fragment>
             <ui:fragment rendered="#{!corresponConfirmationPage.learningContents}">
               いいえ
             </ui:fragment>
+          </div>
+          <div class="row">
+            <label>ラベル</label>
+          </div>
+          <div class="row">
+            <label>タグ</label>
           </div>
           <div class="row">
             <div class="twelve columns">

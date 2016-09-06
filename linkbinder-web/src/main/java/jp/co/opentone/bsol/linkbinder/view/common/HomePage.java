@@ -91,6 +91,12 @@ public class HomePage extends AbstractPage {
     private boolean ccSearch;
 
     /**
+     * 学習用コンテンツの表示用ラベル
+     */
+    @Transfer
+    private String learningContentsTitleLabel = this.getLearningContentsLabel();
+
+    /**
      * 空のインスタンスを生成する.
      */
     public HomePage() {
@@ -187,6 +193,20 @@ public class HomePage extends AbstractPage {
      */
     public void setCcSearch(boolean ccSearch) {
         this.ccSearch = ccSearch;
+    }
+
+    /**
+     * 学習用コンテンツの表示用ラベルを返す.
+     */
+    public String getLearningContentsTitleLabel() {
+        return this.learningContentsTitleLabel;
+    }
+
+    /**
+     * 学習用コンテンツの表示用ラベルを設定する.
+     */
+    public void setLearningContentsTitleLabel(String learningContentsTitle) {
+        this.learningContentsTitleLabel = learningContentsTitle;
     }
 
     /**

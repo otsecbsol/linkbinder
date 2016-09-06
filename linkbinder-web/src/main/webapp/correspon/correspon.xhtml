@@ -362,7 +362,7 @@
 
     <div class="row">
       <div class="twelve colums">
-        <h:outputLabel value="#{corresponPage.getLearningCorresponLabel()}として設定する" />
+        <h:outputLabel value="#{corresponPage.learningCorresponTitleLabel}として設定する" />
         <ui:fragment rendered="#{corresponPage.learningContents}">
         はい
         </ui:fragment>
@@ -1363,13 +1363,13 @@
           <ui:fragment rendered="#{corresponPage.learningContents}">
               <div class="row">
                 <div class="three columns correspon-action">
-                  <h:outputLabel value="#{corresponPage.getLearningCorresponLabel()}の再登録" />
+                  <h:outputLabel value="#{corresponPage.learningCorresponTitleLabel}の再登録" />
                   <div class="correpon-action-button">
-                  <h:commandButton id="recreate" value="#{corresponPage.getLearningCorresponLabel()}再登録"
+                  <h:commandButton id="recreate" value="#{corresponPage.learningCorresponTitleLabel}再登録"
                                    action="#{corresponPage.copyCorresponForLearning(corresponPage.correspon)}"
                                    styleClass="button-primary"
                                    disabled="#{corresponPage.elemControl.issueButton}"
-                                   onclick="setActionName(event); return confirmButton('#{corresponPage.getLearningCorresponLabel()}' + 'の再登録を行います。よろしいですか？');" />
+                                   onclick="setActionName(event); return confirmButton('#{corresponPage.learningCorresponTitleLabel}' + 'の再登録を行います。よろしいですか？');" />
                   </div>
                 </div>
               </div>

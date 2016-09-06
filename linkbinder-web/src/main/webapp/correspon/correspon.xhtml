@@ -1364,11 +1364,11 @@
               <div class="row">
                 <div class="three columns correspon-action">
                   <h:outputLabel value="#{corresponPage.learningCorresponTitleLabel}の再登録" />
-                  <div class="correpon-action-button">
+                  <div class="correspon-action-button">
                   <h:commandButton id="recreate" value="#{corresponPage.learningCorresponTitleLabel}再登録"
                                    action="#{corresponPage.copyCorresponForLearning(corresponPage.correspon)}"
                                    styleClass="button-primary"
-                                   disabled="#{corresponPage.elemControl.issueButton}"
+                                   disabled="#{correspあonPage.elemControl.issueButton}"
                                    onclick="setActionName(event); return confirmButton('#{corresponPage.learningCorresponTitleLabel}' + 'の再登録を行います。よろしいですか？');" />
                   </div>
                 </div>

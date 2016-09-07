@@ -952,12 +952,16 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
         validateDeleteIssuePermission(correspon);
         // 承認状態の更新
         updateCorresponForIssue(correspon);
-
-        if (correspon.getForLearning() == ForLearning.LEARNING) {
+        // 学習用コンテンツの場合、文書を学習用プロジェクトへコピー.
+        Correspon originalCorrespon;
+        try {
+            originalCorrespon = findCorrespon(correspon.getId());
+        } catch (RecordNotFoundException e) {
+            throw new ServiceAbortException(ApplicationMessageCode.NO_DATA_FOUND);
+        }
+        if (originalCorrespon.getForLearning() == ForLearning.LEARNING) {
             Correspon clone = new Correspon();
             try {
-                CorresponDao dao = getDao(CorresponDao.class);
-                Correspon originalCorrespon = dao.findById(correspon.getId());
                 PropertyUtils.copyProperties(clone, originalCorrespon);
             } catch(NoSuchMethodException e) {
                 throw new ServiceAbortException(e.getMessage());
@@ -965,8 +969,6 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
                 throw new ServiceAbortException(e.getMessage());
             } catch (IllegalAccessException e) {
                 throw new ServiceAbortException(e.getMessage());
-            } catch (RecordNotFoundException e) {
-
             }
             copyCorresponForLearning(clone);
         }

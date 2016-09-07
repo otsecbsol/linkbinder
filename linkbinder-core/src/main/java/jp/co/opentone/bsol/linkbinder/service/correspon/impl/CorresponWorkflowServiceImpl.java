@@ -462,6 +462,8 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
         updateCorresponForApprove(correspon);
         // 承認作業状態を更新
         updateWorkflowForApprove(workflow);
+        // 学習用プロジェクトへ文書をコピーする
+        copyLearningCorrespon(correspon);
         // メール通知を行う for approve
         sendWorkflowNotice(correspon, EmailNoticeEventCd.APPROVED);
         // メール通知を行う for issue
@@ -1461,6 +1463,11 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
         newWorkflow.setFinishedBy(getCurrentUser());
 
         updateWorkflow(newWorkflow);
+    }
+
+    private void copyLearningCorrespon(Correspon correspon) throws ServiceAbortException {
+        Correspon originalCorrespon = corresponService.findCorrespon(correspon.getId());
+        corresponService.copyCorresponForLearning(originalCorrespon);
     }
 
     /**

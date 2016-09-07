@@ -177,7 +177,6 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
     @Transactional(readOnly = true)
     public Correspon find(Long id) throws ServiceAbortException {
         ArgumentValidator.validateNotNull(id);
-        try {
             Correspon c = findCorrespon(id);
             // 関連情報を取得
             loadAddressCorresponGroup(c);
@@ -185,16 +184,18 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
             // アクセス可能なレコードであるか検証
             validateAccess(c);
             return c;
-        } catch (RecordNotFoundException e) {
-            throw new ServiceAbortException(ApplicationMessageCode.NO_DATA_FOUND);
-        }
     }
 
-    private Correspon findCorrespon(Long id)
-            throws RecordNotFoundException, ServiceAbortException {
+    public Correspon findCorrespon(Long id)
+            throws ServiceAbortException {
         CorresponDao dao = getDao(CorresponDao.class);
-        Correspon c = dao.findById(id);
-        loadCorresponType(c);
+        Correspon c;
+        try {
+            c = dao.findById(id);
+            loadCorresponType(c);
+        } catch(RecordNotFoundException e) {
+            throw new ServiceAbortException(ApplicationMessageCode.NO_DATA_FOUND);
+        }
         adjustCustomFields(c);
 
         return c;
@@ -954,11 +955,7 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
         updateCorresponForIssue(correspon);
         // 学習用コンテンツの場合、文書を学習用プロジェクトへコピー.
         Correspon originalCorrespon;
-        try {
             originalCorrespon = findCorrespon(correspon.getId());
-        } catch (RecordNotFoundException e) {
-            throw new ServiceAbortException(ApplicationMessageCode.NO_DATA_FOUND);
-        }
         if (originalCorrespon.getForLearning() == ForLearning.LEARNING) {
             Correspon clone = new Correspon();
             try {
@@ -1315,12 +1312,7 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
                 log.debug("correspon.getId[" + correspon.getId() + "]");
             }
             Correspon oldCorrespon = null;
-            try {
-                oldCorrespon = findCorrespon(correspon.getId());
-            } catch (RecordNotFoundException e) {
-                log.warn(e.getMessageCode() + " correspon.getId[" + correspon.getId() + "]");
-                throw new ServiceAbortException(ApplicationMessageCode.NO_DATA_FOUND);
-            }
+            oldCorrespon = findCorrespon(correspon.getId());
             if (log.isDebugEnabled()) {
                 log.debug("oldCorrespon.getCorresponStatus[" + oldCorrespon.getCorresponStatus()
                     + "]");

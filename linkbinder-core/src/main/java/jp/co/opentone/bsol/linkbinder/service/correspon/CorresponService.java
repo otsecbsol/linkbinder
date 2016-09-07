@@ -173,4 +173,12 @@ public interface CorresponService extends IService {
             throws ServiceAbortException;
 
     void copyCorresponForLearning(Correspon correspon);
+
+    /**
+     * 指定されたIDの文書を検索する.
+     * @param id corresponId
+     * @return 検索結果
+     */
+    Correspon findCorrespon(Long id)
+            throws ServiceAbortException;
 }

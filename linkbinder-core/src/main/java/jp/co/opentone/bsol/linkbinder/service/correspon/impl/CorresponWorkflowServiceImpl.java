@@ -21,6 +21,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -463,7 +464,9 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
         // 承認作業状態を更新
         updateWorkflowForApprove(workflow);
         // 学習用プロジェクトへ文書をコピーする
-        copyLearningCorrespon(correspon);
+        if(correspon.getForLearning() == ForLearning.LEARNING) {
+            copyLearningCorrespon(correspon);
+        }
         // メール通知を行う for approve
         sendWorkflowNotice(correspon, EmailNoticeEventCd.APPROVED);
         // メール通知を行う for issue

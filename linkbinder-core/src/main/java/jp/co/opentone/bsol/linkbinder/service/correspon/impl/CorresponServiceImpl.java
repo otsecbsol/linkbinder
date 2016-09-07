@@ -15,24 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.service.correspon.impl;
 
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
-import jp.co.opentone.bsol.linkbinder.dto.condition.SearchProjectCondition;
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.poi.hssf.record.Record;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import jp.co.opentone.bsol.framework.core.config.SystemConfig;
 import jp.co.opentone.bsol.framework.core.dao.KeyDuplicateException;
 import jp.co.opentone.bsol.framework.core.dao.RecordNotFoundException;
@@ -56,6 +38,8 @@ import jp.co.opentone.bsol.linkbinder.dao.AttachmentDao;
 import jp.co.opentone.bsol.linkbinder.dao.CorresponDao;
 import jp.co.opentone.bsol.linkbinder.dao.CorresponTypeDao;
 import jp.co.opentone.bsol.linkbinder.dao.CustomFieldDao;
+import jp.co.opentone.bsol.linkbinder.dao.LearningLabelDao;
+import jp.co.opentone.bsol.linkbinder.dao.LearningTagDao;
 import jp.co.opentone.bsol.linkbinder.dao.PersonInChargeDao;
 import jp.co.opentone.bsol.linkbinder.dao.ProjectDao;
 import jp.co.opentone.bsol.linkbinder.dao.UserDao;
@@ -75,12 +59,14 @@ import jp.co.opentone.bsol.linkbinder.dto.WorkflowPattern;
 import jp.co.opentone.bsol.linkbinder.dto.code.AllowApproverToBrowse;
 import jp.co.opentone.bsol.linkbinder.dto.code.CorresponStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.EmailNoticeEventCd;
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import jp.co.opentone.bsol.linkbinder.dto.code.ForceToUseWorkflow;
 import jp.co.opentone.bsol.linkbinder.dto.code.ReadStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowProcessStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowType;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchCustomFieldCondition;
+import jp.co.opentone.bsol.linkbinder.dto.condition.SearchProjectCondition;
 import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
 import jp.co.opentone.bsol.linkbinder.service.AbstractService;
 import jp.co.opentone.bsol.linkbinder.service.common.CorresponSequenceService;
@@ -90,6 +76,19 @@ import jp.co.opentone.bsol.linkbinder.service.notice.EmailNoticeService;
 import jp.co.opentone.bsol.linkbinder.util.AttachmentUtil;
 import jp.co.opentone.bsol.linkbinder.util.view.correspon.CorresponPageFormatter;
 import jp.co.opentone.bsol.linkbinder.util.view.correspon.CorresponResponseHistoryModel;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * このサービスではコレポン文書に関する処理を提供する.
@@ -185,12 +184,21 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
             // 関連情報を取得
             loadAddressCorresponGroup(c);
             loadWorkflow(c);
+            loadLearningLabelAndTag(c);
             // アクセス可能なレコードであるか検証
             validateAccess(c);
             return c;
         } catch (RecordNotFoundException e) {
             throw new ServiceAbortException(ApplicationMessageCode.NO_DATA_FOUND);
         }
+    }
+
+    private void loadLearningLabelAndTag(Correspon c) {
+        LearningLabelDao labelDao = getDao(LearningLabelDao.class);
+        c.setLearningLabel(labelDao.findByCorresponId(c.getId()));
+
+        LearningTagDao tagDao = getDao(LearningTagDao.class);
+        c.setLearningTag(tagDao.findByCorresponId(c.getId()));
     }
 
     private Correspon findCorrespon(Long id)

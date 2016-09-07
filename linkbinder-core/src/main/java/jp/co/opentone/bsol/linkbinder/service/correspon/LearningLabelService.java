@@ -43,24 +43,23 @@ public interface LearningLabelService extends IService {
     List<LearningLabel> findExsistLabel();
 
     /**
-     * 指定された学習用ラベル１件を登録する.
-     * @param label 学習用ラベル
-     * @return 学習用ラベルId
-     */
-    Long insertLearningLabel(LearningLabel label);
-
-    /**
-     * ラベルと文書の関連を登録する。
-     * @param label 学習用ラベル
-     * @param correspon 文書
-     * @return 紐付けたID
-     */
-    Long insertCorresponLearningLabel(LearningLabel label,Correspon correspon);
-
-    /**
      *
      * @param corresponId
      * @return
      */
     List<CorresponLearningLabel> findByCorresponId(Long corresponId);
+
+    /**
+     * 指定された文書に設定されたラベルをすべて削除する.
+     * @param correspon 文書
+     * @throws ServiceAbortException 削除に失敗
+     */
+    void clearAllLearningLabels(Correspon correspon) throws ServiceAbortException;
+
+    /**
+     * 学習用文書のラベルを保存する.
+     * @param correspon 学習用文書
+     * @throws ServiceAbortException 保存に失敗
+     */
+    void saveLearningLabels(Correspon correspon) throws ServiceAbortException;
 }

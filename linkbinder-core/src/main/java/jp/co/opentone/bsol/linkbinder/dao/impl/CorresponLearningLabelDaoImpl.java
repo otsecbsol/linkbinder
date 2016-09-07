@@ -40,8 +40,6 @@ public class CorresponLearningLabelDaoImpl extends AbstractDao<CorresponLearning
      */
     private static final String NAMESPACE = "corresponLearningLabel";
 
-    private static final String SQL_INSERT_CORRESPON_LEARNING_LABEL = "corresponLearningLabel.insertCorresponLearningLabel";
-
     private static final String SQL_FIND_BY_CORRESPON_ID = "corresponLearningLabel.findByCorresponId";
 
     /**
@@ -58,11 +56,6 @@ public class CorresponLearningLabelDaoImpl extends AbstractDao<CorresponLearning
      */
     public CorresponLearningLabelDaoImpl() {
         super(NAMESPACE);
-    }
-
-    @Override
-    public Long insertLearningLabel(CorresponLearningLabel label) {
-        return (Long)getSqlMapClientTemplate().insert(SQL_INSERT_CORRESPON_LEARNING_LABEL,label);
     }
 
     @Override

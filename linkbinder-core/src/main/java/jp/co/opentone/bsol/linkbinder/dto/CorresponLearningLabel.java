@@ -148,7 +148,7 @@ public class CorresponLearningLabel extends AbstractDto implements VersioningEnt
      * </p>
      * @param corresponId
      */
-    public void setCorresponIdId(Long corresponId) {
+    public void setCorresponId(Long corresponId) {
         this.corresponId = corresponId;
     }
 

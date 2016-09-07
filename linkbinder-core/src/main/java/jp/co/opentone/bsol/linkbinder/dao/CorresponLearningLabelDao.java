@@ -29,11 +29,6 @@ import java.util.List;
 public interface CorresponLearningLabelDao extends GenericDao<CorresponLearningLabel> {
 
     /**
-     * ラベルと文書の関連を登録する。
-     */
-    Long insertLearningLabel(CorresponLearningLabel label);
-
-    /**
      * 文書に紐付いたラベルの一覧を返す.
      * @param corresponId
      * @return ラベル-文書関連情報.

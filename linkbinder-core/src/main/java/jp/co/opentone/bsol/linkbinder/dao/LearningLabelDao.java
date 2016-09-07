@@ -47,10 +47,16 @@ public interface LearningLabelDao extends GenericDao<LearningLabel> {
      */
     List<LearningLabel> findExsistLabel();
 
+
     /**
-     * 指定された学習用ラベルを１件登録する。
-     * @param label 学習用ラベル
-     * @return ラベルid.
+     * 指定された文書に設定された学習用ラベルを返す.
+     * @return 検索結果
      */
-    Long insertLearningLabel(LearningLabel label);
+    List<LearningLabel> findByCorresponId(Long corresponId);
+
+    /**
+     * 指定された学習用ラベルが使われていなければ削除する.
+     * @param label ラベル
+     */
+    void deleteIfUnused(LearningLabel label);
 }

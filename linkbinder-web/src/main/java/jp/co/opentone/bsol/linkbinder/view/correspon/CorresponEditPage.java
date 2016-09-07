@@ -15,6 +15,10 @@
  */
 package jp.co.opentone.bsol.linkbinder.view.correspon;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jp.co.opentone.bsol.framework.core.exception.ApplicationFatalRuntimeException;
 import jp.co.opentone.bsol.framework.core.message.MessageCode;
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
 import jp.co.opentone.bsol.framework.core.util.DateUtil;
@@ -79,11 +83,13 @@ import javax.faces.event.ComponentSystemEvent;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -825,10 +831,14 @@ public class CorresponEditPage extends AbstractCorresponPage
     @Transfer
     private List<LearningLabel> learningLabelList = null;
 
+    private List<LearningLabel> selectedLearningLabelList = null;
+    private List<LearningTag> selectedLearningTagList = null;
+
     private String candidateLearningLabels;
     private String selectedLearningLabels;
     private String candidateLearningTags;
     private String selectedLearningTags;
+
     /**
      * 学習用タグリスト.
      */
@@ -1228,41 +1238,11 @@ public class CorresponEditPage extends AbstractCorresponPage
     }
 
     private void setLearningLabelsTo(Correspon c) {
-        List<LearningLabel> labels = new ArrayList<>();
-        for (Long selectedId : getLearningLabels()) {
-            String strId = String.valueOf(selectedId);
-            labels.add(learningLabelSelectList.stream()
-                    .filter(s -> StringUtils.equals(s.getValue().toString(), strId))
-                    .map(s -> {
-                        LearningLabel l = new LearningLabel();
-                        l.setId(selectedId);
-                        l.setName(s.getLabel());
-
-                        return l;
-                    })
-                    .findFirst()
-                    .get());
-        }
-        c.setLearningLabel(labels);
+        c.setLearningLabel(selectedLearningLabelList);
     }
 
     private void setLearningTagsTo(Correspon c) {
-        List<LearningTag> tags = new ArrayList<>();
-        for (Long selectedId : getLearningTags()) {
-            String strId = String.valueOf(selectedId);
-            tags.add(learningTagSelectList.stream()
-                    .filter(s -> StringUtils.equals(s.getValue().toString(), strId))
-                    .map(s -> {
-                        LearningTag l = new LearningTag();
-                        l.setId(selectedId);
-                        l.setName(s.getLabel());
-
-                        return l;
-                    })
-                    .findFirst()
-                    .get());
-        }
-        c.setLearningTag(tags);
+        c.setLearningTag(selectedLearningTagList);
     }
 
     /* (non-Javadoc)
@@ -2619,6 +2599,175 @@ public class CorresponEditPage extends AbstractCorresponPage
 
     public void setLearningLabelList(List<LearningLabel> learningLabelList) {
         this.learningLabelList = learningLabelList;
+    }
+
+    public void syncSelectedLearningLabels() {
+        if (StringUtils.isNotEmpty(selectedLearningLabels)) {
+            List<LearningTaggingItems> items = fromJson(selectedLearningLabels);
+            selectedLearningLabelList = items.stream()
+                    .map(e -> {
+                        LearningLabel label = new LearningLabel();
+                        label.setId(e.getId());
+                        label.setName(e.getText());
+
+                        return label;
+                    })
+                    .collect(Collectors.toList());
+        }
+    }
+
+    public void createSelectedLearningLabels() {
+        List<LearningTaggingItems> items;
+        if (CollectionUtils.isNotEmpty(selectedLearningLabelList)) {
+            items = selectedLearningLabelList.stream()
+                    .map(e -> new LearningTaggingItems(e.getId(), e.getName()))
+                    .collect(Collectors.toList());
+        } else {
+            items = new ArrayList<>();
+        }
+        selectedLearningLabels = toJson(items);
+    }
+
+    public void createSelectedLearningTags() {
+        List<LearningTaggingItems> items;
+        if (CollectionUtils.isNotEmpty(selectedLearningTagList)) {
+            items = selectedLearningTagList.stream()
+                    .map(e -> new LearningTaggingItems(e.getId(), e.getName()))
+                    .collect(Collectors.toList());
+        } else {
+            items = new ArrayList<>();
+        }
+        selectedLearningTags = toJson(items);
+    }
+
+    public void createCandidateLearningLabels() {
+        List<LearningTaggingItems> items;
+        if (CollectionUtils.isNotEmpty(learningLabelList)) {
+            items = learningLabelList.stream()
+                    .map(e -> new LearningTaggingItems(e.getId(), e.getName()))
+                    .collect(Collectors.toList());
+        } else {
+            items = new ArrayList<>();
+        }
+        candidateLearningLabels = toJson(items);
+    }
+
+    public void createCandidateLearningTags() {
+        List<LearningTaggingItems> items;
+        if (CollectionUtils.isNotEmpty(learningTagList)) {
+            items = learningTagList.stream()
+                    .map(e -> new LearningTaggingItems(e.getId(), e.getName()))
+                    .collect(Collectors.toList());
+        } else {
+            items = new ArrayList<>();
+        }
+        candidateLearningTags = toJson(items);
+    }
+
+    private String toJson(List<?> list) {
+        ObjectMapper m = new ObjectMapper();
+        try {
+            return m.writeValueAsString(list);
+        } catch (JsonProcessingException e) {
+            throw new ApplicationFatalRuntimeException(e);
+        }
+    }
+
+    private List<LearningTaggingItems> fromJson(String json) {
+        ObjectMapper m = new ObjectMapper();
+        try {
+            return m.readValue(json, new TypeReference<List<LearningTaggingItems>>() {});
+        } catch (JsonProcessingException e) {
+            throw new ApplicationFatalRuntimeException(e);
+        } catch (IOException e) {
+            throw new ApplicationFatalRuntimeException(e);
+        }
+    }
+
+    public String getCandidateLearningLabels() {
+        return candidateLearningLabels;
+    }
+
+    public void setCandidateLearningLabels(String candidateLearningLabels) {
+        this.candidateLearningLabels = candidateLearningLabels;
+    }
+
+    public String getSelectedLearningLabels() {
+        return selectedLearningLabels;
+    }
+
+    public void setSelectedLearningLabels(String selectedLearningLabels) {
+        this.selectedLearningLabels = selectedLearningLabels;
+    }
+
+    public String getCandidateLearningTags() {
+        return candidateLearningTags;
+    }
+
+    public void setCandidateLearningTags(String candidateLearningTags) {
+        this.candidateLearningTags = candidateLearningTags;
+    }
+
+    public String getSelectedLearningTags() {
+        return selectedLearningTags;
+    }
+
+    public void setSelectedLearningTags(String selectedLearningTags) {
+        this.selectedLearningTags = selectedLearningTags;
+    }
+
+    public List<LearningLabel> getSelectedLearningLabelList() {
+        return selectedLearningLabelList;
+    }
+
+    public void setSelectedLearningLabelList(List<LearningLabel> selectedLearningLabelList) {
+        this.selectedLearningLabelList = selectedLearningLabelList;
+    }
+
+    public List<LearningTag> getSelectedLearningTagList() {
+        return selectedLearningTagList;
+    }
+
+    public void setSelectedLearningTagList(List<LearningTag> selectedLearningTagList) {
+        this.selectedLearningTagList = selectedLearningTagList;
+    }
+
+    public static class LearningTaggingItems {
+        private Long id;
+        private String text;
+        private boolean selected;
+
+        public LearningTaggingItems() {
+        }
+
+        public LearningTaggingItems(Long id, String text) {
+            this.id = id;
+            this.text = text;
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getText() {
+            return text;
+        }
+
+        public void setText(String text) {
+            this.text = text;
+        }
+
+        public boolean isSelected() {
+            return selected;
+        }
+
+        public void setSelected(boolean selected) {
+            this.selected = selected;
+        }
     }
 
     /**

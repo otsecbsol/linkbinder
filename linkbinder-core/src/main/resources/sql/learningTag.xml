@@ -51,6 +51,21 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     ORDER BY t.name
   </select>
 
+  <select id="findByCorresponId" resultMap="result">
+    SELECT
+      t.*
+    FROM learning_tag t
+      INNER JOIN correspon_learning_tag ct
+        ON ct.tag_id = t.id
+       AND ct.delete_no = 0
+      INNER JOIN correspon c
+        ON c.id = ct.correspon_id
+       AND c.delete_no = 0
+    WHERE t.delete_no = 0
+      AND c.id = #value#
+    ORDER BY t.name
+  </select>
+
   <select id="findExsistTag" resultMap="result">
     SELECT
     id,

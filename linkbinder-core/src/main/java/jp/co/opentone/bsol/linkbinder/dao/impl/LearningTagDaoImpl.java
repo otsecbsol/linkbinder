@@ -45,6 +45,10 @@ public class LearningTagDaoImpl extends AbstractDao<LearningTag> implements Lear
      */
     private static final String SQL_FIND_BY_PROJECT_ID = "findByProjectId";
     /**
+     * SQLID: 指定文書の学習用タグを検索するID.
+     */
+    private static final String SQL_FIND_BY_CORRESPON_ID = "findByCorresponId";
+    /**
      * SQLID:既に登録されている学習用タグを検索するID.
      */
     private static final String SQL_FIND_EXSIST_LABEL = "findExsistTag";
@@ -75,5 +79,11 @@ public class LearningTagDaoImpl extends AbstractDao<LearningTag> implements Lear
     public List<LearningTag> findExsistTag() {
         return (List<LearningTag>) getSqlMapClientTemplate()
                 .queryForList(getSqlId(SQL_FIND_EXSIST_LABEL));
+    }
+
+    @Override
+    public List<LearningTag> findByCorresponId(Long corresponId) {
+        return (List<LearningTag>) getSqlMapClientTemplate()
+                .queryForList(getSqlId(SQL_FIND_BY_CORRESPON_ID), corresponId);
     }
 }

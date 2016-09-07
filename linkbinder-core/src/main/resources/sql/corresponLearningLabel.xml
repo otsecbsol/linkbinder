@@ -33,22 +33,22 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     <result property="deleteNo"        column="delete_no"/>
   </resultMap>
 
-  <insert id="insertCorresponLearningLabel">
+  <insert id="create">
     <selectKey resultClass="long" keyProperty="id">
       SELECT s_correspon_learning_label_id.NEXTVAL AS id FROM dual
     </selectKey>
     INSERT INTO correspon_learning_label (
-    id,
-    correspon_id,
-    label_id,
-    created_by,
-    updated_by
+      id,
+      correspon_id,
+      label_id,
+      created_by,
+      updated_by
     ) VALUES (
-    #id#,
-    #corresponId#,
-    #labelId#,
-    #createdBy.empNo#,
-    #updatedBy.empNo#
+      #id#,
+      #corresponId#,
+      #labelId#,
+      #createdBy.empNo#,
+      #updatedBy.empNo#
     )
   </insert>
 
@@ -68,4 +68,8 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       AND correspon_id = #value#
   </select>
 
+  <delete id="delete">
+    DELETE correspon_learning_label
+    WHERE id = #id#
+  </delete>
 </sqlMap>

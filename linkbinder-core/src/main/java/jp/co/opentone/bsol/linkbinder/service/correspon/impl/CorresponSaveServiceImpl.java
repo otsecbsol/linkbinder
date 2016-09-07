@@ -48,6 +48,7 @@ import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
 import jp.co.opentone.bsol.linkbinder.service.AbstractService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponSaveService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponService;
+import jp.co.opentone.bsol.linkbinder.service.correspon.LearningLabelService;
 import jp.co.opentone.bsol.linkbinder.service.notice.EmailNoticeService;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
@@ -93,6 +94,12 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
      */
     @Resource
     private CorresponService corresponService;
+
+    /**
+     * 学習用文書ラベルサービス.
+     */
+    @Resource
+    private LearningLabelService learningLabelService;
 
     /**
      * 空のインスタンスを生成する.
@@ -359,6 +366,7 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
             // コレポン文書階層設定
             createHierarchy(clone);
         }
+        saveLearningLabel(clone);
 
         return clone.getId();
     }
@@ -414,6 +422,7 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
         updateAddressCorresponGroup(clone);                  // 宛先 活動単位
         updateAddressUser(clone);                            // 宛先 ユーザー
 
+        saveLearningLabel(clone);
 
         return clone.getId();
     }
@@ -943,6 +952,19 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
             throw new ServiceAbortException(e);
         }
 
+    }
+
+    private void saveLearningLabel(Correspon correspon) throws ServiceAbortException {
+        if (isLearningCorrespon(correspon)) {
+            learningLabelService.saveLearningLabels(correspon);
+        } else {
+            learningLabelService.clearAllLearningLabels(correspon);
+        }
+    }
+
+    private boolean isLearningCorrespon(Correspon correspon) {
+        return correspon.getForLearning() != null
+                && ForLearning.LEARNING == correspon.getForLearning();
     }
 
     private List<AddressCorresponGroup> findAddressCorresponGroups(Long corresponId) {

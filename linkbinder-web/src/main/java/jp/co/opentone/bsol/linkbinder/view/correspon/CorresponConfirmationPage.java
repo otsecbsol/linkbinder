@@ -24,8 +24,6 @@ import jp.co.opentone.bsol.linkbinder.action.AbstractAction;
 import jp.co.opentone.bsol.linkbinder.attachment.AttachmentInfo;
 import jp.co.opentone.bsol.linkbinder.dto.AddressCorresponGroup;
 import jp.co.opentone.bsol.linkbinder.dto.Correspon;
-import jp.co.opentone.bsol.linkbinder.dto.CorresponLearningLabel;
-import jp.co.opentone.bsol.linkbinder.dto.LearningLabel;
 import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import jp.co.opentone.bsol.linkbinder.event.CorresponCreated;
 import jp.co.opentone.bsol.linkbinder.event.CorresponUpdated;
@@ -48,7 +46,6 @@ import org.springframework.context.annotation.Scope;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -542,12 +539,6 @@ public class CorresponConfirmationPage extends AbstractCorresponPage
 
             boolean isNew = page.correspon.isNew();
             Long id = page.corresponSaveService.save(page.correspon);
-
-
-            if (page.correspon.getLearningLabel() != null && !page.correspon.getLearningLabel().isEmpty()) {
-                page.saveLearningLabel(page.correspon.getLearningLabel());
-            }
-//            Long labelId = page.learningLabelService.insertLearningLabel()
             if (log.isDebugEnabled()) {
                 log.debug("Save successful.");
             }
@@ -589,39 +580,6 @@ public class CorresponConfirmationPage extends AbstractCorresponPage
             return true;
         } else {
             return false;
-        }
-    }
-
-    private void saveLearningLabel(List<LearningLabel> label) throws ServiceAbortException {
-        //TODO 既に文書へ登録されているラベルの取扱
-        List<LearningLabel> exsistLabelIdList = new ArrayList<LearningLabel>();
-        List<CorresponLearningLabel> corresponLabelList = new ArrayList<CorresponLearningLabel>();
-        exsistLabelIdList = learningLabelService.findAll();
-        corresponLabelList = learningLabelService.findByCorresponId(correspon.getId());
-
-        for(LearningLabel item : label) {
-            boolean isExsistLabel = false;
-            boolean isAlreadyRegistered = false;
-
-            for(CorresponLearningLabel corresponLabel : corresponLabelList) {
-                if (item.getId().equals(corresponLabel.getLabelId())) {
-                    isAlreadyRegistered = true;
-                }
-            }
-            if(!isAlreadyRegistered) {
-                for (LearningLabel exsistLabel : exsistLabelIdList) {
-                    if (item.getId().equals(exsistLabel.getId())) {
-                        isExsistLabel = true;
-                    }
-                }
-                Long labelId = item.getId();
-                // 重複がなければそのまま登録,重複している場合は紐付けのみ登録
-                if(!isExsistLabel) {
-                    labelId = learningLabelService.insertLearningLabel(item);
-                }
-
-                learningLabelService.insertCorresponLearningLabel(item,correspon);
-            }
         }
     }
 }

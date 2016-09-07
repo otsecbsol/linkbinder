@@ -336,6 +336,43 @@ $(document).ready(function() {
         document.getElementById("form:importFileSize").value = '';
     }
 
+    $('#learningCorresponLabel').select2({
+        tags: true,
+        data: JSON.parse($('#' + $.escape('form:candidateLearningLabels')).val())
+    });
+
+    var counter = -1;
+    var triggerId = '#' + $.escape('form:learningCorresponLabelTrigger');
+
+    $('#learningCorresponLabel').on('select2:select', function(e) {
+        var data = e.params.data;
+        if (data.id === data.text) {
+            data.id = counter--;
+        }
+
+        var hidden = $('#' + $.escape('form:selectedLearningLabels'));
+        var selectedValues = JSON.parse(hidden.val());
+        selectedValues.push(data);
+
+        hidden.val(JSON.stringify(selectedValues));
+        $(triggerId).click();
+    });
+
+    $('#learningCorresponLabel').on('select2:unselect', function(e) {
+        var data = e.params.data;
+
+        var hidden = $('#' + $.escape('form:selectedLearningLabels'));
+        var selectedValues = JSON.parse(hidden.val());
+        for (var i = 0; i < selectedValues.length; i++) {
+            if (selectedValues[i].text === data.text) {
+                selectedValues.splice(i, 1);
+                break;
+            }
+        }
+
+        hidden.val(JSON.stringify(selectedValues));
+        $(triggerId).click();
+    });
     /*
     $('.selectTagging').select2({
         tags: true,
@@ -351,7 +388,6 @@ $(document).ready(function() {
             };
         }
     });
-     */
     $('.selectTagging').select2({
         tags: true
     });
@@ -363,6 +399,7 @@ $(document).ready(function() {
             appendToTaggingList(data, this);
         }
     });
+     */
 });
 
 /*

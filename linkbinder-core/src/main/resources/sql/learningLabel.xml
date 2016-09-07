@@ -79,6 +79,21 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     WHERE delete_no = 0
   </select>
 
+  <select id="findByCorresponId" resultMap="result">
+    SELECT
+      l.*
+    FROM learning_label l
+      INNER JOIN correspon_learning_label cl
+        ON cl.label_id = l.id
+       AND cl.delete_no = 0
+      INNER JOIN correspon c
+        ON c.id = cl.correspon_id
+       AND c.delete_no = 0
+    WHERE l.delete_no = 0
+      AND c.id = #value#
+    ORDER BY l.name
+  </select>
+
   <select id="findLearningLabelCorrespon" resultMap="resultLearningLabelCorrespon">
     SELECT
       l.id,
@@ -101,7 +116,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     ORDER BY l.name, c.id
   </select>
 
-  <insert id="insertLearningLabel">
+  <insert id="create">
     <selectKey resultClass="long" keyProperty="id">
       SELECT s_learning_label_id.NEXTVAL AS id FROM dual
     </selectKey>
@@ -118,4 +133,12 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     )
   </insert>
 
+  <delete id="deleteIfUnused">
+    DELETE FROM learning_label l
+    WHERE id = #id#
+      AND NOT EXISTS (
+        SELECT 1 FROM correspon_learning_label cl
+        WHERE cl.label_id = l.id
+      )
+  </delete>
 </sqlMap>

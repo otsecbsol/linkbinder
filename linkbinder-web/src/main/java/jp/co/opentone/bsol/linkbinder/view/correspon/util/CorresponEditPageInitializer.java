@@ -50,7 +50,6 @@ import jp.co.opentone.bsol.linkbinder.service.correspon.LearningLabelService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.LearningTagService;
 import jp.co.opentone.bsol.linkbinder.view.correspon.CorresponEditPage;
 import jp.co.opentone.bsol.linkbinder.view.correspon.strategy.CorresponSetupStrategy;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -59,7 +58,6 @@ import javax.annotation.Resource;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * コレポン編集画面の初期表示に必要な処理を行うクラス.
@@ -326,19 +324,11 @@ public class CorresponEditPageInitializer implements Serializable {
         private void applyLearningContents() {
             page.setForLearning(correspon.getForLearning() == ForLearning.LEARNING);
 
-            // ラベル・タグ
-            if (CollectionUtils.isNotEmpty(correspon.getLearningLabel())) {
-                List<Long> result = correspon.getLearningLabel().stream()
-                        .map(l -> l.getId())
-                        .collect(Collectors.toList());
-                page.setLearningLabels(result.toArray(new Long[0]));
-            }
-            if (CollectionUtils.isNotEmpty(correspon.getLearningTag())) {
-                List<Long> result = correspon.getLearningTag().stream()
-                        .map(l -> l.getId())
-                        .collect(Collectors.toList());
-                page.setLearningTags(result.toArray(new Long[0]));
-            }
+            page.setSelectedLearningLabelList(correspon.getLearningLabel());
+            page.createSelectedLearningLabels();
+
+            page.setSelectedLearningTagList(correspon.getLearningTag());
+            page.createSelectedLearningTags();
         }
 
         /**
@@ -472,7 +462,9 @@ public class CorresponEditPageInitializer implements Serializable {
         private void processLearning() throws ServiceAbortException {
             // 学習用ラベル・タグを取得、選択リスト生成
             page.setLearningLabelList(initializer.learningLabelService.findAll());
+            page.createCandidateLearningLabels();
             page.setLearningTagList(initializer.learningTagService.findAll());
+            page.createCandidateLearningTags();
         }
 
         /**

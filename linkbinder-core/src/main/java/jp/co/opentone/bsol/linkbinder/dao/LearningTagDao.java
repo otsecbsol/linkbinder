@@ -39,4 +39,6 @@ public interface LearningTagDao extends GenericDao<LearningTag> {
      * @return 検索結果
      */
     List<LearningTag> findExsistTag();
+
+    List<LearningTag> findByCorresponId(Long corresponId);
 }

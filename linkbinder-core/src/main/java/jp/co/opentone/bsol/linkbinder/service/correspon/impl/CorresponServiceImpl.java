@@ -63,6 +63,7 @@ import jp.co.opentone.bsol.linkbinder.dto.code.ReadStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowProcessStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowType;
+import jp.co.opentone.bsol.linkbinder.dto.condition.SearchCorresponCondition;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchCustomFieldCondition;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchProjectCondition;
 import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
@@ -1012,13 +1013,38 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
         // リストのIDに紐づく文書としてコピーする処理
         List<Project> learningProjectList = findLearningProject();
         for(Project learningProject : learningProjectList) {
-            correspon.setProjectId(learningProject.getProjectId());
             try {
+            deleteExsistLearningCorrespon(correspon,learningProject.getProjectId());
+            correspon.setProjectId(learningProject.getProjectId());
                 saveLearningCorrespon(correspon);
             } catch (KeyDuplicateException e) {
                 continue;
+            } catch (StaleRecordException e) {
+                continue;
             }
 
+        }
+    }
+
+    /**
+     * 学習用プロジェクトから、同じ文書番号の文書を削除する.
+     * @param correspon 削除したい文書の元文書
+     * @param learningProjectId 対象の学習用プロジェクト
+     */
+    private void deleteExsistLearningCorrespon(Correspon correspon,String learningProjectId)
+                    throws KeyDuplicateException, StaleRecordException{
+        // 検索条件を作成
+        SearchCorresponCondition condition = new SearchCorresponCondition();
+        condition.setProjectId(learningProjectId);
+        condition.setCorresponNo(correspon.getCorresponNo());
+
+        CorresponDao dao = getDao(CorresponDao.class);
+        List<Correspon> resultList = dao.find(condition);
+
+        if (resultList != null && !resultList.isEmpty()) {
+            for (Correspon resultCorrespon : resultList) {
+                dao.delete(resultCorrespon);
+            }
         }
     }
 

@@ -384,6 +384,14 @@
       </div>
     </div>
 
+      <div class="row">
+          <h:commandButton id="recreate" value="#{corresponPage.learningCorresponTitleLabel}再登録"
+                           action="#{corresponPage.copyCorresponForLearning(corresponPage.correspon)}"
+                           styleClass="button-primary"
+                           onclick="setActionName(event); return confirmButton('#{corresponPage.learningCorresponTitleLabel}' + 'の再登録を行います。よろしいですか？');"
+                           disabled="#{!corresponPage.learningContents}"
+                           rendered="#{corresponPage.elemControl.recreateLearningContentsButton}"/>
+      </div>
     <hr/>
 
     <ui:fragment rendered="#{not corresponPage.learningProject}">
@@ -1360,20 +1368,6 @@
               </div>
             </div>
           </div>
-          <ui:fragment rendered="#{corresponPage.learningContents}">
-              <div class="row">
-                <div class="three columns correspon-action">
-                  <h:outputLabel value="#{corresponPage.learningCorresponTitleLabel}の再登録" />
-                  <div class="correspon-action-button">
-                  <h:commandButton id="recreate" value="#{corresponPage.learningCorresponTitleLabel}再登録"
-                                   action="#{corresponPage.copyCorresponForLearning(corresponPage.correspon)}"
-                                   styleClass="button-primary"
-                                   disabled="#{corresponPage.elemControl.issueButton}"
-                                   onclick="setActionName(event); return confirmButton('#{corresponPage.learningCorresponTitleLabel}' + 'の再登録を行います。よろしいですか？');" />
-                  </div>
-                </div>
-              </div>
-          </ui:fragment>
         </div>
       </h:panelGroup>
     </ui:fragment>

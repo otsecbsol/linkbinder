@@ -54,10 +54,6 @@ public class LearningLabelDaoImpl extends AbstractDao<LearningLabel> implements 
      */
     private static final String SQL_FIND_BY_CORRESPON_ID = "findByCorresponId";
     /**
-     * SQLID:既に登録されている学習用ラベルを検索するID.
-     */
-    private static final String SQL_FIND_EXSIST_LABEL = "findExsistLabel";
-    /**
      * SQLID: 未使用の学習用ラベルを削除するID.
      */
     private static final String SQL_DELETE_IF_UNUSED_ID = "deleteIfUnused";
@@ -88,12 +84,6 @@ public class LearningLabelDaoImpl extends AbstractDao<LearningLabel> implements 
     public List<LearningLabel> findByProjectId(String projectId) {
         return (List<LearningLabel>) getSqlMapClientTemplate()
                 .queryForList(getSqlId(SQL_FIND_BY_PROJECT_ID), projectId);
-    }
-
-    @Override
-    public List<LearningLabel> findExsistLabel() {
-        return (List<LearningLabel>) getSqlMapClientTemplate()
-                .queryForList(getSqlId(SQL_FIND_EXSIST_LABEL));
     }
 
     @Override

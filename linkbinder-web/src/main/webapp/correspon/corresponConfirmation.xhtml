@@ -125,7 +125,7 @@
                             value="#{corresponConfirmationPage.correspon.previousRevCorresponNo}" />
             </div>
           </div>
-          <ui:fragment rendered="#{corresponConfirmationPage.learningContents}">
+          <ui:fragment rendered="#{corresponConfirmationPage.projectUseLearning and corresponConfirmationPage.correspon.learningContents}">
             <div class="row">
               <div class="twelve columns">
                 <h:outputText value="#{corresponConfirmationPage.getLearningContentsTitle()}として設定する"/>

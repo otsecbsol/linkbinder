@@ -24,7 +24,6 @@ import jp.co.opentone.bsol.linkbinder.action.AbstractAction;
 import jp.co.opentone.bsol.linkbinder.attachment.AttachmentInfo;
 import jp.co.opentone.bsol.linkbinder.dto.AddressCorresponGroup;
 import jp.co.opentone.bsol.linkbinder.dto.Correspon;
-import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import jp.co.opentone.bsol.linkbinder.event.CorresponCreated;
 import jp.co.opentone.bsol.linkbinder.event.CorresponUpdated;
 import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
@@ -572,14 +571,6 @@ public class CorresponConfirmationPage extends AbstractCorresponPage
                     info.delete();
                 }
             }
-        }
-    }
-
-    public boolean isLearningContents() {
-        if (correspon.getForLearning() == ForLearning.LEARNING) {
-            return true;
-        } else {
-            return false;
         }
     }
 }

@@ -705,6 +705,14 @@ public class Correspon extends AbstractDto implements VersioningEntity {
     }
 
     /**
+     * 学習用文書であればtrueを返す.
+     * @return 判定結果
+     */
+    public boolean isLearningContents() {
+        return forLearning != null && ForLearning.LEARNING == forLearning;
+    }
+
+    /**
      * id の値を返す.
      * <p>
      * [v_correspon.id]
@@ -2597,15 +2605,31 @@ public class Correspon extends AbstractDto implements VersioningEntity {
         this.file5FileType = file5FileType;
     }
 
-    public String getLearningProjectId() { return this.learningProjectId; }
+    public String getLearningProjectId() {
+        return this.learningProjectId;
+    }
 
-    public void setLearningProjectId(String learningProjectId) { this.learningProjectId = learningProjectId; }
+    public void setLearningProjectId(String learningProjectId) {
+        this.learningProjectId = learningProjectId;
+    }
 
-    public List<LearningLabel> getLearningLabel() { return this.learningLabel; }
+    public List<LearningLabel> getLearningLabel() {
+        if (learningLabel == null) {
+            return new ArrayList<>();
+        }
 
-    public void setLearningLabel(List<LearningLabel> labelList) { this.learningLabel = labelList; }
+        return this.learningLabel;
+    }
+
+    public void setLearningLabel(List<LearningLabel> labelList) {
+        this.learningLabel = labelList;
+    }
 
     public List<LearningTag> getLearningTag() {
+        if (learningTag == null) {
+            return new ArrayList<>();
+        }
+
         return learningTag;
     }
 

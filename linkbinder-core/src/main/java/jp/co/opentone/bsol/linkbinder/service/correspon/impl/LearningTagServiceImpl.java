@@ -67,13 +67,6 @@ public class LearningTagServiceImpl extends AbstractService implements LearningT
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<LearningTag> findExsistTag() {
-        LearningTagDao dao = getDao(LearningTagDao.class);
-        return dao.findExsistTag();
-    }
-
-    @Override
     public void clearAllLearningTags(Correspon correspon) throws ServiceAbortException {
         LearningTagDao dao = getDao(LearningTagDao.class);
         CorresponLearningTagDao ctDao = getDao(CorresponLearningTagDao.class);

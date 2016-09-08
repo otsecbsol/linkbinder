@@ -307,6 +307,31 @@ $(document).ready(function() {
         editor_deselector: "ignoreTinyEditor"
     });
 
+    setupLearningTaggingElement({
+        elementId: 'learningCorresponLabel',
+        candidateId: 'form:candidateLearningLabels',
+        selectedId: 'form:selectedLearningLabels',
+        triggerId: 'form:learningCorresponLabelTrigger'
+    });
+    setupLearningTaggingElement({
+        elementId: 'learningCorresponTag',
+        candidateId: 'form:candidateLearningTags',
+        selectedId: 'form:selectedLearningTags',
+        triggerId: 'form:learningCorresponTagTrigger'
+    });
+
+    var toggleForLearning  = function() {
+        if ($('.forLearning').prop('checked')) {
+            $('#forLearningParts').show();
+        } else {
+            $('#forLearningParts').hide();
+        }
+    };
+
+    // 初期化
+    $('.forLearning').on('click', toggleForLearning);
+    toggleForLearning();
+
     if (document.getElementById('form:initialDisplaySuccess').value == 'true') {
         setupAttachmentsForErrorBack();
         changeReplyRequired();
@@ -336,18 +361,6 @@ $(document).ready(function() {
         document.getElementById("form:importFileSize").value = '';
     }
 
-    setupLearningTaggingElement({
-        elementId: 'learningCorresponLabel',
-        candidateId: 'form:candidateLearningLabels',
-        selectedId: 'form:selectedLearningLabels',
-        triggerId: 'form:learningCorresponLabelTrigger'
-    });
-    setupLearningTaggingElement({
-        elementId: 'learningCorresponTag',
-        candidateId: 'form:candidateLearningTags',
-        selectedId: 'form:selectedLearningTags',
-        triggerId: 'form:learningCorresponTagTrigger'
-    });
 });
 
 function setupLearningTaggingElement(option) {

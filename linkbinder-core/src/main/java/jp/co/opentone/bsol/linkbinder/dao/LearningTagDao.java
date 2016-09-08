@@ -34,12 +34,6 @@ public interface LearningTagDao extends GenericDao<LearningTag> {
      */
     List<LearningTag> findByProjectId(String projectId);
 
-    /**
-     * 指定されたプロジェクトの、利用されている全ての学習用タグを返す.
-     * @return 検索結果
-     */
-    List<LearningTag> findExsistTag();
-
     List<LearningTag> findByCorresponId(Long corresponId);
 
     /**

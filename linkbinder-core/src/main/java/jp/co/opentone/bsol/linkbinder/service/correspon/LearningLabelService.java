@@ -37,12 +37,6 @@ public interface LearningLabelService extends IService {
     List<LearningLabel> findAll() throws ServiceAbortException;
 
     /**
-     * 利用されている学習用ラベルを返す.
-     * @return 検索結果
-     */
-    List<LearningLabel> findExsistLabel();
-
-    /**
      *
      * @param corresponId
      * @return

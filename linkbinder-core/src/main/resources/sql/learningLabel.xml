@@ -61,7 +61,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
   </select>
 
   <select id="findByProjectId" resultMap="result">
-    SELECT
+    SELECT DISTINCT
       l.*
     FROM learning_label l
       INNER JOIN correspon_learning_label cl
@@ -73,20 +73,6 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     WHERE l.delete_no = 0
       AND c.project_id = #value#
     ORDER BY l.name
-  </select>
-
-  <select id="findExsistLabel" resultMap="result">
-    SELECT
-      id,
-      name,
-      created_by,
-      created_at,
-      updated_by,
-      updated_at,
-      version_no,
-      delete_no
-    FROM learning_label
-    WHERE delete_no = 0
   </select>
 
   <select id="findByCorresponId" resultMap="result">

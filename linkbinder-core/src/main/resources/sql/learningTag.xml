@@ -48,7 +48,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
   </select>
 
   <select id="findByProjectId" resultMap="result">
-    SELECT
+    SELECT DISTINCT
       t.*
     FROM learning_tag t
       INNER JOIN correspon_learning_tag ct
@@ -75,20 +75,6 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     WHERE t.delete_no = 0
       AND c.id = #value#
     ORDER BY t.name
-  </select>
-
-  <select id="findExsistTag" resultMap="result">
-    SELECT
-    id,
-    name,
-    created_by,
-    created_at,
-    updated_by,
-    updated_at,
-    version_no,
-    delete_no
-    FROM learning_tag
-    WHERE delete_no = 0
   </select>
 
   <insert id="create">

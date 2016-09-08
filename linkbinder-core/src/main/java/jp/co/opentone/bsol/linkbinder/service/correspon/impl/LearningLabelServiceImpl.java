@@ -68,13 +68,6 @@ public class LearningLabelServiceImpl extends AbstractService implements Learnin
 
     @Override
     @Transactional(readOnly = true)
-    public List<LearningLabel> findExsistLabel() {
-        LearningLabelDao dao = getDao(LearningLabelDao.class);
-        return dao.findExsistLabel();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<CorresponLearningLabel> findByCorresponId(Long corresponId) {
         CorresponLearningLabelDao dao = getDao(CorresponLearningLabelDao.class);
         return dao.findByCorresponId(corresponId);

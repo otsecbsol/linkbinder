@@ -19,12 +19,12 @@
 PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
 "http://ibatis.apache.org/dtd/sql-map-2.dtd">
 
-<sqlMap namespace="corresponLearningLabel">
+<sqlMap namespace="corresponLearningTag">
 
-  <resultMap id="result" class="jp.co.opentone.bsol.linkbinder.dto.CorresponLearningLabel">
+  <resultMap id="result" class="jp.co.opentone.bsol.linkbinder.dto.CorresponLearningTag">
     <result property="id"              column="id"/>
     <result property="corresponId"    column="correspon_id"/>
-    <result property="labelId"         column="label_id"/>
+    <result property="tagId"         column="tag_id"/>
     <result property="createdBy.empNo" column="created_by"/>
     <result property="createdAt"       column="created_at"/>
     <result property="updatedBy.empNo" column="updated_by"/>
@@ -33,7 +33,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     <result property="deleteNo"        column="delete_no"/>
   </resultMap>
 
-  <resultMap id="resultForUpdate" class="jp.co.opentone.bsol.linkbinder.dto.CorresponLearningLabel">
+  <resultMap id="resultForUpdate" class="jp.co.opentone.bsol.linkbinder.dto.CorresponLearningTag">
     <result property="versionNo" column="version_no" />
   </resultMap>
 
@@ -41,7 +41,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     SELECT
       version_no
     FROM
-      correspon_learning_label
+      correspon_learning_tag
     WHERE
       id = #id#
     FOR UPDATE
@@ -49,18 +49,18 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
 
   <insert id="create">
     <selectKey resultClass="long" keyProperty="id">
-      SELECT s_correspon_learning_label_id.NEXTVAL AS id FROM dual
+      SELECT s_correspon_learning_tag_id.NEXTVAL AS id FROM dual
     </selectKey>
-    INSERT INTO correspon_learning_label (
+    INSERT INTO correspon_learning_tag (
       id,
       correspon_id,
-      label_id,
+      tag_id,
       created_by,
       updated_by
     ) VALUES (
       #id#,
       #corresponId#,
-      #labelId#,
+      #tagId#,
       #createdBy.empNo#,
       #updatedBy.empNo#
     )
@@ -70,20 +70,20 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     SELECT
       id,
       correspon_id,
-      label_id,
+      tag_id,
       created_by,
       created_at,
       updated_by,
       updated_at,
       version_no,
       delete_no
-    FROM  correspon_learning_label
+    FROM  correspon_learning_tag
     WHERE delete_no = 0
       AND correspon_id = #value#
   </select>
 
   <delete id="delete">
-    DELETE correspon_learning_label
+    DELETE correspon_learning_tag
     WHERE id = #id#
   </delete>
 </sqlMap>

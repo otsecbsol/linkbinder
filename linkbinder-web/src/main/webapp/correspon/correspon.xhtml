@@ -363,11 +363,17 @@
     <div class="row">
       <div class="twelve colums">
         <h:outputLabel>ラベル</h:outputLabel>
+        <ui:repeat value="#{corresponPage.correspon.learningLabel}" var="e" varStatus="loop">
+          <h:outputText value="#{e.name}" styleClass="learning-label"/>#{loop.last ? '' : ','}
+        </ui:repeat>
       </div>
     </div>
     <div class="row">
       <div class="twelve colums">
         <h:outputLabel>タグ</h:outputLabel>
+        <ui:repeat value="#{corresponPage.correspon.learningTag}" var="e" varStatus="loop">
+          <h:outputText value="#{e.name}" styleClass="learning-tag"/>#{loop.last ? '' : ','}
+        </ui:repeat>
       </div>
     </div>
 

@@ -36,6 +36,17 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     <result property="versionNo" column="version_no" />
   </resultMap>
 
+
+  <select id="findByIdForUpdate" resultMap="resultForUpdate">
+    SELECT
+      version_no
+    FROM
+      learning_tag
+    WHERE
+      id = #id#
+    FOR UPDATE
+  </select>
+
   <select id="findByProjectId" resultMap="result">
     SELECT
       t.*
@@ -80,4 +91,29 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     WHERE delete_no = 0
   </select>
 
+  <insert id="create">
+    <selectKey resultClass="long" keyProperty="id">
+      SELECT s_learning_tag_id.NEXTVAL AS id FROM dual
+    </selectKey>
+    INSERT INTO learning_tag(
+      id,
+      name,
+      created_by,
+      updated_by
+    ) VALUES (
+      #id#,
+      #name#,
+      #createdBy.empNo#,
+      #updatedBy.empNo#
+    )
+  </insert>
+
+  <delete id="deleteIfUnused">
+    DELETE FROM learning_tag t
+    WHERE id = #id#
+      AND NOT EXISTS (
+        SELECT 1 FROM correspon_learning_tag ct
+        WHERE ct.tag_id = t.id
+    )
+  </delete>
 </sqlMap>

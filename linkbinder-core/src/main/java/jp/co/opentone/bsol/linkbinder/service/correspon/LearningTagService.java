@@ -17,6 +17,7 @@ package jp.co.opentone.bsol.linkbinder.service.correspon;
 
 import jp.co.opentone.bsol.framework.core.service.IService;
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
+import jp.co.opentone.bsol.linkbinder.dto.Correspon;
 import jp.co.opentone.bsol.linkbinder.dto.LearningTag;
 
 import java.util.List;
@@ -39,4 +40,18 @@ public interface LearningTagService extends IService {
      * @return 検索結果
      */
     List<LearningTag> findExsistTag();
+
+    /**
+     * 指定された文書に設定されたタグをすべて削除する.
+     * @param correspon 文書
+     * @throws ServiceAbortException 削除に失敗
+     */
+    void clearAllLearningTags(Correspon correspon) throws ServiceAbortException;
+
+    /**
+     * 学習用文書のタグを保存する.
+     * @param correspon 学習用文書
+     * @throws ServiceAbortException 保存に失敗
+     */
+    void saveLearningTags(Correspon correspon) throws ServiceAbortException;
 }

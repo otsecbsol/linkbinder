@@ -133,4 +133,5 @@
   <sqlMap resource="sql/learningLabel.xml" />
   <sqlMap resource="sql/learningTag.xml" />
   <sqlMap resource="sql/corresponLearningLabel.xml" />
+  <sqlMap resource="sql/corresponLearningTag.xml" />
 </sqlMapConfig>

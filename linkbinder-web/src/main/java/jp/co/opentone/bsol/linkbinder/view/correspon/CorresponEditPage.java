@@ -15,6 +15,7 @@
  */
 package jp.co.opentone.bsol.linkbinder.view.correspon;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -814,31 +815,10 @@ public class CorresponEditPage extends AbstractCorresponPage
     private List<DistTemplateHeader> distributionTemplateList;
 
     /**
-     * プロジェクトに登録されている学習用ラベル一覧.
-     */
-    @Transfer
-    private List<SelectItem> learningLabelSelectList = new ArrayList<SelectItem>();
-
-    /**
-     * プロジェクトに登録されている学習用タグ一覧.
-     */
-    @Transfer
-    private List<SelectItem> learningTagSelectList = new ArrayList<SelectItem>();
-
-    /**
      * 学習用ラベルリスト.
      */
     @Transfer
     private List<LearningLabel> learningLabelList = null;
-
-    private List<LearningLabel> selectedLearningLabelList = null;
-    private List<LearningTag> selectedLearningTagList = null;
-
-    private String candidateLearningLabels;
-    private String selectedLearningLabels;
-    private String candidateLearningTags;
-    private String selectedLearningTags;
-
     /**
      * 学習用タグリスト.
      */
@@ -846,25 +826,30 @@ public class CorresponEditPage extends AbstractCorresponPage
     private List<LearningTag> learningTagList = null;
 
     /**
-     * 文書に登録されている学習用ラベル一覧.
+     * 選択済み学習用ラベル(入力値).
      */
-    @Transfer
-    private Long[] learningLabels = new Long[0];
+    private List<LearningLabel> selectedLearningLabelList = null;
+    /**
+     * 選択済み学習用タグ(入力値).
+     */
+    private List<LearningTag> selectedLearningTagList = null;
 
     /**
-     * 文書に登録されている学習用タグ一覧.
+     * 学習用ラベル選択候補のJSON表現.
      */
-    @Transfer
-    private Long[] learningTags = new Long[0];
-
+    private String candidateLearningLabels;
     /**
-     * 未定義の学習用ラベルが新たに追加された時にその値を格納するフィールド.
+     * 選択済み学習用ラベルのJSON表現.
      */
-    private String learningCorresponLabelAddedValue;
+    private String selectedLearningLabels;
     /**
-     * 未定義の学習用ラベルが新たに追加された時に割り当てるダミーIDカウンタ.
+     * 学習用タグ選択候補のJSON表現.
      */
-    private long learningCorresponLabelAddedIdCounter = -1L;
+    private String candidateLearningTags;
+    /**
+     * 選択済み学習用タグのJSON表現.
+     */
+    private String selectedLearningTags;
 
     //*****END
 
@@ -2616,6 +2601,21 @@ public class CorresponEditPage extends AbstractCorresponPage
         }
     }
 
+    public void syncSelectedLearningTags() {
+        if (StringUtils.isNotEmpty(selectedLearningTags)) {
+            List<LearningTaggingItems> items = fromJson(selectedLearningTags);
+            selectedLearningTagList = items.stream()
+                    .map(e -> {
+                        LearningTag tag = new LearningTag();
+                        tag.setId(e.getId());
+                        tag.setName(e.getText());
+
+                        return tag;
+                    })
+                    .collect(Collectors.toList());
+        }
+    }
+
     public void createSelectedLearningLabels() {
         List<LearningTaggingItems> items;
         if (CollectionUtils.isNotEmpty(selectedLearningLabelList)) {
@@ -2732,6 +2732,7 @@ public class CorresponEditPage extends AbstractCorresponPage
         this.selectedLearningTagList = selectedLearningTagList;
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class LearningTaggingItems {
         private Long id;
         private String text;
@@ -2768,49 +2769,6 @@ public class CorresponEditPage extends AbstractCorresponPage
         public void setSelected(boolean selected) {
             this.selected = selected;
         }
-    }
-
-    /**
-     * 学習用ラベル選択リストを設定する.
-     * @param learningLabelSelectList 学習用ラベル選択リスト
-     */
-    public void setLearningLabelSelectList(List<SelectItem> learningLabelSelectList) {
-        this.learningLabelSelectList = learningLabelSelectList;
-    }
-
-    /**
-     * 学習用ラベル選択肢（既存のラベル）を設定する.
-     * @return learningLabelSelectList 学習用ラベル選択肢
-     */
-    public List<SelectItem> getLearningLabelSelectList() {
-
-        if (this.learningLabelSelectList != null && !this.learningLabelSelectList.isEmpty()) {
-            return this.learningLabelSelectList;
-        }
-
-        this.learningLabelSelectList = viewHelper.createSelectItem(
-                learningLabelList, "id", "name");
-        return learningLabelSelectList;
-    }
-
-    /**
-     * 学習用タグ選択リストを設定する.
-     * @param learningTagSelectList 学習用タグ選択リスト
-     */
-    public void setLearningTagSelectList(List<SelectItem> learningTagSelectList) { this.learningTagSelectList = learningTagSelectList; }
-
-    /**
-     * 学習用タグ選択肢（既存のタグ）を返却する.
-     * @return learningTagSelectList 学習用タグ選択肢.
-     */
-    public List<SelectItem> getLearningTagSelectList() {
-        if (this.learningTagSelectList != null && !this.learningTagSelectList.isEmpty()) {
-            return this.learningTagSelectList;
-        }
-
-        this.learningTagSelectList = viewHelper.createSelectItem(
-                learningTagList, "id", "name");
-        return learningTagSelectList;
     }
 
     /**
@@ -3109,52 +3067,8 @@ public class CorresponEditPage extends AbstractCorresponPage
         return customFieldValueCandidateList;
     }
 
-    public void appendToLearningLabelSelectList() {
-        learningLabelSelectList.add(new SelectItem(learningCorresponLabelAddedIdCounter--, learningCorresponLabelAddedValue));
-        Long[] values = new Long[learningLabels.length + 1];
-        System.arraycopy(learningLabels, 0, values, 0, learningLabels.length);
-        values[values.length - 1] = learningCorresponLabelAddedIdCounter;
-
-//        learningLabels.add(learningCorresponLabelAddedIdCounter);
-        /*
-        LearningLabel label = new LearningLabel();
-        label.setName(learningCorresponLabelAddedValue);
-        learningLabelList.add(label);
-
-        learningLabelSelectList.clear();
-        */
-    }
-
-    public String getLearningCorresponLabelAddedValue() {
-        return learningCorresponLabelAddedValue;
-    }
-
-    public void setLearningCorresponLabelAddedValue(String learningCorresponLabelAddedValue) {
-        this.learningCorresponLabelAddedValue = learningCorresponLabelAddedValue;
-    }
-
     public void setLearningTagList(List<LearningTag> learningTagList) {
         this.learningTagList = learningTagList;
-    }
-
-    public Long[] getLearningTags() {
-        return learningTags;
-    }
-
-    public void setLearningTags(Long[] learningTags) {
-        this.learningTags = learningTags;
-    }
-
-    public Long[] getLearningLabels() {
-        return learningLabels == null ? null : learningLabels.clone();
-    }
-
-    public void setLearningLabels(Long[] learningLabels) {
-        if (learningLabels != null) {
-            this.learningLabels = learningLabels.clone();
-        } else {
-            this.learningLabels = null;
-        }
     }
 
     /**

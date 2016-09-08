@@ -52,6 +52,10 @@ public class LearningTagDaoImpl extends AbstractDao<LearningTag> implements Lear
      * SQLID:既に登録されている学習用タグを検索するID.
      */
     private static final String SQL_FIND_EXSIST_LABEL = "findExsistTag";
+    /**
+     * SQLID: 未使用の学習用タグを削除するID.
+     */
+    private static final String SQL_DELETE_IF_UNUSED_ID = "deleteIfUnused";
 
     /**
      * 前方一致検索を行うフィールド名.
@@ -85,5 +89,10 @@ public class LearningTagDaoImpl extends AbstractDao<LearningTag> implements Lear
     public List<LearningTag> findByCorresponId(Long corresponId) {
         return (List<LearningTag>) getSqlMapClientTemplate()
                 .queryForList(getSqlId(SQL_FIND_BY_CORRESPON_ID), corresponId);
+    }
+
+    @Override
+    public void deleteIfUnused(LearningTag tag) {
+        getSqlMapClientTemplate().delete(getSqlId(SQL_DELETE_IF_UNUSED_ID), tag);
     }
 }

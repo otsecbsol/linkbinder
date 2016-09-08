@@ -336,21 +336,40 @@ $(document).ready(function() {
         document.getElementById("form:importFileSize").value = '';
     }
 
-    $('#learningCorresponLabel').select2({
+    setupLearningTaggingElement({
+        elementId: 'learningCorresponLabel',
+        candidateId: 'form:candidateLearningLabels',
+        selectedId: 'form:selectedLearningLabels',
+        triggerId: 'form:learningCorresponLabelTrigger'
+    });
+    setupLearningTaggingElement({
+        elementId: 'learningCorresponTag',
+        candidateId: 'form:candidateLearningTags',
+        selectedId: 'form:selectedLearningTags',
+        triggerId: 'form:learningCorresponTagTrigger'
+    });
+});
+
+function setupLearningTaggingElement(option) {
+
+    var id = '#' + option.elementId;
+    var candidateId = '#' + $.escape(option.candidateId);
+    var selectedId = '#' + $.escape(option.selectedId);
+    var triggerId = '#' + $.escape(option.triggerId);
+
+    $(id).select2({
         tags: true,
-        data: JSON.parse($('#' + $.escape('form:candidateLearningLabels')).val())
+        data: JSON.parse($(candidateId).val())
     });
 
     var counter = -1;
-    var triggerId = '#' + $.escape('form:learningCorresponLabelTrigger');
-
-    $('#learningCorresponLabel').on('select2:select', function(e) {
+    $(id).on('select2:select', function(e) {
         var data = e.params.data;
         if (data.id === data.text) {
             data.id = counter--;
         }
 
-        var hidden = $('#' + $.escape('form:selectedLearningLabels'));
+        var hidden = $(selectedId);
         var selectedValues = JSON.parse(hidden.val());
         selectedValues.push(data);
 
@@ -358,10 +377,10 @@ $(document).ready(function() {
         $(triggerId).click();
     });
 
-    $('#learningCorresponLabel').on('select2:unselect', function(e) {
+    $(id).on('select2:unselect', function(e) {
         var data = e.params.data;
 
-        var hidden = $('#' + $.escape('form:selectedLearningLabels'));
+        var hidden = $(selectedId);
         var selectedValues = JSON.parse(hidden.val());
         for (var i = 0; i < selectedValues.length; i++) {
             if (selectedValues[i].text === data.text) {
@@ -373,78 +392,6 @@ $(document).ready(function() {
         hidden.val(JSON.stringify(selectedValues));
         $(triggerId).click();
     });
-    /*
-    $('.selectTagging').select2({
-        tags: true,
-        createTag: function(params) {
-            console.log(params);
-            var term = $.trim(params.term);
-            if (term === '') return null;
-
-            return {
-                id: -1,
-                text: term,
-                newTag: true
-            };
-        }
-    });
-    $('.selectTagging').select2({
-        tags: true
-    });
-    //$(document).on('select2:select', '.selectTagging', function(e) {
-    $('.selectTagging').on('select2:select', function(e) {
-        console.log(JSON.stringify(e.params));
-        var data = e.params.data;
-        if (data.id === data.text) {
-            appendToTaggingList(data, this);
-        }
-    });
-     */
-});
-
-/*
-$(document).ready(function() {
-    $('.selectTagging').select2({ tags: true }).each(function () {
-        var select = $(this);
-        //var selectTagging = $(select);
-        select.on('select2:select', function (e) {
-            var data = e.params.data;
-            if (data.id === data.text) {
-                appendToTaggingList(data, this);
-            }
-        });
-        select.prop('reload', function(e) {
-            select.select2('destroy');
-            select.select2();
-        });
-    });
-});
-*/
-
-function appendToTaggingList(data, select) {
-    console.log(data);
-    console.log(select)
-
-    var addedValueId = select.id + 'AddedValue';
-    var triggerId = select.id + 'Trigger';
-    console.log(triggerId);
-
-    $('#' + $.escape(addedValueId)).val(data.text);
-    $('#' + $.escape(triggerId)).click();
-}
-
-function reloadSelectTagging(data) {
-    if (data.status === 'success') {
-        var selectId = data.source.id.replace(/Trigger$/, '');
-        //$('#' + $.escape(selectId)).select2({ tags: true });
-        $('#' + $.escape(selectId)).on('select2:select', function(e) {
-            console.log(JSON.stringify(e.params));
-            var data = e.params.data;
-            if (data.id === data.text) {
-                appendToTaggingList(data, this);
-            }
-        });
-    }
 }
 
 function oncompleteAdd(data) {

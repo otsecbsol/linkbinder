@@ -49,6 +49,7 @@ import jp.co.opentone.bsol.linkbinder.service.AbstractService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponSaveService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.LearningLabelService;
+import jp.co.opentone.bsol.linkbinder.service.correspon.LearningTagService;
 import jp.co.opentone.bsol.linkbinder.service.notice.EmailNoticeService;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
@@ -100,6 +101,12 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
      */
     @Resource
     private LearningLabelService learningLabelService;
+
+    /**
+     * 学習用文書タグサービス.
+     */
+    @Resource
+    private LearningTagService learningTagService;
 
     /**
      * 空のインスタンスを生成する.
@@ -367,6 +374,7 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
             createHierarchy(clone);
         }
         saveLearningLabel(clone);
+        saveLearningTag(clone);
 
         return clone.getId();
     }
@@ -423,6 +431,7 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
         updateAddressUser(clone);                            // 宛先 ユーザー
 
         saveLearningLabel(clone);
+        saveLearningTag(clone);
 
         return clone.getId();
     }
@@ -959,6 +968,14 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
             learningLabelService.saveLearningLabels(correspon);
         } else {
             learningLabelService.clearAllLearningLabels(correspon);
+        }
+    }
+
+    private void saveLearningTag(Correspon correspon) throws ServiceAbortException {
+        if (isLearningCorrespon(correspon)) {
+            learningTagService.saveLearningTags(correspon);
+        } else {
+            learningTagService.clearAllLearningTags(correspon);
         }
     }
 

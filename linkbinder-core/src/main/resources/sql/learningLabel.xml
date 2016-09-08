@@ -50,6 +50,16 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     <result property="versionNo" column="version_no" />
   </resultMap>
 
+  <select id="findByIdForUpdate" resultMap="resultForUpdate">
+    SELECT
+      version_no
+    FROM
+      learning_label
+    WHERE
+      id = #id#
+    FOR UPDATE
+  </select>
+
   <select id="findByProjectId" resultMap="result">
     SELECT
       l.*
@@ -110,7 +120,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
        AND c.delete_no = 0
     WHERE l.delete_no = 0
       AND c.project_id IN (
-        SELECT project_id FROM sys_pj
+        SELECT pj_id FROM sys_pj
         WHERE for_learning = 1
       )
     ORDER BY l.name, c.id

@@ -15,17 +15,27 @@
  */
 package jp.co.opentone.bsol.linkbinder.service.correspon.impl;
 
+import jp.co.opentone.bsol.framework.core.dao.KeyDuplicateException;
+import jp.co.opentone.bsol.framework.core.dao.StaleRecordException;
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
+import jp.co.opentone.bsol.linkbinder.dao.CorresponLearningTagDao;
 import jp.co.opentone.bsol.linkbinder.dao.LearningTagDao;
+import jp.co.opentone.bsol.linkbinder.dto.Correspon;
+import jp.co.opentone.bsol.linkbinder.dto.CorresponLearningTag;
 import jp.co.opentone.bsol.linkbinder.dto.LearningTag;
+import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
 import jp.co.opentone.bsol.linkbinder.service.AbstractService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.LearningTagService;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * このサービスでは学習用タグに関する処理を提供する.
@@ -61,5 +71,92 @@ public class LearningTagServiceImpl extends AbstractService implements LearningT
     public List<LearningTag> findExsistTag() {
         LearningTagDao dao = getDao(LearningTagDao.class);
         return dao.findExsistTag();
+    }
+
+    @Override
+    public void clearAllLearningTags(Correspon correspon) throws ServiceAbortException {
+        LearningTagDao dao = getDao(LearningTagDao.class);
+        CorresponLearningTagDao ctDao = getDao(CorresponLearningTagDao.class);
+        try {
+            for (CorresponLearningTag ct : ctDao.findByCorresponId(correspon.getId())) {
+                // 関連を削除
+                ctDao.delete(ct);
+
+                // 結果、未使用のタグとなった場合はタグも削除
+                LearningTag t = new LearningTag();
+                t.setId(ct.getTagId());
+                dao.deleteIfUnused(t);
+            }
+        } catch (KeyDuplicateException e) {
+            throw new ServiceAbortException(e);
+        } catch (StaleRecordException e) {
+            throw new ServiceAbortException(
+                    ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
+        }
+    }
+
+    @Override
+    public void saveLearningTags(Correspon correspon) throws ServiceAbortException {
+        List<LearningTag> tags = correspon.getLearningTag();
+        Set<LearningTag> deleteCandidateTags = new HashSet<>();
+
+        LearningTagDao dao = getDao(LearningTagDao.class);
+        CorresponLearningTagDao ctDao = getDao(CorresponLearningTagDao.class);
+        try {
+            List<CorresponLearningTag> exists = ctDao.findByCorresponId(correspon.getId());
+            // 保存対象に含まれていなければ削除する
+            for (CorresponLearningTag ct : exists) {
+                LearningTag found = (LearningTag) CollectionUtils.find(tags, new Predicate() {
+                    @Override
+                    public boolean evaluate(Object o) {
+                        return ((LearningTag) o).getId().equals(ct.getTagId());
+                    }
+                });
+                if (found == null) {
+                    ctDao.delete(ct);
+
+                    LearningTag t = new LearningTag();
+                    t.setId(ct.getTagId());
+                    deleteCandidateTags.add(t);
+                }
+            }
+
+            // 新しいタグを登録
+            for (LearningTag t : correspon.getLearningTag()) {
+                if (t.getId() < 0) {
+                    t.setCreatedBy(getCurrentUser());
+                    t.setUpdatedBy(getCurrentUser());
+                    Long id = dao.create(t);
+                    t.setId(id);
+                }
+                // 関連付けを登録
+                CorresponLearningTag found =
+                        (CorresponLearningTag) CollectionUtils.find(exists, new Predicate() {
+                            @Override
+                            public boolean evaluate(Object o) {
+                                return ((CorresponLearningTag) o).getTagId().equals(t.getId());
+                            }
+                        });
+                if (found == null) {
+                    CorresponLearningTag ct = new CorresponLearningTag();
+                    ct.setCorresponId(correspon.getId());
+                    ct.setTagId(t.getId());
+                    ct.setCreatedBy(getCurrentUser());
+                    ct.setUpdatedBy(getCurrentUser());
+
+                    ctDao.create(ct);
+                }
+            }
+
+            for (LearningTag t : deleteCandidateTags) {
+                // 結果、未使用のタグとなった場合はタグも削除
+                dao.deleteIfUnused(t);
+            }
+        } catch (KeyDuplicateException e) {
+            throw new ServiceAbortException(e);
+        } catch (StaleRecordException e) {
+            throw new ServiceAbortException(
+                    ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
+        }
     }
 }

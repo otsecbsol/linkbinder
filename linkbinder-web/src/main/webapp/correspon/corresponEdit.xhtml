@@ -187,7 +187,7 @@
             <div id="forLearningParts">
               <div class="row">
                 <div class="twelve columns">
-                  <h:outputLabel for="learningCorresponLabel" value="ラベル" />
+                  <label for="learningCorresponLabel">ラベル</label>
                   <select id="learningCorresponLabel"
                           multiple="multiple"
                           class="u-full-width"
@@ -203,33 +203,26 @@
                                    style="display:none">
                     <f:ajax execute="selectedLearningLabels" render="@none"/>
                   </h:commandButton>
-
-                  <ui:remove>
-                    <h:selectManyListbox id="learningCorresponLabel" multiple="multiple"
-                                         value="#{corresponEditPage.learningLabels}"
-                                         styleClass="u-full-width selectTagging"
-                                         style="display:none">
-                      <f:selectItems value="#{corresponEditPage.learningLabelSelectList}" />
-                    </h:selectManyListbox>
-                    <h:inputHidden id="learningCorresponLabelAddedValue" value="#{corresponEditPage.learningCorresponLabelAddedValue}"/>
-                    <h:commandButton id="learningCorresponLabelTrigger"
-                                     action="#{corresponEditPage.appendToLearningLabelSelectList}"
-                                     style="display:none">
-                      <f:ajax execute="learningCorresponLabelAddedValue"
-                              render="learningCorresponLabel"
-                              onevent="reloadSelectTagging"/>
-                    </h:commandButton>
-                  </ui:remove>
                 </div>
               </div>
               <div class="row">
                 <div class="twelve columns">
-                  <h:outputLabel for="learningCorresponTag" value="タグ" />
-                  <h:selectManyListbox id="learningCorresponTag" multiple="multiple"
-                                       value="#{corresponEditPage.learningTags}"
-                                       styleClass="u-full-width selectTagging">
-                    <f:selectItems value="#{corresponEditPage.learningTagSelectList}" />
-                  </h:selectManyListbox>
+                  <label for="learningCorresponTag">タグ</label>
+                  <select id="learningCorresponTag"
+                          multiple="multiple"
+                          class="u-full-width"
+                          style="display:none;">
+                    <ui:repeat value="#{corresponEditPage.selectedLearningTagList}" var="item">
+                      <option value="#{item.id}" selected="selected">#{item.name}</option>
+                    </ui:repeat>
+                  </select>
+                  <h:inputHidden id="candidateLearningTags" value="#{corresponEditPage.candidateLearningTags}"/>
+                  <h:inputHidden id="selectedLearningTags" value="#{corresponEditPage.selectedLearningTags}"/>
+                  <h:commandButton id="learningCorresponTagTrigger"
+                                   action="#{corresponEditPage.syncSelectedLearningTags}"
+                                   style="display:none">
+                    <f:ajax execute="selectedLearningTags" render="@none"/>
+                  </h:commandButton>
                 </div>
               </div>
             </div>

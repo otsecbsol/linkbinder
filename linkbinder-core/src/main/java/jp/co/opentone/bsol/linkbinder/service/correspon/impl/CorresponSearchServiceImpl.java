@@ -143,7 +143,7 @@ public class CorresponSearchServiceImpl extends AbstractService implements Corre
      */
     private static final List<String> HEADER;
     static {
-        HEADER = new ArrayList<String>();
+        HEADER = new ArrayList<>();
         HEADER.add("ID");
         HEADER.add("文書番号");
         HEADER.add("改訂前文書番号");
@@ -169,7 +169,7 @@ public class CorresponSearchServiceImpl extends AbstractService implements Corre
      */
     private static final List<String> FIELDS;
     static {
-        FIELDS = new ArrayList<String>();
+        FIELDS = new ArrayList<>();
         FIELDS.add("id");
         FIELDS.add("corresponNo");
         FIELDS.add("previousRevCorresponNo");
@@ -194,7 +194,7 @@ public class CorresponSearchServiceImpl extends AbstractService implements Corre
      */
     private static final Map<String, String> FORMATS;
     static {
-        FORMATS = new HashMap<String, String>();
+        FORMATS = new HashMap<>();
         FORMATS.put("createdAt", CsvGenerator.DEFAULT_DATE_FORMAT_PATTERN);
         FORMATS.put("issuedAt", CsvGenerator.DEFAULT_DATE_FORMAT_PATTERN);
         FORMATS.put("updatedAt", CsvGenerator.DEFAULT_DATE_FORMAT_PATTERN);
@@ -234,7 +234,6 @@ public class CorresponSearchServiceImpl extends AbstractService implements Corre
     public SearchCorresponResult search(SearchCorresponCondition condition)
         throws ServiceAbortException {
         // 全文検索条件を含んでいるかどうか判定
-        List<Correspon> corresponList = null;
         if (hasFullTextSearchCondition(condition)) {
             // 全文検索条件をセット
             setCorresponListFullTextSearchCondition(condition);
@@ -244,7 +243,7 @@ public class CorresponSearchServiceImpl extends AbstractService implements Corre
         // 該当データの存在チェック
         int count = getDataCount(condition);
         // 指定された条件に該当するコレポン文書一覧情報を取得
-        corresponList = findCorresponList(condition);
+        List<Correspon> corresponList = findCorresponList(condition);
         // ページングデータのチェック
         checkPagingData(corresponList);
 
@@ -355,9 +354,7 @@ public class CorresponSearchServiceImpl extends AbstractService implements Corre
                 List<CorresponResponseHistory> histories =
                     corresponService.findCorresponResponseHistory(correspon);
 
-                List<CorresponResponseHistoryModel> historyModels =
-                    new ArrayList<CorresponResponseHistoryModel>();
-
+                List<CorresponResponseHistoryModel> historyModels = new ArrayList<>();
                 for (CorresponResponseHistory history : histories) {
                     CorresponResponseHistoryModel model = new CorresponResponseHistoryModel();
                     model.setCorresponResponseHistory(history);
@@ -501,7 +498,6 @@ public class CorresponSearchServiceImpl extends AbstractService implements Corre
      * @param condition
      *            検索条件
      * @return コレポン文書のリスト
-     * @author opentone
      */
     private List<Long> findCorresponIdInPageList(SearchCorresponCondition condition) {
         CorresponDao dao = getDao(CorresponDao.class);
@@ -512,42 +508,37 @@ public class CorresponSearchServiceImpl extends AbstractService implements Corre
      * 全文検索結果を含んだコレポン文書一覧を取得する.
      * 引数の contidion のプロパティを変更する。
      * @param condition 検索条件
-     * @return コレポン文書のリスト
      * @throws ServiceAbortException 例外
      */
     private void setCorresponListFullTextSearchCondition(SearchCorresponCondition condition)
         throws ServiceAbortException {
         SearchFullTextSearchCorresponCondition fullTextSearchCondition
             = new SearchFullTextSearchCorresponCondition();
-        try {
-            fullTextSearchCondition.setKeyword(condition.getKeyword());
-            fullTextSearchCondition.setFullTextSearchMode(condition.getFullTextSearchMode());
-            List<FullTextSearchCorresponsResult> resultFullText
-                = fullTextSearchService.searchNoLimit(fullTextSearchCondition);
+        fullTextSearchCondition.setKeyword(condition.getKeyword());
+        fullTextSearchCondition.setFullTextSearchMode(condition.getFullTextSearchMode());
+        List<FullTextSearchCorresponsResult> resultFullText
+            = fullTextSearchService.searchNoLimit(fullTextSearchCondition);
 
-            // 最大件数チェック
-            validateHitNumber(resultFullText.size(), true);
+        // 最大件数チェック
+        validateHitNumber(resultFullText.size(), true);
 
-            // 取得結果のIDを、通常検索条件にセットする
-            List<Ids> idOuter = new ArrayList<Ids>();
-            List<Long> idInner = new ArrayList<Long>();
-            int i = 0;
-            for (FullTextSearchCorresponsResult item : resultFullText) {
-                i++;
-                idInner.add(item.getId());
-                // 全文検索結果が 規定件数 （SELECT 文 IN 句の最大要素数） を超える場合、条件を分ける
-                if ((i % MAX_IN_ARGS) == 0) {
-                    idOuter.add(new Ids(idInner));
-                    idInner = new ArrayList<Long>();
-                }
-            }
-            if (idInner.size() > 0) {
+        // 取得結果のIDを、通常検索条件にセットする
+        List<Ids> idOuter = new ArrayList<>();
+        List<Long> idInner = new ArrayList<>();
+        int i = 0;
+        for (FullTextSearchCorresponsResult item : resultFullText) {
+            i++;
+            idInner.add(item.getId());
+            // 全文検索結果が 規定件数 （SELECT 文 IN 句の最大要素数） を超える場合、条件を分ける
+            if ((i % MAX_IN_ARGS) == 0) {
                 idOuter.add(new Ids(idInner));
+                idInner = new ArrayList<>();
             }
-            condition.setIdList(idOuter);
-        } catch (ServiceAbortException e) {
-            throw e;
         }
+        if (idInner.size() > 0) {
+            idOuter.add(new Ids(idInner));
+        }
+        condition.setIdList(idOuter);
     }
 
     /**

@@ -27,7 +27,6 @@ import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
 import jp.co.opentone.bsol.linkbinder.service.AbstractService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.LearningTagService;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -53,11 +52,6 @@ public class LearningTagServiceImpl extends AbstractService implements LearningT
      * logger.
      */
     private static final Logger log = LoggerFactory.getLogger(LearningTagServiceImpl.class);
-    /**
-     * 空のインスタンスを生成する.
-     */
-    public LearningTagServiceImpl() {
-    }
 
     @Override
     @Transactional(readOnly = true)
@@ -80,11 +74,11 @@ public class LearningTagServiceImpl extends AbstractService implements LearningT
                 t.setId(ct.getTagId());
                 dao.deleteIfUnused(t);
             }
-        } catch (KeyDuplicateException e) {
-            throw new ServiceAbortException(e);
         } catch (StaleRecordException e) {
             throw new ServiceAbortException(
                     ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
+        } catch (KeyDuplicateException e) {
+            throw new ServiceAbortException(e);
         }
     }
 
@@ -99,12 +93,7 @@ public class LearningTagServiceImpl extends AbstractService implements LearningT
             List<CorresponLearningTag> exists = ctDao.findByCorresponId(correspon.getId());
             // 保存対象に含まれていなければ削除する
             for (CorresponLearningTag ct : exists) {
-                LearningTag found = (LearningTag) CollectionUtils.find(tags, new Predicate() {
-                    @Override
-                    public boolean evaluate(Object o) {
-                        return ((LearningTag) o).getId().equals(ct.getTagId());
-                    }
-                });
+                LearningTag found = (LearningTag) CollectionUtils.find(tags, o -> ((LearningTag) o).getId().equals(ct.getTagId()));
                 if (found == null) {
                     ctDao.delete(ct);
 
@@ -124,12 +113,7 @@ public class LearningTagServiceImpl extends AbstractService implements LearningT
                 }
                 // 関連付けを登録
                 CorresponLearningTag found =
-                        (CorresponLearningTag) CollectionUtils.find(exists, new Predicate() {
-                            @Override
-                            public boolean evaluate(Object o) {
-                                return ((CorresponLearningTag) o).getTagId().equals(t.getId());
-                            }
-                        });
+                        (CorresponLearningTag) CollectionUtils.find(exists, o -> ((CorresponLearningTag) o).getTagId().equals(t.getId()));
                 if (found == null) {
                     CorresponLearningTag ct = new CorresponLearningTag();
                     ct.setCorresponId(correspon.getId());
@@ -141,15 +125,13 @@ public class LearningTagServiceImpl extends AbstractService implements LearningT
                 }
             }
 
-            for (LearningTag t : deleteCandidateTags) {
-                // 結果、未使用のタグとなった場合はタグも削除
-                dao.deleteIfUnused(t);
-            }
-        } catch (KeyDuplicateException e) {
-            throw new ServiceAbortException(e);
+            // 結果、未使用のタグとなった場合はタグも削除
+            deleteCandidateTags.forEach(dao::deleteIfUnused);
         } catch (StaleRecordException e) {
             throw new ServiceAbortException(
                     ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
+        } catch (KeyDuplicateException e) {
+            throw new ServiceAbortException(e);
         }
     }
 }

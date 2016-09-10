@@ -57,12 +57,6 @@ public class ImageTextDetectionServiceImpl extends AbstractService implements
      */
     private static final long serialVersionUID = -2795456058133877087L;
 
-    /**
-     * 空のインスタンスを生成する.
-     */
-    public ImageTextDetectionServiceImpl() {
-    }
-
     private GoogleVisionApiClient newApiClient() {
         GoogleVisionApiConfiguration config = GoogleVisionApiConfiguration.builder()
                 .use(BooleanUtils.toBoolean(SystemConfig.getValue(Constants.KEY_GOOGLE_VISION_USE)))

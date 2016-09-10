@@ -120,7 +120,7 @@ public class CorresponStatusControl extends AbstractService {
      * @return 承認作業状態
      */
     private WorkflowProcessStatus setupWorkflowProcessStatus(Correspon c) {
-        WorkflowProcessStatus result = null;
+        WorkflowProcessStatus result;
         switch (c.getWorkflowStatus()) {
         case DRAFT:
             result = getWorkflowProcessStatusDraft(c);

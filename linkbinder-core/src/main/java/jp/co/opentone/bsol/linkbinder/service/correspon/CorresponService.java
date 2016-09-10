@@ -172,5 +172,11 @@ public interface CorresponService extends IService {
     byte[] generateZip(Correspon correspons, boolean usePersonInCharge)
             throws ServiceAbortException;
 
-    void copyCorresponForLearning(Correspon correspon);
+    /**
+     * 指定された文書を学習用プロジェクトへ公開する.
+     * @param id 文書ID
+     * @return 作成した文書IDリスト
+     * @throws ServiceAbortException 保存に失敗
+     */
+    List<Long> issueToLearningProjects(Long id) throws ServiceAbortException;
 }

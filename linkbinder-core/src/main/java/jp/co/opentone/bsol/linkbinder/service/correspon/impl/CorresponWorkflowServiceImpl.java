@@ -15,19 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.service.correspon.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import jp.co.opentone.bsol.framework.core.config.SystemConfig;
 import jp.co.opentone.bsol.framework.core.dao.KeyDuplicateException;
 import jp.co.opentone.bsol.framework.core.dao.RecordNotFoundException;
@@ -60,6 +47,16 @@ import jp.co.opentone.bsol.linkbinder.service.common.CorresponSequenceService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponWorkflowService;
 import jp.co.opentone.bsol.linkbinder.service.notice.EmailNoticeService;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * このサービスでは承認フローに関する処理を提供する.
@@ -254,7 +251,7 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
      */
     private void checkDuplicatedUser(List<Workflow> workflows) throws ServiceAbortException {
         // Listに対象情報セット
-        HashMap<String, String> workflowHash = new HashMap<String, String>();
+        HashMap<String, String> workflowHash = new HashMap<>();
         for (Workflow w : workflows) {
             if (!(workflowHash.size() == 0)) {
                 if (workflowHash.containsKey(w.getUser().getEmpNo())) {
@@ -305,7 +302,7 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
                     insertWorkflow(wf);
                 }
             }
-        } else if (isKeyPattern2AndWorkflowProcessStatus(correspon, workflows, workflowDb)) {
+        } else if (isKeyPattern2AndWorkflowProcessStatus(correspon, workflowDb)) {
             // Approverを取得
             Workflow approver = workflows.get(workflows.size() - 1);
             // Approverのレコードのみ削除する
@@ -324,13 +321,12 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
     /**
      * 承認フローパターンが2で承認ステータスがRequest_for_CheckまたはUnder_Considerationか判定する.
      * @param correspon コレポン文書
-     * @param workflows 承認フロー
      * @param workflowDb DBから取得した承認フロー
      * @return 承認パターンが2かつ承認ステータスがRequest_for_CheckまたはUnder_Considerationの場合true
      *         上記以外false
      */
     private boolean isKeyPattern2AndWorkflowProcessStatus(
-            Correspon correspon, List<Workflow> workflows, List<Workflow> workflowDb) {
+            Correspon correspon, List<Workflow> workflowDb) {
         return isWorkflowPattern2(correspon)
             && !workflowDb.isEmpty()
             && (correspon.getWorkflowStatus() == WorkflowStatus.REQUEST_FOR_CHECK
@@ -349,11 +345,11 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
         try {
             WorkflowDao dao = getDao(WorkflowDao.class);
             return dao.deleteByCorresponIdWorkflowNo(corresponId, workflowNo, getCurrentUser());
-        } catch (KeyDuplicateException kde) {
-            throw new ServiceAbortException(kde);
         } catch (StaleRecordException e) {
             throw new ServiceAbortException(
-                ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
+                    ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
+        } catch (KeyDuplicateException kde) {
+            throw new ServiceAbortException(kde);
         }
     }
 
@@ -367,11 +363,11 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
         try {
             WorkflowDao dao = getDao(WorkflowDao.class);
             return dao.deleteByCorresponId(corresponId, getCurrentUser());
-        } catch (KeyDuplicateException kde) {
-            throw new ServiceAbortException(kde);
         } catch (StaleRecordException e) {
             throw new ServiceAbortException(
-                ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
+                    ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
+        } catch (KeyDuplicateException kde) {
+            throw new ServiceAbortException(kde);
         }
     }
 
@@ -463,14 +459,15 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
         updateCorresponForApprove(correspon);
         // 承認作業状態を更新
         updateWorkflowForApprove(workflow);
-        // 学習用プロジェクトへ文書をコピーする
-        if(correspon.isLearningContents()) {
-            copyLearningCorrespon(correspon);
-        }
         // メール通知を行う for approve
         sendWorkflowNotice(correspon, EmailNoticeEventCd.APPROVED);
         // メール通知を行う for issue
         sendIssuedNotice(correspon);
+
+        // 学習用プロジェクトへ文書をコピーする
+        if(correspon.isLearningContents()) {
+            corresponService.issueToLearningProjects(correspon.getId());
+        }
     }
 
     /*
@@ -623,7 +620,7 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
      */
     private List<WorkflowTemplate> createWorkflowTemplateList(Long workflowTemplateUserId,
             List<Workflow> workflow) {
-        List<WorkflowTemplate> workflowTemplateList = new ArrayList<WorkflowTemplate>();
+        List<WorkflowTemplate> workflowTemplateList = new ArrayList<>();
 
         for (Workflow w : workflow) {
             WorkflowTemplate workflowTemplate = new WorkflowTemplate();
@@ -764,7 +761,7 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
     /**
      * 承認状態共通チェック2.
      * @param correspon コレポン文書
-     * @param workflow 承認フロー
+     * @param workflows 承認フロー
      * @throws ServiceAbortException 承認状態共通チェックに引っかかった場合
      */
     private void validateWorkflowCommonToCheckSecond(Correspon correspon, List<Workflow> workflows)
@@ -930,7 +927,6 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
     /**
      * Checkerの承認作業状態をチェックする.
      * @param workflow 承認フロー
-     * @return boolean 正常ならtrue / 異常ならfalse
      * @throws ServiceAbortException チェックに引っかかった場合
      */
     private void invalidCheckerWorkflowStatus(Workflow workflow) throws ServiceAbortException {
@@ -1069,7 +1065,7 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
             throws ServiceAbortException {
         // DBから承認フローを取得する
         long id = correspon.getId();
-        boolean isApproverUnderConsideration = false;
+        boolean isApproverUnderConsideration;
 
         // DBから承認フローリストを取得する
         WorkflowDao dao = getDao(WorkflowDao.class);
@@ -1080,12 +1076,9 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
         Workflow wf = workflowDb.get(workflowDb.size() - 1);
         WorkflowProcessStatus wfp = wf.getWorkflowProcessStatus();
 
-        if (wf.isApprover() && WorkflowProcessStatus.NONE == wfp) {
-            // 承認フロー差分チェック
-            isApproverUnderConsideration = isInvalidWorkflowDiffCheck(workflow, workflowDb);
-        } else {
-            isApproverUnderConsideration = true;
-        }
+        // 承認フロー差分チェック
+        isApproverUnderConsideration = !(wf.isApprover() && WorkflowProcessStatus.NONE == wfp)
+                                    || isInvalidWorkflowDiffCheck(workflow, workflowDb);
         return isApproverUnderConsideration;
     }
 
@@ -1111,15 +1104,13 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
             }
         }
         // 追加したデータがある場合
-        if (0 < count) {
-            return isAddWorkflow(workflow);
-        }
-        return false;
+        return 0 < count && isAddWorkflow(workflow);
     }
 
     /**
      * コレポン文書から取得した承認フローリストとDBから取得した承認フローリストの差分をチェックする.
-     * @param workflowIdDb DBから取得した承認フローID
+     * @param workflowDb DBから取得した承認フローID
+     * @param workflows ワークフローリスト
      * @return 承認フローリストに存在しなければtrue、それ以外はfalse
      */
     private boolean isDeletedWorkflow(List<Workflow> workflowDb, List<Workflow> workflows) {
@@ -1128,7 +1119,7 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
             WorkflowProcessStatus processStatusDb = wd.getWorkflowProcessStatus();
             // 削除されたデータがあるかチェックする
             if (WorkflowProcessStatus.NONE != processStatusDb) {
-                if (isInvalidWorkflowDbDiff(workflowIdDb, processStatusDb, workflows)) {
+                if (isInvalidWorkflowDbDiff(workflowIdDb, workflows)) {
                     return true;
                 }
             }
@@ -1138,7 +1129,7 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
 
     /**
      * 承認フロー設定が正しい順序で作成されているかチェックする.
-     * @param workflowIdDb コレポン文書から取得した承認フローリスト
+     * @param workflow 承認フローリスト
      * @return true:異常 false:正常
      */
     private boolean isAddWorkflow(List<Workflow> workflow) {
@@ -1165,12 +1156,10 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
     /**
      * DBが保持している承認フローリストと渡ってきた承認フローリストの差分をチェックする.
      * @param workflowIdDb DBから取得した承認フローID
-     * @param processStatusDb DBから取得した承認フロー作業状態
      * @param workflow コレポン文書から取得した承認フローリスト
      * @return 承認フローリストに存在しなければtrue、それ以外はfalse
      */
-    private boolean isInvalidWorkflowDbDiff(long workflowIdDb,
-        WorkflowProcessStatus processStatusDb, List<Workflow> workflow) {
+    private boolean isInvalidWorkflowDbDiff(long workflowIdDb, List<Workflow> workflow) {
         for (Workflow w : workflow) {
             long workflowId = w.getId();
             if (workflowIdDb == workflowId) {
@@ -1192,11 +1181,10 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
 
         // コレポン文書を承認/否認していないCheckerが存在する場合、 [Under Consideration]
         List<Workflow> list = correspon.getWorkflows();
-        for (int i = 0; i < list.size(); i++) {
-            Workflow otherWorkflow = list.get(i);
+        for (Workflow otherWorkflow : list) {
             if (otherWorkflow.isChecker()
                     && !workflow.getId().equals(otherWorkflow.getId()) // 対象のワークフローは除く
-                && !WorkflowProcessStatus.CHECKED.equals(
+                    && !WorkflowProcessStatus.CHECKED.equals(
                     otherWorkflow.getWorkflowProcessStatus())) {
                 workflowStatus = WorkflowStatus.UNDER_CONSIDERATION;
             }
@@ -1251,7 +1239,6 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
     /**
      * コレポン文書の承認状態を更新する.
      * @param correspon コレポン文書
-     * @param workflowStatus 承認状態
      * @throws ServiceAbortException 更新失敗
      */
     private void updateCorrespon(Correspon correspon) throws ServiceAbortException {
@@ -1291,7 +1278,7 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
         } else if (isWorkflowPattern2(correspon)) {
             updateWorkflowPattern2(workflowList, workflow);
         } else if (isWorkflowPattern3(correspon)) {
-            updateWorkflowPattern3(workflowList, workflow);
+            updateWorkflowPattern3(workflow);
         }
         // 承認パターン3の時は何もしない
     }
@@ -1302,7 +1289,7 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
      * @param ignore 無視するワークフロー
      * @return 承認作業状態がNoneである最初のワークフロー
      */
-    protected Workflow getFirstNotProcessedWorkflow(List<Workflow> workflowList, Workflow ignore) {
+    Workflow getFirstNotProcessedWorkflow(List<Workflow> workflowList, Workflow ignore) {
         Workflow result = null;
         for (Workflow w : workflowList) {
             if (w.getWorkflowNo().equals(ignore.getWorkflowNo())) {
@@ -1316,8 +1303,7 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
         return result;
     }
 
-    protected boolean isNextProcessStatusUpdatable(
-        List<Workflow> workflowList, Workflow next, Workflow ignore) {
+    boolean isNextProcessStatusUpdatable(List<Workflow> workflowList, Workflow next, Workflow ignore) {
         for (Workflow w : workflowList) {
             if (w.isApprover()) {
                 return false;
@@ -1397,14 +1383,13 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
         // CheckerがすべてCheck済みの時、Approverを更新
         boolean isUpdate = true;
         Workflow approver = null;
-        for (int i = 0; i < workflowList.size(); i++) {
-            Workflow nextWorkflow = workflowList.get(i);
+        for (Workflow nextWorkflow : workflowList) {
             if (nextWorkflow.getWorkflowNo().equals(workflow.getWorkflowNo())) {
                 continue;
             }
 
             if (nextWorkflow.isChecker()
-                && !WorkflowProcessStatus.CHECKED.equals(nextWorkflow.getWorkflowProcessStatus())) {
+                    && !WorkflowProcessStatus.CHECKED.equals(nextWorkflow.getWorkflowProcessStatus())) {
                 isUpdate = false;
                 break;
             } else if (nextWorkflow.isApprover()) {
@@ -1420,11 +1405,10 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
 
     /**
      * パターン3のワークフローを更新する.
-     * @param workflowList ワークフローリスト
      * @param workflow 自分のワークフロー
      * @throws ServiceAbortException 更新時エラー
      */
-    private void updateWorkflowPattern3(List<Workflow> workflowList, Workflow workflow)
+    private void updateWorkflowPattern3(Workflow workflow)
             throws ServiceAbortException {
         //  検証・承認依頼後に承認フローパターンが変更された場合への対応
         //    ・検証・承認依頼されていないCheckerの承認作業状態をRequest for Checkに更新する
@@ -1468,11 +1452,6 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
         updateWorkflow(newWorkflow);
     }
 
-    private void copyLearningCorrespon(Correspon correspon) throws ServiceAbortException {
-        Correspon originalCorrespon = corresponService.find(correspon.getId());
-        corresponService.copyCorresponForLearning(originalCorrespon);
-    }
-
     /**
      * 承認フローを否認する.
      * @param workflow ワークフロー
@@ -1507,7 +1486,6 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
     /**
      * ワークフローの承認作業状態を更新する.
      * @param workflow ワークフロー
-     * @param workflowProcessStatus 承認作業状態
      * @throws ServiceAbortException 更新失敗
      */
     private void updateWorkflow(Workflow workflow) throws ServiceAbortException {
@@ -1525,7 +1503,7 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
     /**
      * ワークフローの承認作業状態を更新する.
      * @param workflow ワークフロー
-     * @param workflowProcessStatus 承認作業状態
+     * @param currentStatus 承認作業状態
      * @throws ServiceAbortException 更新失敗
      */
     private void updateWorkflowProcessStatusById(
@@ -1534,18 +1512,18 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
         try {
             WorkflowDao dao = getDao(WorkflowDao.class);
             dao.updateWorkflowProcessStatusById(workflow, currentStatus);
-        } catch (KeyDuplicateException e) {
-            throw new ServiceAbortException(e);
         } catch (StaleRecordException e) {
             throw new ServiceAbortException(
-                ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
+                    ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
+        } catch (KeyDuplicateException e) {
+            throw new ServiceAbortException(e);
         }
     }
 
     /**
      * ワークフローの承認作業状態を更新する.
      * @param workflow ワークフロー
-     * @param workflowProcessStatus 承認作業状態
+     * @param currentStatus 承認作業状態
      * @throws ServiceAbortException 更新失敗
      */
     private void updateWorkflowProcessStatusesByCorresponIdAndWorkflowType(
@@ -1554,11 +1532,11 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
         try {
             WorkflowDao dao = getDao(WorkflowDao.class);
             dao.updateWorkflowProcessStatusesByCorresponIdAndWorkflowType(workflow, currentStatus);
-        } catch (KeyDuplicateException e) {
-            throw new ServiceAbortException(e);
         } catch (StaleRecordException e) {
             throw new ServiceAbortException(
-                ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
+                    ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
+        } catch (KeyDuplicateException e) {
+            throw new ServiceAbortException(e);
         }
     }
 
@@ -1632,7 +1610,7 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
      * @return Checkerが追加されている場合はtrue
      */
     private boolean isCheckerAdded(List<Workflow> workflows) {
-        final Long newId = Long.valueOf(0L);
+        final Long newId = 0L;
         for (Workflow w : workflows) {
             log.debug("  {}.{}-{} {}", new Object[] {w.getWorkflowNo(),
                                             w.getId(),
@@ -1739,9 +1717,7 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
         try {
             WorkflowTemplateUserDao dao = getDao(WorkflowTemplateUserDao.class);
             return dao.delete(templateUser);
-        } catch (KeyDuplicateException e) {
-            throw new ServiceAbortException(e);
-        } catch (StaleRecordException e) {
+        } catch (KeyDuplicateException | StaleRecordException e) {
             throw new ServiceAbortException(e);
         }
     }
@@ -1757,9 +1733,7 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
         try {
             WorkflowTemplateDao dao = getDao(WorkflowTemplateDao.class);
             return dao.deleteByWorkflowTemplateUserId(template);
-        } catch (KeyDuplicateException e) {
-            throw new ServiceAbortException(e);
-        } catch (StaleRecordException e) {
+        } catch (KeyDuplicateException | StaleRecordException e) {
             throw new ServiceAbortException(e);
         }
     }

@@ -27,7 +27,6 @@ import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
 import jp.co.opentone.bsol.linkbinder.service.AbstractService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.LearningLabelService;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -53,11 +52,6 @@ public class LearningLabelServiceImpl extends AbstractService implements Learnin
      * logger.
      */
     private static final Logger log = LoggerFactory.getLogger(LearningLabelServiceImpl.class);
-    /**
-     * 空のインスタンスを生成する.
-     */
-    public LearningLabelServiceImpl() {
-    }
 
     @Override
     @Transactional(readOnly = true)
@@ -87,11 +81,11 @@ public class LearningLabelServiceImpl extends AbstractService implements Learnin
                 l.setId(cl.getLabelId());
                 dao.deleteIfUnused(l);
             }
-        } catch (KeyDuplicateException e) {
-            throw new ServiceAbortException(e);
         } catch (StaleRecordException e) {
             throw new ServiceAbortException(
                     ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
+        } catch (KeyDuplicateException e) {
+            throw new ServiceAbortException(e);
         }
     }
 
@@ -106,12 +100,7 @@ public class LearningLabelServiceImpl extends AbstractService implements Learnin
             List<CorresponLearningLabel> exists = clDao.findByCorresponId(correspon.getId());
             // 保存対象に含まれていなければ削除する
             for (CorresponLearningLabel cl : exists) {
-                LearningLabel found = (LearningLabel) CollectionUtils.find(labels, new Predicate() {
-                    @Override
-                    public boolean evaluate(Object o) {
-                        return ((LearningLabel) o).getId().equals(cl.getLabelId());
-                    }
-                });
+                LearningLabel found = (LearningLabel) CollectionUtils.find(labels, o -> ((LearningLabel) o).getId().equals(cl.getLabelId()));
                 if (found == null) {
                     clDao.delete(cl);
 
@@ -131,12 +120,7 @@ public class LearningLabelServiceImpl extends AbstractService implements Learnin
                 }
                 // 関連付けを登録
                 CorresponLearningLabel found =
-                        (CorresponLearningLabel) CollectionUtils.find(exists, new Predicate() {
-                            @Override
-                            public boolean evaluate(Object o) {
-                                return ((CorresponLearningLabel) o).getLabelId().equals(l.getId());
-                            }
-                        });
+                        (CorresponLearningLabel) CollectionUtils.find(exists, o -> ((CorresponLearningLabel) o).getLabelId().equals(l.getId()));
                 if (found == null) {
                     CorresponLearningLabel cl = new CorresponLearningLabel();
                     cl.setCorresponId(correspon.getId());
@@ -148,15 +132,13 @@ public class LearningLabelServiceImpl extends AbstractService implements Learnin
                 }
             }
 
-            for (LearningLabel l : deleteCandidateLabels) {
-                // 結果、未使用のラベルとなった場合はラベルも削除
-                dao.deleteIfUnused(l);
-            }
-        } catch (KeyDuplicateException e) {
-            throw new ServiceAbortException(e);
+            // 結果、未使用のラベルとなった場合はラベルも削除
+            deleteCandidateLabels.forEach(dao::deleteIfUnused);
         } catch (StaleRecordException e) {
             throw new ServiceAbortException(
                     ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
+        } catch (KeyDuplicateException e) {
+            throw new ServiceAbortException(e);
         }
     }
 }

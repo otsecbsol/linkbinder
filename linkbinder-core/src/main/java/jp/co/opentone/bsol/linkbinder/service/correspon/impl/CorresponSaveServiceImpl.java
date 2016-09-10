@@ -964,7 +964,7 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
     }
 
     private void saveLearningLabel(Correspon correspon) throws ServiceAbortException {
-        if (isLearningCorrespon(correspon)) {
+        if (correspon.isLearningContents()) {
             learningLabelService.saveLearningLabels(correspon);
         } else {
             learningLabelService.clearAllLearningLabels(correspon);
@@ -972,16 +972,11 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
     }
 
     private void saveLearningTag(Correspon correspon) throws ServiceAbortException {
-        if (isLearningCorrespon(correspon)) {
+        if (correspon.isLearningContents()) {
             learningTagService.saveLearningTags(correspon);
         } else {
             learningTagService.clearAllLearningTags(correspon);
         }
-    }
-
-    private boolean isLearningCorrespon(Correspon correspon) {
-        return correspon.getForLearning() != null
-                && ForLearning.LEARNING == correspon.getForLearning();
     }
 
     private List<AddressCorresponGroup> findAddressCorresponGroups(Long corresponId) {

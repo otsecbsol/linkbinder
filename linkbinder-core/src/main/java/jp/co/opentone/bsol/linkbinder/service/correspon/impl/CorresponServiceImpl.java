@@ -273,7 +273,7 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
     //  カスタムフィールド項目数が多いため行数オーバーする
     //CHECKSTYLE:OFF
     private List<CorresponCustomField> collectCurrentCorresponCustomField(Correspon c) {
-        List<CorresponCustomField> fields = new ArrayList<CorresponCustomField>();
+        List<CorresponCustomField> fields = new ArrayList<>();
         CorresponCustomField f;
         if (c.getCustomField1Id() != null) {
             f = new CorresponCustomField();
@@ -494,10 +494,10 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
             attachment.setContent(client.getFileContent(attachment.getFileId(), filePath));
 
             return attachment;
-        } catch (RecordNotFoundException e) {
-            throw new ServiceAbortException(e);
         } catch (FileStoreException e) {
             throw new ServiceAbortException(ApplicationMessageCode.ERROR_UPLOADING_FILE);
+        } catch (RecordNotFoundException e) {
+            throw new ServiceAbortException(e);
         } finally {
             // ファイルを削除する
             if (filePath != null) {
@@ -669,10 +669,9 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
      * 承認フローを更新する(パターン1).
      * @param workflow
      *            承認フローリスト
-     * @throws ServiceAbortException
+     * @throws ServiceAbortException 更新に失敗
      */
     private void createWorkflowPattern1(List<Workflow> workflow) throws ServiceAbortException {
-
         Workflow updateWorkflow;
 
         for (Workflow w : workflow) {
@@ -700,10 +699,9 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
      * 承認フローを更新する(パターン2).
      * @param workflow
      *            承認フローリスト
-     * @throws ServiceAbortException
+     * @throws ServiceAbortException 更新に失敗
      */
     private void createWorkflowPattern2(List<Workflow> workflow) throws ServiceAbortException {
-
         Workflow updateWorkflow;
 
         boolean existChecker = false;
@@ -728,10 +726,9 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
      * 承認フローを更新する(パターン3).
      * @param workflow
      *            承認フローリスト
-     * @throws ServiceAbortException
+     * @throws ServiceAbortException 更新に失敗
      */
     private void createWorkflowPattern3(List<Workflow> workflow) throws ServiceAbortException {
-
         Workflow updateWorkflow;
 
         for (Workflow w : workflow) {
@@ -916,7 +913,6 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
      * @return 削除用のオブジェクト
      */
     private Correspon createDeletedCorrespon(Correspon old) {
-
         Correspon correspon = new Correspon();
         correspon.setId(old.getId());
         correspon.setUpdatedBy(getCurrentUser());
@@ -932,7 +928,6 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
      *             削除に失敗
      */
     private void deleteCorrespon(Correspon correspon) throws ServiceAbortException {
-
         try {
             CorresponDao dao = getDao(CorresponDao.class);
             dao.delete(correspon);
@@ -968,23 +963,9 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
         // メール通知機能
         sendIssuedNotice(correspon, EmailNoticeEventCd.ISSUED);
 
-
         // 学習用コンテンツの場合、文書を学習用プロジェクトへコピー.
         if (correspon.isLearningContents()) {
-            Correspon clone = new Correspon();
-            try {
-                Correspon originalCorrespon = findCorrespon(correspon.getId());
-                PropertyUtils.copyProperties(clone, originalCorrespon);
-            } catch(NoSuchMethodException e) {
-                throw new ServiceAbortException(e.getMessage());
-            } catch (InvocationTargetException e) {
-                throw new ServiceAbortException(e.getMessage());
-            } catch (IllegalAccessException e) {
-                throw new ServiceAbortException(e.getMessage());
-            } catch (RecordNotFoundException e) {
-                throw new ServiceAbortException(e.getMessage());
-            }
-            copyCorresponForLearning(clone);
+            issueToLearningProjects(correspon.getId());
         }
     }
 
@@ -1019,33 +1000,11 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
     }
 
     /**
-     * 学習用に設定された文書をコピーする.
-     * @param correspon 「学習用コンテンツ」に指定された、対象の文書
-     * @throws ServiceAbortException
-     */
-    public void copyCorresponForLearning(Correspon correspon)  {
-        // リストのIDに紐づく文書としてコピーする処理
-        List<Project> learningProjectList = findLearningProject();
-        for(Project learningProject : learningProjectList) {
-            try {
-            deleteExsistLearningCorrespon(correspon,learningProject.getProjectId());
-            correspon.setProjectId(learningProject.getProjectId());
-                saveLearningCorrespon(correspon);
-            } catch (KeyDuplicateException e) {
-                continue;
-            } catch (StaleRecordException e) {
-                continue;
-            }
-
-        }
-    }
-
-    /**
      * 学習用プロジェクトから、同じ文書番号の文書を削除する.
      * @param correspon 削除したい文書の元文書
      * @param learningProjectId 対象の学習用プロジェクト
      */
-    private void deleteExsistLearningCorrespon(Correspon correspon,String learningProjectId)
+    private void deleteExistLearningCorrespon(Correspon correspon, String learningProjectId)
                     throws KeyDuplicateException, StaleRecordException{
         // 検索条件を作成
         SearchCorresponCondition condition = new SearchCorresponCondition();
@@ -1504,9 +1463,7 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
             List<CorresponResponseHistory> histories =
                 findCorresponResponseHistory(correspon);
 
-            List<CorresponResponseHistoryModel> historyModels =
-                new ArrayList<CorresponResponseHistoryModel>();
-
+            List<CorresponResponseHistoryModel> historyModels = new ArrayList<>();
             for (CorresponResponseHistory history : histories) {
                 CorresponResponseHistoryModel model = new CorresponResponseHistoryModel();
                 model.setCorresponResponseHistory(history);
@@ -1539,6 +1496,29 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
         } catch (GeneratorFailedException e) {
             throw new ServiceAbortException(e.getMessage(), e, MessageCode.E_GENERATION_FAILED,
                                             e.getMessage());
+        }
+    }
+
+    @Override
+    public List<Long> issueToLearningProjects(Long id) throws ServiceAbortException {
+        try {
+            Correspon c = findCorrespon(id);
+            loadLearningLabelAndTag(c);
+            List<Attachment> attachments = findAttachments(c.getId());
+
+            for (Project p : findLearningProject()) {
+                deleteExistLearningCorrespon(c, p.getProjectId());
+                //TODO
+            }
+
+            return null;
+        } catch (RecordNotFoundException e) {
+            throw new ServiceAbortException(ApplicationMessageCode.NO_DATA_FOUND);
+        } catch (StaleRecordException e) {
+            throw new ServiceAbortException(
+                    ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
+        } catch (KeyDuplicateException e) {
+            throw new ServiceAbortException(e);
         }
     }
 
@@ -1665,7 +1645,10 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
                 try {
                     a.setContent(client.getFileContent(a.getFileId(), filePath));
                 } finally {
-                    new File(filePath).delete();
+                    boolean delete = new File(filePath).delete();
+                    if (!delete) {
+                        log.warn("ファイル削除に失敗しました {}", filePath);
+                    }
                 }
             });
 
@@ -1680,13 +1663,6 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
         condition.setForLearning(ForLearning.LEARNING);
 
         ProjectDao dao = getDao(ProjectDao.class);
-        List<Project> learningPjList = dao.findLearningPj(condition);
-
-        return learningPjList;
-    }
-
-    private void saveLearningCorrespon(Correspon correspon) throws KeyDuplicateException {
-        CorresponDao dao = getDao(CorresponDao.class);
-        Long copyLearningCorresponId = dao.create(correspon);
+        return dao.findLearningPj(condition);
     }
 }

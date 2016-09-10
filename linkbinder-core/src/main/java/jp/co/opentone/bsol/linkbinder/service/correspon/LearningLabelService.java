@@ -37,9 +37,9 @@ public interface LearningLabelService extends IService {
     List<LearningLabel> findAll() throws ServiceAbortException;
 
     /**
-     *
-     * @param corresponId
-     * @return
+     * 指定された文書に設定されたラベルを返す.
+     * @param corresponId 文書ID
+     * @return 検索結果
      */
     List<CorresponLearningLabel> findByCorresponId(Long corresponId);
 

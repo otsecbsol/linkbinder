@@ -359,6 +359,12 @@ public class CorresponEditPage extends AbstractCorresponPage
     private Long from = 1L;
 
     /**
+     * 学習用文書の表示用ラベル
+     */
+    @Transfer
+    private String learningCorresponTitleLabel = this.getLearningCorresponLabel();
+
+    /**
      * 学習用コンテンツとして設定するか否か.
      */
     @Transfer
@@ -1630,6 +1636,20 @@ public class CorresponEditPage extends AbstractCorresponPage
         } else {
             return false;
         }
+    }
+
+    /**
+     * 学習用文書の表示用ラベルを返す.
+     */
+    public String getLearningCorresponTitleLabel() {
+        return this.learningCorresponTitleLabel;
+    }
+
+    /**
+     * 学習用文書の表示用ラベルを設定する.
+     */
+    public void setLearningCorresponTitleLabel(String learningCorresponTitle) {
+        this.learningCorresponTitleLabel = learningCorresponTitle;
     }
 
     /**

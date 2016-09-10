@@ -213,6 +213,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     <result property="replyRequired"                           column="reply_required" />
     <result property="deadlineForReply"                        column="deadline_for_reply" />
     <result property="workflowStatus"                          column="workflow_status" />
+    <result property="forLearning"                             column="for_learning" />
     <result property="customField1Id"                          column="custom_field1_id" />
     <result property="customField1Label"                       column="custom_field1_label" />
     <result property="customField1Value"                       column="custom_field1_value" />
@@ -1072,6 +1073,8 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       project_correspon_type_id,
       subject,
       body,
+      issued_by,
+      issued_at,
       correspon_status,
       reply_required,
       deadline_for_reply,
@@ -1088,6 +1091,8 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       #corresponType.projectCorresponTypeId#,
       #subject#,
       #body#,
+      #issuedBy.empNo#,
+      #issuedAt#,
       #corresponStatus#,
       #replyRequired#,
       #deadlineForReply#,

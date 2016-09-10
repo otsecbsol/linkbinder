@@ -65,6 +65,7 @@ import jp.co.opentone.bsol.linkbinder.dto.code.ReadStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowProcessStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowType;
+import jp.co.opentone.bsol.linkbinder.dto.condition.SearchCorresponCondition;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchCustomFieldCondition;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchProjectCondition;
 import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
@@ -187,6 +188,7 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
             loadLearningLabelAndTag(c);
             // アクセス可能なレコードであるか検証
             validateAccess(c);
+
             return c;
         } catch (RecordNotFoundException e) {
             throw new ServiceAbortException(ApplicationMessageCode.NO_DATA_FOUND);
@@ -963,12 +965,15 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
         validateDeleteIssuePermission(correspon);
         // 承認状態の更新
         updateCorresponForIssue(correspon);
+        // メール通知機能
+        sendIssuedNotice(correspon, EmailNoticeEventCd.ISSUED);
 
-        if (correspon.getForLearning() == ForLearning.LEARNING) {
+
+        // 学習用コンテンツの場合、文書を学習用プロジェクトへコピー.
+        if (correspon.isLearningContents()) {
             Correspon clone = new Correspon();
             try {
-                CorresponDao dao = getDao(CorresponDao.class);
-                Correspon originalCorrespon = dao.findById(correspon.getId());
+                Correspon originalCorrespon = findCorrespon(correspon.getId());
                 PropertyUtils.copyProperties(clone, originalCorrespon);
             } catch(NoSuchMethodException e) {
                 throw new ServiceAbortException(e.getMessage());
@@ -977,12 +982,10 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
             } catch (IllegalAccessException e) {
                 throw new ServiceAbortException(e.getMessage());
             } catch (RecordNotFoundException e) {
-
+                throw new ServiceAbortException(e.getMessage());
             }
             copyCorresponForLearning(clone);
         }
-        // メール通知機能
-        sendIssuedNotice(correspon, EmailNoticeEventCd.ISSUED);
     }
 
     /**
@@ -1020,18 +1023,42 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
      * @param correspon 「学習用コンテンツ」に指定された、対象の文書
      * @throws ServiceAbortException
      */
-    private void copyCorresponForLearning(Correspon correspon) throws ServiceAbortException {
-        //TODO: 「学習用プロジェクト」に指定されたProjectIDの数だけ文書を複製・登録する処理を追加する
-        // ここでリストのIDに紐づく文書としてコピーする処理
+    public void copyCorresponForLearning(Correspon correspon)  {
+        // リストのIDに紐づく文書としてコピーする処理
         List<Project> learningProjectList = findLearningProject();
         for(Project learningProject : learningProjectList) {
-            correspon.setProjectId(learningProject.getProjectId());
             try {
+            deleteExsistLearningCorrespon(correspon,learningProject.getProjectId());
+            correspon.setProjectId(learningProject.getProjectId());
                 saveLearningCorrespon(correspon);
             } catch (KeyDuplicateException e) {
                 continue;
+            } catch (StaleRecordException e) {
+                continue;
             }
 
+        }
+    }
+
+    /**
+     * 学習用プロジェクトから、同じ文書番号の文書を削除する.
+     * @param correspon 削除したい文書の元文書
+     * @param learningProjectId 対象の学習用プロジェクト
+     */
+    private void deleteExsistLearningCorrespon(Correspon correspon,String learningProjectId)
+                    throws KeyDuplicateException, StaleRecordException{
+        // 検索条件を作成
+        SearchCorresponCondition condition = new SearchCorresponCondition();
+        condition.setProjectId(learningProjectId);
+        condition.setCorresponNo(correspon.getCorresponNo());
+
+        CorresponDao dao = getDao(CorresponDao.class);
+        List<Correspon> resultList = dao.find(condition);
+
+        if (resultList != null && !resultList.isEmpty()) {
+            for (Correspon resultCorrespon : resultList) {
+                dao.delete(resultCorrespon);
+            }
         }
     }
 

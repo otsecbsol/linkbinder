@@ -379,6 +379,14 @@
       </div>
     </ui:fragment>
 
+      <div class="row">
+          <h:commandButton id="recreate" value="#{corresponPage.learningCorresponTitleLabel}再登録"
+                           action="#{corresponPage.copyCorresponForLearning(corresponPage.correspon)}"
+                           styleClass="button-primary"
+                           onclick="setActionName(event); return confirmButton('#{corresponPage.learningCorresponTitleLabel}' + 'の再登録を行います。よろしいですか？');"
+                           disabled="#{!corresponPage.learningContents}"
+                           rendered="#{corresponPage.elemControl.recreateLearningContentsButton}"/>
+      </div>
     <hr/>
 
     <ui:fragment rendered="#{not corresponPage.learningProject}">

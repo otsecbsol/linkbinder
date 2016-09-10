@@ -128,7 +128,7 @@
           <ui:fragment rendered="#{corresponConfirmationPage.projectUseLearning and corresponConfirmationPage.correspon.learningContents}">
             <div class="row">
               <div class="twelve columns">
-                <h:outputText value="#{corresponConfirmationPage.getLearningContentsTitle()}として設定する"/>
+                <h:outputText value="#{corresponConfirmationPage.learningCorresponTitleLabel}として設定する"/>
               </div>
             </div>
             <div class="row">
@@ -148,6 +148,7 @@
               </div>
             </div>
           </ui:fragment>
+
           <div class="row">
             <div class="twelve columns">
               <label>宛先</label>

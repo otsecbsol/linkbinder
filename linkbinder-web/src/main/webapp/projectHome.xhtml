@@ -194,7 +194,7 @@
                   <h:inputHidden id="displayAllCorrTracking"/>
                   <ul id="CorrTrackingList">
                     <ui:repeat value="#{projectHomePage.groupSummaryDataModel}" var="groupSummary" varStatus="groupSummaryStatus">
-                      <li id="#{groupSummaryStatus.index}" >
+                      <li id="#{groupSummaryStatus.index}" style="margin-bottom:0px;" >
                         <h:commandLink action="#{projectHomePage.goCorresponIndexTracking}" value="  #{groupSummary.corresponType.corresponType}(#{groupSummary.corresponType.workflowPattern.name})" onclick="setActionName(event);" />
                         <h:outputText value="(" style="margin-left: 10px;" />
                         <h:commandLink action="#{projectHomePage.goCorresponIndexTracking}" value="To" onclick="setActionName(event);setParameters('form:selectedTo', 'true');" />
@@ -204,6 +204,7 @@
                         <h:outputText value=")" />
                       </li>
                     </ui:repeat>
+                    <h:commandLink action="#{projectHomePage.goCorresponIndexLearningContents}" value="#{projectHomePage.learningContentsTitleLabel}" onclick="setActionName(event);" />
                   </ul>
                 </div>
                 <div id="groupSummaryDisplay"
@@ -212,7 +213,7 @@
                     詳細を表示する
                   </a>
                 </div>
-                <h:commandLink action="#{projectHomePage.goCorresponIndexLearningContents}" value="#{projectHomePage.getLearningContentsTitle()}" onclick="setActionName(event);" />
+                <br />
                 <h:commandLink
                         action="#{projectHomePage.goCorresponIndexTrackingAll}"
                         value="すべての文書を見る" />

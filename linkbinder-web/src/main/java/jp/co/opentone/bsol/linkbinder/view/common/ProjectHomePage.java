@@ -187,6 +187,12 @@ public class ProjectHomePage extends AbstractPage {
     private boolean favoriteFilterDisplay;
 
     /**
+     * 学習用コンテンツの表示用ラベル
+     */
+    @Transfer
+    private String learningContentsTitleLabel = this.getLearningContentsLabel();
+
+    /**
      * 空のインスタンスを生成する.
      */
     public ProjectHomePage() {
@@ -520,6 +526,20 @@ public class ProjectHomePage extends AbstractPage {
      */
     public boolean isFavoriteFilterDisplay() {
         return favoriteFilterDisplay;
+    }
+
+    /**
+     * 学習用コンテンツの表示用ラベルを返す.
+     */
+    public String getLearningContentsTitleLabel() {
+        return this.learningContentsTitleLabel;
+    }
+
+    /**
+     * 学習用コンテンツの表示用ラベルを設定する.
+     */
+    public void setLearningContentsTitleLabel(String learningContentsTitle) {
+        this.learningContentsTitleLabel = learningContentsTitle;
     }
 
 

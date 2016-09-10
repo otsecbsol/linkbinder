@@ -21,6 +21,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -462,6 +463,10 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
         updateCorresponForApprove(correspon);
         // 承認作業状態を更新
         updateWorkflowForApprove(workflow);
+        // 学習用プロジェクトへ文書をコピーする
+        if(correspon.isLearningContents()) {
+            copyLearningCorrespon(correspon);
+        }
         // メール通知を行う for approve
         sendWorkflowNotice(correspon, EmailNoticeEventCd.APPROVED);
         // メール通知を行う for issue
@@ -1461,6 +1466,11 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
         newWorkflow.setFinishedBy(getCurrentUser());
 
         updateWorkflow(newWorkflow);
+    }
+
+    private void copyLearningCorrespon(Correspon correspon) throws ServiceAbortException {
+        Correspon originalCorrespon = corresponService.find(correspon.getId());
+        corresponService.copyCorresponForLearning(originalCorrespon);
     }
 
     /**

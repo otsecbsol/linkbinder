@@ -176,6 +176,12 @@ public class CorresponConfirmationPage extends AbstractCorresponPage
     private int fileNo;
 
     /**
+     * 学習用文書の表示用ラベル
+     */
+    @Transfer
+    private String learningCorresponTitleLabel = this.getLearningCorresponLabel();
+
+    /**
      * 画面初期表示判定値を返す.
      * @return the initialDisplaySuccess
      */
@@ -572,5 +578,19 @@ public class CorresponConfirmationPage extends AbstractCorresponPage
                 }
             }
         }
+    }
+
+    /**
+     * 学習用文書の表示用ラベルを返す.
+     */
+    public String getLearningCorresponTitleLabel() {
+        return this.learningCorresponTitleLabel;
+    }
+
+    /**
+     * 学習用文書の表示用ラベルを設定する.
+     */
+    public void setLearningCorresponTitleLabel(String learningCorresponTitle) {
+        this.learningCorresponTitleLabel = learningCorresponTitle;
     }
 }

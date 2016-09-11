@@ -16,9 +16,7 @@
 package jp.co.opentone.bsol.linkbinder.service.correspon.impl;
 
 import jp.co.opentone.bsol.framework.core.config.SystemConfig;
-import jp.co.opentone.bsol.framework.core.dao.KeyDuplicateException;
 import jp.co.opentone.bsol.framework.core.dao.RecordNotFoundException;
-import jp.co.opentone.bsol.framework.core.dao.StaleRecordException;
 import jp.co.opentone.bsol.framework.core.generator.GeneratorFailedException;
 import jp.co.opentone.bsol.framework.core.generator.csv.CsvGenerator;
 import jp.co.opentone.bsol.framework.core.generator.excel.WorkbookGenerator;
@@ -48,19 +46,18 @@ import jp.co.opentone.bsol.linkbinder.dto.condition.SearchCorresponCondition.Ids
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchFullTextSearchCorresponCondition;
 import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
 import jp.co.opentone.bsol.linkbinder.service.AbstractService;
+import jp.co.opentone.bsol.linkbinder.service.CorresponServiceHelper;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponFullTextSearchService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponReadStatusService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponSearchService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponService;
 import jp.co.opentone.bsol.linkbinder.util.view.correspon.CorresponPageFormatter;
 import jp.co.opentone.bsol.linkbinder.util.view.correspon.CorresponResponseHistoryModel;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -103,36 +100,6 @@ public class CorresponSearchServiceImpl extends AbstractService implements Corre
      * スタイルシート名.
      */
     private static final String TEMPLATE_KEY_STYLESHEET = "template.stylesheet";
-    /**
-     * ファイル名フォーマット形式.
-     */
-    private static final String FILENAME_FORMAT = "%s_%s(%s).html";
-
-    /**
-     * ファイル名用IDフォーマット形式.
-     */
-    private static final String FILENAME_ID_FORMAT = "%010d";
-
-    /**
-     * ファイル名禁止文字をプロパティから取得するKEY.
-     */
-    private static final String FILENAME_KEY_REGEX = "file.name.regex";
-
-    /**
-     * ファイル名禁止文字がプロパティに設定されていない場合のデフォルト値.
-     */
-    private static final String FILENAME_DEFAULT_REGEX = "[\\\\/:*?\"<>|]";
-
-    /**
-     * ファイル名置換文字をプロパティから取得するするKEY.
-     */
-    private static final String FILENAME_KEY_REPLACEMENT = "file.name.replacement";
-
-    /**
-     * ファイル名禁止文字がプロパティに設定されていない場合のデフォルト値.
-     */
-    private static final String FILENAME_DEFAULT_REPLACEMENT = "-";
-
     /**
      * SELECT 文 IN 句の、最大要素数.
      */
@@ -201,6 +168,11 @@ public class CorresponSearchServiceImpl extends AbstractService implements Corre
         FORMATS.put("deadlineForReply", CsvGenerator.DEFAULT_DATE_FORMAT_PATTERN);
     }
 
+    /**
+     * サービスヘルパ.
+     */
+    @Resource
+    private CorresponServiceHelper serviceHelper;
     /**
      * コレポン文書サービス.
      */
@@ -348,7 +320,7 @@ public class CorresponSearchServiceImpl extends AbstractService implements Corre
             ZipArchiver zip = new ZipArchiver();
             for (Correspon selected : correspons) {
                 // 指定のコレポン文書を取得 -- 存在しない場合はエラー
-                Correspon correspon = findCorresponDetail(selected.getId());
+                Correspon correspon = serviceHelper.findCorresponDetailWithDisplayInfo(selected.getId());
 
                 // 応答履歴を取得し、表示用のビーンに詰める
                 List<CorresponResponseHistory> histories =
@@ -374,7 +346,7 @@ public class CorresponSearchServiceImpl extends AbstractService implements Corre
                 util.setUsePersonInCharge(usePersonInCharge);
                 generator.setUtil(util);
 
-                zip.add(createCorresponHtmlName(correspon), generator.generate());
+                zip.add(serviceHelper.createCorresponHtmlName(correspon), generator.generate());
             }
             return zip.toByte();
         } catch (GeneratorFailedException e) {
@@ -415,7 +387,7 @@ public class CorresponSearchServiceImpl extends AbstractService implements Corre
             // ステータスチェック
             checkCorresponStatus(correspon);
             // 更新
-            updateCorrespon(createUpdatedCorrespon(correspon));
+            serviceHelper.updateCorrespon(createUpdatedCorrespon(correspon));
             // コレポン文書を更新した為、既読→未読に変更
             if (CorresponStatus.CANCELED == correspon.getCorresponStatus()) {
                 corresponReadStatusService.updateReadStatusByCorresponId(
@@ -436,7 +408,7 @@ public class CorresponSearchServiceImpl extends AbstractService implements Corre
             // 権限チェック
             checkDeletePermission(correspon);
             // 更新
-            deleteCorrespon(createDeletedCorrespon(correspon));
+            serviceHelper.deleteCorrespon(serviceHelper.setupCorresponForDelete(correspon));
         }
     }
 
@@ -746,23 +718,6 @@ public class CorresponSearchServiceImpl extends AbstractService implements Corre
     }
 
     /**
-     * コレポン文書を更新する.
-     * @param correspon コレポン文書
-     * @throws ServiceAbortException 更新に失敗
-     */
-    private void updateCorrespon(Correspon correspon) throws ServiceAbortException {
-        try {
-            CorresponDao dao = getDao(CorresponDao.class);
-            dao.update(correspon);
-        } catch (KeyDuplicateException e) {
-            throw new ServiceAbortException(e);
-        } catch (StaleRecordException e) {
-            throw new ServiceAbortException(
-                    ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
-        }
-    }
-
-    /**
      * コレポン文書を削除する権限をチェックする.
      * @param correspon コレポン文書
      * @throws ServiceAbortException 権限エラー
@@ -775,101 +730,6 @@ public class CorresponSearchServiceImpl extends AbstractService implements Corre
                 && !getCurrentUser().getEmpNo().equals(correspon.getCreatedBy().getEmpNo())) {
             throw new ServiceAbortException(
                 ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_ACCESS_LEVEL_INSUFFICIENT);
-        }
-    }
-
-    /**
-     * 文書状態削除用のオブジェクトを作成する.
-     * @param old 削除対象のコレポン文書
-     * @return 削除用のオブジェクト
-     */
-    private Correspon createDeletedCorrespon(Correspon old) {
-        Correspon correspon = new Correspon();
-        correspon.setId(old.getId());
-        correspon.setUpdatedBy(getCurrentUser());
-        correspon.setVersionNo(old.getVersionNo());
-
-        return correspon;
-    }
-
-    /**
-     * コレポン文書を削除する.
-     * @param correspon コレポン文書
-     * @throws ServiceAbortException 削除に失敗
-     */
-    private void deleteCorrespon(Correspon correspon) throws ServiceAbortException {
-        try {
-            CorresponDao dao = getDao(CorresponDao.class);
-            dao.delete(correspon);
-        } catch (KeyDuplicateException e) {
-            throw new ServiceAbortException(e);
-        } catch (StaleRecordException e) {
-            throw new ServiceAbortException(
-                    ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
-        }
-    }
-
-    /**
-     * ZIPファイル内のHTMLファイルの名前を作成する.
-     * <pre>
-     * ファイル名：
-     *     projectId_コレポン文書番号(コレポン文書ID).html
-     *     ただし未発行の場合はprojectId_(コレポン文書ID).html
-     *         ・コレポン文書IDは10桁前ゼロ埋め
-     *         ・コレポン文書番号の「:」はWindowsのファイル名として使用できない文字なので、「-」に変換
-     *         ・その他Windowsのファイル名として使用できない文字があれば「-」に変換
-     * </pre>
-     * @return HTMLファイル名
-     */
-    private String createCorresponHtmlName(Correspon correspon) {
-        String corresponNo = correspon.getCorresponNo();
-        if (corresponNo == null) { // NULLならば空文字に変換
-            corresponNo = "";
-        }
-        String corresponId = String.format(FILENAME_ID_FORMAT, correspon.getId());
-
-        String fileName = String.format(FILENAME_FORMAT,
-                                        getCurrentProjectId(),
-                                        corresponNo,
-                                        corresponId);
-        return convertFileName(fileName);
-    }
-
-    /**
-     * Windowsのファイル名として使用できない文字を変換する.
-     * @return ファイル名
-     */
-    private String convertFileName(String name) {
-        String regex = SystemConfig.getValue(FILENAME_KEY_REGEX);
-        if (StringUtils.isEmpty(regex)) {
-            regex = FILENAME_DEFAULT_REGEX;
-        }
-        String replacement = SystemConfig.getValue(FILENAME_KEY_REPLACEMENT);
-        if (replacement == null) { // 置換文字は空文字でも問題ない
-            replacement = FILENAME_DEFAULT_REPLACEMENT;
-        }
-        return name.replaceAll(regex, replacement);
-    }
-
-    /**
-     * コレポン文書の情報を関連する情報と一緒に取得する.
-     * @throws ServiceAbortException 取得エラー
-     */
-    private Correspon findCorresponDetail(Long id) throws ServiceAbortException {
-        try {
-            Correspon clone = new Correspon();
-            Correspon original = corresponService.find(id);
-            PropertyUtils.copyProperties(clone, original);
-            clone.setWorkflows(createDisplayWorkflowList(original));
-            return clone;
-        } catch (ServiceAbortException e) {
-            throw new ServiceAbortException(ApplicationMessageCode.NO_DATA_FOUND);
-        } catch (IllegalAccessException e) {
-            throw new ServiceAbortException(e.getMessage());
-        } catch (InvocationTargetException e) {
-            throw new ServiceAbortException(e.getMessage());
-        } catch (NoSuchMethodException e) {
-            throw new ServiceAbortException(e.getMessage());
         }
     }
 

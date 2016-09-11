@@ -44,6 +44,7 @@ import jp.co.opentone.bsol.linkbinder.dto.condition.SearchCustomFieldCondition;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchUserCondition;
 import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
 import jp.co.opentone.bsol.linkbinder.service.AbstractService;
+import jp.co.opentone.bsol.linkbinder.service.CorresponServiceHelper;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponValidateService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -71,6 +72,12 @@ implements CorresponValidateService {
      * logger.
      */
     private static final Logger log = LoggerFactory.getLogger(CorresponValidateServiceImpl.class);
+
+    /**
+     * サービスヘルパ.
+     */
+    @Resource
+    private CorresponServiceHelper serviceHelper;
 
     /**
      * 承認状態、承認作業状態を制御するクラス.
@@ -387,7 +394,7 @@ implements CorresponValidateService {
         }
 
         // 文書状態(Open/Closed/Canceled)チェック
-        commonValidateCorresponStatus(correspon);
+        serviceHelper.commonValidateCorresponStatus(correspon);
 
         // From①②のチェック
         doValidateCorresponGroup(correspon.getProjectId(), correspon.getFromCorresponGroup());
@@ -453,68 +460,6 @@ implements CorresponValidateService {
         }
 
         // 「③文章状態が[2:Canceled]の際はエラー」は、後の文書状態(Open/Closed/Canceled)チェックで実施しているので省略
-    }
-
-    /**
-     * 文書状態(Open/Closed/Canceled)チェック.
-     * <p>
-     * チェック定義書の「文書状態(Open/Closed/Canceled)チェック」に記述された一連のチェックを行う<br />
-     * 【新規追加】ただし、新規登録の際の文書状態チェックは「Canceledか否か」のチェックのみ行う
-     * </p>
-     *
-     * @param correspon
-     *            コレポン文書情報
-     *
-     * @throws ServiceAbortException 検証エラー
-     */
-    private void commonValidateCorresponStatus(Correspon correspon) throws ServiceAbortException {
-        if (correspon.isNew()) { // コレポン文書の文書状態が[2:Canceled]の際はエラー
-            log.trace("★文書状態(新規)");
-            if (log.isDebugEnabled()) {
-                log.debug("correspon.getCorresponStatus[" + correspon.getCorresponStatus() + "]");
-            }
-            if (CorresponStatus.CANCELED.equals(correspon.getCorresponStatus())) {
-                throw new ServiceAbortException(
-                    ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORREPON_CANCELED);
-            }
-        } else { // 更新前コレポン文書の文書状態が[2:Canceled]の際はエラー
-            log.trace("★文書状態(更新)①");
-            if (log.isDebugEnabled()) {
-                log.debug("correspon.getId[" + correspon.getId() + "]");
-            }
-            Correspon oldCorrespon = null;
-            try {
-                oldCorrespon = findCorrespon(correspon.getId());
-            } catch (RecordNotFoundException e) {
-                log.warn(e.getMessageCode() + " correspon.getId[" + correspon.getId() + "]");
-                throw new ServiceAbortException(ApplicationMessageCode.NO_DATA_FOUND);
-            }
-            if (log.isDebugEnabled()) {
-                log.debug(
-                    "oldCorrespon.getCorresponStatus[" + oldCorrespon.getCorresponStatus() + "]");
-            }
-            if (CorresponStatus.CANCELED.equals(oldCorrespon.getCorresponStatus())) {
-                log.warn(ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORREPON_CANCELED
-                    + " " + oldCorrespon);
-                throw new ServiceAbortException(
-                    ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORREPON_CANCELED);
-            }
-            // コレポン文書の承認状態が[5:Issued]以外で、文書状態を[2:Canceled]にする際はエラー
-            log.trace("★文書状態(更新)②");
-            if (log.isDebugEnabled()) {
-                log.debug("oldCorrespon.getWorkflowStatus["
-                    + oldCorrespon.getWorkflowStatus() + "]");
-                log.debug("correspon.getCorresponStatus[" + correspon.getCorresponStatus() + "]");
-            }
-            if (!WorkflowStatus.ISSUED.equals(oldCorrespon.getWorkflowStatus())
-                    &&  CorresponStatus.CANCELED.equals(correspon.getCorresponStatus())) {
-                log.warn(ApplicationMessageCode
-                    .CANNOT_PERFORM_BECAUSE_CORREPON_NOT_ISSUED_AND_CANCELED
-                    + " " + oldCorrespon);
-                throw new ServiceAbortException(
-                    ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORREPON_NOT_ISSUED_AND_CANCELED);
-            }
-        }
     }
 
     /**

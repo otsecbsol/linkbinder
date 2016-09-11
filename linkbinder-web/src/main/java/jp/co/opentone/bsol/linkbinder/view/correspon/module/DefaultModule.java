@@ -300,6 +300,15 @@ public class DefaultModule implements Serializable {
     }
 
     /**
+     * 学習用プロジェクトへ公開する.
+     * @return 遷移先
+     */
+    public String issueToLearningProjects() {
+        serviceActionHandler.handleAction(new IssueToLearningProjectsAction(page, this));
+        return null;
+    }
+
+    /**
      * コレポン文書を検証依頼状態にする.
      *
      * @return null
@@ -1306,6 +1315,46 @@ public class DefaultModule implements Serializable {
         public void execute() throws ServiceAbortException {
             module.corresponService.issue(page.getCorrespon());
             page.setNextPageMessage(ApplicationMessageCode.CORRESPON_ISSUED);
+
+            //イベント発火
+            page.getEventBus().raiseEvent(
+                    new CorresponIssued(page.getCorrespon().getId(),
+                            page.getCorrespon().getProjectId()));
+        }
+    }
+
+    /**
+     * IssueToLearingProjectsアクション.
+     *
+     * @author opentone
+     */
+    static class IssueToLearningProjectsAction extends AbstractAction {
+        /**
+         * serialVersionUID.
+         */
+        private static final long serialVersionUID = -2245769339551640071L;
+        /** アクション発生元ページ. */
+        private CorresponPage page;
+        /** モジュール. */
+        private DefaultModule module;
+
+        /**
+         * このアクションの発生元ページを指定してインスタンス化する.
+         * @param page 発生元ページ
+         */
+        public IssueToLearningProjectsAction(CorresponPage page, DefaultModule module) {
+            super(page);
+            this.page = page;
+            this.module = module;
+        }
+
+        /*
+         * (non-Javadoc)
+         * @see jp.co.opentone.bsol.framework.action.Action#execute()
+         */
+        public void execute() throws ServiceAbortException {
+            module.corresponService.issueToLearningProjects(page.getCorrespon().getId());
+            page.setPageMessage(ApplicationMessageCode.SAVE_SUCCESSFUL);
 
             //イベント発火
             page.getEventBus().raiseEvent(

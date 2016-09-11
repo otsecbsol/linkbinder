@@ -15,18 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.service;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-
 import jp.co.opentone.bsol.framework.core.ProcessContext;
 import jp.co.opentone.bsol.framework.core.config.SystemConfig;
 import jp.co.opentone.bsol.framework.core.dao.Dao;
@@ -45,9 +33,18 @@ import jp.co.opentone.bsol.linkbinder.dto.CorresponGroupUser;
 import jp.co.opentone.bsol.linkbinder.dto.Project;
 import jp.co.opentone.bsol.linkbinder.dto.ProjectUser;
 import jp.co.opentone.bsol.linkbinder.dto.User;
-import jp.co.opentone.bsol.linkbinder.dto.Workflow;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchUserCondition;
 import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+
+import javax.annotation.Resource;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Servcieの抽象クラス.
@@ -390,45 +387,6 @@ public abstract class AbstractService implements ApplicationContextAware, IServi
 //        Map<String, Object> values = container.getValue(SystemConfig.KEY_ACTION_VALUES);
 //        return (String) values.get(Constants.KEY_BASE_PATH);
 //    }
-
-    /**
-     * コレポン文書が保持するワークフローにPreparerの情報を付与したリストを返す.
-     * @see WorkflowHelper#createWorkflowListWithPreparer(Correspon)
-     * @param correspon コレポン文書
-     * @return 先頭にPreparerの情報を付与したワークフロー一覧
-     */
-    public List<Workflow> createDisplayWorkflowList(Correspon correspon) {
-        return workflowHelper.createWorkflowListWithPreparer(correspon);
-    }
-
-    /**
-     * 指定されたユーザーのプライマリ活動単位を返す.
-     * ここで言う「プライマリ活動単位」は、次の順で決定される.
-     * 活動単位に所属していないユーザーの場合はnullを返す.
-     * <ol>
-     * <li>ユーザーのデフォルト活動単位</li>
-     * <li>ユーザーの所属する活動単位のうち、最初に見つかった活動単位</li>
-     * </ol>
-     * @param user 対象のユーザー
-     * @return 活動単位
-     */
-    public CorresponGroup findPrimaryCorresponGroup(User user) {
-        ArgumentValidator.validateNotNull(user);
-        List<ProjectUser> users = findProjectUsers();
-        //  デフォルト活動単位が設定済であればそれをセット
-        CorresponGroup group = detectDefaultCorresponGroup(users, user);
-        if (group != null) {
-            return group;
-        }
-
-        // 1つ以上の活動単位に所属していれば
-        // 最初の活動単位
-        List<CorresponGroupUser> listCgu = findCorresponGroupUser(user);
-        if (listCgu != null && !listCgu.isEmpty()) {
-            group = listCgu.get(0).getCorresponGroup();
-        }
-        return group;
-    }
 
     private List<ProjectUser> findProjectUsers() {
         SearchUserCondition condition = new SearchUserCondition();

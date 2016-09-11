@@ -23,7 +23,6 @@ import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
 import jp.co.opentone.bsol.framework.core.util.ArgumentValidator;
 import jp.co.opentone.bsol.framework.core.util.DateUtil;
 import jp.co.opentone.bsol.framework.core.util.SQLConvertUtil;
-import jp.co.opentone.bsol.linkbinder.dao.CorresponDao;
 import jp.co.opentone.bsol.linkbinder.dao.UserDao;
 import jp.co.opentone.bsol.linkbinder.dao.WorkflowDao;
 import jp.co.opentone.bsol.linkbinder.dao.WorkflowTemplateDao;
@@ -42,8 +41,8 @@ import jp.co.opentone.bsol.linkbinder.dto.condition.SearchUserCondition;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchWorkflowTemplateUserCondition;
 import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
 import jp.co.opentone.bsol.linkbinder.service.AbstractService;
+import jp.co.opentone.bsol.linkbinder.service.CorresponServiceHelper;
 import jp.co.opentone.bsol.linkbinder.service.UserRoleHelper;
-import jp.co.opentone.bsol.linkbinder.service.common.CorresponSequenceService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponWorkflowService;
 import jp.co.opentone.bsol.linkbinder.service.notice.EmailNoticeService;
@@ -108,10 +107,10 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
     private static final String KEY_PATTERN_3 = "workflow.pattern.3";
 
     /**
-     * 承認フローサービス.
+     * サービスヘルパ.
      */
     @Resource
-    private CorresponSequenceService corresponSequenceService;
+    private CorresponServiceHelper serviceHelper;
 
     /**
      * E-mail通知関連サービス.
@@ -280,7 +279,7 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
             List<Workflow> workflowDb) throws ServiceAbortException {
         //  コレポン文書を更新する(排他制御のため)
         //  正常に更新できれば以降の処理に続く
-        updateCorrespon(correspon);
+        serviceHelper.updateCorrespon(correspon);
 
         Long corresponId = correspon.getId();
         // 承認フローパターン１で自身がCheckerの時は、自身以降のChecker/Approverのデータを更新する。
@@ -1190,7 +1189,7 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
             }
         }
         // コレポン文書の更新
-        updateCorrespon(createNewCorrespon(correspon, workflowStatus));
+        serviceHelper.updateCorrespon(serviceHelper.setupNewCorresponForUpdate(correspon, workflowStatus));
     }
 
     /**
@@ -1199,14 +1198,7 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
      * @throws ServiceAbortException 承認失敗
      */
     private void updateCorresponForApprove(Correspon correspon) throws ServiceAbortException {
-        Correspon newCorrespon = createNewCorrespon(correspon, WorkflowStatus.ISSUED);
-        // コレポン文書番号を生成
-        newCorrespon.setCorresponNo(corresponSequenceService.getCorresponNo(correspon));
-        newCorrespon.setIssuedAt(DateUtil.getNow());
-        newCorrespon.setIssuedBy(getCurrentUser());
-
-        // コレポン文書の更新
-        updateCorrespon(newCorrespon);
+        serviceHelper.updateCorresponForIssue(correspon);
     }
 
     /**
@@ -1215,42 +1207,9 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
      * @throws ServiceAbortException * 否認失敗
      */
     private void updateCorresponForDeny(Correspon correspon) throws ServiceAbortException {
-        Correspon newCorrespon = createNewCorrespon(correspon, WorkflowStatus.DENIED);
+        Correspon newCorrespon = serviceHelper.setupNewCorresponForUpdate(correspon, WorkflowStatus.DENIED);
         // コレポン文書の更新
-        updateCorrespon(newCorrespon);
-    }
-
-    /**
-     * 更新用のコレポン文書Dtoを生成する.
-     * @param oldCorrespon コレポン文書
-     * @param workflowStatus 承認状態
-     * @return 更新用コレポン文書
-     */
-    private Correspon createNewCorrespon(Correspon oldCorrespon, WorkflowStatus workflowStatus) {
-        Correspon newCorrespon = new Correspon();
-        newCorrespon.setId(oldCorrespon.getId());
-        newCorrespon.setUpdatedBy(getCurrentUser());
-        newCorrespon.setWorkflowStatus(workflowStatus);
-        newCorrespon.setVersionNo(oldCorrespon.getVersionNo());
-
-        return newCorrespon;
-    }
-
-    /**
-     * コレポン文書の承認状態を更新する.
-     * @param correspon コレポン文書
-     * @throws ServiceAbortException 更新失敗
-     */
-    private void updateCorrespon(Correspon correspon) throws ServiceAbortException {
-        try {
-            CorresponDao dao = getDao(CorresponDao.class);
-            dao.update(correspon);
-        } catch (KeyDuplicateException e) {
-            throw new ServiceAbortException(e);
-        } catch (StaleRecordException e) {
-            throw new ServiceAbortException(
-                ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
-        }
+        serviceHelper.updateCorrespon(newCorrespon);
     }
 
     /**
@@ -1267,7 +1226,7 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
         newWorkflow.setFinishedAt(DateUtil.getNow());
         newWorkflow.setFinishedBy(getCurrentUser());
 
-        updateWorkflow(newWorkflow);
+        serviceHelper.updateWorkflow(newWorkflow);
 
         // 承認フローの適用パターンに準じてChecker、Approverの承認作業状態を更新する
         List<Workflow> workflowList = correspon.getWorkflows();
@@ -1449,7 +1408,7 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
         newWorkflow.setFinishedAt(DateUtil.getNow());
         newWorkflow.setFinishedBy(getCurrentUser());
 
-        updateWorkflow(newWorkflow);
+        serviceHelper.updateWorkflow(newWorkflow);
     }
 
     /**
@@ -1463,7 +1422,7 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
         newWorkflow.setFinishedAt(DateUtil.getNow());
         newWorkflow.setFinishedBy(getCurrentUser());
 
-        updateWorkflow(newWorkflow);
+        serviceHelper.updateWorkflow(newWorkflow);
     }
 
     /**
@@ -1481,23 +1440,6 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
         newWorkflow.setVersionNo(oldWorkflow.getVersionNo());
 
         return newWorkflow;
-    }
-
-    /**
-     * ワークフローの承認作業状態を更新する.
-     * @param workflow ワークフロー
-     * @throws ServiceAbortException 更新失敗
-     */
-    private void updateWorkflow(Workflow workflow) throws ServiceAbortException {
-        try {
-            WorkflowDao dao = getDao(WorkflowDao.class);
-            dao.update(workflow);
-        } catch (KeyDuplicateException e) {
-            throw new ServiceAbortException(e);
-        } catch (StaleRecordException e) {
-            throw new ServiceAbortException(
-                ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
-        }
     }
 
     /**

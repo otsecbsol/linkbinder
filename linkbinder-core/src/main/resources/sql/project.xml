@@ -102,22 +102,21 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     </isNotEmpty>
   </select>
 
-<select id="findLearningPj" resultMap="project">
+  <select id="findLearningPj" resultMap="project">
     SELECT
-    project_id,
-    client_name_e,
-    client_name_j,
-    name_e,
-    name_j,
-    for_learning
-    FROM
-    v_system_project
+      project_id,
+      client_name_e,
+      client_name_j,
+      name_e,
+      name_j,
+      for_learning
+    FROM v_project
     <dynamic prepend="WHERE">
         <isNotEmpty property="projectId" prepend="AND">
             project_id like #projectId# || '%' {escape #escapeChar#}
         </isNotEmpty>
         <isNotEmpty property="nameE" prepend="AND">
-            name_e like #nameE#  || '%' {escape #escapeChar#}
+            client_name_e like #nameE#  || '%' {escape #escapeChar#}
         </isNotEmpty>
         for_learning = 1
     </dynamic>
@@ -128,7 +127,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     <isNotEmpty property="sanitizedOrderBy">
         $sanitizedOrderBy$
     </isNotEmpty>
-</select>
+  </select>
 
   <select id="count" resultClass="int">
     SELECT

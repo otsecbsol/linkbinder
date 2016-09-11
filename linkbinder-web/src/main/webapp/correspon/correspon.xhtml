@@ -360,7 +360,7 @@
         </h:panelGroup>
       </div>
     </div>
-    <ui:fragment rendered="#{corresponPage.projectUseLearning and corresponPage.correspon.learningContents}">
+    <ui:fragment rendered="#{(corresponPage.projectUseLearning and corresponPage.correspon.learningContents) or corresponPage.learningProject}">
       <div class="row">
         <div class="twelve colums">
           <h:outputLabel>ラベル</h:outputLabel>
@@ -377,16 +377,18 @@
           </ui:repeat>
         </div>
       </div>
-    </ui:fragment>
-
-      <div class="row">
-          <h:commandButton id="recreate" value="#{corresponPage.learningCorresponTitleLabel}再登録"
-                           action="#{corresponPage.copyCorresponForLearning(corresponPage.correspon)}"
+      <ui:fragment rendered="#{not corresponPage.learningProject}">
+        <div class="row">
+          <h:commandButton id="recreate" value="#{corresponPage.learningCorresponTitleLabel}公開"
+                           action="#{corresponPage.issueToLearningProjects}"
                            styleClass="button-primary"
-                           onclick="setActionName(event); return confirmButton('#{corresponPage.learningCorresponTitleLabel}' + 'の再登録を行います。よろしいですか？');"
+                           onclick="setActionName(event); return confirmButton('現在の文書の内容で#{corresponPage.learningCorresponTitleLabel}を公開します。よろしいですか？');"
                            disabled="#{!corresponPage.learningContents}"
                            rendered="#{corresponPage.elemControl.recreateLearningContentsButton}"/>
-      </div>
+        </div>
+      </ui:fragment>
+    </ui:fragment>
+
     <hr/>
 
     <ui:fragment rendered="#{not corresponPage.learningProject}">
@@ -886,167 +888,170 @@
       </div>
       <h:inputHidden id="fileId" value="#{corresponPage.fileId}"/>
     </div>
-    <div class="row">
-      <div class="twelve columns">
-        <label>その他項目</label>
-        <a href="javascript:void(0);" onclick="switchDisplay('customFields', this, 'form:customFieldsDisplay')">
-          <h:outputText value="#{corresponPage.customFieldsDetail}"/>
-        </a>
-        <h:inputHidden id="customFieldsDisplay" value="#{corresponPage.customFieldsDisplay}"/>
-      </div>
-    </div>
-    <div id="customFields" class="detail">
-      <div class="row customField">
-        <div class="twelve columns">
-          <h:outputLabel value="#{corresponPage.correspon.customField1Label}"
-                         rendered="#{corresponPage.correspon.customField1Label != null and !corresponPage.displayReplied}"
-                         styleClass="label"/>
-          <h:outputText value="#{corresponPage.correspon.customField1Value}"
-                        rendered="#{!corresponPage.displayReplied}"/>
 
-          <h:outputLabel value="#{corresponPage.replied.customField1Label}"
-                         rendered="#{corresponPage.replied.customField1Label != null and corresponPage.displayReplied}"
-                         styleClass="label"/>
-          <h:outputText value="#{corresponPage.replied.customField1Value}"
-                        rendered="#{corresponPage.displayReplied}"/>
+    <ui:fragment rendered="#{not corresponPage.learningProject}">
+      <div class="row">
+        <div class="twelve columns">
+          <label>その他項目</label>
+          <a href="javascript:void(0);" onclick="switchDisplay('customFields', this, 'form:customFieldsDisplay')">
+            <h:outputText value="#{corresponPage.customFieldsDetail}"/>
+          </a>
+          <h:inputHidden id="customFieldsDisplay" value="#{corresponPage.customFieldsDisplay}"/>
         </div>
       </div>
-      <div class="row customField">
-        <div class="twelve columns">
-          <h:outputLabel value="#{corresponPage.correspon.customField2Label}"
-                         rendered="#{corresponPage.correspon.customField2Label != null and !corresponPage.displayReplied}"
-                         styleClass="label"/>
-          <h:outputText value="#{corresponPage.correspon.customField2Value}"
-                        rendered="#{!corresponPage.displayReplied}"/>
+      <div id="customFields" class="detail">
+        <div class="row customField">
+          <div class="twelve columns">
+            <h:outputLabel value="#{corresponPage.correspon.customField1Label}"
+                           rendered="#{corresponPage.correspon.customField1Label != null and !corresponPage.displayReplied}"
+                           styleClass="label"/>
+            <h:outputText value="#{corresponPage.correspon.customField1Value}"
+                          rendered="#{!corresponPage.displayReplied}"/>
 
-          <h:outputLabel value="#{corresponPage.replied.customField2Label}"
-                         rendered="#{corresponPage.replied.customField2Label != null and corresponPage.displayReplied}"
-                         styleClass="label"/>
-          <h:outputText value="#{corresponPage.replied.customField2Value}"
-                        rendered="#{corresponPage.displayReplied}"/>
+            <h:outputLabel value="#{corresponPage.replied.customField1Label}"
+                           rendered="#{corresponPage.replied.customField1Label != null and corresponPage.displayReplied}"
+                           styleClass="label"/>
+            <h:outputText value="#{corresponPage.replied.customField1Value}"
+                          rendered="#{corresponPage.displayReplied}"/>
+          </div>
+        </div>
+        <div class="row customField">
+          <div class="twelve columns">
+            <h:outputLabel value="#{corresponPage.correspon.customField2Label}"
+                           rendered="#{corresponPage.correspon.customField2Label != null and !corresponPage.displayReplied}"
+                           styleClass="label"/>
+            <h:outputText value="#{corresponPage.correspon.customField2Value}"
+                          rendered="#{!corresponPage.displayReplied}"/>
+
+            <h:outputLabel value="#{corresponPage.replied.customField2Label}"
+                           rendered="#{corresponPage.replied.customField2Label != null and corresponPage.displayReplied}"
+                           styleClass="label"/>
+            <h:outputText value="#{corresponPage.replied.customField2Value}"
+                          rendered="#{corresponPage.displayReplied}"/>
+          </div>
+        </div>
+        <div class="row customField">
+          <div class="twelve columns">
+            <h:outputLabel value="#{corresponPage.correspon.customField3Label}"
+                           rendered="#{corresponPage.correspon.customField3Label != null and !corresponPage.displayReplied}"
+                           styleClass="label"/>
+            <h:outputText value="#{corresponPage.correspon.customField3Value}"
+                          rendered="#{!corresponPage.displayReplied}"/>
+
+            <h:outputLabel value="#{corresponPage.replied.customField3Label}"
+                           rendered="#{corresponPage.replied.customField3Label != null and corresponPage.displayReplied}"
+                           styleClass="label"/>
+            <h:outputText value="#{corresponPage.replied.customField3Value}"
+                          rendered="#{corresponPage.displayReplied}"/>
+          </div>
+        </div>
+        <div class="row customField">
+          <div class="twelve columns">
+            <h:outputLabel value="#{corresponPage.correspon.customField4Label}"
+                           rendered="#{corresponPage.correspon.customField4Label != null and !corresponPage.displayReplied}"
+                           styleClass="label"/>
+            <h:outputText value="#{corresponPage.correspon.customField4Value}"
+                          rendered="#{!corresponPage.displayReplied}"/>
+
+            <h:outputLabel value="#{corresponPage.replied.customField4Label}"
+                           rendered="#{corresponPage.replied.customField4Label != null and corresponPage.displayReplied}"
+                           styleClass="label"/>
+            <h:outputText value="#{corresponPage.replied.customField4Value}"
+                          rendered="#{corresponPage.displayReplied}"/>
+          </div>
+        </div>
+        <div class="row customField">
+          <div class="twelve columns">
+            <h:outputLabel value="#{corresponPage.correspon.customField5Label}"
+                           rendered="#{corresponPage.correspon.customField5Label != null and !corresponPage.displayReplied}"
+                           styleClass="label"/>
+            <h:outputText value="#{corresponPage.correspon.customField5Value}"
+                          rendered="#{!corresponPage.displayReplied}"/>
+
+            <h:outputLabel value="#{corresponPage.replied.customField5Label}"
+                           rendered="#{corresponPage.replied.customField5Label != null and corresponPage.displayReplied}"
+                           styleClass="label"/>
+            <h:outputText value="#{corresponPage.replied.customField5Value}"
+                          rendered="#{corresponPage.displayReplied}"/>
+          </div>
+        </div>
+        <div class="row customField">
+          <div class="twelve columns">
+            <h:outputLabel value="#{corresponPage.correspon.customField6Label}"
+                           rendered="#{corresponPage.correspon.customField6Label != null and !corresponPage.displayReplied}"
+                           styleClass="label"/>
+            <h:outputText value="#{corresponPage.correspon.customField6Value}"
+                          rendered="#{!corresponPage.displayReplied}"/>
+
+            <h:outputLabel value="#{corresponPage.replied.customField6Label}"
+                           rendered="#{corresponPage.replied.customField6Label != null and corresponPage.displayReplied}"
+                           styleClass="label"/>
+            <h:outputText value="#{corresponPage.replied.customField6Value}"
+                          rendered="#{corresponPage.displayReplied}"/>
+          </div>
+        </div>
+        <div class="row customField">
+          <div class="twelve columns">
+            <h:outputLabel value="#{corresponPage.correspon.customField7Label}"
+                           rendered="#{corresponPage.correspon.customField7Label != null and !corresponPage.displayReplied}"
+                           styleClass="label"/>
+            <h:outputText value="#{corresponPage.correspon.customField7Value}"
+                          rendered="#{!corresponPage.displayReplied}"/>
+
+            <h:outputLabel value="#{corresponPage.replied.customField7Label}"
+                           rendered="#{corresponPage.replied.customField7Label != null and corresponPage.displayReplied}"
+                           styleClass="label"/>
+            <h:outputText value="#{corresponPage.replied.customField7Value}"
+                          rendered="#{corresponPage.displayReplied}"/>
+          </div>
+        </div>
+        <div class="row customField">
+          <div class="twelve columns">
+            <h:outputLabel value="#{corresponPage.correspon.customField8Label}"
+                           rendered="#{corresponPage.correspon.customField8Label != null and !corresponPage.displayReplied}"
+                           styleClass="label"/>
+            <h:outputText value="#{corresponPage.correspon.customField8Value}"
+                          rendered="#{!corresponPage.displayReplied}"/>
+
+            <h:outputLabel value="#{corresponPage.replied.customField8Label}"
+                           rendered="#{corresponPage.replied.customField8Label != null and corresponPage.displayReplied}"
+                           styleClass="label"/>
+            <h:outputText value="#{corresponPage.replied.customField8Value}"
+                          rendered="#{corresponPage.displayReplied}"/>
+          </div>
+        </div>
+        <div class="row customField">
+          <div class="twelve columns">
+            <h:outputLabel value="#{corresponPage.correspon.customField9Label}"
+                           rendered="#{corresponPage.correspon.customField9Label != null and !corresponPage.displayReplied}"
+                           styleClass="label"/>
+            <h:outputText value="#{corresponPage.correspon.customField9Value}"
+                          rendered="#{!corresponPage.displayReplied}"/>
+
+            <h:outputLabel value="#{corresponPage.replied.customField9Label}"
+                           rendered="#{corresponPage.replied.customField9Label != null and corresponPage.displayReplied}"
+                           styleClass="label"/>
+            <h:outputText value="#{corresponPage.replied.customField9Value}"
+                          rendered="#{corresponPage.displayReplied}"/>
+          </div>
+        </div>
+        <div class="row customField">
+          <div class="twelve columns">
+            <h:outputLabel value="#{corresponPage.correspon.customField10Label}"
+                           rendered="#{corresponPage.correspon.customField10Label != null and !corresponPage.displayReplied}"
+                           styleClass="label"/>
+            <h:outputText value="#{corresponPage.correspon.customField10Value}"
+                          rendered="#{!corresponPage.displayReplied}"/>
+
+            <h:outputLabel value="#{corresponPage.replied.customField10Label}"
+                           rendered="#{corresponPage.replied.customField10Label != null and corresponPage.displayReplied}"
+                           styleClass="label"/>
+            <h:outputText value="#{corresponPage.replied.customField10Value}"
+                          rendered="#{corresponPage.displayReplied}"/>
+          </div>
         </div>
       </div>
-      <div class="row customField">
-        <div class="twelve columns">
-          <h:outputLabel value="#{corresponPage.correspon.customField3Label}"
-                         rendered="#{corresponPage.correspon.customField3Label != null and !corresponPage.displayReplied}"
-                         styleClass="label"/>
-          <h:outputText value="#{corresponPage.correspon.customField3Value}"
-                        rendered="#{!corresponPage.displayReplied}"/>
-
-          <h:outputLabel value="#{corresponPage.replied.customField3Label}"
-                         rendered="#{corresponPage.replied.customField3Label != null and corresponPage.displayReplied}"
-                         styleClass="label"/>
-          <h:outputText value="#{corresponPage.replied.customField3Value}"
-                        rendered="#{corresponPage.displayReplied}"/>
-        </div>
-      </div>
-      <div class="row customField">
-        <div class="twelve columns">
-          <h:outputLabel value="#{corresponPage.correspon.customField4Label}"
-                         rendered="#{corresponPage.correspon.customField4Label != null and !corresponPage.displayReplied}"
-                         styleClass="label"/>
-          <h:outputText value="#{corresponPage.correspon.customField4Value}"
-                        rendered="#{!corresponPage.displayReplied}"/>
-
-          <h:outputLabel value="#{corresponPage.replied.customField4Label}"
-                         rendered="#{corresponPage.replied.customField4Label != null and corresponPage.displayReplied}"
-                         styleClass="label"/>
-          <h:outputText value="#{corresponPage.replied.customField4Value}"
-                        rendered="#{corresponPage.displayReplied}"/>
-        </div>
-      </div>
-      <div class="row customField">
-        <div class="twelve columns">
-          <h:outputLabel value="#{corresponPage.correspon.customField5Label}"
-                         rendered="#{corresponPage.correspon.customField5Label != null and !corresponPage.displayReplied}"
-                         styleClass="label"/>
-          <h:outputText value="#{corresponPage.correspon.customField5Value}"
-                        rendered="#{!corresponPage.displayReplied}"/>
-
-          <h:outputLabel value="#{corresponPage.replied.customField5Label}"
-                         rendered="#{corresponPage.replied.customField5Label != null and corresponPage.displayReplied}"
-                         styleClass="label"/>
-          <h:outputText value="#{corresponPage.replied.customField5Value}"
-                        rendered="#{corresponPage.displayReplied}"/>
-        </div>
-      </div>
-      <div class="row customField">
-        <div class="twelve columns">
-          <h:outputLabel value="#{corresponPage.correspon.customField6Label}"
-                         rendered="#{corresponPage.correspon.customField6Label != null and !corresponPage.displayReplied}"
-                         styleClass="label"/>
-          <h:outputText value="#{corresponPage.correspon.customField6Value}"
-                        rendered="#{!corresponPage.displayReplied}"/>
-
-          <h:outputLabel value="#{corresponPage.replied.customField6Label}"
-                         rendered="#{corresponPage.replied.customField6Label != null and corresponPage.displayReplied}"
-                         styleClass="label"/>
-          <h:outputText value="#{corresponPage.replied.customField6Value}"
-                        rendered="#{corresponPage.displayReplied}"/>
-        </div>
-      </div>
-      <div class="row customField">
-        <div class="twelve columns">
-          <h:outputLabel value="#{corresponPage.correspon.customField7Label}"
-                         rendered="#{corresponPage.correspon.customField7Label != null and !corresponPage.displayReplied}"
-                         styleClass="label"/>
-          <h:outputText value="#{corresponPage.correspon.customField7Value}"
-                        rendered="#{!corresponPage.displayReplied}"/>
-
-          <h:outputLabel value="#{corresponPage.replied.customField7Label}"
-                         rendered="#{corresponPage.replied.customField7Label != null and corresponPage.displayReplied}"
-                         styleClass="label"/>
-          <h:outputText value="#{corresponPage.replied.customField7Value}"
-                        rendered="#{corresponPage.displayReplied}"/>
-        </div>
-      </div>
-      <div class="row customField">
-        <div class="twelve columns">
-          <h:outputLabel value="#{corresponPage.correspon.customField8Label}"
-                         rendered="#{corresponPage.correspon.customField8Label != null and !corresponPage.displayReplied}"
-                         styleClass="label"/>
-          <h:outputText value="#{corresponPage.correspon.customField8Value}"
-                        rendered="#{!corresponPage.displayReplied}"/>
-
-          <h:outputLabel value="#{corresponPage.replied.customField8Label}"
-                         rendered="#{corresponPage.replied.customField8Label != null and corresponPage.displayReplied}"
-                         styleClass="label"/>
-          <h:outputText value="#{corresponPage.replied.customField8Value}"
-                        rendered="#{corresponPage.displayReplied}"/>
-        </div>
-      </div>
-      <div class="row customField">
-        <div class="twelve columns">
-          <h:outputLabel value="#{corresponPage.correspon.customField9Label}"
-                         rendered="#{corresponPage.correspon.customField9Label != null and !corresponPage.displayReplied}"
-                         styleClass="label"/>
-          <h:outputText value="#{corresponPage.correspon.customField9Value}"
-                        rendered="#{!corresponPage.displayReplied}"/>
-
-          <h:outputLabel value="#{corresponPage.replied.customField9Label}"
-                         rendered="#{corresponPage.replied.customField9Label != null and corresponPage.displayReplied}"
-                         styleClass="label"/>
-          <h:outputText value="#{corresponPage.replied.customField9Value}"
-                        rendered="#{corresponPage.displayReplied}"/>
-        </div>
-      </div>
-      <div class="row customField">
-        <div class="twelve columns">
-          <h:outputLabel value="#{corresponPage.correspon.customField10Label}"
-                         rendered="#{corresponPage.correspon.customField10Label != null and !corresponPage.displayReplied}"
-                         styleClass="label"/>
-          <h:outputText value="#{corresponPage.correspon.customField10Value}"
-                        rendered="#{!corresponPage.displayReplied}"/>
-
-          <h:outputLabel value="#{corresponPage.replied.customField10Label}"
-                         rendered="#{corresponPage.replied.customField10Label != null and corresponPage.displayReplied}"
-                         styleClass="label"/>
-          <h:outputText value="#{corresponPage.replied.customField10Value}"
-                        rendered="#{corresponPage.displayReplied}"/>
-        </div>
-      </div>
-    </div>
+    </ui:fragment>
 
     <ui:fragment rendered="#{not corresponPage.learningProject}">
       <hr/>

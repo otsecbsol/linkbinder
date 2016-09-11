@@ -1306,6 +1306,15 @@ public class CorresponPage extends AbstractCorresponPage implements AttachmentDo
     }
 
     /**
+     * 学習用プロジェクトへ公開する.
+     * @return null
+     */
+    public String issueToLearningProjects() {
+        String result = this.getModule().issueToLearningProjects();
+        return result;
+    }
+
+    /**
      * コレポン文書を検証依頼状態にする.
      *
      * @return null
@@ -3463,10 +3472,6 @@ public class CorresponPage extends AbstractCorresponPage implements AttachmentDo
         } else {
             return false;
         }
-    }
-
-    public void copyCorresponForLearning(Correspon correspon) {
-        corresponService.copyCorresponForLearning(correspon);
     }
 
     /**

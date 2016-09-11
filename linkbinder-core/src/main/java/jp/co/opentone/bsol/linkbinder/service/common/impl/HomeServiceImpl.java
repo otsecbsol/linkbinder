@@ -55,8 +55,8 @@ public class HomeServiceImpl extends AbstractService implements HomeService {
      * @see jp.co.opentone.bsol.linkbinder.service.common.HomeService#findProjects(ForLearning learn)
      */
     @Transactional(readOnly = true)
-    public List<ProjectSummary> findProjects(ForLearning learn) throws ServiceAbortException {
-        return findProjectSummarys(createFindProjectsCondition(learn));
+    public List<ProjectSummary> findProjects() throws ServiceAbortException {
+        return findProjectSummarys(createFindProjectsCondition());
     }
 
     /*

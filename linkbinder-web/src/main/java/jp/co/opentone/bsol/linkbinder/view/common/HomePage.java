@@ -21,7 +21,6 @@ import jp.co.opentone.bsol.framework.web.extension.jsf.annotation.Transfer;
 import jp.co.opentone.bsol.linkbinder.action.AbstractAction;
 import jp.co.opentone.bsol.linkbinder.dto.ProjectSummary;
 import jp.co.opentone.bsol.linkbinder.dto.User;
-import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import jp.co.opentone.bsol.linkbinder.dto.code.ReadStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowStatus;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchCorresponCondition;
@@ -307,7 +306,7 @@ public class HomePage extends AbstractPage {
          * @see jp.co.opentone.bsol.framework.action.Action#execute()
          */
         public void execute() throws ServiceAbortException {
-            page.projectSummaryList = page.homeService.findProjects(ForLearning.NORMAL);
+            page.projectSummaryList = page.homeService.findProjects();
 
             // デフォルトプロジェクトがある場合は先頭に並び替え
             if (!StringUtils.isEmpty(page.getCurrentUser().getDefaultProjectId())) {

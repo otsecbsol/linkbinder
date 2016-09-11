@@ -40,6 +40,14 @@ public interface ProjectService extends IService {
     List<Project> search(SearchProjectCondition condition) throws ServiceAbortException;
 
     /**
+     * ログインユーザーがアクセス可能なプロジェクトを返す.
+     * @param containsLearningProject 学習用プロジェクトを含む場合はtrue
+     * @return 検索結果
+     * @throws ServiceAbortException 検索に失敗
+     */
+    List<Project> findAccessibleProjects(boolean containsLearningProject) throws ServiceAbortException;
+
+    /**
      * 指定された条件に該当するプロジェクト情報を返す.
      * @param condition
      *            検索条件

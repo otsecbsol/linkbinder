@@ -307,6 +307,31 @@ $(document).ready(function() {
         editor_deselector: "ignoreTinyEditor"
     });
 
+    setupLearningTaggingElement({
+        elementId: 'learningCorresponLabel',
+        candidateId: 'form:candidateLearningLabels',
+        selectedId: 'form:selectedLearningLabels',
+        triggerId: 'form:learningCorresponLabelTrigger'
+    });
+    setupLearningTaggingElement({
+        elementId: 'learningCorresponTag',
+        candidateId: 'form:candidateLearningTags',
+        selectedId: 'form:selectedLearningTags',
+        triggerId: 'form:learningCorresponTagTrigger'
+    });
+
+    var toggleForLearning  = function() {
+        if ($('.forLearning').prop('checked')) {
+            $('#forLearningParts').show();
+        } else {
+            $('#forLearningParts').hide();
+        }
+    };
+
+    // 初期化
+    $('.forLearning').on('click', toggleForLearning);
+    toggleForLearning();
+
     if (document.getElementById('form:initialDisplaySuccess').value == 'true') {
         setupAttachmentsForErrorBack();
         changeReplyRequired();
@@ -335,7 +360,52 @@ $(document).ready(function() {
         document.getElementById("form:importFileName").value = '';
         document.getElementById("form:importFileSize").value = '';
     }
+
 });
+
+function setupLearningTaggingElement(option) {
+
+    var id = '#' + option.elementId;
+    var candidateId = '#' + $.escape(option.candidateId);
+    var selectedId = '#' + $.escape(option.selectedId);
+    var triggerId = '#' + $.escape(option.triggerId);
+
+    $(id).select2({
+        tags: true,
+        data: JSON.parse($(candidateId).val())
+    });
+
+    var counter = -1;
+    $(id).on('select2:select', function(e) {
+        var data = e.params.data;
+        if (data.id === data.text) {
+            data.id = counter--;
+        }
+
+        var hidden = $(selectedId);
+        var selectedValues = JSON.parse(hidden.val());
+        selectedValues.push(data);
+
+        hidden.val(JSON.stringify(selectedValues));
+        $(triggerId).click();
+    });
+
+    $(id).on('select2:unselect', function(e) {
+        var data = e.params.data;
+
+        var hidden = $(selectedId);
+        var selectedValues = JSON.parse(hidden.val());
+        for (var i = 0; i < selectedValues.length; i++) {
+            if (selectedValues[i].text === data.text) {
+                selectedValues.splice(i, 1);
+                break;
+            }
+        }
+
+        hidden.val(JSON.stringify(selectedValues));
+        $(triggerId).click();
+    });
+}
 
 function oncompleteAdd(data) {
     Spinner.onStatusChange(data);
@@ -425,4 +495,3 @@ function isApplyTemplate() {
         return true;
     }
 }
-

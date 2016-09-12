@@ -169,7 +169,6 @@ public class LearningCorresponListPage extends AbstractPage {
 
             return label.substring(i + 1);
         }
-
         private String getParentLabel(String label) {
             String delimiter = SystemConfig.getValue(Constants.KEY_LEARNING_LABEL_DELIMITER);
             int i = label.lastIndexOf(delimiter);

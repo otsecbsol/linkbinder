@@ -39,6 +39,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.elasticsearch.index.IndexNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -156,6 +157,10 @@ public class CorresponFullTextSearchServiceImpl extends AbstractService implemen
         try (ElasticsearchClient client = new ElasticsearchClient(setupConfiguration(getCurrentProjectId()))) {
             ElasticsearchSearchOption option = setupSearchOption(condition);
             client.search(option, response -> handleResponse(response, condition, c));
+        } catch (IndexNotFoundException e) {
+            //retry
+            createIndex(e.getIndex());
+            doSearch(condition, unlimited, c);
         } catch (Exception e) {
             throw new ApplicationFatalRuntimeException(e);
         }

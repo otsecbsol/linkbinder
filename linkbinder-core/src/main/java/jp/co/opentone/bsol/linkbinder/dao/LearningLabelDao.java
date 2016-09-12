@@ -36,8 +36,20 @@ public interface LearningLabelDao extends GenericDao<LearningLabel> {
     List<LearningLabelCorrespon> findLearningLabelCorrespon();
 
     /**
-     * 指定されたプロジェクトのすべての学習ラベルを返す.
+     * 指定されたプロジェクトの、全ての関連付けられた学習用ラベルを返す.
      * @return 検索結果
      */
     List<LearningLabel> findByProjectId(String projectId);
+
+    /**
+     * 指定された文書に設定された学習用ラベルを返す.
+     * @return 検索結果
+     */
+    List<LearningLabel> findByCorresponId(Long corresponId);
+
+    /**
+     * 指定された学習用ラベルが使われていなければ削除する.
+     * @param label ラベル
+     */
+    void deleteIfUnused(LearningLabel label);
 }

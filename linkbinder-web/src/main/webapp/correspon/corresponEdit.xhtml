@@ -70,12 +70,6 @@
     <ui:include src="/include/calendarFunc.xhtml">
       <ui:param name="styleKey" value="form:deadlineForReply" />
     </ui:include>
-    $(document).ready(function() {
-      $('select').select2({
-        width: '100%',
-        tags: 'true'
-      });
-    });
   </ui:define>
   <ui:define name="body">
     <f:view>
@@ -179,41 +173,61 @@
                         rendered="#{!corresponEditPage.elemControl.fromEditable}" />
             </div>
           </div>
-            <div class="twelve columns">
-              <label>
-                <h:selectBooleanCheckbox id="forLearning" value="#{corresponEditPage.forLearning}" />
-                <span class="label-body">
+            <ui:fragment rendered="#{corresponEditPage.projectUseLearning}">
+              <div class="row">
+                <div class="twelve columns">
+                  <label>
+                    <h:selectBooleanCheckbox id="forLearning" value="#{corresponEditPage.forLearning}" styleClass="forLearning"/>
+                    <span class="label-body">
                   <h:outputText value="この文書を" />
-                  <h:outputText value="#{corresponEditPage.getLearningContentsTitle()}" />
+                  <h:outputText value="#{corresponEditPage.learningCorresponTitleLabel}" />
                   <h:outputText value="として設定する" />
                 </span>
-                <h:message for="corresponNo" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
-              </label>
-            </div>
-            <div id="forLearningParts">
-              <div class="row">
-                <div class="twelve columns">
-                  <h:outputLabel for="learning_correspon_tag" value="ラベル" />
-                  <h:selectManyListbox id="learning_correspon_label" multiple="multiple">
-                    <f:selectItem itemValue="基本的事項/" itemLabel="基本的事項/" />
-                    <f:selectItem itemValue="現場における安全管理事項について/" itemLabel="現場における安全管理事項について/" />
-                    <f:selectItem itemValue="現場における安全管理事項について/飛来物・落下物への注意点" itemLabel="現場における安全管理事項について/飛来物・落下物への注意点" />
-                    <f:selectItem itemValue="2" itemLabel="Item 2" />
-                  </h:selectManyListbox>
+                    <h:message for="corresponNo" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
+                  </label>
                 </div>
               </div>
-              <div class="row">
-                <div class="twelve columns">
-                  <h:outputLabel for="learning_correspon_tag" value="タグ" />
-                  <h:selectManyListbox id="learning_correspon_tag" multiple="multiple">
-                    <f:selectItem itemValue="基本事項" itemLabel="基本事項" />
-                    <f:selectItem itemValue="参考情報" itemLabel="参考情報" />
-                    <f:selectItem itemValue="注意情報" itemLabel="注意情報" />
-                    <f:selectItem itemValue="行政からの情報" itemLabel="行政からの情報" />
-                  </h:selectManyListbox>
+              <div id="forLearningParts">
+                <div class="row">
+                  <div class="twelve columns">
+                    <label for="learningCorresponLabel">ラベル</label>
+                    <select id="learningCorresponLabel"
+                            multiple="multiple"
+                            class="u-full-width learningTaggingElement">
+                      <ui:repeat value="#{corresponEditPage.selectedLearningLabelList}" var="item">
+                        <option value="#{item.id}" selected="selected">#{item.name}</option>
+                      </ui:repeat>
+                    </select>
+                    <h:inputHidden id="candidateLearningLabels" value="#{corresponEditPage.candidateLearningLabels}"/>
+                    <h:inputHidden id="selectedLearningLabels" value="#{corresponEditPage.selectedLearningLabels}"/>
+                    <h:commandButton id="learningCorresponLabelTrigger"
+                                     action="#{corresponEditPage.syncSelectedLearningLabels}"
+                                     style="display:none">
+                      <f:ajax execute="selectedLearningLabels" render="@none"/>
+                    </h:commandButton>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="twelve columns">
+                    <label for="learningCorresponTag">タグ</label>
+                    <select id="learningCorresponTag"
+                            multiple="multiple"
+                            class="u-full-width learningTaggingElement">
+                      <ui:repeat value="#{corresponEditPage.selectedLearningTagList}" var="item">
+                        <option value="#{item.id}" selected="selected">#{item.name}</option>
+                      </ui:repeat>
+                    </select>
+                    <h:inputHidden id="candidateLearningTags" value="#{corresponEditPage.candidateLearningTags}"/>
+                    <h:inputHidden id="selectedLearningTags" value="#{corresponEditPage.selectedLearningTags}"/>
+                    <h:commandButton id="learningCorresponTagTrigger"
+                                     action="#{corresponEditPage.syncSelectedLearningTags}"
+                                     style="display:none">
+                      <f:ajax execute="selectedLearningTags" render="@none"/>
+                    </h:commandButton>
+                  </div>
                 </div>
               </div>
-            </div>
+            </ui:fragment>
           <ui:fragment rendered="#{corresponEditPage.distributionTemplateList != null}">
           <div class="row">
             <div class="ten columns">

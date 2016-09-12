@@ -92,11 +92,18 @@ public abstract class AbstractPage implements LinkBinderPage, Serializable {
     public static final String NEXT = ">>";
 
     /**
-     * 学習用コンテンツエリアのタイトルを取得して返す.
-     * @return 学習用コンテンツエリアタイトル
+     * "学習用コンテンツ"のタイトルを取得して返す.
+     * @return "学習用コンテンツ"タイトル
      */
-    public String getLearningContentsTitle() {
-        return SystemConfig.getValue(Constants.KEY_LEARNING_TITLE);
+    public String getLearningContentsLabel() {
+        return SystemConfig.getValue(Constants.KEY_LEARNING_CONTENTS_LABEL);
+    }
+    /**
+     * "学習用文書"のタイトルを取得して返す.
+     * @return "学習用文書"タイトル
+     */
+    public String getLearningCorresponLabel() {
+        return SystemConfig.getValue(Constants.KEY_LEARNING_CORRESPON_LABEL);
     }
 
     /**

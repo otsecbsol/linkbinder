@@ -43,11 +43,6 @@ public class LearningCorresponServiceImpl extends AbstractService implements Lea
      * logger.
      */
     private static final Logger log = LoggerFactory.getLogger(LearningCorresponServiceImpl.class);
-    /**
-     * 空のインスタンスを生成する.
-     */
-    public LearningCorresponServiceImpl() {
-    }
 
     @Override
     @Transactional(readOnly = true)

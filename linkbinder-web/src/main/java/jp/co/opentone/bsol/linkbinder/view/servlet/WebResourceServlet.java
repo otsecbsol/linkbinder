@@ -15,21 +15,20 @@
  */
 package jp.co.opentone.bsol.linkbinder.view.servlet;
 
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Webアプリケーションルート配下の各種リソースを配信する.
@@ -100,15 +99,17 @@ public class WebResourceServlet extends HttpServlet {
     protected void write(HttpServletResponse resp, String path)
             throws ServletException, IOException {
         InputStream in = getServletContext().getResourceAsStream(path);
-        try {
-            OutputStream o = resp.getOutputStream();
-            byte[] b = new byte[4096];
-            int i = 0;
-            while ((i = in.read(b, 0, b.length)) != -1) {
-                o.write(b, 0, i);
+        if (in != null) {
+            try {
+                OutputStream o = resp.getOutputStream();
+                byte[] b = new byte[4096];
+                int i = 0;
+                while ((i = in.read(b, 0, b.length)) != -1) {
+                    o.write(b, 0, i);
+                }
+            } finally {
+                in.close();
             }
-        } finally {
-            in.close();
         }
     }
 

@@ -47,9 +47,6 @@
       <list>
         <value>classpath:jdbc.properties</value>
         <value>file:${LB_RESOURCE_DIR}/jdbc.properties</value>
-        <!--
-        <value>file://${LB_RESOURCE_DIR}/jdbc.properties</value>
-        -->
     </list>
   </property>
   </bean>

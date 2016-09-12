@@ -19,11 +19,12 @@
 PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
 "http://ibatis.apache.org/dtd/sql-map-2.dtd">
 
-<sqlMap namespace="learningTag">
+<sqlMap namespace="corresponLearningTag">
 
-  <resultMap id="result" class="jp.co.opentone.bsol.linkbinder.dto.LearningTag">
+  <resultMap id="result" class="jp.co.opentone.bsol.linkbinder.dto.CorresponLearningTag">
     <result property="id"              column="id"/>
-    <result property="name"            column="name"/>
+    <result property="corresponId"    column="correspon_id"/>
+    <result property="tagId"         column="tag_id"/>
     <result property="createdBy.empNo" column="created_by"/>
     <result property="createdAt"       column="created_at"/>
     <result property="updatedBy.empNo" column="updated_by"/>
@@ -32,74 +33,57 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     <result property="deleteNo"        column="delete_no"/>
   </resultMap>
 
-  <resultMap id="resultForUpdate" class="jp.co.opentone.bsol.linkbinder.dto.LearningTag">
+  <resultMap id="resultForUpdate" class="jp.co.opentone.bsol.linkbinder.dto.CorresponLearningTag">
     <result property="versionNo" column="version_no" />
   </resultMap>
-
 
   <select id="findByIdForUpdate" resultMap="resultForUpdate">
     SELECT
       version_no
     FROM
-      learning_tag
+      correspon_learning_tag
     WHERE
       id = #id#
     FOR UPDATE
   </select>
 
-  <select id="findByProjectId" resultMap="result">
-    SELECT DISTINCT
-      t.*
-    FROM learning_tag t
-      INNER JOIN correspon_learning_tag ct
-        ON ct.tag_id = t.id
-       AND ct.delete_no = 0
-      INNER JOIN correspon c
-        ON c.id = ct.correspon_id
-       AND c.delete_no = 0
-    WHERE t.delete_no = 0
-      AND c.project_id = #value#
-    ORDER BY t.name
-  </select>
-
-  <select id="findByCorresponId" resultMap="result">
-    SELECT
-      t.*
-    FROM learning_tag t
-      INNER JOIN correspon_learning_tag ct
-        ON ct.tag_id = t.id
-       AND ct.delete_no = 0
-      INNER JOIN correspon c
-        ON c.id = ct.correspon_id
-       AND c.delete_no = 0
-    WHERE t.delete_no = 0
-      AND c.id = #value#
-    ORDER BY t.name
-  </select>
-
   <insert id="create">
     <selectKey resultClass="long" keyProperty="id">
-      SELECT s_learning_tag_id.NEXTVAL AS id FROM dual
+      SELECT s_correspon_learning_tag_id.NEXTVAL AS id FROM dual
     </selectKey>
-    INSERT INTO learning_tag(
+    INSERT INTO correspon_learning_tag (
       id,
-      name,
+      correspon_id,
+      tag_id,
       created_by,
       updated_by
     ) VALUES (
       #id#,
-      #name#,
+      #corresponId#,
+      #tagId#,
       #createdBy.empNo#,
       #updatedBy.empNo#
     )
   </insert>
 
-  <delete id="deleteIfUnused">
-    DELETE FROM learning_tag t
+  <select id="findByCorresponId" resultMap="result">
+    SELECT
+      id,
+      correspon_id,
+      tag_id,
+      created_by,
+      created_at,
+      updated_by,
+      updated_at,
+      version_no,
+      delete_no
+    FROM  correspon_learning_tag
+    WHERE delete_no = 0
+      AND correspon_id = #value#
+  </select>
+
+  <delete id="delete">
+    DELETE correspon_learning_tag
     WHERE id = #id#
-      AND NOT EXISTS (
-        SELECT 1 FROM correspon_learning_tag ct
-        WHERE ct.tag_id = t.id
-    )
   </delete>
 </sqlMap>

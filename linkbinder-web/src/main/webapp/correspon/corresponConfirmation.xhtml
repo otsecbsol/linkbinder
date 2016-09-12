@@ -125,16 +125,30 @@
                             value="#{corresponConfirmationPage.correspon.previousRevCorresponNo}" />
             </div>
           </div>
-          <div class="row">
-            <h:outputLabel value="#{corresponConfirmationPage.getLearningContentsTitle()}として設定する"/>
-            <!-- TODO:それぞれの表示を追加する -->
-            <ui:fragment rendered="#{corresponConfirmationPage.learningContents}">
-              true
-            </ui:fragment>
-            <ui:fragment rendered="#{!corresponConfirmationPage.learningContents}">
-              false
-            </ui:fragment>
-          </div>
+          <ui:fragment rendered="#{corresponConfirmationPage.projectUseLearning and corresponConfirmationPage.correspon.learningContents}">
+            <div class="row">
+              <div class="twelve columns">
+                <h:outputText value="#{corresponConfirmationPage.learningCorresponTitleLabel}として設定する"/>
+              </div>
+            </div>
+            <div class="row">
+              <div class="twelve columns">
+                <h:outputLabel>ラベル</h:outputLabel>
+                <ui:repeat value="#{corresponConfirmationPage.correspon.learningLabel}" var="e" varStatus="loop">
+                  <h:outputText value="#{e.name}" styleClass="learning-label"/>#{loop.last ? '' : ','}
+                </ui:repeat>
+              </div>
+            </div>
+            <div class="row">
+              <div class="twelve columns">
+                <h:outputLabel>タグ</h:outputLabel>
+                <ui:repeat value="#{corresponConfirmationPage.correspon.learningTag}" var="e" varStatus="loop">
+                  <h:outputText value="#{e.name}" styleClass="learning-tag"/>#{loop.last ? '' : ','}
+                </ui:repeat>
+              </div>
+            </div>
+          </ui:fragment>
+
           <div class="row">
             <div class="twelve columns">
               <label>宛先</label>

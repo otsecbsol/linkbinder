@@ -17,16 +17,13 @@ package jp.co.opentone.bsol.linkbinder.service.correspon.impl;
 
 import jp.co.opentone.bsol.framework.core.dao.KeyDuplicateException;
 import jp.co.opentone.bsol.framework.core.dao.StaleRecordException;
+import jp.co.opentone.bsol.framework.core.exception.ApplicationFatalRuntimeException;
 import jp.co.opentone.bsol.framework.core.extension.ibatis.DBValue;
-import jp.co.opentone.bsol.framework.core.filestore.FileStoreClient;
-import jp.co.opentone.bsol.framework.core.filestore.FileStoreException;
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
 import jp.co.opentone.bsol.framework.core.util.ArgumentValidator;
 import jp.co.opentone.bsol.linkbinder.dao.AddressCorresponGroupDao;
 import jp.co.opentone.bsol.linkbinder.dao.AddressUserDao;
-import jp.co.opentone.bsol.linkbinder.dao.AttachmentDao;
 import jp.co.opentone.bsol.linkbinder.dao.CorresponCustomFieldDao;
-import jp.co.opentone.bsol.linkbinder.dao.CorresponDao;
 import jp.co.opentone.bsol.linkbinder.dao.CorresponHierarchyDao;
 import jp.co.opentone.bsol.linkbinder.dao.PersonInChargeDao;
 import jp.co.opentone.bsol.linkbinder.dao.WorkflowDao;
@@ -46,6 +43,7 @@ import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowProcessStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowStatus;
 import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
 import jp.co.opentone.bsol.linkbinder.service.AbstractService;
+import jp.co.opentone.bsol.linkbinder.service.CorresponServiceHelper;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponSaveService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponService;
 import jp.co.opentone.bsol.linkbinder.service.notice.EmailNoticeService;
@@ -57,7 +55,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.List;
 /**
  * このサービスではコレポン文書に関する処理を提供する.
@@ -75,6 +72,12 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
      * logger.
      */
     private static final Logger log = LoggerFactory.getLogger(CorresponSaveServiceImpl.class);
+
+    /**
+     * サービスヘルパ.
+     */
+    @Resource
+    private CorresponServiceHelper serviceHelper;
 
     /**
      * 承認状態、承認作業状態を制御するクラス.
@@ -104,36 +107,17 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
      * 承認フローを更新する.
      * @param workflow
      *            承認フロー
-     * @throws ServiceAbortException
-     */
-    private void updateWorkflow(Workflow workflow) throws ServiceAbortException {
-        try {
-            // 排他制御を通過した場合はワークフローの更新処理へ
-            WorkflowDao dao = getDao(WorkflowDao.class);
-            dao.update(workflow);
-        } catch (KeyDuplicateException kde) {
-            throw new ServiceAbortException(kde);
-        } catch (StaleRecordException sre) {
-            throw new ServiceAbortException(
-                ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
-        }
-    }
-
-    /**
-     * 承認フローを更新する.
-     * @param workflow
-     *            承認フロー
-     * @throws ServiceAbortException
+     * @throws ServiceAbortException 更新失敗
      */
     private void updateWorkflowByCorresponId(Workflow workflow) throws ServiceAbortException {
         try {
             WorkflowDao dao = getDao(WorkflowDao.class);
             dao.updateByCorresponId(workflow);
-        } catch (KeyDuplicateException kde) {
-            throw new ServiceAbortException(kde);
         } catch (StaleRecordException sre) {
             throw new ServiceAbortException(
-                ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
+                    ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
+        } catch (KeyDuplicateException kde) {
+            throw new ServiceAbortException(kde);
         }
     }
 
@@ -142,17 +126,11 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
      * Update(Deniedの編集).
      *
      * @param correspon コレポン文書
+     * @param wfProcessStatus ワークフロー処理状態
      *
      * @return workflow ワークフロー
-     *
-     * @throws ServiceAbortException
      */
-    private Workflow setUpWorkflowCaseDenied(
-        Correspon correspon,
-        WorkflowProcessStatus wfProcessStatus
-    )
-    throws ServiceAbortException {
-
+    private Workflow setUpWorkflowCaseDenied(Correspon correspon, WorkflowProcessStatus wfProcessStatus) {
         Workflow workflow = new Workflow();
         workflow.setCorresponId(correspon.getId());
         workflow.setWorkflowProcessStatus(wfProcessStatus);
@@ -163,129 +141,28 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
         workflow.setUpdatedBy(getCurrentUser());
 
         return workflow;
-
     }
 
     /**
      * 更新用フローの作成.
      *
      * @param correspon コレポン文書
-     *
+     * @param wfProcessStatus ワークフロー処理状態
      * @return workflow ワークフロー
-     *
-     * @throws ServiceAbortException
      */
-    private Workflow setUpWorkflow(Correspon correspon, WorkflowProcessStatus wfProcessStatus)
-    throws ServiceAbortException {
-
+    private Workflow setUpWorkflow(Correspon correspon, WorkflowProcessStatus wfProcessStatus) {
         Workflow workflowForUpdate = new Workflow();
 
         List<Workflow> workflows = correspon.getWorkflows();
-        for (Workflow w : workflows) {
-            if (w.getUser().getEmpNo().equals(getCurrentUser().getEmpNo())) {
-                workflowForUpdate.setId(w.getId());
-                workflowForUpdate.setWorkflowProcessStatus(wfProcessStatus);
-                workflowForUpdate.setUpdatedBy(getCurrentUser());
-                workflowForUpdate.setVersionNo(w.getVersionNo());
-            }
-        }
+        workflows.stream()
+                .filter(w -> w.getUser().getEmpNo().equals(getCurrentUser().getEmpNo()))
+                .forEach(w -> {
+            workflowForUpdate.setId(w.getId());
+            workflowForUpdate.setWorkflowProcessStatus(wfProcessStatus);
+            workflowForUpdate.setUpdatedBy(getCurrentUser());
+            workflowForUpdate.setVersionNo(w.getVersionNo());
+        });
         return workflowForUpdate;
-    }
-
-    /**
-     * コレポン文書を作成する.
-     * @param correspon
-     *            コレポン文書
-     * @throws ServiceAbortException
-     */
-    private Long createCorrespon(Correspon correspon) throws ServiceAbortException {
-        log.trace("①コレポン文書(correspon)");
-        try {
-            CorresponDao dao = getDao(CorresponDao.class);
-            if (log.isDebugEnabled()) {
-                log.debug("" + correspon);
-            }
-            return dao.create(correspon);
-        } catch (KeyDuplicateException kde) {
-            throw new ServiceAbortException(kde);
-        }
-    }
-
-    /**
-     * コレポン文書を更新する.
-     * @param correspon
-     *            コレポン文書
-     * @throws ServiceAbortException
-     */
-    private void updateCorrespon(Correspon correspon) throws ServiceAbortException {
-        log.trace("①コレポン文書(correspon)");
-        try {
-            CorresponDao dao = getDao(CorresponDao.class);
-            if (log.isDebugEnabled()) {
-                log.debug("" + correspon);
-            }
-            dao.update(correspon);
-        } catch (KeyDuplicateException kde) {
-            throw new ServiceAbortException(kde);
-        } catch (StaleRecordException sre) {
-            throw new ServiceAbortException(
-                ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
-        }
-    }
-
-    /**
-     * 添付ファイルを更新する.
-     * @param attachment
-     *            添付ファイル
-     * @throws ServiceAbortException
-     */
-    private void updateAttachment(Attachment attachment) throws ServiceAbortException {
-        try {
-            AttachmentDao dao = getDao(AttachmentDao.class);
-            dao.update(attachment);
-        } catch (KeyDuplicateException kde) {
-            throw new ServiceAbortException(kde);
-        } catch (StaleRecordException sre) {
-            throw new ServiceAbortException(
-                    ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
-        }
-    }
-
-    /**
-     * 添付ファイルを削除する.
-     * @param attachment
-     *            添付ファイル
-     * @throws ServiceAbortException
-     */
-    private void deleteAttachment(Attachment attachment) throws ServiceAbortException {
-        try {
-            AttachmentDao dao = getDao(AttachmentDao.class);
-            dao.delete(attachment);
-        } catch (KeyDuplicateException kde) {
-            throw new ServiceAbortException(kde);
-        } catch (StaleRecordException sre) {
-            throw new ServiceAbortException(
-                ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
-        }
-    }
-
-    /**
-     * 添付ファイルを作成する.
-     * @param attachment
-     *            添付ファイル
-     * @throws ServiceAbortException
-     */
-    private void createAttachment(Attachment attachment) throws ServiceAbortException {
-        log.trace("②添付ファイル(attachment)");
-        try {
-            AttachmentDao dao = getDao(AttachmentDao.class);
-            if (log.isDebugEnabled()) {
-                log.debug("" + attachment);
-            }
-            dao.create(attachment);
-        } catch (KeyDuplicateException e) {
-            throw new ServiceAbortException(e);
-        }
     }
 
     /* (non-Javadoc)
@@ -294,7 +171,7 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
     public Long save(Correspon correspon) throws ServiceAbortException {
         ArgumentValidator.validateNotNull(correspon);
         // コレポンID
-        Long corresponId = null;
+        Long corresponId;
         if (correspon.isNew()) {
             // 新規登録
             corresponId = doCreateCorrespon(correspon);
@@ -329,7 +206,7 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
         attachment.setCreatedBy(getCurrentUser());
         attachment.setUpdatedBy(getCurrentUser());
 
-        updateAttachment(attachment);
+        serviceHelper.updateAttachment(attachment);
     }
 
     /**
@@ -344,11 +221,11 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
         // コレポン情報設定
         clone.setCreatedBy(getCurrentUser());
         // コレポン文書ID
-        clone.setId(createCorrespon(setUpCorrespon(clone)));
+        clone.setId(serviceHelper.createCorrespon(setUpCorrespon(clone)));
         // 添付ファイル保存
-        saveAttachments(clone);
+        serviceHelper.saveAttachments(clone);
         // 1～10のカスタム情報をCorresponCustomField設定
-        createCorresponCustomField(clone);
+        serviceHelper.createCorresponCustomField(clone);
         // 宛先-活動単位情報設定
         saveAddressCorresponGroup(clone);
         // 宛先-ユーザー情報設定
@@ -359,6 +236,8 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
             // コレポン文書階層設定
             createHierarchy(clone);
         }
+        serviceHelper.saveLearningLabel(clone);
+        serviceHelper.saveLearningTag(clone);
 
         return clone.getId();
     }
@@ -370,19 +249,13 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
      *            コレポン文書情報
      * @return correspon
      *            コレポン文書情報
-     * @throws ServiceAbortException
-     *            コレポン文書のコピーに失敗
      */
-    private Correspon copyCorresponProperties(Correspon correspon) throws ServiceAbortException {
+    private Correspon copyCorresponProperties(Correspon correspon) {
         Correspon clone = new Correspon();
         try {
             PropertyUtils.copyProperties(clone, correspon);
-        } catch (IllegalAccessException e) {
-            throw new ServiceAbortException(e.getMessage());
-        } catch (InvocationTargetException e) {
-            throw new ServiceAbortException(e.getMessage());
-        } catch (NoSuchMethodException e) {
-            throw new ServiceAbortException(e.getMessage());
+        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            throw new ApplicationFatalRuntimeException(e);
         }
         return clone;
     }
@@ -403,17 +276,19 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
         // 承認作業状態を取得する
         WorkflowProcessStatus wfProcessStatus = corresponStatusControl.getWorkflowProcessStatus();
         //①－4－3．入力内容を指定のコレポン文書に更新する。
-        updateCorrespon(setUpCorrespon(clone));                // コレポン文書
+        serviceHelper.updateCorrespon(setUpCorrespon(clone));                // コレポン文書
         if (wfProcessStatus != null) {
             updateWorkflow(correspon, wfProcessStatus);          // ワークフロー
         }
         //  添付ファイル保存
-        saveAttachments(clone);
+        serviceHelper.saveAttachments(clone);
 
         updateCorresponCustomField(clone);                   // コレポン文書 カスタムフィールド
         updateAddressCorresponGroup(clone);                  // 宛先 活動単位
         updateAddressUser(clone);                            // 宛先 ユーザー
 
+        serviceHelper.saveLearningLabel(clone);
+        serviceHelper.saveLearningTag(clone);
 
         return clone.getId();
     }
@@ -452,65 +327,8 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
     }
 
     /**
-     * コレポン入力情報CorresponCustomFieldをListに設定.
-     *
-     * @param correspon
-     *            コレポン文書情報
-     * @return CorresponCustomField情報
-     * @throws ServiceAbortException
-     */
-    private List<CorresponCustomField> setUpCorresponCustomFieldData(Correspon correspon)
-                    throws ServiceAbortException {
-        List<CorresponCustomField> result = new ArrayList<CorresponCustomField>();
-        setUpCorresponCustomField(result,
-                                  correspon.getCustomField1Id(),
-                                  correspon.getCustomField1Value());
-        setUpCorresponCustomField(result,
-                                  correspon.getCustomField2Id(),
-                                  correspon.getCustomField2Value());
-        setUpCorresponCustomField(result,
-                                  correspon.getCustomField3Id(),
-                                  correspon.getCustomField3Value());
-        setUpCorresponCustomField(result,
-                                  correspon.getCustomField4Id(),
-                                  correspon.getCustomField4Value());
-        setUpCorresponCustomField(result,
-                                  correspon.getCustomField5Id(),
-                                  correspon.getCustomField5Value());
-        setUpCorresponCustomField(result,
-                                  correspon.getCustomField6Id(),
-                                  correspon.getCustomField6Value());
-        setUpCorresponCustomField(result,
-                                  correspon.getCustomField7Id(),
-                                  correspon.getCustomField7Value());
-        setUpCorresponCustomField(result,
-                                  correspon.getCustomField8Id(),
-                                  correspon.getCustomField8Value());
-        setUpCorresponCustomField(result,
-                                  correspon.getCustomField9Id(),
-                                  correspon.getCustomField9Value());
-        setUpCorresponCustomField(result,
-                                  correspon.getCustomField10Id(),
-                                  correspon.getCustomField10Value());
-        return result;
-    }
-
-    private void setUpCorresponCustomField(
-                List<CorresponCustomField> fields,
-                Long projectCustomFieldId,
-                String value) {
-
-        if (projectCustomFieldId != null) {
-            CorresponCustomField f = new CorresponCustomField();
-            f.setProjectCustomFieldId(projectCustomFieldId);
-            f.setValue(value);
-            fields.add(f);
-        }
-    }
-
-    /**
      * コレポン入力情報Hierarchyを設定.
-     * @param correspon
+     * @param correspon 文書
      * @return CorresponHierarchy情報
      */
     private CorresponHierarchy setUpCorresponHierarchyData(Correspon correspon) {
@@ -520,36 +338,12 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
     }
 
     /**
-     * 添付ファイルをFileStoreシステムに保存する.
-     * @param attachment 添付ファイル
-     * @return FileStoreシステムが発番したオブジェクトID
-     * @throws ServiceAbortException 保存に失敗
-     */
-    private String saveAttachmentContent(Attachment attachment)
-            throws ServiceAbortException {
-
-        FileStoreClient fileStore = getFileStoreClient();
-        try {
-            String result = fileStore.createFile(attachment.getSourcePath());
-            if (log.isDebugEnabled()) {
-                log.debug("Save an attachment to FileStore. {}, {}", attachment.getFileName(), result);
-            }
-            return result;
-        } catch (FileStoreException e) {
-            throw new ServiceAbortException(e.getMessage(),
-                                            e,
-                                            ApplicationMessageCode.ERROR_SAVING_FILE);
-        }
-    }
-
-    /**
      * ワークフローの更新処理.
      * ワークフロー
      *
      * @param original 更新前のコレポン文書
      * @param wfProcessStatus 更新する値
-     * @throws ServiceAbortException
-     * @throws StaleRecordException
+     * @throws ServiceAbortException 更新失敗
      */
     private void updateWorkflow(Correspon original, WorkflowProcessStatus wfProcessStatus)
             throws ServiceAbortException {
@@ -566,7 +360,7 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
             //  検証・承認依頼中のコレポン文書をChecker/Approverが更新する場合は
             //  自身の承認作業ステータスを作業中に更新する
             if (isChecker(original) || isApprover(original)) {
-                updateWorkflow(setUpWorkflow(original, wfProcessStatus));
+                serviceHelper.updateWorkflow(setUpWorkflow(original, wfProcessStatus));
             }
             break;
         default:
@@ -575,68 +369,18 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
         }
     }
 
-    private void saveAttachments(Correspon correspon) throws ServiceAbortException {
-        List<Attachment> attachments = correspon.getUpdateAttachments();
-        if (attachments == null) {
-            return;
-        }
-
-        for (Attachment a : attachments) {
-            a.setCorresponId(correspon.getId());
-            a.setFileType(Attachment.detectFileTypeByFileName(a.getFileName()));
-            a.setCreatedBy(getCurrentUser());
-            a.setUpdatedBy(getCurrentUser());
-
-            processSaveAttachment(a);
-        }
-    }
-
-    private void processSaveAttachment(Attachment attachment) throws ServiceAbortException {
-        switch (attachment.getMode()) {
-        case NEW:
-            String fileStoreFileId = saveAttachmentContent(attachment);
-            attachment.setFileId(fileStoreFileId);
-            createAttachment(attachment);
-            break;
-        case UPDATE:
-            updateAttachment(attachment);
-            break;
-        case DELETE :
-            deleteAttachment(attachment);
-            break;
-        default:
-            // 添付ファイルはNEW、DELETEのいずれかしかあり得ない (UPDATEは無し)
-            break;
-        }
-    }
-
-    /**
-     * forLearningの値をDBへ記録する値へと変換する.
-     *
-     * @param learning 学習用コンテンツか否か（boolean）
-     * @return 変換結果（true:"X", false:null）
-     */
-    private String convertLearningValue(String learning) {
-        if(learning.equals("true")) {
-            return "X";
-        } else {
-            return null;
-        }
-    }
-
     /**
      * List情報に変更があった場合の更新処理.
      * コレポン文書-カスタムフィールド
      *
      * @param correspon コレポン文書
-     * @throws ServiceAbortException
-     * @throws StaleRecordException
+     * @throws ServiceAbortException 更新失敗
      */
     private void updateCorresponCustomField(Correspon correspon) throws ServiceAbortException {
         //削除処理
         deleteCorresponCustomField(correspon);
         //登録処理
-        createCorresponCustomField(correspon);
+        serviceHelper.createCorresponCustomField(correspon);
     }
 
     /**
@@ -644,8 +388,7 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
      * コレポン文書-カスタムフィールド
      *
      * @param correspon コレポン文書
-     * @throws ServiceAbortException
-     * @throws StaleRecordException
+     * @throws ServiceAbortException 更新失敗
      */
     private void deleteCorresponCustomField(Correspon correspon) throws ServiceAbortException {
         //コレポン文書-カスタムフィールド
@@ -656,41 +399,11 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
         try {
             log.trace("③コレポン文書-カスタムフィールド削除(correspon_custom_field)");
             corresponCustomFieldDao.deleteByCorresponId(corresponCustomField);
-        } catch (KeyDuplicateException e) {
-            throw new ServiceAbortException(e);
         } catch (StaleRecordException e) {
             throw new ServiceAbortException(
-                ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
-        }
-    }
-
-    /**
-     * コレポン文書-カスタムフィールドの登録処理.
-     *
-     * @param correspon コレポン文書
-     * @throws ServiceAbortException
-     */
-    private void createCorresponCustomField(Correspon correspon) throws ServiceAbortException {
-        //コレポン文書-カスタムフィールド
-        CorresponCustomFieldDao corresponCustomFieldDao = getDao(CorresponCustomFieldDao.class);
-        List<CorresponCustomField> corresponCustomFields = setUpCorresponCustomFieldData(correspon);
-        for (CorresponCustomField corresponCustomField : corresponCustomFields) {
-            if (corresponCustomField == null) {
-                continue;
-            }
-
-            corresponCustomField.setCorresponId(correspon.getId());
-            corresponCustomField.setCreatedBy(correspon.getCreatedBy());
-            corresponCustomField.setUpdatedBy(getCurrentUser());
-            log.trace("③コレポン文書-カスタムフィールド(correspon_custom_field)");
-            try {
-                if (log.isDebugEnabled()) {
-                    log.debug("" + corresponCustomField);
-                }
-                corresponCustomFieldDao.create(corresponCustomField);
-            } catch (KeyDuplicateException e) {
-                throw new ServiceAbortException(e);
-            }
+                    ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
+        } catch (KeyDuplicateException e) {
+            throw new ServiceAbortException(e);
         }
     }
 
@@ -699,8 +412,7 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
      * 宛先ユーザー
      *
      * @param correspon コレポン文書
-     * @throws ServiceAbortException
-     * @throws StaleRecordException
+     * @throws ServiceAbortException 更新失敗
      */
     private void updateAddressUser(Correspon correspon) throws ServiceAbortException {
         //削除処理
@@ -714,13 +426,11 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
      * 宛先ユーザー
      *
      * @param correspon コレポン文書
-     * @throws ServiceAbortException
-     * @throws StaleRecordException
+     * @throws ServiceAbortException 更新失敗
      */
     private void deleteAddressUser(Correspon correspon) throws ServiceAbortException {
         AddressUserDao addressUserDao = getDao(AddressUserDao.class);
-        List<AddressCorresponGroup> addressCorresponGroupList
-        = correspon.getAddressCorresponGroups();
+        List<AddressCorresponGroup> addressCorresponGroupList = correspon.getAddressCorresponGroups();
         if (addressCorresponGroupList == null) {
             return;
         }
@@ -742,11 +452,11 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
             addressUser.setUpdatedBy(getCurrentUser());
             try {
                 addressUserDao.deleteByAddressCorresponGroupId(addressUser);
-            } catch (KeyDuplicateException e) {
-                throw new ServiceAbortException(e);
             } catch (StaleRecordException e) {
                 throw new ServiceAbortException(
-                    ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
+                        ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
+            } catch (KeyDuplicateException e) {
+                throw new ServiceAbortException(e);
             }
         }
     }
@@ -756,7 +466,7 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
      * 宛先ユーザーのPIC
      *
      * @param addressUsers 宛先ユーザーリスト
-     * @throws ServiceAbortException
+     * @throws ServiceAbortException 更新失敗
      */
     private void deletePersonInCharge(List<AddressUser> addressUsers) throws ServiceAbortException {
         PersonInChargeDao personInChargeDao = getDao(PersonInChargeDao.class);
@@ -774,11 +484,11 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
                 personInCharge.setUpdatedBy(getCurrentUser());
                 try {
                     personInChargeDao.deleteByAddressUserId(personInCharge);
-                } catch (KeyDuplicateException e) {
-                    throw new ServiceAbortException(e);
                 } catch (StaleRecordException e) {
                     throw new ServiceAbortException(
-                        ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
+                            ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
+                } catch (KeyDuplicateException e) {
+                    throw new ServiceAbortException(e);
                 }
             }
         }
@@ -788,12 +498,11 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
      * 宛先ユーザーの登録処理.
      *
      * @param correspon コレポン文書
-     * @throws ServiceAbortException
+     * @throws ServiceAbortException 更新失敗
      */
     private void createAddressUser(Correspon correspon) throws ServiceAbortException {
         AddressUserDao addressuserDao = getDao(AddressUserDao.class);
-        List<AddressCorresponGroup> addressCorresponGroupList
-        = correspon.getAddressCorresponGroups();
+        List<AddressCorresponGroup> addressCorresponGroupList = correspon.getAddressCorresponGroups();
         if (addressCorresponGroupList == null) {
             return;
         }
@@ -834,7 +543,7 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
      * 宛先ユーザーに設定されたPICの登録処理.
      *
      * @param addressUser 宛先ユーザー
-     * @throws ServiceAbortException
+     * @throws ServiceAbortException 更新失敗
      */
     private void createPersonInCharge(AddressUser addressUser) throws ServiceAbortException {
         PersonInChargeDao personInChargeDao = getDao(PersonInChargeDao.class);
@@ -856,8 +565,7 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
      * 宛先-活動単位
      *
      * @param correspon コレポン文書
-     * @throws ServiceAbortException
-     * @throws StaleRecordException
+     * @throws ServiceAbortException 更新失敗
      */
     private void updateAddressCorresponGroup(Correspon correspon) throws ServiceAbortException {
         //削除処理
@@ -871,8 +579,7 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
      * 宛先-活動単位
      *
      * @param correspon コレポン文書
-     * @throws ServiceAbortException
-     * @throws StaleRecordException
+     * @throws ServiceAbortException 更新失敗
      */
     private void deleteAddressCorresponGroup(Correspon correspon) throws ServiceAbortException {
         AddressCorresponGroupDao addressCorresponGroupDao = getDao(AddressCorresponGroupDao.class);
@@ -883,11 +590,11 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
             ag.setUpdatedBy(getCurrentUser());
             try {
                 addressCorresponGroupDao.delete(ag);
-            } catch (KeyDuplicateException e) {
-                throw new ServiceAbortException(e);
             } catch (StaleRecordException e) {
                 throw new ServiceAbortException(
-                    ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
+                        ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
+            } catch (KeyDuplicateException e) {
+                throw new ServiceAbortException(e);
             }
         }
     }
@@ -896,7 +603,7 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
      * 宛先-活動単位の登録処理.
      *
      * @param correspon コレポン文書
-     * @throws ServiceAbortException
+     * @throws ServiceAbortException 更新失敗
      */
     private void saveAddressCorresponGroup(Correspon correspon) throws ServiceAbortException {
         AddressCorresponGroupDao addressCorresponGroupDao = getDao(AddressCorresponGroupDao.class);
@@ -926,11 +633,11 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
                 }
             }
 
-        } catch (KeyDuplicateException e) {
-            throw new ServiceAbortException(e);
         } catch (StaleRecordException e) {
             throw new ServiceAbortException(
-                ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
+                    ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
+        } catch (KeyDuplicateException e) {
+            throw new ServiceAbortException(e);
         }
     }
 
@@ -956,7 +663,6 @@ public class CorresponSaveServiceImpl extends AbstractService implements Corresp
         } catch (KeyDuplicateException e) {
             throw new ServiceAbortException(e);
         }
-
     }
 
     private List<AddressCorresponGroup> findAddressCorresponGroups(Long corresponId) {

@@ -20,14 +20,12 @@ import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
 import jp.co.opentone.bsol.linkbinder.Constants;
 import jp.co.opentone.bsol.linkbinder.dto.LoginUserInfo;
 import jp.co.opentone.bsol.linkbinder.dto.Project;
-import jp.co.opentone.bsol.linkbinder.dto.ProjectSummary;
 import jp.co.opentone.bsol.linkbinder.dto.ProjectUser;
-import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchUserCondition;
 import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
 import jp.co.opentone.bsol.linkbinder.service.admin.ProjectCustomSettingService;
+import jp.co.opentone.bsol.linkbinder.service.admin.ProjectService;
 import jp.co.opentone.bsol.linkbinder.service.admin.UserService;
-import jp.co.opentone.bsol.linkbinder.service.common.HomeService;
 import jp.co.opentone.bsol.linkbinder.view.IllegalUserLoginException;
 import jp.co.opentone.bsol.linkbinder.view.LoginUserInfoHolder;
 import jp.co.opentone.bsol.linkbinder.view.common.module.redirect.RedirectProcessParameterKey;
@@ -140,21 +138,17 @@ public class ProjectSwitchFilter extends AbstractFilter {
     }
 
     private Project getProject(HttpSession session, String projectId) {
-        HomeService homeService = getHomeService(session);
-        ProjectCustomSettingService projectCustomSettingService
-                = getProjectCustomSettingService(session);
-
+        ProjectService projectService = getProjectService(session);
+        ProjectCustomSettingService projectCustomSettingService = getProjectCustomSettingService(session);
         try {
             /**プロジェクトの妥当性検査.*/
-            List<ProjectSummary> projectSummaries = homeService.findProjects(ForLearning.NORMAL);
-            projectSummaries.addAll(homeService.findProjects(ForLearning.LEARNING));
-            for (ProjectSummary projectSummary : projectSummaries) {
-                if (projectSummary.getProject().getProjectId().equals(projectId)) {
+            List<Project> projects = projectService.findAccessibleProjects(true);
+            for (Project project : projects) {
+                if (project.getProjectId().equals(projectId)) {
                     // プロジェクトカスタム設定情報をプロジェクトに設定
-                    Project p = projectSummary.getProject();
-                    p.setProjectCustomSetting(
-                            projectCustomSettingService.find(p.getProjectId(), false));
-                    return p;
+                    project.setProjectCustomSetting(
+                            projectCustomSettingService.find(project.getProjectId(), false));
+                    return project;
                 }
             }
             return null;
@@ -198,9 +192,9 @@ public class ProjectSwitchFilter extends AbstractFilter {
         return applicationContext.getBean(UserService.class);
     }
 
-    private HomeService getHomeService(HttpSession session) {
+    private ProjectService getProjectService(HttpSession session) {
         ApplicationContext applicationContext = createApplicationContext(session);
-        return applicationContext.getBean(HomeService.class);
+        return applicationContext.getBean(ProjectService.class);
     }
 
     private ProjectCustomSettingService getProjectCustomSettingService(HttpSession session) {

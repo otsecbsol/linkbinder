@@ -25,10 +25,8 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     <result property="id"              column="id"/>
     <result property="name"            column="name"/>
     <result property="createdBy.empNo" column="created_by"/>
-    <result property="createdBy.nameE" column="created_by_name"/>
     <result property="createdAt"       column="created_at"/>
     <result property="updatedBy.empNo" column="updated_by"/>
-    <result property="updatedBy.nameE" column="updated_by_name"/>
     <result property="updatedAt"       column="updated_at"/>
     <result property="versionNo"       column="version_no"/>
     <result property="deleteNo"        column="delete_no"/>
@@ -52,8 +50,18 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     <result property="versionNo" column="version_no" />
   </resultMap>
 
-  <select id="findByProjectId" resultMap="result">
+  <select id="findByIdForUpdate" resultMap="resultForUpdate">
     SELECT
+      version_no
+    FROM
+      learning_label
+    WHERE
+      id = #id#
+    FOR UPDATE
+  </select>
+
+  <select id="findByProjectId" resultMap="result">
+    SELECT DISTINCT
       l.*
     FROM learning_label l
       INNER JOIN correspon_learning_label cl
@@ -64,6 +72,21 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
        AND c.delete_no = 0
     WHERE l.delete_no = 0
       AND c.project_id = #value#
+    ORDER BY l.name
+  </select>
+
+  <select id="findByCorresponId" resultMap="result">
+    SELECT
+      l.*
+    FROM learning_label l
+      INNER JOIN correspon_learning_label cl
+        ON cl.label_id = l.id
+       AND cl.delete_no = 0
+      INNER JOIN correspon c
+        ON c.id = cl.correspon_id
+       AND c.delete_no = 0
+    WHERE l.delete_no = 0
+      AND c.id = #value#
     ORDER BY l.name
   </select>
 
@@ -83,10 +106,35 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
        AND c.delete_no = 0
     WHERE l.delete_no = 0
       AND c.project_id IN (
-        SELECT project_id FROM sys_pj
+        SELECT pj_id FROM sys_pj
         WHERE for_learning = 1
       )
     ORDER BY l.name, c.id
   </select>
 
+  <insert id="create">
+    <selectKey resultClass="long" keyProperty="id">
+      SELECT s_learning_label_id.NEXTVAL AS id FROM dual
+    </selectKey>
+    INSERT INTO learning_label(
+      id,
+      name,
+      created_by,
+      updated_by
+    ) VALUES (
+      #id#,
+      #name#,
+      #createdBy.empNo#,
+      #updatedBy.empNo#
+    )
+  </insert>
+
+  <delete id="deleteIfUnused">
+    DELETE FROM learning_label l
+    WHERE id = #id#
+      AND NOT EXISTS (
+        SELECT 1 FROM correspon_learning_label cl
+        WHERE cl.label_id = l.id
+      )
+  </delete>
 </sqlMap>

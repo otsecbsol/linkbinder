@@ -46,9 +46,7 @@ public class SavedAttachmentInfo extends AttachmentInfo {
      * @param service コレポン文書サービス
      */
     public SavedAttachmentInfo(Attachment attachment, CorresponService service) {
-        setFileName(attachment.getFileName());
-        setFileId(attachment.getId());
-
+        populate(attachment);
         this.attachment = attachment;
         this.service = service;
     }
@@ -74,7 +72,14 @@ public class SavedAttachmentInfo extends AttachmentInfo {
         if (attachment.getContent() == null) {
             attachment.setContent(getContent());
         }
-        attachment.setMode(UpdateMode.NONE);
+
+        if (isExtractedTextChanged()) {
+            attachment.setExtractedText(getExtractedText());
+            attachment.setOrgExtractedText(getExtractedText());
+            attachment.setMode(UpdateMode.UPDATE);
+        } else {
+            attachment.setMode(UpdateMode.NONE);
+        }
 
         return attachment;
     }

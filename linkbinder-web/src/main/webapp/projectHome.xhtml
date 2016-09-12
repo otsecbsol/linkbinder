@@ -194,35 +194,29 @@
                   <h:inputHidden id="displayAllCorrTracking"/>
                   <ul id="CorrTrackingList">
                     <ui:repeat value="#{projectHomePage.groupSummaryDataModel}" var="groupSummary" varStatus="groupSummaryStatus">
-                      <li id="#{groupSummaryStatus.index}" >
+                      <li id="#{groupSummaryStatus.index}" style="margin-bottom:0px;" >
                         <h:commandLink action="#{projectHomePage.goCorresponIndexTracking}" value="  #{groupSummary.corresponType.corresponType}(#{groupSummary.corresponType.workflowPattern.name})" onclick="setActionName(event);" />
                         <h:outputText value="(" style="margin-left: 10px;" />
                         <h:commandLink action="#{projectHomePage.goCorresponIndexTracking}" value="To" onclick="setActionName(event);setParameters('form:selectedTo', 'true');" />
-                          <h:outputText value=" : #{groupSummary.toCount}, " />
-                        <h:commandLink action="#{projectHomePage.goCorresponIndexTracking}" value="Cc" onclick="setActionName(event);setParameters('form:selectedCc', 'true');" />
-                        <h:outputText value=" : #{groupSummary.ccCount}" />
-                        <h:outputText value=")" />
-                        <br />
-                        <h:commandLink action="#{projectHomePage.goCorresponIndexLearningContents}" value="#{projectHomePage.getLearningContentsTitle()}" onclick="setActionName(event);" />
-                        <h:outputText value="(" style="margin-left: 10px;" />
-                        <h:commandLink action="#{projectHomePage.goCorresponIndexTracking}" value="[Dmy]To" onclick="setActionName(event);setParameters('form:selectedTo', 'true');" />
                         <h:outputText value=" : #{groupSummary.toCount}, " />
-                        <h:commandLink action="#{projectHomePage.goCorresponIndexTracking}" value="[Dmy]Cc" onclick="setActionName(event);setParameters('form:selectedCc', 'true');" />
+                        <h:commandLink action="#{projectHomePage.goCorresponIndexTracking}" value="Cc" onclick="setActionName(event);setParameters('form:selectedCc', 'true');" />
                         <h:outputText value=" : #{groupSummary.ccCount}" />
                         <h:outputText value=")" />
                       </li>
                     </ui:repeat>
+                    <h:commandLink action="#{projectHomePage.goCorresponIndexLearningContents}" value="#{projectHomePage.learningContentsTitleLabel}" onclick="setActionName(event);" />
                   </ul>
                 </div>
                 <div id="groupSummaryDisplay"
-                  style="width: 100%; text-align: right; display: none;">
+                     style="width: 100%; text-align: right; display: none;">
                   <a id="groupSummaryDisplayLink" href="javascript:void(0);" onclick="toggleDispCorrTracking();">
-                   詳細を表示する
+                    詳細を表示する
                   </a>
                 </div>
+                <br />
                 <h:commandLink
-                  action="#{projectHomePage.goCorresponIndexTrackingAll}"
-                  value="すべての文書を見る" />
+                        action="#{projectHomePage.goCorresponIndexTrackingAll}"
+                        value="すべての文書を見る" />
               </div>
             </div>
             <div class="row">

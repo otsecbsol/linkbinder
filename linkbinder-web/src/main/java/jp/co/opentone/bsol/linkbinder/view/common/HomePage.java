@@ -15,19 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.view.common;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.ManagedBean;
-import javax.annotation.Resource;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
-
-import jp.co.opentone.bsol.framework.core.config.SystemConfig;
-import jp.co.opentone.bsol.linkbinder.Constants;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.context.annotation.Scope;
-
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
 import jp.co.opentone.bsol.framework.web.extension.jsf.annotation.Initialize;
 import jp.co.opentone.bsol.framework.web.extension.jsf.annotation.Transfer;
@@ -39,6 +26,15 @@ import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowStatus;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchCorresponCondition;
 import jp.co.opentone.bsol.linkbinder.service.common.HomeService;
 import jp.co.opentone.bsol.linkbinder.view.AbstractPage;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.context.annotation.Scope;
+
+import javax.annotation.ManagedBean;
+import javax.annotation.Resource;
+import javax.faces.model.DataModel;
+import javax.faces.model.ListDataModel;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 当システムにログイン後、最初に表示されるホーム画面.
@@ -64,12 +60,6 @@ public class HomePage extends AbstractPage {
      */
     @Transfer
     private List<ProjectSummary> projectSummaryList = null;
-
-    /**
-     * 学習用プロジェクトサマリリスト.
-     */
-    @Transfer
-    private List<ProjectSummary> learningProjectSummaryList = null;
 
     /**
      * データのDataModel.
@@ -98,6 +88,12 @@ public class HomePage extends AbstractPage {
      */
     @Transfer
     private boolean ccSearch;
+
+    /**
+     * 学習用コンテンツの表示用ラベル
+     */
+    @Transfer
+    private String learningContentsTitleLabel = this.getLearningContentsLabel();
 
     /**
      * 空のインスタンスを生成する.
@@ -199,17 +195,17 @@ public class HomePage extends AbstractPage {
     }
 
     /**
-     * 学習用プロジェクトサマリリストを取得します.
+     * 学習用コンテンツの表示用ラベルを返す.
      */
-    public List<ProjectSummary> getLearningProjectSummaryList() {
-        return this.learningProjectSummaryList;
+    public String getLearningContentsTitleLabel() {
+        return this.learningContentsTitleLabel;
     }
 
     /**
-     * 学習用プロジェクトサマリを設定します.
+     * 学習用コンテンツの表示用ラベルを設定する.
      */
-    public void setLearningProjectSummaryList(List projectList) {
-        this.learningProjectSummaryList = projectList;
+    public void setLearningContentsTitleLabel(String learningContentsTitle) {
+        this.learningContentsTitleLabel = learningContentsTitle;
     }
 
     /**
@@ -260,25 +256,6 @@ public class HomePage extends AbstractPage {
     }
 
     /**
-     * 選択された行のプロジェクトIDを取得する（学習用コンテンツ用）.
-     * @return プロジェクトID
-     */
-        // TODO:選択された項目に対応するプロジェクトIDを取得する処理
-//    private String getSeletedLearningProjectId() {
-//        return ((ProjectSummary) learningDataModel.getRowData()).getProject().getProjectId();
-//    }
-
-
-    /**
-     * プロジェクト情報をセッションに設定する（学習用コンテンツ用）.
-     */
-    private void setLearningProjectInfo() {
-        //TODO:選択された内容に対応したプロジェクト情報を設定する処理
-//        setCurrentProjectInfo(((ProjectSummary) learningDataModel.getRowData()).getProject());
-    }
-
-
-    /**
      * コレポン文書検索条件を設定する.
      */
     private void setCorresponSearchCondition() {
@@ -300,30 +277,6 @@ public class HomePage extends AbstractPage {
         condition.setUserCc(ccSearch);
 
         setCurrentSearchCorresponCondition(condition, getSeletedProjectId());
-    }
-
-    /**
-     * コレポン文書検索条件を設定する(学習用コンテンツ用).
-     */
-    private void setCorresponSearchConditionForLearning() {
-        SearchCorresponCondition condition = new SearchCorresponCondition();
-        condition.setProjectId(SystemConfig.getValue(Constants.KEY_LEARNING_PJ));
-        condition.setUserId(getCurrentUser().getUserId());
-        condition.setSystemAdmin(isSystemAdmin());
-        condition.setProjectAdmin(isProjectAdmin(SystemConfig.getValue(Constants.KEY_LEARNING_PJ)));
-
-        //  発行済
-        condition.setWorkflowStatuses(new WorkflowStatus[] {WorkflowStatus.ISSUED});
-
-        User[] users = {getCurrentUser()};
-        condition.setToUsers(users);
-        ReadStatus[] readStatuses = {ReadStatus.NEW};
-        condition.setReadStatuses(readStatuses);
-        condition.setUserAttention(attentionSearch);
-        condition.setUserPic(personInChargeSearch);
-        condition.setUserCc(ccSearch);
-
-        setCurrentSearchCorresponCondition(condition, SystemConfig.getValue(Constants.KEY_LEARNING_PJ));
     }
 
     /**
@@ -354,17 +307,6 @@ public class HomePage extends AbstractPage {
          */
         public void execute() throws ServiceAbortException {
             page.projectSummaryList = page.homeService.findProjects();
-
-            // リストから学習用コンテンツプロジェクトを削除し、別途保持する。
-            List<ProjectSummary> newList = new ArrayList<ProjectSummary>();
-            for(int i = 0;i < page.projectSummaryList.size();i++) {
-                String flg = page.projectSummaryList.get(i).getProject().getForLearning();
-                if(null != flg && flg.equals("X")) {
-                    newList.add(page.projectSummaryList.get(i));
-                    page.projectSummaryList.remove(i);
-                }
-            }
-            page.learningProjectSummaryList = newList;
 
             // デフォルトプロジェクトがある場合は先頭に並び替え
             if (!StringUtils.isEmpty(page.getCurrentUser().getDefaultProjectId())) {

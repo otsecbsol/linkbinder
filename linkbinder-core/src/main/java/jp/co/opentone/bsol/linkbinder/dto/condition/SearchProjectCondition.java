@@ -17,13 +17,7 @@ package jp.co.opentone.bsol.linkbinder.dto.condition;
 
 import jp.co.opentone.bsol.framework.core.config.SystemConfig;
 import jp.co.opentone.bsol.framework.core.util.SQLConvertUtil;
-import jp.co.opentone.bsol.linkbinder.dto.code.AddressType;
-import jp.co.opentone.bsol.linkbinder.dto.code.AddressUserType;
-import jp.co.opentone.bsol.linkbinder.dto.code.AllowApproverToBrowse;
-import jp.co.opentone.bsol.linkbinder.dto.code.ReadStatus;
-import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowProcessStatus;
-import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowStatus;
-import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowType;
+import jp.co.opentone.bsol.linkbinder.dto.code.*;
 
 
 /**
@@ -69,10 +63,11 @@ public class SearchProjectCondition extends AbstractCondition {
      */
     private String nameE;
 
+
     /**
      * 学習用プロジェクト.
      */
-    private String forLearning;
+    private ForLearning forLearning = ForLearning.NORMAL;
 
     /**
      * ORDER BY句に渡す並び順の条件.
@@ -171,14 +166,14 @@ public class SearchProjectCondition extends AbstractCondition {
     /**
      * forLearningを取得する.
      */
-    public String getForLearning() {
+    public ForLearning getForLearning() {
         return forLearning;
     }
 
     /**
      * forLearningを設定する.
      */
-    public void setForLearning(String learn) {
+    public void setForLearning(ForLearning learn) {
         this.forLearning = learn;
     }
 

@@ -212,6 +212,9 @@ public class UserSettingsPage extends AbstractPage {
     @Transfer
     private boolean enableRSSView;
 
+    @Transfer
+    private boolean editUseLearning;
+
     /**
      * 空のインスタンスを生成する.
      */
@@ -578,6 +581,14 @@ public class UserSettingsPage extends AbstractPage {
         return isActionInvoked("form:save");
     }
 
+    public boolean isEditUseLearning() {
+        return editUseLearning;
+    }
+
+    public void setEditUseLearning(boolean editUseLearning) {
+        this.editUseLearning = editUseLearning;
+    }
+
     /**
      * 画面初期化アクション.
      * @author opentone
@@ -619,6 +630,8 @@ public class UserSettingsPage extends AbstractPage {
                                                 MessageCode.E_INVALID_PARAMETER);
             }
             page.userSettings = page.userService.findUserSettings(page.id);
+            page.editUseLearning = page.userSettings.getUser().isUseLearning();
+
             validate();
             // 現在のプロジェクトのユーザー設定を抜き出し
             setCurrentProjectUserSetting();
@@ -858,6 +871,7 @@ public class UserSettingsPage extends AbstractPage {
 
             page.userSettings.setDefaultEmailAddress(page.getDefaultEmailAddress());
             page.userSettings.setPassword(page.getPassword());
+            page.userSettings.getUser().setUseLearning(page.isEditUseLearning());
 
             page.userService.save(page.userSettings);
 

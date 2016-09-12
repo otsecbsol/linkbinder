@@ -40,6 +40,14 @@ public interface ProjectService extends IService {
     List<Project> search(SearchProjectCondition condition) throws ServiceAbortException;
 
     /**
+     * ログインユーザーがアクセス可能なプロジェクトを返す.
+     * @param containsLearningProject 学習用プロジェクトを含む場合はtrue
+     * @return 検索結果
+     * @throws ServiceAbortException 検索に失敗
+     */
+    List<Project> findAccessibleProjects(boolean containsLearningProject) throws ServiceAbortException;
+
+    /**
      * 指定された条件に該当するプロジェクト情報を返す.
      * @param condition
      *            検索条件
@@ -68,14 +76,15 @@ public interface ProjectService extends IService {
      *             検索に失敗
      */
     Project find(String id) throws ServiceAbortException;
+
     /**
-     * 全プロジェクト情報を返す.
-     * @param id 検索プロジェクトID
+     * 検索条件に一致するプロジェクトを検索する.
      * @return 検索結果。一致結果がない場合はnullを返却する。
      * @throws ServiceAbortException
      *             検索に失敗
      */
-    List<Project> findAll() throws ServiceAbortException;
+    List<Project> findForCsvDownload(SearchProjectCondition condition) throws ServiceAbortException;
+
 
     /**
      * 指定されたプロジェクト情報一覧をCSV形式に変換して返す.

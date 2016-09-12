@@ -50,6 +50,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     <result property="deadlineForReply"                         column="deadline_for_reply" />
     <result property="requestedApprovalAt"                      column="requested_approval_at" />
     <result property="workflowStatus"                           column="workflow_status" />
+    <result property="forLearning"                              column="for_learning" />
     <result property="customField1Id"                           column="custom_field1_id" />
     <result property="customField1Label"                        column="custom_field1_label" />
     <result property="customField1Value"                        column="custom_field1_value" />
@@ -83,18 +84,33 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     <result property="file1Id"                                  column="file1_id" />
     <result property="file1FileId"                              column="file1_file_id" />
     <result property="file1FileName"                            column="file1_file_name" />
+    <result property="file1FileType"                            column="file1_file_type" />
+    <result property="file1OrgExtractedText"                    column="file1_org_extracted_text" />
+    <result property="file1ExtractedText"                       column="file1_extracted_text" />
     <result property="file2Id"                                  column="file2_id" />
     <result property="file2FileId"                              column="file2_file_id" />
     <result property="file2FileName"                            column="file2_file_name" />
+    <result property="file2FileType"                            column="file2_file_type" />
+    <result property="file2OrgExtractedText"                    column="file2_org_extracted_text" />
+    <result property="file2ExtractedText"                       column="file2_extracted_text" />
     <result property="file3Id"                                  column="file3_id" />
     <result property="file3FileId"                              column="file3_file_id" />
     <result property="file3FileName"                            column="file3_file_name" />
+    <result property="file3FileType"                            column="file3_file_type" />
+    <result property="file3OrgExtractedText"                    column="file3_org_extracted_text" />
+    <result property="file3ExtractedText"                       column="file3_extracted_text" />
     <result property="file4Id"                                  column="file4_id" />
     <result property="file4FileId"                              column="file4_file_id" />
     <result property="file4FileName"                            column="file4_file_name" />
+    <result property="file4FileType"                            column="file4_file_type" />
+    <result property="file4OrgExtractedText"                    column="file4_org_extracted_text" />
+    <result property="file4ExtractedText"                       column="file4_extracted_text" />
     <result property="file5Id"                                  column="file5_id" />
     <result property="file5FileId"                              column="file5_file_id" />
     <result property="file5FileName"                            column="file5_file_name" />
+    <result property="file5FileType"                            column="file5_file_type" />
+    <result property="file5OrgExtractedText"                    column="file5_org_extracted_text" />
+    <result property="file5ExtractedText"                       column="file5_extracted_text" />
     <result property="createdBy.empNo"                          column="created_by" />
     <result property="createdBy.nameE"                          column="created_by_name" />
     <result property="createdBy.role"                           column="created_by_role" />
@@ -197,6 +213,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     <result property="replyRequired"                           column="reply_required" />
     <result property="deadlineForReply"                        column="deadline_for_reply" />
     <result property="workflowStatus"                          column="workflow_status" />
+    <result property="forLearning"                             column="for_learning" />
     <result property="customField1Id"                          column="custom_field1_id" />
     <result property="customField1Label"                       column="custom_field1_label" />
     <result property="customField1Value"                       column="custom_field1_value" />
@@ -356,6 +373,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       deadline_for_reply,
       requested_approval_at,
       workflow_status,
+      for_learning,
       custom_field1_id,
       custom_field1_label,
       custom_field1_value,
@@ -389,18 +407,33 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       file1_id,
       file1_file_id,
       file1_file_name,
+      file1_file_type,
+      file1_org_extracted_text,
+      file1_extracted_text,
       file2_id,
       file2_file_id,
       file2_file_name,
+      file2_file_type,
+      file2_org_extracted_text,
+      file2_extracted_text,
       file3_id,
       file3_file_id,
       file3_file_name,
+      file3_file_type,
+      file3_org_extracted_text,
+      file3_extracted_text,
       file4_id,
       file4_file_id,
       file4_file_name,
+      file4_file_type,
+      file4_org_extracted_text,
+      file4_extracted_text,
       file5_id,
       file5_file_id,
       file5_file_name,
+      file5_file_type,
+      file5_org_extracted_text,
+      file5_extracted_text,
       created_by,
       created_by_name,
       (SELECT p.role
@@ -499,6 +532,43 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
           <isEqual property="readStatusNull" compareValue="true">
             or read_status is null
           </isEqual>
+          )
+        </isNotEmpty>
+        <isNotEmpty prepend="AND" property="forLearnings">
+          for_learning in
+          <iterate property="forLearnings" conjunction=","
+                   open="(" close=")">
+            #forLearnings[]#
+          </iterate>
+        </isNotEmpty>
+        <isNotEmpty prepend="AND" property="learningLabels">
+          EXISTS (
+            SELECT l.id FROM correspon_learning_label cl
+              INNER JOIN learning_label l
+                 ON l.id = cl.label_id
+               AND l.delete_no = 0
+            WHERE cl.correspon_id = c.id
+              AND cl.delete_no = 0
+              AND l.id IN
+          <iterate property="learningLabels" conjunction=","
+                   open="(" close=")">
+            #learningLabels[].id#
+          </iterate>
+          )
+        </isNotEmpty>
+        <isNotEmpty prepend="AND" property="learningTags">
+          EXISTS (
+            SELECT t.id FROM correspon_learning_tag ct
+              INNER JOIN learning_tag t
+                 ON t.id = ct.tag_id
+              AND t.delete_no = 0
+            WHERE ct.correspon_id = c.id
+              AND ct.delete_no = 0
+              AND t.id IN
+          <iterate property="learningTags" conjunction=","
+                   open="(" close=")">
+            #learningTags[].id#
+          </iterate>
           )
         </isNotEmpty>
         <isNotEmpty prepend="AND" property="corresponStatuses">
@@ -838,6 +908,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       reply_required,
       deadline_for_reply,
       workflow_status,
+      for_learning,
       custom_field1_id,
       custom_field1_label,
       custom_field1_value,
@@ -995,34 +1066,99 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     </selectKey>
     INSERT INTO correspon (
       id,
+      correspon_no,
       project_id,
       from_correspon_group_id,
       previous_rev_correspon_id,
       project_correspon_type_id,
       subject,
       body,
+      issued_by,
+      issued_at,
       correspon_status,
       reply_required,
       deadline_for_reply,
       workflow_status,
       created_by,
-      updated_by
+      updated_by,
+      for_learning
     ) VALUES (
       #id#,
+      #corresponNo#,
       #projectId#,
       #fromCorresponGroup.id#,
       #previousRevCorresponId#,
       #corresponType.projectCorresponTypeId#,
       #subject#,
       #body#,
+      #issuedBy.empNo#,
+      #issuedAt#,
       #corresponStatus#,
       #replyRequired#,
       #deadlineForReply#,
       #workflowStatus#,
       #createdBy.empNo#,
-      #updatedBy.empNo#
+      #updatedBy.empNo#,
+      #forLearning#
     )
   </insert>
+
+  <insert id="copyToLearningProject">
+  <selectKey resultClass="long" keyProperty="id">
+    SELECT s_correspon_id.NEXTVAL AS id FROM dual
+  </selectKey>
+  INSERT INTO correspon (
+    id,
+    correspon_no,
+    project_id,
+    from_correspon_group_id,
+    previous_rev_correspon_id,
+    project_correspon_type_id,
+    subject,
+    body,
+    issued_by,
+    issued_at,
+    correspon_status,
+    reply_required,
+    deadline_for_reply,
+    requested_approval_at,
+    workflow_status,
+    created_by,
+    created_at,
+    updated_by,
+    updated_at,
+    version_no,
+    delete_no,
+    for_learning
+  )
+  SELECT
+    #id#,
+    correspon_no,
+    #learningProjectId# AS project_id,
+    from_correspon_group_id,
+    previous_rev_correspon_id,
+    project_correspon_type_id,
+    subject,
+    body,
+    issued_by,
+    issued_at,
+    correspon_status,
+    reply_required,
+    deadline_for_reply,
+    requested_approval_at,
+    workflow_status,
+    created_by,
+    created_at,
+    updated_by,
+    updated_at,
+    version_no,
+    delete_no,
+    for_learning
+  FROM correspon
+  WHERE
+    delete_no = 0 AND
+    id = #id#
+</insert>
 
   <update id="delete">
     UPDATE correspon

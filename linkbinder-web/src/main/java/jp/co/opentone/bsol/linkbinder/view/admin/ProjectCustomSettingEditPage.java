@@ -15,15 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.view.admin;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.ManagedBean;
-import javax.annotation.Resource;
-import javax.faces.model.SelectItem;
-
-import org.springframework.context.annotation.Scope;
-
 import jp.co.opentone.bsol.framework.core.dto.Code;
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
 import jp.co.opentone.bsol.framework.web.extension.jsf.annotation.Initialize;
@@ -34,6 +25,13 @@ import jp.co.opentone.bsol.linkbinder.dto.code.CorresponStatus;
 import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
 import jp.co.opentone.bsol.linkbinder.service.admin.ProjectCustomSettingService;
 import jp.co.opentone.bsol.linkbinder.view.AbstractPage;
+import org.springframework.context.annotation.Scope;
+
+import javax.annotation.ManagedBean;
+import javax.annotation.Resource;
+import javax.faces.model.SelectItem;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * プロジェクトカスタム設定画面.
@@ -77,6 +75,12 @@ public class ProjectCustomSettingEditPage extends AbstractPage {
      */
     @Transfer
     private boolean settingUseAccessControl;
+
+    /**
+     * UseLearning設定値.
+     */
+    @Transfer
+    private boolean settingUseLearning;
 
     /**
      * プロジェクトカスタム設定画面サービス.
@@ -215,6 +219,14 @@ public class ProjectCustomSettingEditPage extends AbstractPage {
         this.settingUseAccessControl = settingUseAccessControl;
     }
 
+    public boolean isSettingUseLearning() {
+        return settingUseLearning;
+    }
+
+    public void setSettingUseLearning(boolean settingUseLearning) {
+        this.settingUseLearning = settingUseLearning;
+    }
+
     static class InitializeAction extends AbstractAction {
         /**
          * serialVersionUID.
@@ -251,6 +263,8 @@ public class ProjectCustomSettingEditPage extends AbstractPage {
             page.settingDefaultStatus = pcs.getDefaultStatus().getValue();
             page.settingUsePersonInCharge = pcs.isUsePersonInCharge();
             page.settingUseAccessControl = pcs.isUseCorresponAccessControl();
+            page.settingUseLearning = pcs.isUseLearning();
+
             page.setCurrentProjectInfo(page.getCurrentProject());
         }
     }
@@ -282,6 +296,8 @@ public class ProjectCustomSettingEditPage extends AbstractPage {
             pcs.setDefaultStatus(page.getCorresponStatus());
             pcs.setUsePersonInCharge(page.getSettingUsePersonInCharge());
             pcs.setUseCorresponAccessControl(page.isSettingUseAccessControl());
+            pcs.setUseLearning(page.isSettingUseLearning());
+
             page.service.save(pcs);
 
             page.projectCustomSetting = page.service.find(page.getCurrentProjectId());

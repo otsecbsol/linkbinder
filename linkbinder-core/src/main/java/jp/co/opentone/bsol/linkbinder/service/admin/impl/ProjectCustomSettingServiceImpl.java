@@ -143,6 +143,7 @@ public class ProjectCustomSettingServiceImpl extends AbstractService
         result.setProjectId(getCurrentProjectId());
         result.setDefaultStatus(projectCustomSetting.getDefaultStatus());
         result.setUsePersonInCharge(projectCustomSetting.isUsePersonInCharge());
+        result.setUseLearning(projectCustomSetting.isUseLearning());
         result.setCreatedBy(getCurrentUser());
         result.setUpdatedBy(getCurrentUser());
         return result;
@@ -177,6 +178,7 @@ public class ProjectCustomSettingServiceImpl extends AbstractService
         result.setDefaultStatus(projectCustomSetting.getDefaultStatus());
         result.setUsePersonInCharge(projectCustomSetting.isUsePersonInCharge());
         result.setUseCorresponAccessControl(projectCustomSetting.isUseCorresponAccessControl());
+        result.setUseLearning(projectCustomSetting.isUseLearning());
         result.setUpdatedBy(getCurrentUser());
         result.setVersionNo(projectCustomSetting.getVersionNo());
         return result;

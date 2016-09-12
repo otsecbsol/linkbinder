@@ -63,6 +63,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       <isNotEmpty property="nameE" prepend="AND">
       name_e like #nameE#  || '%' {escape #escapeChar#}
       </isNotEmpty>
+      for_learning = 0
     </dynamic>
   </sql>
 
@@ -98,6 +99,33 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     </isEmpty>
     <isNotEmpty property="sanitizedOrderBy">
       $sanitizedOrderBy$
+    </isNotEmpty>
+  </select>
+
+  <select id="findLearningPj" resultMap="project">
+    SELECT
+      project_id,
+      client_name_e,
+      client_name_j,
+      name_e,
+      name_j,
+      for_learning
+    FROM v_project
+    <dynamic prepend="WHERE">
+        <isNotEmpty property="projectId" prepend="AND">
+            project_id like #projectId# || '%' {escape #escapeChar#}
+        </isNotEmpty>
+        <isNotEmpty property="nameE" prepend="AND">
+            client_name_e like #nameE#  || '%' {escape #escapeChar#}
+        </isNotEmpty>
+        for_learning = 1
+    </dynamic>
+    ORDER BY
+    <isEmpty property="sanitizedOrderBy">
+        project_id
+    </isEmpty>
+    <isNotEmpty property="sanitizedOrderBy">
+        $sanitizedOrderBy$
     </isNotEmpty>
   </select>
 
@@ -199,6 +227,14 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
             ON pcs.project_id = p.project_id
             AND pcs.delete_no = 0
         )
+      <dynamic>
+          <isNotNull property="forLearning">
+            <isNotEqual property="forLearning" compareValue="0">
+              WHERE
+              for_learning = #forLearning#
+            </isNotEqual>
+          </isNotNull>
+      </dynamic>
     GROUP BY
       project_id,
       client_name_e,
@@ -217,7 +253,8 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       client_name_e,
       client_name_j,
       name_e,
-      name_j
+      name_j,
+      for_learning
    FROM
       v_system_project
    WHERE
@@ -248,6 +285,12 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
   FROM sys_pj pj
     INNER JOIN sys_pj_auth au
       ON pj.pj_id = au.pj_id
+  <dynamic>
+      <isNotNull property="forLearning">
+              WHERE
+              for_learning = #forLearning#
+      </isNotNull>
+  </dynamic>
   </select>
 
   <insert id="createProject">

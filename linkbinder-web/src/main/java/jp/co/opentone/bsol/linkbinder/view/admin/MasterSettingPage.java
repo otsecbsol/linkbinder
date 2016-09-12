@@ -24,6 +24,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -404,8 +405,9 @@ public class MasterSettingPage extends AbstractPage implements MasterDataImporta
                     case PROJECT:
                         //プロジェクト情報
                         fileName +=  "_Project.csv";
+                        SearchProjectCondition condition = createFindProjectsCondition(ForLearning.NORMAL);
 
-                        List<Project> list = page.pjService.findAll();
+                        List<Project> list = page.pjService.findForCsvDownload(condition);
                         data = page.pjService.generateCSV(list);
                         break;
                     case USER:
@@ -420,7 +422,13 @@ public class MasterSettingPage extends AbstractPage implements MasterDataImporta
                 throw new ServiceAbortException(
                     "Excel Download failed.", e, ApplicationMessageCode.E_DOWNLOAD_FAILED);
             }
+        }
 
+        private SearchProjectCondition createFindProjectsCondition(ForLearning learn) {
+            SearchProjectCondition condition = new SearchProjectCondition();
+            condition.setForLearning(learn);
+
+            return condition;
         }
     }
 

@@ -15,25 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.view.correspon;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.ManagedBean;
-import javax.annotation.Resource;
-import javax.faces.context.FacesContext;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
-import javax.faces.model.SelectItem;
-
-import org.apache.commons.lang.SerializationUtils;
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.validator.constraints.Length;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-
 import jp.co.opentone.bsol.framework.core.config.SystemConfig;
 import jp.co.opentone.bsol.framework.core.exception.ApplicationFatalRuntimeException;
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
@@ -65,6 +46,7 @@ import jp.co.opentone.bsol.linkbinder.dto.WorkflowTemplate;
 import jp.co.opentone.bsol.linkbinder.dto.WorkflowTemplateUser;
 import jp.co.opentone.bsol.linkbinder.dto.code.AddressType;
 import jp.co.opentone.bsol.linkbinder.dto.code.CorresponStatus;
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import jp.co.opentone.bsol.linkbinder.dto.code.ReplyRequired;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowProcessStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowStatus;
@@ -88,6 +70,23 @@ import jp.co.opentone.bsol.linkbinder.view.correspon.util.AddressModel;
 import jp.co.opentone.bsol.linkbinder.view.correspon.util.AddressUserModel;
 import jp.co.opentone.bsol.linkbinder.view.correspon.util.CorresponDataSource;
 import jp.co.opentone.bsol.linkbinder.view.util.RichTextUtil;
+import org.apache.commons.lang.SerializationUtils;
+import org.apache.commons.lang.StringUtils;
+import org.hibernate.validator.constraints.Length;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+
+import javax.annotation.ManagedBean;
+import javax.annotation.Resource;
+import javax.faces.context.FacesContext;
+import javax.faces.model.DataModel;
+import javax.faces.model.ListDataModel;
+import javax.faces.model.SelectItem;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * コレポン文書表示画面.
@@ -755,6 +754,17 @@ public class CorresponPage extends AbstractCorresponPage implements AttachmentDo
     private boolean changeCorrespon;
 
     /**
+     * 学習用コンテンツの表示用ラベル
+     */
+    @Transfer
+    private String learningContentsTitleLabel = this.getLearningContentsLabel();
+    /**
+     * 学習用文書の表示用ラベル
+     */
+    @Transfer
+    private String learningCorresponTitleLabel = this.getLearningCorresponLabel();
+
+    /**
      * 空のインスタンスを生成する.
      */
     public CorresponPage() {
@@ -1293,6 +1303,15 @@ public class CorresponPage extends AbstractCorresponPage implements AttachmentDo
     public String issue() {
         String result = this.getModule().issue();
         return toUrl(result);
+    }
+
+    /**
+     * 学習用プロジェクトへ公開する.
+     * @return null
+     */
+    public String issueToLearningProjects() {
+        String result = this.getModule().issueToLearningProjects();
+        return result;
     }
 
     /**
@@ -3065,7 +3084,7 @@ public class CorresponPage extends AbstractCorresponPage implements AttachmentDo
      * TRタグ制御Classを設定する.
      * @param sb StringBuilder
      * @param rowNo Listの行数（0～）
-     * @param correspon コレポン文書
+     * @param history CorresponResponseHistory
      * @param corrId 強調表示するコレポン文書ID
      */
     private void setClassId(StringBuilder sb,
@@ -3445,5 +3464,41 @@ public class CorresponPage extends AbstractCorresponPage implements AttachmentDo
      */
     public CorresponPageController getCorresponPageController() {
         return corresponPageController;
+    }
+
+    public boolean isLearningContents() {
+        if (correspon.getForLearning() == ForLearning.LEARNING) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 学習用コンテンツの表示用ラベルを返す.
+     */
+    public String getLearningContentsTitleLabel() {
+        return this.learningContentsTitleLabel;
+    }
+
+    /**
+     * 学習用コンテンツの表示用ラベルを設定する.
+     */
+    public void setLearningContentsTitleLabel(String learningContentsTitle) {
+        this.learningContentsTitleLabel = learningContentsTitle;
+    }
+
+    /**
+     * 学習用文書の表示用ラベルを返す.
+     */
+    public String getLearningCorresponTitleLabel() {
+        return this.learningCorresponTitleLabel;
+    }
+
+    /**
+     * 学習用文書の表示用ラベルを設定する.
+     */
+    public void setLearningCorresponTitleLabel(String learningCorresponTitle) {
+        this.learningCorresponTitleLabel = learningCorresponTitle;
     }
 }

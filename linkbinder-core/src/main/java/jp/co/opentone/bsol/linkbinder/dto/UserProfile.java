@@ -15,10 +15,10 @@
  */
 package jp.co.opentone.bsol.linkbinder.dto;
 
-import java.util.Date;
-
 import jp.co.opentone.bsol.framework.core.dao.VersioningEntity;
 import jp.co.opentone.bsol.framework.core.util.CloneUtil;
+
+import java.util.Date;
 
 
 /**
@@ -70,6 +70,8 @@ public class UserProfile extends AbstractDto implements VersioningEntity {
      * </p>
      */
     private String corresponInvisibleFields;
+
+    private boolean useLearning;
 
     /**
      * Created by.
@@ -388,5 +390,13 @@ public class UserProfile extends AbstractDto implements VersioningEntity {
 
     public boolean isNew() {
         return getId() == null || getId() == 0;
+    }
+
+    public boolean isUseLearning() {
+        return useLearning;
+    }
+
+    public void setUseLearning(boolean useLearning) {
+        this.useLearning = useLearning;
     }
 }

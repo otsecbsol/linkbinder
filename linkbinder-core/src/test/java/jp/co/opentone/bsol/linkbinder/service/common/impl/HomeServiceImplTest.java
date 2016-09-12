@@ -15,18 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.service.common.impl;
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
 import jp.co.opentone.bsol.framework.test.AbstractTestCase;
 import jp.co.opentone.bsol.linkbinder.dao.impl.CompanyDaoImpl;
@@ -52,6 +40,17 @@ import jp.co.opentone.bsol.linkbinder.service.AbstractService;
 import jp.co.opentone.bsol.linkbinder.service.common.HomeService;
 import mockit.Mock;
 import mockit.MockUp;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
  * ホーム画面のサービスのテストクラス.

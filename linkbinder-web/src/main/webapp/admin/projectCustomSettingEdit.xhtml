@@ -48,8 +48,17 @@
             <div class="eight columns">
               <label>
                 <h:selectBooleanCheckbox id="settingUseAccessControl"
-                    value="#{projectCustomSettingEditPage.settingUseAccessControl}"/>
+                                         value="#{projectCustomSettingEditPage.settingUseAccessControl}"/>
                 <span class="label-body">文書種類に応じたアクセス制御機能を使用する</span>
+              </label>
+            </div>
+          </div>
+          <div class="row">
+            <div class="eight columns">
+              <label>
+                <h:selectBooleanCheckbox id="useLearning"
+                    value="#{projectCustomSettingEditPage.settingUseLearning}"/>
+                <span class="label-body">学習用文書機能を使用する</span>
               </label>
             </div>
           </div>

@@ -16,6 +16,11 @@
                 "store":"yes",
                 "analyzer":"kuromoji_analyzer"
             },
+            "forLearning":{
+                "type":"string",
+                "store":"yes",
+                "analyzer":"kuromoji_analyzer"
+            },
             "lastModified":{
                 "type":"string",
                 "store":"yes",
@@ -46,6 +51,11 @@
                                 "term_vector":"with_positions_offsets"
                             }
                         }
+                    },
+                    "extracted_text":{
+                        "type":"string",
+                        "store":"yes",
+                        "analyzer":"kuromoji_analyzer"
                     }
                 }
             }

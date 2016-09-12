@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="learningTag">
+
+  <resultMap id="result" class="jp.co.opentone.bsol.linkbinder.dto.LearningTag">
+    <result property="id"              column="id"/>
+    <result property="name"            column="name"/>
+    <result property="createdBy.empNo" column="created_by"/>
+    <result property="createdAt"       column="created_at"/>
+    <result property="updatedBy.empNo" column="updated_by"/>
+    <result property="updatedAt"       column="updated_at"/>
+    <result property="versionNo"       column="version_no"/>
+    <result property="deleteNo"        column="delete_no"/>
+  </resultMap>
+
+  <resultMap id="resultForUpdate" class="jp.co.opentone.bsol.linkbinder.dto.LearningTag">
+    <result property="versionNo" column="version_no" />
+  </resultMap>
+
+
+  <select id="findByIdForUpdate" resultMap="resultForUpdate">
+    SELECT
+      version_no
+    FROM
+      learning_tag
+    WHERE
+      id = #id#
+    FOR UPDATE
+  </select>
+
+  <select id="findByProjectId" resultMap="result">
+    SELECT DISTINCT
+      t.*
+    FROM learning_tag t
+      INNER JOIN correspon_learning_tag ct
+        ON ct.tag_id = t.id
+       AND ct.delete_no = 0
+      INNER JOIN correspon c
+        ON c.id = ct.correspon_id
+       AND c.delete_no = 0
+    WHERE t.delete_no = 0
+      AND c.project_id = #value#
+    ORDER BY t.name
+  </select>
+
+  <select id="findByCorresponId" resultMap="result">
+    SELECT
+      t.*
+    FROM learning_tag t
+      INNER JOIN correspon_learning_tag ct
+        ON ct.tag_id = t.id
+       AND ct.delete_no = 0
+      INNER JOIN correspon c
+        ON c.id = ct.correspon_id
+       AND c.delete_no = 0
+    WHERE t.delete_no = 0
+      AND c.id = #value#
+    ORDER BY t.name
+  </select>
+
+  <insert id="create">
+    <selectKey resultClass="long" keyProperty="id">
+      SELECT s_learning_tag_id.NEXTVAL AS id FROM dual
+    </selectKey>
+    INSERT INTO learning_tag(
+      id,
+      name,
+      created_by,
+      updated_by
+    ) VALUES (
+      #id#,
+      #name#,
+      #createdBy.empNo#,
+      #updatedBy.empNo#
+    )
+  </insert>
+
+  <delete id="deleteIfUnused">
+    DELETE FROM learning_tag t
+    WHERE id = #id#
+      AND NOT EXISTS (
+        SELECT 1 FROM correspon_learning_tag ct
+        WHERE ct.tag_id = t.id
+    )
+  </delete>
+</sqlMap>

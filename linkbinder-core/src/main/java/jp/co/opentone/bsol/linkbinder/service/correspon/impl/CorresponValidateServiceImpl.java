@@ -15,18 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.service.correspon.impl;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
 import jp.co.opentone.bsol.framework.core.dao.RecordNotFoundException;
 import jp.co.opentone.bsol.framework.core.exception.ApplicationFatalRuntimeException;
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
@@ -56,7 +44,18 @@ import jp.co.opentone.bsol.linkbinder.dto.condition.SearchCustomFieldCondition;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchUserCondition;
 import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
 import jp.co.opentone.bsol.linkbinder.service.AbstractService;
+import jp.co.opentone.bsol.linkbinder.service.CorresponServiceHelper;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponValidateService;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 /**
  * このサービスではコレポン文書の検証に関する処理を提供する.
  * @author opentone
@@ -73,6 +72,12 @@ implements CorresponValidateService {
      * logger.
      */
     private static final Logger log = LoggerFactory.getLogger(CorresponValidateServiceImpl.class);
+
+    /**
+     * サービスヘルパ.
+     */
+    @Resource
+    private CorresponServiceHelper serviceHelper;
 
     /**
      * 承認状態、承認作業状態を制御するクラス.
@@ -162,7 +167,7 @@ implements CorresponValidateService {
      *
      * @param correspon
      *            コレポン文書情報
-     * @throws ServiceAbortException
+     * @throws ServiceAbortException 検証エラー
      */
     private void validateCorresponNew(Correspon correspon) throws ServiceAbortException {
         log.trace("●文書作成チェック");
@@ -185,10 +190,10 @@ implements CorresponValidateService {
      *
      * @param correspon
      *            コレポン文書情報
-     * @throws ServiceAbortException
+     * @throws ServiceAbortException 検証エラー
      */
     private void commonValidateCorresponNewReply(Correspon correspon) throws ServiceAbortException {
-        Correspon sourceCorrespon = null;
+        Correspon sourceCorrespon;
         // 返信元のコレポンが存在しない際はエラー
         log.trace("★返信①");
         try {
@@ -243,11 +248,11 @@ implements CorresponValidateService {
      *
      * @param correspon
      *            コレポン文書情報
-     * @throws ServiceAbortException
+     * @throws ServiceAbortException 検証エラー
      */
     private void commonValidateCorresponNewRevision(Correspon correspon)
     throws ServiceAbortException {
-        Correspon sourceCorrespon = null;
+        Correspon sourceCorrespon;
         // 改訂元のコレポンが存在しない際はエラー
         try {
             log.trace("★改訂①");
@@ -281,7 +286,7 @@ implements CorresponValidateService {
      *
      * @param correspon
      *            コレポン文書情報
-     * @throws ServiceAbortException
+     * @throws ServiceAbortException 検証エラー
      */
     private void validateCorresponUpdated(Correspon correspon) throws ServiceAbortException {
         // 指定のコレポン文書のプロジェクトが現在選択中のプロジェクト以外はエラー
@@ -327,7 +332,7 @@ implements CorresponValidateService {
     private void validateCorresponWorkflowStatus(Correspon correspon) throws ServiceAbortException {
         log.trace("★承認状態チェック");
         // コレポン文書の承認状態が、以前のものと比較して変更されている際はエラー
-        Correspon oldCorrespon = null;
+        Correspon oldCorrespon;
         try {
             oldCorrespon = findCorrespon(correspon.getId());
         } catch (RecordNotFoundException e) {
@@ -389,7 +394,7 @@ implements CorresponValidateService {
         }
 
         // 文書状態(Open/Closed/Canceled)チェック
-        commonValidateCorresponStatus(correspon);
+        serviceHelper.commonValidateCorresponStatus(correspon);
 
         // From①②のチェック
         doValidateCorresponGroup(correspon.getProjectId(), correspon.getFromCorresponGroup());
@@ -458,68 +463,6 @@ implements CorresponValidateService {
     }
 
     /**
-     * 文書状態(Open/Closed/Canceled)チェック.
-     * <p>
-     * チェック定義書の「文書状態(Open/Closed/Canceled)チェック」に記述された一連のチェックを行う<br />
-     * 【新規追加】ただし、新規登録の際の文書状態チェックは「Canceledか否か」のチェックのみ行う
-     * </p>
-     *
-     * @param correspon
-     *            コレポン文書情報
-     *
-     * @throws ServiceAbortException
-     */
-    private void commonValidateCorresponStatus(Correspon correspon) throws ServiceAbortException {
-        if (correspon.isNew()) { // コレポン文書の文書状態が[2:Canceled]の際はエラー
-            log.trace("★文書状態(新規)");
-            if (log.isDebugEnabled()) {
-                log.debug("correspon.getCorresponStatus[" + correspon.getCorresponStatus() + "]");
-            }
-            if (CorresponStatus.CANCELED.equals(correspon.getCorresponStatus())) {
-                throw new ServiceAbortException(
-                    ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORREPON_CANCELED);
-            }
-        } else { // 更新前コレポン文書の文書状態が[2:Canceled]の際はエラー
-            log.trace("★文書状態(更新)①");
-            if (log.isDebugEnabled()) {
-                log.debug("correspon.getId[" + correspon.getId() + "]");
-            }
-            Correspon oldCorrespon = null;
-            try {
-                oldCorrespon = findCorrespon(correspon.getId());
-            } catch (RecordNotFoundException e) {
-                log.warn(e.getMessageCode() + " correspon.getId[" + correspon.getId() + "]");
-                throw new ServiceAbortException(ApplicationMessageCode.NO_DATA_FOUND);
-            }
-            if (log.isDebugEnabled()) {
-                log.debug(
-                    "oldCorrespon.getCorresponStatus[" + oldCorrespon.getCorresponStatus() + "]");
-            }
-            if (CorresponStatus.CANCELED.equals(oldCorrespon.getCorresponStatus())) {
-                log.warn(ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORREPON_CANCELED
-                    + " " + oldCorrespon);
-                throw new ServiceAbortException(
-                    ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORREPON_CANCELED);
-            }
-            // コレポン文書の承認状態が[5:Issued]以外で、文書状態を[2:Canceled]にする際はエラー
-            log.trace("★文書状態(更新)②");
-            if (log.isDebugEnabled()) {
-                log.debug("oldCorrespon.getWorkflowStatus["
-                    + oldCorrespon.getWorkflowStatus() + "]");
-                log.debug("correspon.getCorresponStatus[" + correspon.getCorresponStatus() + "]");
-            }
-            if (!WorkflowStatus.ISSUED.equals(oldCorrespon.getWorkflowStatus())
-                    &&  CorresponStatus.CANCELED.equals(correspon.getCorresponStatus())) {
-                log.warn(ApplicationMessageCode
-                    .CANNOT_PERFORM_BECAUSE_CORREPON_NOT_ISSUED_AND_CANCELED
-                    + " " + oldCorrespon);
-                throw new ServiceAbortException(
-                    ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORREPON_NOT_ISSUED_AND_CANCELED);
-            }
-        }
-    }
-
-    /**
      * To①②③④チェック.
      * <p>
      * チェック定義書の「コレポン文書Validateチェック」の「To①②③④」に記述された一連のチェックを行う
@@ -528,18 +471,17 @@ implements CorresponValidateService {
      * @param correspon
      *            コレポン文書情報
      *
-     * @throws ServiceAbortException
+     * @throws ServiceAbortException 検証エラー
      */
     private void doValidateCorresponTo(Correspon correspon) throws ServiceAbortException {
         log.trace("●To");
         // 重複エラーチェックリスト
-        List<Long> corresponGroupList = new ArrayList<Long>();
+        List<Long> corresponGroupList = new ArrayList<>();
         List<AddressCorresponGroup> addressCorresponGroupList
             = correspon.getAddressCorresponGroups();
 
-        List<String> empNos = null;
-        List<ProjectUser> projectUsers = null;
-
+        List<String> empNos;
+        List<ProjectUser> projectUsers;
         try {
             empNos = findEmpNo();
         } catch (RecordNotFoundException e) {
@@ -605,18 +547,17 @@ implements CorresponValidateService {
      * @param correspon
      *            コレポン文書情報
      *
-     * @throws ServiceAbortException
+     * @throws ServiceAbortException 検証エラー
      */
     private void doValidateCorresponCc(Correspon correspon) throws ServiceAbortException {
         log.trace("●Cc");
         // 重複エラーチェックリスト
-        List<Long> corresponGroupList = new ArrayList<Long>();
+        List<Long> corresponGroupList = new ArrayList<>();
         List<AddressCorresponGroup> addressCorresponGroupList
             = correspon.getAddressCorresponGroups();
 
-        List<String> empNos = null;
-        List<ProjectUser> projectUsers = null;
-
+        List<String> empNos;
+        List<ProjectUser> projectUsers;
         try {
             empNos = findEmpNo();
         } catch (RecordNotFoundException e) {
@@ -678,16 +619,15 @@ implements CorresponValidateService {
      *
      * @param corresponProjectId
      *            コレポン文書のprojectId
-     * @param CorresponGroup
+     * @param corresponGroup
      *            チェックしたい活動単位コレポン文書のprojectId
-     *
-     * @throws ServiceAbortException
+     * @throws ServiceAbortException 検証エラー
      */
     private void doValidateCorresponGroup(
         String corresponProjectId, CorresponGroup corresponGroup) throws ServiceAbortException {
         // To/Cc/From①選択された活動単位がマスタに存在しない際はエラー
         log.trace("★ToCcFrom①");
-        CorresponGroup sourceCorresponGroup = null;
+        CorresponGroup sourceCorresponGroup;
         if (log.isDebugEnabled()) {
             log.debug("corresponGroup.getId["
                 + corresponGroup.getId() + "]");
@@ -721,10 +661,6 @@ implements CorresponValidateService {
      * チェック定義書の「コレポン文書Validateチェック」の「To③④」に記述された一連のチェックのうち<br />
      * 共通の処理を行う
      * </p>
-     *
-     * @param correspon
-     *            コレポン文書情報
-     *
      * @throws ServiceAbortException ユーザがコレポンと同一プロジェクトに存在していない
      */
     private void validateCorresponToAttention(AddressUser au, List<String> empNos,
@@ -762,10 +698,6 @@ implements CorresponValidateService {
      * チェック定義書の「コレポン文書Validateチェック」の「Cc③④」に記述された一連のチェックのうち<br />
      * 共通の処理を行う
      * </p>
-     *
-     * @param correspon
-     *            コレポン文書情報
-     *
      * @throws ServiceAbortException ユーザがコレポンと同一プロジェクトに存在していない
      */
     private void validateCorresponCcUser(AddressUser au, List<String> empNos,
@@ -805,7 +737,7 @@ implements CorresponValidateService {
      * @param correspon
      *            コレポン文書情報
      *
-     * @throws ServiceAbortException
+     * @throws ServiceAbortException 検証エラー
      */
     private void doValidateCorresponType(Correspon correspon) throws ServiceAbortException {
         // ①コレポン文書種別マスタに存在しない際はエラー
@@ -857,7 +789,7 @@ implements CorresponValidateService {
         log.trace("★Attachment");
         //  新規登録・削除・保存済の添付ファイルを走査し、
         //  ファイル名に重複がないか検証する
-        Set<String> fileNames = new HashSet<String>();
+        Set<String> fileNames = new HashSet<>();
         for (Attachment a : correspon.getUpdateAttachments()) {
             switch (a.getMode()) {
             case DELETE:
@@ -892,41 +824,41 @@ implements CorresponValidateService {
      *
      * @param correspon
      *            コレポン文書情報
-     * @throws ServiceAbortException
+     * @throws ServiceAbortException 検証エラー
      */
     private void doValidateCustomField(Correspon correspon) throws ServiceAbortException {
         log.trace("●Field(フィールド数だけ)");
         List<CustomField> fields = findProjectCustomFields(correspon.getProjectId());
         validateCustomField(fields,
-                            correspon.getCustomField1Id(),
-                            correspon.getCustomField1Value());
+                            correspon.getCustomField1Id()
+        );
         validateCustomField(fields,
-                            correspon.getCustomField2Id(),
-                            correspon.getCustomField2Value());
+                            correspon.getCustomField2Id()
+        );
         validateCustomField(fields,
-                            correspon.getCustomField3Id(),
-                            correspon.getCustomField3Value());
+                            correspon.getCustomField3Id()
+        );
         validateCustomField(fields,
-                            correspon.getCustomField4Id(),
-                            correspon.getCustomField4Value());
+                            correspon.getCustomField4Id()
+        );
         validateCustomField(fields,
-                            correspon.getCustomField5Id(),
-                            correspon.getCustomField5Value());
+                            correspon.getCustomField5Id()
+        );
         validateCustomField(fields,
-                            correspon.getCustomField6Id(),
-                            correspon.getCustomField6Value());
+                            correspon.getCustomField6Id()
+        );
         validateCustomField(fields,
-                            correspon.getCustomField7Id(),
-                            correspon.getCustomField7Value());
+                            correspon.getCustomField7Id()
+        );
         validateCustomField(fields,
-                            correspon.getCustomField8Id(),
-                            correspon.getCustomField8Value());
+                            correspon.getCustomField8Id()
+        );
         validateCustomField(fields,
-                            correspon.getCustomField9Id(),
-                            correspon.getCustomField9Value());
+                            correspon.getCustomField9Id()
+        );
         validateCustomField(fields,
-                            correspon.getCustomField10Id(),
-                            correspon.getCustomField10Value());
+                            correspon.getCustomField10Id()
+        );
 
 //        validateCustomFieldData(correspon, CUSTOM_FIELD_NO_1,
 //            correspon.getCustomField1Id(), correspon.getCustomField1Value());
@@ -962,13 +894,11 @@ implements CorresponValidateService {
      * カスタムフィールドがマスタに存在するかチェックする.
      * @param master 現時点でのカスタムフィールドマスタレコード
      * @param projectCustomFieldId 入力されたカスタムフィールドのID(project_custom_field.id)
-     * @param value 入力値
      * @throws ServiceAbortException 検証エラー
      */
     private void validateCustomField(
-        List<CustomField> master,
-        Long projectCustomFieldId,
-        String value)
+            List<CustomField> master,
+            Long projectCustomFieldId)
             throws ServiceAbortException {
 
         if (projectCustomFieldId == null) {
@@ -1002,8 +932,8 @@ implements CorresponValidateService {
     /**
      * コレポン文書を返す.
      * @param id コレポンid
-     * @return Corresopn コレポン文書
-     * @throws RecordNotFoundException
+     * @return コレポン文書
+     * @throws RecordNotFoundException レコードが見つからない
      */
     private Correspon findCorrespon(Long id) throws RecordNotFoundException {
         CorresponDao dao = getDao(CorresponDao.class);
@@ -1014,7 +944,7 @@ implements CorresponValidateService {
      * マスタから取得した活動単位(CorresponGroup)を返す.
      * @param id id
      * @return 活動単位
-     * @throws ServiceAbortException 指定IDの活動単位がマスタに存在しない
+     * @throws RecordNotFoundException 指定IDの活動単位がマスタに存在しない
      */
     private CorresponGroup findCorresponGroup(Long id)
     throws RecordNotFoundException {
@@ -1026,7 +956,7 @@ implements CorresponValidateService {
      * コレポン文書種別(CorresponType)を返す.
      * @param id id
      * @return コレポン文書種別
-     * @throws ServiceAbortException
+     * @throws RecordNotFoundException レコードが見つからない
      */
     private CorresponType findCorresponType(Long id)
     throws RecordNotFoundException {
@@ -1039,7 +969,7 @@ implements CorresponValidateService {
      * @param id id
      * @param projectId projectId
      * @return コレポン文書種別
-     * @throws ServiceAbortException
+     * @throws RecordNotFoundException レコードが見つからない
      */
     private CorresponType findCorresponTypeByIdProjectId(Long id, String projectId)
     throws RecordNotFoundException {
@@ -1050,7 +980,7 @@ implements CorresponValidateService {
     /**
      * 全ユーザーの従業員番号を返す.
      * @return 全ユーザーの従業員番号
-     * @throws RecordNotFoundException
+     * @throws RecordNotFoundException レコードが見つからない
      */
     private List<String> findEmpNo() throws RecordNotFoundException {
         UserDao dao = getDao(UserDao.class);
@@ -1060,7 +990,7 @@ implements CorresponValidateService {
     /**
      * プロジェクトに所属するユーザーを返す.
      * @return ユーザー
-     * @throws RecordNotFoundException
+     * @throws RecordNotFoundException レコードが見つからない
      */
     private List<ProjectUser> findUserByProjectId(String projectId)
     throws RecordNotFoundException {

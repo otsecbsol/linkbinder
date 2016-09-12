@@ -23,6 +23,22 @@
   <ui:define name="jsInner">
     $(document).ready(function() {
       $('#form\\:projectSummary').highlightRows();
+
+
+      $('#learning').tree({
+        dataUrl:  '#{request.contextPath}/api/learningCorresponList.jsf',
+        autoOpen: true,
+        saveState: true
+      });
+      $('#learning').bind(
+        'tree.click',
+        function(event) {
+          var node = event.node;
+          if (node.url) {
+            location.href = node.url;
+          }
+        }
+      );
     });
   </ui:define>
 
@@ -76,6 +92,14 @@
           <h:inputHidden id="personInChargeSearch" value="#{homePage.personInChargeSearch}" />
           <h:inputHidden id="ccSearch" value="#{homePage.ccSearch}" />
         </div>
+        <ui:fragment rendered="#{homePage.useLearning}">
+        <hr />
+        <div class="row learn">
+          <span id="learn"><h:outputText value="#{homePage.learningContentsTitleLabel}" /></span>
+        </div>
+        <div id="learning">
+        </div>
+        </ui:fragment>
       </h:form>
     </f:view>
   </ui:define>

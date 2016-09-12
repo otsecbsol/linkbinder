@@ -32,6 +32,7 @@ import jp.co.opentone.bsol.linkbinder.dto.ProjectUser;
 import jp.co.opentone.bsol.linkbinder.dto.User;
 import jp.co.opentone.bsol.linkbinder.dto.code.CorresponStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.CorresponTypeAdmittee;
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import jp.co.opentone.bsol.linkbinder.dto.code.ReplyRequired;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowStatus;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchCorresponGroupCondition;
@@ -45,6 +46,8 @@ import jp.co.opentone.bsol.linkbinder.service.admin.CustomFieldService;
 import jp.co.opentone.bsol.linkbinder.service.admin.DistributionTemplateService;
 import jp.co.opentone.bsol.linkbinder.service.admin.UserService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponService;
+import jp.co.opentone.bsol.linkbinder.service.correspon.LearningLabelService;
+import jp.co.opentone.bsol.linkbinder.service.correspon.LearningTagService;
 import jp.co.opentone.bsol.linkbinder.view.correspon.CorresponEditPage;
 import jp.co.opentone.bsol.linkbinder.view.correspon.strategy.CorresponSetupStrategy;
 import org.apache.commons.lang.StringUtils;
@@ -109,6 +112,17 @@ public class CorresponEditPageInitializer implements Serializable {
      */
     @Resource
     private DistributionTemplateService distTemplateService;
+    /**
+     * 学習用ラベルサービス
+     */
+    @Resource
+    private LearningLabelService learningLabelService;
+    /**
+     * 学習用タグサービス
+     */
+    @Resource
+    private LearningTagService learningTagService;
+
     /**
      * 空のインスタンスを生成する.
      */
@@ -249,6 +263,7 @@ public class CorresponEditPageInitializer implements Serializable {
             applyCorresponType();
             applyCorresponStatus();
             applyReplyRequired();
+            applyLearningContents();
         }
 
         /**
@@ -301,6 +316,19 @@ public class CorresponEditPageInitializer implements Serializable {
             if (correspon.getCorresponStatus() != null) {
                 page.setCorresponStatus(correspon.getCorresponStatus().getValue());
             }
+        }
+
+        /**
+         * 学習用文書か否かを設定する.
+         */
+        private void applyLearningContents() {
+            page.setForLearning(correspon.getForLearning() == ForLearning.LEARNING);
+
+            page.setSelectedLearningLabelList(correspon.getLearningLabel());
+            page.createSelectedLearningLabels();
+
+            page.setSelectedLearningTagList(correspon.getLearningTag());
+            page.createSelectedLearningTags();
         }
 
         /**
@@ -373,6 +401,7 @@ public class CorresponEditPageInitializer implements Serializable {
             processAddressUser();
             processCustomFieldValues();
             processDistributionTemplate();
+            processLearning();
         }
 
         private void processFromCorresponGroup() throws ServiceAbortException {
@@ -429,6 +458,14 @@ public class CorresponEditPageInitializer implements Serializable {
             page.createSelectCorresponType();
         }
 
+
+        private void processLearning() throws ServiceAbortException {
+            // 学習用ラベル・タグを取得、選択リスト生成
+            page.setLearningLabelList(initializer.learningLabelService.findAll());
+            page.createCandidateLearningLabels();
+            page.setLearningTagList(initializer.learningTagService.findAll());
+            page.createCandidateLearningTags();
+        }
 
         /**
          * ユーザーの種別に応じて CorresponType のリストをフィルターする.
@@ -534,7 +571,6 @@ public class CorresponEditPageInitializer implements Serializable {
                     String.format(pageProperty, i),
                     null);
             }
-
             page.initCustomFieldValueCandidateList();
         }
 

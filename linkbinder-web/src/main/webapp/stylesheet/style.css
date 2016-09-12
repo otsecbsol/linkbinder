@@ -188,6 +188,7 @@ hr {
 /* --- コンテンツ部分 --- */
 #content {
   background-color: #fff;
+  padding: 0px 15px 0px 15px;
   /* z-index: 10; */
 }
 #content h3 {
@@ -203,7 +204,7 @@ hr {
   margin: 0px 1px 15px 0px;
   padding: 0;
 }
-#title {
+#title, #learn {
   position: relative;
   top: 0px;
   left:6px;
@@ -212,11 +213,11 @@ hr {
   font-size: 2rem;
 }
 
-#title:before {
+#title:before, #learn:before {
   content: "\f0c1\0020\0020\0020\0020";
   font-family: FontAwesome;
 }
-.title {
+.title,.learn {
   border-bottom: dashed 1px #d7d7d7;
   margin-bottom: 1rem;
 }

@@ -16,6 +16,11 @@
                 "store":"yes",
                 "analyzer":"kuromoji_analyzer"
             },
+            "forLearning":{
+                "type":"string",
+                "store":"yes",
+                "analyzer":"kuromoji_analyzer"
+            },
             "lastModified":{
                 "type":"string",
                 "store":"yes",

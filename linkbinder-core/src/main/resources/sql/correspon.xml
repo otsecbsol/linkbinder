@@ -50,6 +50,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     <result property="deadlineForReply"                         column="deadline_for_reply" />
     <result property="requestedApprovalAt"                      column="requested_approval_at" />
     <result property="workflowStatus"                           column="workflow_status" />
+    <result property="forLearning"                              column="for_learning" />
     <result property="customField1Id"                           column="custom_field1_id" />
     <result property="customField1Label"                        column="custom_field1_label" />
     <result property="customField1Value"                        column="custom_field1_value" />
@@ -212,6 +213,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     <result property="replyRequired"                           column="reply_required" />
     <result property="deadlineForReply"                        column="deadline_for_reply" />
     <result property="workflowStatus"                          column="workflow_status" />
+    <result property="forLearning"                             column="for_learning" />
     <result property="customField1Id"                          column="custom_field1_id" />
     <result property="customField1Label"                       column="custom_field1_label" />
     <result property="customField1Value"                       column="custom_field1_value" />
@@ -371,6 +373,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       deadline_for_reply,
       requested_approval_at,
       workflow_status,
+      for_learning,
       custom_field1_id,
       custom_field1_label,
       custom_field1_value,
@@ -529,6 +532,43 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
           <isEqual property="readStatusNull" compareValue="true">
             or read_status is null
           </isEqual>
+          )
+        </isNotEmpty>
+        <isNotEmpty prepend="AND" property="forLearnings">
+          for_learning in
+          <iterate property="forLearnings" conjunction=","
+                   open="(" close=")">
+            #forLearnings[]#
+          </iterate>
+        </isNotEmpty>
+        <isNotEmpty prepend="AND" property="learningLabels">
+          EXISTS (
+            SELECT l.id FROM correspon_learning_label cl
+              INNER JOIN learning_label l
+                 ON l.id = cl.label_id
+               AND l.delete_no = 0
+            WHERE cl.correspon_id = c.id
+              AND cl.delete_no = 0
+              AND l.id IN
+          <iterate property="learningLabels" conjunction=","
+                   open="(" close=")">
+            #learningLabels[].id#
+          </iterate>
+          )
+        </isNotEmpty>
+        <isNotEmpty prepend="AND" property="learningTags">
+          EXISTS (
+            SELECT t.id FROM correspon_learning_tag ct
+              INNER JOIN learning_tag t
+                 ON t.id = ct.tag_id
+              AND t.delete_no = 0
+            WHERE ct.correspon_id = c.id
+              AND ct.delete_no = 0
+              AND t.id IN
+          <iterate property="learningTags" conjunction=","
+                   open="(" close=")">
+            #learningTags[].id#
+          </iterate>
           )
         </isNotEmpty>
         <isNotEmpty prepend="AND" property="corresponStatuses">
@@ -868,6 +908,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       reply_required,
       deadline_for_reply,
       workflow_status,
+      for_learning,
       custom_field1_id,
       custom_field1_label,
       custom_field1_value,
@@ -1011,6 +1052,9 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       <isNotNull prepend="," property="body">
         body                      = #body#
       </isNotNull>
+      <isNotNull prepend="," property="forLearning">
+        for_learning              = #forLearning#
+      </isNotNull>
     </dynamic>
     WHERE
       id = #id#
@@ -1022,34 +1066,99 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     </selectKey>
     INSERT INTO correspon (
       id,
+      correspon_no,
       project_id,
       from_correspon_group_id,
       previous_rev_correspon_id,
       project_correspon_type_id,
       subject,
       body,
+      issued_by,
+      issued_at,
       correspon_status,
       reply_required,
       deadline_for_reply,
       workflow_status,
       created_by,
-      updated_by
+      updated_by,
+      for_learning
     ) VALUES (
       #id#,
+      #corresponNo#,
       #projectId#,
       #fromCorresponGroup.id#,
       #previousRevCorresponId#,
       #corresponType.projectCorresponTypeId#,
       #subject#,
       #body#,
+      #issuedBy.empNo#,
+      #issuedAt#,
       #corresponStatus#,
       #replyRequired#,
       #deadlineForReply#,
       #workflowStatus#,
       #createdBy.empNo#,
-      #updatedBy.empNo#
+      #updatedBy.empNo#,
+      #forLearning#
     )
   </insert>
+
+  <insert id="copyToLearningProject">
+  <selectKey resultClass="long" keyProperty="id">
+    SELECT s_correspon_id.NEXTVAL AS id FROM dual
+  </selectKey>
+  INSERT INTO correspon (
+    id,
+    correspon_no,
+    project_id,
+    from_correspon_group_id,
+    previous_rev_correspon_id,
+    project_correspon_type_id,
+    subject,
+    body,
+    issued_by,
+    issued_at,
+    correspon_status,
+    reply_required,
+    deadline_for_reply,
+    requested_approval_at,
+    workflow_status,
+    created_by,
+    created_at,
+    updated_by,
+    updated_at,
+    version_no,
+    delete_no,
+    for_learning
+  )
+  SELECT
+    #id#,
+    correspon_no,
+    #learningProjectId# AS project_id,
+    from_correspon_group_id,
+    previous_rev_correspon_id,
+    project_correspon_type_id,
+    subject,
+    body,
+    issued_by,
+    issued_at,
+    correspon_status,
+    reply_required,
+    deadline_for_reply,
+    requested_approval_at,
+    workflow_status,
+    created_by,
+    created_at,
+    updated_by,
+    updated_at,
+    version_no,
+    delete_no,
+    for_learning
+  FROM correspon
+  WHERE
+    delete_no = 0 AND
+    id = #id#
+</insert>
 
   <update id="delete">
     UPDATE correspon

@@ -15,21 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.service.correspon.impl;
 
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import jp.co.opentone.bsol.framework.core.config.SystemConfig;
 import jp.co.opentone.bsol.framework.core.dao.KeyDuplicateException;
 import jp.co.opentone.bsol.framework.core.dao.RecordNotFoundException;
@@ -44,49 +29,52 @@ import jp.co.opentone.bsol.framework.core.message.MessageCode;
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
 import jp.co.opentone.bsol.framework.core.util.ArgumentValidator;
 import jp.co.opentone.bsol.framework.core.util.DateUtil;
-import jp.co.opentone.bsol.framework.core.util.PropertyGetUtil;
 import jp.co.opentone.bsol.framework.core.util.zip.ZipArchiver;
-import jp.co.opentone.bsol.linkbinder.Constants;
 import jp.co.opentone.bsol.linkbinder.attachment.SavedAttachmentInfo;
-import jp.co.opentone.bsol.linkbinder.dao.AddressCorresponGroupDao;
 import jp.co.opentone.bsol.linkbinder.dao.AttachmentDao;
 import jp.co.opentone.bsol.linkbinder.dao.CorresponDao;
-import jp.co.opentone.bsol.linkbinder.dao.CorresponTypeDao;
-import jp.co.opentone.bsol.linkbinder.dao.CustomFieldDao;
 import jp.co.opentone.bsol.linkbinder.dao.PersonInChargeDao;
 import jp.co.opentone.bsol.linkbinder.dao.ProjectDao;
 import jp.co.opentone.bsol.linkbinder.dao.UserDao;
-import jp.co.opentone.bsol.linkbinder.dao.WorkflowDao;
 import jp.co.opentone.bsol.linkbinder.dto.AddressUser;
 import jp.co.opentone.bsol.linkbinder.dto.Attachment;
 import jp.co.opentone.bsol.linkbinder.dto.Correspon;
-import jp.co.opentone.bsol.linkbinder.dto.CorresponCustomField;
 import jp.co.opentone.bsol.linkbinder.dto.CorresponResponseHistory;
-import jp.co.opentone.bsol.linkbinder.dto.CorresponType;
-import jp.co.opentone.bsol.linkbinder.dto.CustomField;
 import jp.co.opentone.bsol.linkbinder.dto.PersonInCharge;
 import jp.co.opentone.bsol.linkbinder.dto.Project;
+import jp.co.opentone.bsol.linkbinder.dto.UpdateMode;
 import jp.co.opentone.bsol.linkbinder.dto.User;
 import jp.co.opentone.bsol.linkbinder.dto.Workflow;
 import jp.co.opentone.bsol.linkbinder.dto.WorkflowPattern;
 import jp.co.opentone.bsol.linkbinder.dto.code.AllowApproverToBrowse;
 import jp.co.opentone.bsol.linkbinder.dto.code.CorresponStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.EmailNoticeEventCd;
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import jp.co.opentone.bsol.linkbinder.dto.code.ForceToUseWorkflow;
 import jp.co.opentone.bsol.linkbinder.dto.code.ReadStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowProcessStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowType;
-import jp.co.opentone.bsol.linkbinder.dto.condition.SearchCustomFieldCondition;
+import jp.co.opentone.bsol.linkbinder.dto.condition.SearchCorresponCondition;
+import jp.co.opentone.bsol.linkbinder.dto.condition.SearchProjectCondition;
 import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
 import jp.co.opentone.bsol.linkbinder.service.AbstractService;
-import jp.co.opentone.bsol.linkbinder.service.common.CorresponSequenceService;
+import jp.co.opentone.bsol.linkbinder.service.CorresponServiceHelper;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponReadStatusService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponService;
 import jp.co.opentone.bsol.linkbinder.service.notice.EmailNoticeService;
 import jp.co.opentone.bsol.linkbinder.util.AttachmentUtil;
 import jp.co.opentone.bsol.linkbinder.util.view.correspon.CorresponPageFormatter;
 import jp.co.opentone.bsol.linkbinder.util.view.correspon.CorresponResponseHistoryModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * このサービスではコレポン文書に関する処理を提供する.
@@ -113,49 +101,15 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
      */
     private static final String TEMPLATE_KEY_ZIP = "template.correspon.zip";
     /**
-     * ファイル名用IDフォーマット形式.
-     */
-    private static final String FILENAME_ID_FORMAT = "%010d";
-    /**
-     * ファイル名フォーマット形式.
-     */
-    private static final String FILENAME_FORMAT = "%s_%s(%s).html";
-    /**
-     * 添付ファイル名フォーマット形式(ディレクトリ名付き).
-     */
-    private static final String ATTACHMENT_FILENAME_FORMAT = "Attachments-%s_%s(%s)\\%s";
-    /**
-     * ファイル名禁止文字をプロパティから取得するKEY.
-     */
-    private static final String FILENAME_KEY_REGEX = "file.name.regex";
-    /**
-     * ファイル名禁止文字がプロパティに設定されていない場合のデフォルト値.
-     */
-    private static final String FILENAME_DEFAULT_REGEX = "[\\\\/:*?\"<>|]";
-    /**
-     * ファイル名置換文字をプロパティから取得するするKEY.
-     */
-    private static final String FILENAME_KEY_REPLACEMENT = "file.name.replacement";
-    /**
-     * ファイル名禁止文字がプロパティに設定されていない場合のデフォルト値.
-     */
-    private static final String FILENAME_DEFAULT_REPLACEMENT = "-";
-    /**
      * スタイルシート名.
      */
     private static final String TEMPLATE_KEY_STYLESHEET = "template.stylesheet";
 
     /**
-     * 空のインスタンスを生成する.
-     */
-    public CorresponServiceImpl() {
-    }
-
-    /**
-     * コレポン文書番号採番サービス.
+     * サービスヘルパ.
      */
     @Resource
-    private CorresponSequenceService corresponSequenceService;
+    private CorresponServiceHelper serviceHelper;
 
     /** /**
      * コレポン文書既読・未読サービス.
@@ -169,6 +123,12 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
     @Resource
     private EmailNoticeService emailNotificationService;
 
+    /**
+     * 空のインスタンスを生成する.
+     */
+    public CorresponServiceImpl() {
+    }
+
     /*
      * (non-Javadoc)
      * @see
@@ -177,176 +137,17 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
     @Transactional(readOnly = true)
     public Correspon find(Long id) throws ServiceAbortException {
         ArgumentValidator.validateNotNull(id);
-        try {
-            Correspon c = findCorrespon(id);
-            // 関連情報を取得
-            loadAddressCorresponGroup(c);
-            loadWorkflow(c);
-            // アクセス可能なレコードであるか検証
-            validateAccess(c);
-            return c;
-        } catch (RecordNotFoundException e) {
-            throw new ServiceAbortException(ApplicationMessageCode.NO_DATA_FOUND);
-        }
-    }
 
-    private Correspon findCorrespon(Long id)
-            throws RecordNotFoundException, ServiceAbortException {
-        CorresponDao dao = getDao(CorresponDao.class);
-        Correspon c = dao.findById(id);
-        loadCorresponType(c);
-        adjustCustomFields(c);
+        Correspon c = serviceHelper.findCorresponDetail(id);
+        // アクセス可能なレコードであるか検証
+        validateAccess(c);
 
         return c;
     }
 
-    private void loadCorresponType(Correspon c)  throws RecordNotFoundException {
-        CorresponTypeDao dao = getDao(CorresponTypeDao.class);
-        CorresponType ct =
-            dao.findByProjectCorresponTypeId(
-                c.getCorresponType().getProjectCorresponTypeId());
-        c.setCorresponType(ct);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see jp.co.opentone.bsol.linkbinder.service.correspon
-     *     .CorresponService#adjustCustomFields(jp.co.opentone.bsol.linkbinder.dto.Correspon)
-     */
-    public void adjustCustomFields(Correspon c) throws ServiceAbortException {
-        SearchCustomFieldCondition condition = new SearchCustomFieldCondition();
-        condition.setProjectId(c.getProjectId());
-        CustomFieldDao dao = getDao(CustomFieldDao.class);
-        List<CustomField> fields = dao.findByProjectId(condition);
-        List<CorresponCustomField> currentValues = collectCurrentCorresponCustomField(c);
-
-        final String idProperty = "customField%dId";
-        final String labelProperty = "customField%dLabel";
-        final String valueProperty = "customField%dValue";
-        int maxCount =
-            Integer.parseInt(SystemConfig.getValue(Constants.KEY_CUSTOM_FIELD_MAX_COUNT));
-        int max = fields.size() > maxCount ? maxCount : fields.size();
-
-        //  現在のカスタムフィールドマスタの並び順で並べ換える
-        int i = 0;
-        for (; i < max; i++) {
-            CustomField f = fields.get(i);
-
-            PropertyGetUtil.setProperty(
-                c, String.format(idProperty, (i + 1)), f.getProjectCustomFieldId());
-            PropertyGetUtil.setProperty(
-                c, String.format(labelProperty, (i + 1)), f.getLabel());
-
-            String value = null;
-            for (CorresponCustomField v : currentValues) {
-                if (f.getProjectCustomFieldId().equals(v.getProjectCustomFieldId())) {
-                    value = v.getValue();
-                    break;
-                }
-            }
-            PropertyGetUtil.setProperty(
-                c, String.format(valueProperty, (i + 1)), value);
-        }
-        for (; i < maxCount; i++) {
-            PropertyGetUtil.setProperty(
-                c, String.format(idProperty, (i + 1)), null);
-            PropertyGetUtil.setProperty(
-                c, String.format(labelProperty, (i + 1)), null);
-            PropertyGetUtil.setProperty(
-                c, String.format(valueProperty, (i + 1)), null);
-        }
-    }
-
-    //  カスタムフィールド項目数が多いため行数オーバーする
-    //CHECKSTYLE:OFF
-    private List<CorresponCustomField> collectCurrentCorresponCustomField(Correspon c) {
-        List<CorresponCustomField> fields = new ArrayList<CorresponCustomField>();
-        CorresponCustomField f;
-        if (c.getCustomField1Id() != null) {
-            f = new CorresponCustomField();
-            f.setProjectCustomFieldId(c.getCustomField1Id());
-            f.setValue(c.getCustomField1Value());
-            fields.add(f);
-        }
-        if (c.getCustomField2Id() != null) {
-            f = new CorresponCustomField();
-            f.setProjectCustomFieldId(c.getCustomField2Id());
-            f.setValue(c.getCustomField2Value());
-            fields.add(f);
-        }
-        if (c.getCustomField3Id() != null) {
-            f = new CorresponCustomField();
-            f.setProjectCustomFieldId(c.getCustomField3Id());
-            f.setValue(c.getCustomField3Value());
-            fields.add(f);
-        }
-        if (c.getCustomField4Id() != null) {
-            f = new CorresponCustomField();
-            f.setProjectCustomFieldId(c.getCustomField4Id());
-            f.setValue(c.getCustomField4Value());
-            fields.add(f);
-        }
-        if (c.getCustomField5Id() != null) {
-            f = new CorresponCustomField();
-            f.setProjectCustomFieldId(c.getCustomField5Id());
-            f.setValue(c.getCustomField5Value());
-            fields.add(f);
-        }
-        if (c.getCustomField6Id() != null) {
-            f = new CorresponCustomField();
-            f.setProjectCustomFieldId(c.getCustomField6Id());
-            f.setValue(c.getCustomField6Value());
-            fields.add(f);
-        }
-        if (c.getCustomField7Id() != null) {
-            f = new CorresponCustomField();
-            f.setProjectCustomFieldId(c.getCustomField7Id());
-            f.setValue(c.getCustomField7Value());
-            fields.add(f);
-        }
-        if (c.getCustomField8Id() != null) {
-            f = new CorresponCustomField();
-            f.setProjectCustomFieldId(c.getCustomField8Id());
-            f.setValue(c.getCustomField8Value());
-            fields.add(f);
-        }
-        if (c.getCustomField9Id() != null) {
-            f = new CorresponCustomField();
-            f.setProjectCustomFieldId(c.getCustomField9Id());
-            f.setValue(c.getCustomField9Value());
-            fields.add(f);
-        }
-        if (c.getCustomField10Id() != null) {
-            f = new CorresponCustomField();
-            f.setProjectCustomFieldId(c.getCustomField10Id());
-            f.setValue(c.getCustomField10Value());
-            fields.add(f);
-        }
-        return fields;
-    }
-    //CHECKSTYLE:ON
-
-
-    private void loadAddressCorresponGroup(Correspon c) {
-        AddressCorresponGroupDao dao = getDao(AddressCorresponGroupDao.class);
-        c.setAddressCorresponGroups(dao.findByCorresponId(c.getId()));
-    }
-
-    private void loadWorkflow(Correspon c) {
-        WorkflowDao dao = getDao(WorkflowDao.class);
-        List<Workflow> workflows = dao.findByCorresponId(c.getId());
-        setupCorresponGroup(workflows);
-
-        c.setWorkflows(workflows);
-    }
-
-    private void setupCorresponGroup(List<Workflow> workflows) {
-        if (workflows == null) {
-            return;
-        }
-        for (Workflow w : workflows) {
-            w.setCorresponGroup(findPrimaryCorresponGroup(w.getUser()));
-        }
+    @Override
+    public void adjustCustomFields(Correspon correspon) throws ServiceAbortException {
+        serviceHelper.adjustCustomFields(correspon);
     }
 
     /**
@@ -481,10 +282,10 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
             attachment.setContent(client.getFileContent(attachment.getFileId(), filePath));
 
             return attachment;
-        } catch (RecordNotFoundException e) {
-            throw new ServiceAbortException(e);
         } catch (FileStoreException e) {
             throw new ServiceAbortException(ApplicationMessageCode.ERROR_UPLOADING_FILE);
+        } catch (RecordNotFoundException e) {
+            throw new ServiceAbortException(e);
         } finally {
             // ファイルを削除する
             if (filePath != null) {
@@ -583,7 +384,7 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
         Correspon corresponUpdate;
         List<Workflow> workflow = correspon.getWorkflows();
         corresponUpdate = setUpCorresponForRequestForApproval(correspon, workflow);
-        updateCorrespon(corresponUpdate);
+        serviceHelper.updateCorrespon(corresponUpdate);
         // 承認フローを承認パターン別で更新する
         updateWorkflows(correspon);
     }
@@ -656,10 +457,9 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
      * 承認フローを更新する(パターン1).
      * @param workflow
      *            承認フローリスト
-     * @throws ServiceAbortException
+     * @throws ServiceAbortException 更新に失敗
      */
     private void createWorkflowPattern1(List<Workflow> workflow) throws ServiceAbortException {
-
         Workflow updateWorkflow;
 
         for (Workflow w : workflow) {
@@ -670,13 +470,13 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
                     updateWorkflow = setUpWorkflowForRequestForVerification(w, updateWorkflow);
                     updateWorkflow
                         .setWorkflowProcessStatus(WorkflowProcessStatus.REQUEST_FOR_CHECK);
-                    updateWorkflow(updateWorkflow);
+                    serviceHelper.updateWorkflow(updateWorkflow);
                     break;
                 } else {
                     updateWorkflow = setUpWorkflowForRequestForVerification(w, updateWorkflow);
                     updateWorkflow
                         .setWorkflowProcessStatus(WorkflowProcessStatus.REQUEST_FOR_APPROVAL);
-                    updateWorkflow(updateWorkflow);
+                    serviceHelper.updateWorkflow(updateWorkflow);
                     break;
                 }
             }
@@ -687,10 +487,9 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
      * 承認フローを更新する(パターン2).
      * @param workflow
      *            承認フローリスト
-     * @throws ServiceAbortException
+     * @throws ServiceAbortException 更新に失敗
      */
     private void createWorkflowPattern2(List<Workflow> workflow) throws ServiceAbortException {
-
         Workflow updateWorkflow;
 
         boolean existChecker = false;
@@ -700,13 +499,13 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
                 existChecker = true;
                 updateWorkflow = setUpWorkflowForRequestForVerification(w, updateWorkflow);
                 updateWorkflow.setWorkflowProcessStatus(WorkflowProcessStatus.REQUEST_FOR_CHECK);
-                updateWorkflow(updateWorkflow);
+                serviceHelper.updateWorkflow(updateWorkflow);
             }
             // Checkerが存在しない場合はApproverに承認依頼する
             if (!existChecker && WorkflowType.APPROVER == w.getWorkflowType()) {
                 updateWorkflow = setUpWorkflowForRequestForVerification(w, updateWorkflow);
                 updateWorkflow.setWorkflowProcessStatus(WorkflowProcessStatus.REQUEST_FOR_APPROVAL);
-                updateWorkflow(updateWorkflow);
+                serviceHelper.updateWorkflow(updateWorkflow);
             }
         }
     }
@@ -715,10 +514,9 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
      * 承認フローを更新する(パターン3).
      * @param workflow
      *            承認フローリスト
-     * @throws ServiceAbortException
+     * @throws ServiceAbortException 更新に失敗
      */
     private void createWorkflowPattern3(List<Workflow> workflow) throws ServiceAbortException {
-
         Workflow updateWorkflow;
 
         for (Workflow w : workflow) {
@@ -726,48 +524,12 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
             if (WorkflowType.CHECKER == w.getWorkflowType()) {
                 updateWorkflow = setUpWorkflowForRequestForVerification(w, updateWorkflow);
                 updateWorkflow.setWorkflowProcessStatus(WorkflowProcessStatus.REQUEST_FOR_CHECK);
-                updateWorkflow(updateWorkflow);
+                serviceHelper.updateWorkflow(updateWorkflow);
             } else {
                 updateWorkflow = setUpWorkflowForRequestForVerification(w, updateWorkflow);
                 updateWorkflow.setWorkflowProcessStatus(WorkflowProcessStatus.REQUEST_FOR_APPROVAL);
-                updateWorkflow(updateWorkflow);
+                serviceHelper.updateWorkflow(updateWorkflow);
             }
-        }
-    }
-
-    /**
-     * 承認フローを更新する.
-     * @param workflow
-     *            承認フロー
-     * @throws ServiceAbortException
-     */
-    private void updateWorkflow(Workflow workflow) throws ServiceAbortException {
-        try {
-            WorkflowDao dao = getDao(WorkflowDao.class);
-            dao.update(workflow);
-        } catch (KeyDuplicateException kde) {
-            throw new ServiceAbortException(kde);
-        } catch (StaleRecordException sre) {
-            throw new ServiceAbortException(
-                ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
-        }
-    }
-
-    /**
-     * コレポン文書を更新する.
-     * @param correspon
-     *            コレポン文書
-     * @throws ServiceAbortException
-     */
-    private void updateCorrespon(Correspon correspon) throws ServiceAbortException {
-        try {
-            CorresponDao dao = getDao(CorresponDao.class);
-            dao.update(correspon);
-        } catch (KeyDuplicateException kde) {
-            throw new ServiceAbortException(kde);
-        } catch (StaleRecordException sre) {
-            throw new ServiceAbortException(
-                ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
         }
     }
 
@@ -779,8 +541,7 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
      *            更新用ワークフロー
      * @return 検証・承認を依頼する処理に必要な値のみの承認フロー
      */
-    private Workflow setUpWorkflowForRequestForVerification(Workflow workflow,
-        Workflow updateWorkflow) {
+    private Workflow setUpWorkflowForRequestForVerification(Workflow workflow, Workflow updateWorkflow) {
         updateWorkflow.setId(workflow.getId());
         updateWorkflow.setUpdatedBy(getCurrentUser());
         updateWorkflow.setWorkflowProcessStatus(workflow.getWorkflowProcessStatus());
@@ -811,18 +572,6 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
         requestForApprovalCorrespon.setVersionNo(correspon.getVersionNo());
         requestForApprovalCorrespon.setRequestedApprovalAt(correspon.getRequestedApprovalAt());
         return requestForApprovalCorrespon;
-    }
-
-    /**
-     * 存在チェック.
-     * @param hashSet
-     *            ハッシュ
-     * @param target
-     *            ターゲット
-     * @return boolean
-     */
-    public boolean containHash(HashSet<String> hashSet, String target) {
-        return hashSet.contains(target);
     }
 
     /*
@@ -874,7 +623,7 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
         // チェック定義書に定義された(CorresponService#delete)チェックを行う。
         validateDeleteIssuePermission(correspon);
         // 更新
-        deleteCorrespon(createDeletedCorrespon(correspon));
+        serviceHelper.deleteCorrespon(serviceHelper.setupCorresponForDelete(correspon));
     }
 
     /**
@@ -893,41 +642,6 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
             && !getCurrentUser().getEmpNo().equals(correspon.getCreatedBy().getEmpNo())) {
             throw new ServiceAbortException(
                 ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_ACCESS_LEVEL_INSUFFICIENT);
-        }
-    }
-
-    /**
-     * 文書状態削除用のオブジェクトを作成する.
-     * @param old
-     *            削除対象のコレポン文書
-     * @return 削除用のオブジェクト
-     */
-    private Correspon createDeletedCorrespon(Correspon old) {
-
-        Correspon correspon = new Correspon();
-        correspon.setId(old.getId());
-        correspon.setUpdatedBy(getCurrentUser());
-        correspon.setVersionNo(old.getVersionNo());
-        return correspon;
-    }
-
-    /**
-     * コレポン文書を削除する.
-     * @param correspon
-     *            コレポン文書
-     * @throws ServiceAbortException
-     *             削除に失敗
-     */
-    private void deleteCorrespon(Correspon correspon) throws ServiceAbortException {
-
-        try {
-            CorresponDao dao = getDao(CorresponDao.class);
-            dao.delete(correspon);
-        } catch (KeyDuplicateException e) {
-            throw new ServiceAbortException(e);
-        } catch (StaleRecordException e) {
-            throw new ServiceAbortException(
-                ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
         }
     }
 
@@ -951,9 +665,14 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
         // チェック定義書に定義された(CorresponService#issue)チェックを行う。
         validateDeleteIssuePermission(correspon);
         // 承認状態の更新
-        updateCorresponForIssue(correspon);
+        serviceHelper.updateCorresponForIssue(correspon);
         // メール通知機能
         sendIssuedNotice(correspon, EmailNoticeEventCd.ISSUED);
+
+        // 学習用コンテンツの場合、文書を学習用プロジェクトへコピー.
+        if (correspon.isLearningContents()) {
+            issueToLearningProjects(correspon.getId());
+        }
     }
 
     /**
@@ -970,38 +689,25 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
     }
 
     /**
-     * コレポン文書の承認状態を更新する.
-     * @param correspon
-     *            コレポン文書
-     * @throws ServiceAbortException
+     * 学習用プロジェクトから、同じ文書番号の文書を削除する.
+     * @param correspon 削除したい文書の元文書
+     * @param learningProjectId 対象の学習用プロジェクト
      */
-    private void updateCorresponForIssue(Correspon correspon) throws ServiceAbortException {
-        Correspon newCorrespon = createNewCorrespon(correspon, WorkflowStatus.ISSUED);
-        // コレポン文書番号を生成
-        newCorrespon.setCorresponNo(corresponSequenceService.getCorresponNo(correspon));
-        newCorrespon.setIssuedAt(DateUtil.getNow());
-        newCorrespon.setIssuedBy(getCurrentUser());
+    private void deleteExistLearningCorrespon(Correspon correspon, String learningProjectId)
+                    throws KeyDuplicateException, StaleRecordException{
+        // 検索条件を作成
+        SearchCorresponCondition condition = new SearchCorresponCondition();
+        condition.setProjectId(learningProjectId);
+        condition.setCorresponNo(correspon.getCorresponNo());
 
-        // コレポン文書の更新
-        updateCorrespon(newCorrespon);
-    }
+        CorresponDao dao = getDao(CorresponDao.class);
+        List<Correspon> resultList = dao.find(condition);
 
-   /**
-     * 更新用のコレポン文書Dtoを生成する.
-     * @param oldCorrespon
-     *            コレポン文書
-     * @param workflowStatus
-     *            承認状態
-     * @return 更新用コレポン文書
-     */
-    private Correspon createNewCorrespon(Correspon oldCorrespon, WorkflowStatus workflowStatus) {
-        Correspon newCorrespon = new Correspon();
-        newCorrespon.setId(oldCorrespon.getId());
-        newCorrespon.setUpdatedBy(getCurrentUser());
-        newCorrespon.setWorkflowStatus(workflowStatus);
-        newCorrespon.setVersionNo(oldCorrespon.getVersionNo());
-
-        return newCorrespon;
+        if (resultList != null && !resultList.isEmpty()) {
+            for (Correspon resultCorrespon : resultList) {
+                dao.delete(resultCorrespon);
+            }
+        }
     }
 
     /*
@@ -1018,7 +724,7 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
 
         // 渡されたAddressUser, PICを検証する
         log.trace("validate");
-        validatePersonInCharge(correspon, addressUser, pics);
+        validatePersonInCharge(correspon, pics);
 
         // 通知用に現在のPICを取得
         List<PersonInCharge> oldPics = findPersonInChages(addressUser);
@@ -1027,11 +733,11 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
         try {
             log.trace("delete");
             deletePersonInCharge(addressUser);
-        } catch (KeyDuplicateException e) {
-            throw new ServiceAbortException(e);
         } catch (StaleRecordException e) {
             throw new ServiceAbortException(
-                ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_PERSON_IN_CHARGE_NOT_EXIST);
+                    ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_PERSON_IN_CHARGE_NOT_EXIST);
+        } catch (KeyDuplicateException e) {
+            throw new ServiceAbortException(e);
         }
 
         // PICを登録
@@ -1065,15 +771,12 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
      * AddressUser, PICを検証する.
      * @param correspon
      *            コレポン文書
-     * @param addressUser
-     *            AddressUser
      * @param pics
      *            PICのリスト
-     * @throws ServiceAbortException
+     * @throws ServiceAbortException 検証エラー
      */
-    private void validatePersonInCharge(Correspon correspon, AddressUser addressUser,
-        List<PersonInCharge> pics) throws ServiceAbortException {
-
+    private void validatePersonInCharge(Correspon correspon,
+                                        List<PersonInCharge> pics) throws ServiceAbortException {
         for (PersonInCharge pic : pics) {
             try {
                 // PICに選択されたユーザが存在しない際はエラー
@@ -1155,7 +858,7 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
      * @param empNo
      *            従業員番号
      * @return ユーザー
-     * @throws ServiceAbortException
+     * @throws RecordNotFoundException レコードが見つからない
      */
     private User findUserByEmpNo(String empNo) throws RecordNotFoundException {
         UserDao dao = getDao(UserDao.class);
@@ -1166,9 +869,8 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
      * 条件に一致するPerson In Chargeを削除する.
      * @param addressUser
      *            宛先-ユーザー
-     * @return
-     * @throws StaleRecordException
-     * @throws KeyDuplicateException
+     * @return 件数
+     * @throws KeyDuplicateException 削除失敗
      */
     private int deletePersonInCharge(AddressUser addressUser) throws KeyDuplicateException,
         StaleRecordException {
@@ -1185,8 +887,8 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
      *            宛先-ユーザー
      * @param persionInCharge
      *            Person In Charge
-     * @return
-     * @throws KeyDuplicateException
+     * @return 登録したレコードID
+     * @throws KeyDuplicateException 更新失敗
      */
     private Long createPersionInCharge(AddressUser addressUser, PersonInCharge persionInCharge)
         throws KeyDuplicateException {
@@ -1220,7 +922,7 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
         log.trace("★文書状態を更新");
 
         // 文書状態チェック(チェック定義書)
-        commonValidateCorresponStatus(correspon);
+        serviceHelper.commonValidateCorresponStatus(correspon);
 
         // 文書状態チェック(画面仕様)
         // チェック定義書のチェックがあるためCanceledのコレポン文書はここまで到達しない
@@ -1242,72 +944,12 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
 
         log.trace("★文書状態更新実行");
         // 実際に更新を行う
-        updateCorrespon(correspon);
+        serviceHelper.updateCorrespon(correspon);
 
         // コレポン文書を更新した為、既読→未読に変更
         if (CorresponStatus.CANCELED == status) {
             corresponReadStatusService.updateReadStatusByCorresponId(
                         correspon.getId(), ReadStatus.NEW);
-        }
-    }
-
-    /**
-     * 文書状態(Open/Closed/Canceled)チェック.
-     * <p>
-     * チェック定義書の「文書状態(Open/Closed/Canceled)チェック」に記述された一連のチェックを行う<br />
-     * 【新規追加】ただし、新規登録の際の文書状態チェックは「Canceledか否か」のチェックのみ行う
-     * </p>
-     * @param correspon
-     *            コレポン文書情報
-     * @throws ServiceAbortException
-     */
-    // TODO CorresponValidateService#commonValidateCorresponStatusをそのままコピーした.
-    // 要共通化.
-    private void commonValidateCorresponStatus(Correspon correspon) throws ServiceAbortException {
-        if (correspon.isNew()) { // コレポン文書の文書状態が[2:Canceled]の際はエラー
-            log.trace("★文書状態(新規)");
-            if (log.isDebugEnabled()) {
-                log.debug("correspon.getCorresponStatus[" + correspon.getCorresponStatus() + "]");
-            }
-            validateCorresponStatusCanceled(correspon.getCorresponStatus());
-        } else { // 更新前コレポン文書の文書状態が[2:Canceled]の際はエラー
-            log.trace("★文書状態(更新)①");
-            if (log.isDebugEnabled()) {
-                log.debug("correspon.getId[" + correspon.getId() + "]");
-            }
-            Correspon oldCorrespon = null;
-            try {
-                oldCorrespon = findCorrespon(correspon.getId());
-            } catch (RecordNotFoundException e) {
-                log.warn(e.getMessageCode() + " correspon.getId[" + correspon.getId() + "]");
-                throw new ServiceAbortException(ApplicationMessageCode.NO_DATA_FOUND);
-            }
-            if (log.isDebugEnabled()) {
-                log.debug("oldCorrespon.getCorresponStatus[" + oldCorrespon.getCorresponStatus()
-                    + "]");
-            }
-            if (CorresponStatus.CANCELED.equals(oldCorrespon.getCorresponStatus())) {
-                log.warn(ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORREPON_CANCELED + " "
-                    + oldCorrespon);
-                throw new ServiceAbortException(
-                    ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORREPON_CANCELED);
-            }
-            // コレポン文書の承認状態が[5:Issued]以外で、文書状態を[2:Canceled]にする際はエラー
-            log.trace("★文書状態(更新)②");
-            if (log.isDebugEnabled()) {
-                log.debug("oldCorrespon.getWorkflowStatus[" + oldCorrespon.getWorkflowStatus()
-                    + "]");
-                log.debug("correspon.getCorresponStatus[" + correspon.getCorresponStatus() + "]");
-            }
-            if (!WorkflowStatus.ISSUED.equals(oldCorrespon.getWorkflowStatus())
-                && CorresponStatus.CANCELED.equals(correspon.getCorresponStatus())) {
-                log
-                    .warn(ApplicationMessageCode
-                        .CANNOT_PERFORM_BECAUSE_CORREPON_NOT_ISSUED_AND_CANCELED
-                        + " " + oldCorrespon);
-                throw new ServiceAbortException(
-                    ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORREPON_NOT_ISSUED_AND_CANCELED);
-            }
         }
     }
 
@@ -1324,27 +966,12 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
         // 発行状態がISSUEDじゃないと駄目
         validateSavePartialWorkflowStatus(correspon);
         // 文書状態がCanceledは駄目
-        validateCorresponStatusCanceled(correspon.getCorresponStatus());
+        serviceHelper.validateCorresponStatusCanceled(correspon.getCorresponStatus());
         // 更新する
-        updateCorrespon(createSavePatialCorrespon(correspon));
+        serviceHelper.updateCorrespon(createSavePatialCorrespon(correspon));
         // コレポン文書を更新した為、既読→未読に変更
         corresponReadStatusService.updateReadStatusByCorresponId(
                     correspon.getId(), ReadStatus.NEW);
-    }
-
-    /**
-     * 文書状態がCanceledかチェックする.
-     * @param corresponStatus
-     *            文書状態
-     * @throws ServiceAbortException
-     *             文書状態がCanceled
-     */
-    private void validateCorresponStatusCanceled(CorresponStatus corresponStatus)
-        throws ServiceAbortException {
-        if (CorresponStatus.CANCELED == corresponStatus) {
-            throw new ServiceAbortException(
-                ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORREPON_CANCELED);
-        }
     }
 
     /**
@@ -1422,15 +1049,13 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
         try {
             ZipArchiver zip = new ZipArchiver();
             // 指定のコレポン文書を取得 -- 存在しない場合はエラー
-            Correspon correspon = findCorresponDetail(correspons.getId());
+            Correspon correspon = serviceHelper.findCorresponDetailWithDisplayInfo(correspons.getId());
 
             // 応答履歴を取得し、表示用のビーンに詰める
             List<CorresponResponseHistory> histories =
                 findCorresponResponseHistory(correspon);
 
-            List<CorresponResponseHistoryModel> historyModels =
-                new ArrayList<CorresponResponseHistoryModel>();
-
+            List<CorresponResponseHistoryModel> historyModels = new ArrayList<>();
             for (CorresponResponseHistory history : histories) {
                 CorresponResponseHistoryModel model = new CorresponResponseHistoryModel();
                 model.setCorresponResponseHistory(history);
@@ -1450,12 +1075,12 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
             util.setStylesheetName(SystemConfig.getValue(TEMPLATE_KEY_STYLESHEET));
             util.setUsePersonInCharge(usePersonInCharge);
             generator.setUtil(util);
-            zip.add(createCorresponHtmlName(correspon), generator.generate());
+            zip.add(serviceHelper.createCorresponHtmlName(correspon), generator.generate());
 
             // コレポン文書に付随しているAttachMentを取得
             for (Attachment attachment : correspons.getAttachments()) {
                 zip.add(
-                    createAttachmentFileName(correspon, attachment.getFileName()),
+                    serviceHelper.createAttachmentFileName(correspon, attachment.getFileName()),
                     new SavedAttachmentInfo(attachment, this).getContent());
             }
 
@@ -1466,86 +1091,48 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
         }
     }
 
-    /**
-     * ZIPファイル内のHTMLファイルの名前を作成する.
-     * <pre>
-     * ファイル名：
-     *     projectId_コレポン文書番号(コレポン文書ID).html
-     *     ただし未発行の場合はprojectId_(コレポン文書ID).html
-     *         ・コレポン文書IDは10桁前ゼロ埋め
-     *         ・コレポン文書番号の「:」はWindowsのファイル名として使用できない文字なので、「-」に変換
-     *         ・その他Windowsのファイル名として使用できない文字があれば「-」に変換
-     * </pre>
-     * @return HTMLファイル名
-     */
-    private String createCorresponHtmlName(Correspon correspon) {
-        String corresponNo = correspon.getCorresponNo();
-        if (corresponNo == null) { // NULLならば空文字に変換
-            corresponNo = "";
-        }
-        String corresponId = String.format(FILENAME_ID_FORMAT, correspon.getId());
-
-        String fileName = String.format(FILENAME_FORMAT,
-                                        getCurrentProjectId(),
-                                        corresponNo,
-                                        corresponId);
-        return convertFileName(fileName);
+    private void setupForLearningProject(Correspon c) throws ServiceAbortException {
+        // 添付ファイルコピーのための設定
+        List<Attachment> attachments = findAttachments(c.getId());
+        attachments.forEach(a -> {
+            a.setId(null);
+            a.setMode(UpdateMode.NEW);
+            a.setSourcePath(getFileStoreClient().getFile(a.getFileId()).getAbsolutePath());
+        });
+        c.setUpdateAttachments(attachments);
     }
 
-    /**
-     * ディレクトリ名を作成する.
-     * @return ATTACHMENT名
-     */
-    private String createAttachmentFileName(Correspon correspon, String filename) {
-        String corresponNo = correspon.getCorresponNo();
-        if (corresponNo == null) { // NULLならば空文字に変換
-            corresponNo = "";
-        }
-        String corresponId = String.format(FILENAME_ID_FORMAT, correspon.getId());
-
-        String fileName = String.format(ATTACHMENT_FILENAME_FORMAT,
-                                        getCurrentProjectId(),
-                                        corresponNo,
-                                        corresponId,
-                                        filename);
-        return convertFileName(fileName);
-    }
-
-    /**
-     * Windowsのファイル名として使用できない文字を変換する.
-     * @return ファイル名
-     */
-    private String convertFileName(String name) {
-        String regex = SystemConfig.getValue(FILENAME_KEY_REGEX);
-        if (StringUtils.isEmpty(regex)) {
-            regex = FILENAME_DEFAULT_REGEX;
-        }
-        String replacement = SystemConfig.getValue(FILENAME_KEY_REPLACEMENT);
-        if (replacement == null) { // 置換文字は空文字でも問題ない
-            replacement = FILENAME_DEFAULT_REPLACEMENT;
-        }
-        return name.replaceAll(regex, replacement);
-    }
-
-    /**
-     * コレポン文書の情報を関連する情報と一緒に取得する.
-     * @throws ServiceAbortException 取得エラー
-     */
-    private Correspon findCorresponDetail(Long id) throws ServiceAbortException {
+    @Override
+    public List<Long> issueToLearningProjects(Long id) throws ServiceAbortException {
         try {
-            Correspon clone = new Correspon();
-            Correspon original = find(id);
-            PropertyUtils.copyProperties(clone, original);
-            clone.setWorkflows(createDisplayWorkflowList(original));
-            return clone;
-        } catch (ServiceAbortException e) {
+            Correspon c = serviceHelper.findCorrespon(id);
+            serviceHelper.loadLearningLabelAndTag(c);
+            setupForLearningProject(c);
+
+            List<Long> result = new ArrayList<>();
+            for (Project p : findLearningProject()) {
+                deleteExistLearningCorrespon(c, p.getProjectId());
+
+                c.setProjectId(p.getProjectId());
+                Long newId = serviceHelper.createCorrespon(c);
+                c.setId(newId);
+
+                // 添付ファイル保存
+                serviceHelper.saveAttachments(c);
+                serviceHelper.saveLearningLabel(c);
+                serviceHelper.saveLearningTag(c);
+
+                result.add(newId);
+            }
+
+            return result;
+        } catch (RecordNotFoundException e) {
             throw new ServiceAbortException(ApplicationMessageCode.NO_DATA_FOUND);
-        } catch (IllegalAccessException e) {
-            throw new ServiceAbortException(e.getMessage());
-        } catch (InvocationTargetException e) {
-            throw new ServiceAbortException(e.getMessage());
-        } catch (NoSuchMethodException e) {
-            throw new ServiceAbortException(e.getMessage());
+        } catch (StaleRecordException e) {
+            throw new ServiceAbortException(
+                    ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);
+        } catch (KeyDuplicateException e) {
+            throw new ServiceAbortException(e);
         }
     }
 
@@ -1589,7 +1176,10 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
                 try {
                     a.setContent(client.getFileContent(a.getFileId(), filePath));
                 } finally {
-                    new File(filePath).delete();
+                    boolean delete = new File(filePath).delete();
+                    if (!delete) {
+                        log.warn("ファイル削除に失敗しました {}", filePath);
+                    }
                 }
             });
 
@@ -1597,5 +1187,13 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
         } catch (FileStoreException e) {
             throw new ServiceAbortException(ApplicationMessageCode.ERROR_UPLOADING_FILE);
         }
+    }
+
+    private List<Project> findLearningProject() {
+        SearchProjectCondition condition = new SearchProjectCondition();
+        condition.setForLearning(ForLearning.LEARNING);
+
+        ProjectDao dao = getDao(ProjectDao.class);
+        return dao.findLearningPj(condition);
     }
 }

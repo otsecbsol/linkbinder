@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2016 OPEN TONE Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="learningLabel">
+
+  <resultMap id="result" class="jp.co.opentone.bsol.linkbinder.dto.LearningLabel">
+    <result property="id"              column="id"/>
+    <result property="name"            column="name"/>
+    <result property="createdBy.empNo" column="created_by"/>
+    <result property="createdAt"       column="created_at"/>
+    <result property="updatedBy.empNo" column="updated_by"/>
+    <result property="updatedAt"       column="updated_at"/>
+    <result property="versionNo"       column="version_no"/>
+    <result property="deleteNo"        column="delete_no"/>
+  </resultMap>
+
+  <resultMap id="resultLearningLabelCorrespon"
+            class="jp.co.opentone.bsol.linkbinder.dto.LearningLabelCorrespon"
+            groupBy="id">
+    <result property="id"            column="id"/>
+    <result property="label"          column="name"/>
+    <result property="corresponList" resultMap="learningLabel.correspon"/>
+  </resultMap>
+
+  <resultMap id="correspon" class="jp.co.opentone.bsol.linkbinder.dto.Correspon">
+    <result property="id"        column="correspon_id"/>
+    <result property="projectId" column="project_id"/>
+    <result property="subject"   column="subject"/>
+  </resultMap>
+
+  <resultMap id="resultForUpdate" class="jp.co.opentone.bsol.linkbinder.dto.LearningLabel">
+    <result property="versionNo" column="version_no" />
+  </resultMap>
+
+  <select id="findByIdForUpdate" resultMap="resultForUpdate">
+    SELECT
+      version_no
+    FROM
+      learning_label
+    WHERE
+      id = #id#
+    FOR UPDATE
+  </select>
+
+  <select id="findByProjectId" resultMap="result">
+    SELECT DISTINCT
+      l.*
+    FROM learning_label l
+      INNER JOIN correspon_learning_label cl
+        ON cl.label_id = l.id
+       AND cl.delete_no = 0
+      INNER JOIN correspon c
+        ON c.id = cl.correspon_id
+       AND c.delete_no = 0
+    WHERE l.delete_no = 0
+      AND c.project_id = #value#
+    ORDER BY l.name
+  </select>
+
+  <select id="findByCorresponId" resultMap="result">
+    SELECT
+      l.*
+    FROM learning_label l
+      INNER JOIN correspon_learning_label cl
+        ON cl.label_id = l.id
+       AND cl.delete_no = 0
+      INNER JOIN correspon c
+        ON c.id = cl.correspon_id
+       AND c.delete_no = 0
+    WHERE l.delete_no = 0
+      AND c.id = #value#
+    ORDER BY l.name
+  </select>
+
+  <select id="findLearningLabelCorrespon" resultMap="resultLearningLabelCorrespon">
+    SELECT
+      l.id,
+      l.name,
+      c.id AS correspon_id,
+      c.project_id,
+      c.subject
+    FROM learning_label l
+      INNER JOIN correspon_learning_label cl
+        ON cl.label_id = l.id
+       AND cl.delete_no = 0
+      INNER JOIN correspon c
+        ON c.id = cl.correspon_id
+       AND c.delete_no = 0
+    WHERE l.delete_no = 0
+      AND c.project_id IN (
+        SELECT pj_id FROM sys_pj
+        WHERE for_learning = 1
+      )
+    ORDER BY l.name, c.id
+  </select>
+
+  <insert id="create">
+    <selectKey resultClass="long" keyProperty="id">
+      SELECT s_learning_label_id.NEXTVAL AS id FROM dual
+    </selectKey>
+    INSERT INTO learning_label(
+      id,
+      name,
+      created_by,
+      updated_by
+    ) VALUES (
+      #id#,
+      #name#,
+      #createdBy.empNo#,
+      #updatedBy.empNo#
+    )
+  </insert>
+
+  <delete id="deleteIfUnused">
+    DELETE FROM learning_label l
+    WHERE id = #id#
+      AND NOT EXISTS (
+        SELECT 1 FROM correspon_learning_label cl
+        WHERE cl.label_id = l.id
+      )
+  </delete>
+</sqlMap>

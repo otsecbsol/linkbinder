@@ -27,6 +27,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     <result property="lastLoggedInAt"           column="last_logged_in_at" />
     <result property="defaultProjectId"         column="default_project_id" />
     <result property="corresponInvisibleFields" column="correspon_invisible_fields" />
+    <result property="useLearning"              column="use_learning" />
     <result property="createdBy.empNo"          column="created_by" />
     <result property="createdAt"                column="created_at" />
     <result property="updatedBy.empNo"          column="updated_by" />
@@ -53,7 +54,8 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       updated_at,
       version_no,
       delete_no,
-      feed_key
+      feed_key,
+      use_learning
     FROM
       user_profile
   </sql>
@@ -70,7 +72,8 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       correspon_invisible_fields,
       created_by,
       updated_by,
-      feed_key
+      feed_key,
+      use_learning
     ) VALUES (
       #id#,
       #user.empNo#,
@@ -79,7 +82,8 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       #corresponInvisibleFields#,
       #createdBy.empNo#,
       #updatedBy.empNo#,
-      #feedKey#
+      #feedKey#,
+      #useLearning#
     )
   </insert>
 
@@ -98,6 +102,9 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       </isNotNull>
       <isNotNull prepend="," property="defaultProjectId">
         default_project_id         = #defaultProjectId#
+      </isNotNull>
+      <isNotNull prepend="," property="useLearning">
+        use_learning         = #useLearning#
       </isNotNull>
       <isNotNull prepend="," property="corresponInvisibleFields">
         correspon_invisible_fields = #corresponInvisibleFields#

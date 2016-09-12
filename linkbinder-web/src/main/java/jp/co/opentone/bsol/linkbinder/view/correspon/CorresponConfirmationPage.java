@@ -15,16 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.view.correspon;
 
-import java.util.List;
-
-import javax.annotation.ManagedBean;
-import javax.annotation.Resource;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-
 import jp.co.opentone.bsol.framework.core.message.MessageCode;
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
 import jp.co.opentone.bsol.framework.web.extension.jsf.annotation.Initialize;
@@ -41,12 +31,21 @@ import jp.co.opentone.bsol.linkbinder.service.admin.CorresponGroupService;
 import jp.co.opentone.bsol.linkbinder.service.admin.CorresponTypeService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponSaveService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponValidateService;
+import jp.co.opentone.bsol.linkbinder.service.correspon.LearningLabelService;
 import jp.co.opentone.bsol.linkbinder.util.view.correspon.CorresponPageFormatter;
 import jp.co.opentone.bsol.linkbinder.view.correspon.attachment.AttachmentDownloadAction;
 import jp.co.opentone.bsol.linkbinder.view.correspon.attachment.AttachmentDownloadablePage;
 import jp.co.opentone.bsol.linkbinder.view.correspon.util.CorresponDataSource;
 import jp.co.opentone.bsol.linkbinder.view.correspon.util.CorresponEditMode;
 import jp.co.opentone.bsol.linkbinder.view.util.RichTextUtil;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+
+import javax.annotation.ManagedBean;
+import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * コレポン文書入力確認画面.
@@ -104,6 +103,11 @@ public class CorresponConfirmationPage extends AbstractCorresponPage
      */
     @Resource
     private CorresponTypeService corresponTypeService;
+    /**
+     * 学習用ラベルサービス.
+     */
+    @Resource
+    private LearningLabelService learningLabelService;
     /**
      * 初期画面表示判定値.
      */
@@ -170,6 +174,12 @@ public class CorresponConfirmationPage extends AbstractCorresponPage
      * ダウンロード対象ファイルのNo.
      */
     private int fileNo;
+
+    /**
+     * 学習用文書の表示用ラベル
+     */
+    @Transfer
+    private String learningCorresponTitleLabel = this.getLearningCorresponLabel();
 
     /**
      * 画面初期表示判定値を返す.
@@ -568,5 +578,19 @@ public class CorresponConfirmationPage extends AbstractCorresponPage
                 }
             }
         }
+    }
+
+    /**
+     * 学習用文書の表示用ラベルを返す.
+     */
+    public String getLearningCorresponTitleLabel() {
+        return this.learningCorresponTitleLabel;
+    }
+
+    /**
+     * 学習用文書の表示用ラベルを設定する.
+     */
+    public void setLearningCorresponTitleLabel(String learningCorresponTitle) {
+        this.learningCorresponTitleLabel = learningCorresponTitle;
     }
 }

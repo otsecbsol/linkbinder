@@ -15,13 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.service.admin.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import jp.co.opentone.bsol.framework.core.config.SystemConfig;
 import jp.co.opentone.bsol.framework.core.dao.KeyDuplicateException;
 import jp.co.opentone.bsol.framework.core.dao.RecordNotFoundException;
@@ -39,6 +32,13 @@ import jp.co.opentone.bsol.linkbinder.dto.condition.SearchProjectCondition;
 import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
 import jp.co.opentone.bsol.linkbinder.service.AbstractService;
 import jp.co.opentone.bsol.linkbinder.service.admin.ProjectService;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -128,6 +128,26 @@ public class ProjectServiceImpl extends AbstractService implements ProjectServic
 
         return find(condition);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Project> findAccessibleProjects(boolean containsLearningProject) throws ServiceAbortException {
+        SearchProjectCondition condition = new SearchProjectCondition();
+        condition.setEmpNo(getCurrentUser().getEmpNo());
+        condition.setSystemAdmin(isSystemAdmin(getCurrentUser()));
+
+        ProjectDao dao = getDao(ProjectDao.class);
+        List<Project> result = dao.findProjectSummary(condition).stream()
+                        .map(s -> s.getProject())
+                        .collect(Collectors.toList());
+
+        if (containsLearningProject) {
+            result.addAll(dao.findLearningPj(condition));
+        }
+
+        return result;
+    }
+
     /*
      * (non-Javadoc)
      * @see
@@ -289,7 +309,7 @@ public class ProjectServiceImpl extends AbstractService implements ProjectServic
 
     /**
      * 新規登録か更新か判定する.
-     * @param site
+     * @param pjId
      *            拠点情報
      * @return 登録ならtrue / 更新ならfalse
      * @throws ServiceAbortException
@@ -298,10 +318,11 @@ public class ProjectServiceImpl extends AbstractService implements ProjectServic
         return  findSysPj(pjId) == null ;
     }
 
+
     @Override
-    public List<Project> findAll() throws ServiceAbortException {
+    public List<Project> findForCsvDownload(SearchProjectCondition condition) throws ServiceAbortException {
         ProjectDao dao = getDao(ProjectDao.class);
-        return dao.findAll();
+        return dao.findForCsvDownload(condition);
     }
 
     /* (非 Javadoc)

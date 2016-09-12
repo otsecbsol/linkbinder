@@ -86,7 +86,7 @@ public interface CorresponFullTextSearchService extends IService {
      * 指定された文書をインデックスに追加する.
      * @param correspon 文書
      * @param attachments 添付ファイル
-     * @throws ServiceAbortException
+     * @throws ServiceAbortException 追加に失敗した場合
      */
     void addToIndex(Correspon correspon, List<Attachment> attachments)
             throws ServiceAbortException;
@@ -95,13 +95,15 @@ public interface CorresponFullTextSearchService extends IService {
      * 指定された文書をインデックスから削除する.
      * @param correspon 文書
      * @param attachments 添付ファイル
-     * @throws ServiceAbortException
+     * @throws ServiceAbortException 削除に失敗した場合
      */
     void deleteFromIndex(Correspon correspon, List<Attachment> attachments)
             throws ServiceAbortException;
 
     /**
      * インデックスを作成する.
+     * @param projectId プロジェクトID
+     * @throws ServiceAbortException 作成に失敗した場合
      */
     void createIndex(String projectId) throws ServiceAbortException;
 }

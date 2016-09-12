@@ -156,4 +156,9 @@ public interface CorresponDao extends GenericDao<Correspon> {
      * @author opentone
      */
     List<Long> findIdInPage(SearchCorresponCondition condition);
+
+    /**
+     * 学習用文書を学習用プロジェクトへ登録する。
+     */
+    Long insertLearningCorrespon(Correspon correspon);
 }

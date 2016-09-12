@@ -46,6 +46,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     <result property="userProfileVersionNo" column="user_profile_version_no" />
     <result property="remarks"              column="remarks" />
     <result property="empCreatedAt"         column="emp_created_at" />
+    <result property="useLearning"          column="use_learning" />
   </resultMap>
   <resultMap id="projectUser" class="jp.co.opentone.bsol.linkbinder.dto.ProjectUser">
     <result property="projectId"                                   column="project_id" />
@@ -157,7 +158,8 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
      last_logged_in_at,
      user_profile_version_no,
      '' AS remarks,
-     TO_CHAR(emp_created_at, 'YYYY-MM-DD HH24:MI:SS') as emp_created_at
+     TO_CHAR(emp_created_at, 'YYYY-MM-DD HH24:MI:SS') as emp_created_at,
+     use_learning
     FROM
       v_user
     WHERE

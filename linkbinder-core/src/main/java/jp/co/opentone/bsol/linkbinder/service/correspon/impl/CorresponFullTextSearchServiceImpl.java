@@ -29,6 +29,7 @@ import jp.co.opentone.bsol.linkbinder.dto.Attachment;
 import jp.co.opentone.bsol.linkbinder.dto.Correspon;
 import jp.co.opentone.bsol.linkbinder.dto.FullTextSearchCorresponsResult;
 import jp.co.opentone.bsol.linkbinder.dto.FullTextSearchSummaryData;
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchFullTextSearchCorresponCondition;
 import jp.co.opentone.bsol.linkbinder.service.AbstractService;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponFullTextSearchService;
@@ -38,6 +39,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.elasticsearch.index.IndexNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -155,6 +157,10 @@ public class CorresponFullTextSearchServiceImpl extends AbstractService implemen
         try (ElasticsearchClient client = new ElasticsearchClient(setupConfiguration(getCurrentProjectId()))) {
             ElasticsearchSearchOption option = setupSearchOption(condition);
             client.search(option, response -> handleResponse(response, condition, c));
+        } catch (IndexNotFoundException e) {
+            //retry
+            createIndex(e.getIndex());
+            doSearch(condition, unlimited, c);
         } catch (Exception e) {
             throw new ApplicationFatalRuntimeException(e);
         }
@@ -208,6 +214,11 @@ public class CorresponFullTextSearchServiceImpl extends AbstractService implemen
                 option.addHighlightFields("attachments.extractedText");
             }
             break;
+        }
+
+        if (condition.isOnlyLearningCorrespon()) {
+            option.addOptionalSearchCondition("forLearning",
+                    String.valueOf(ForLearning.LEARNING.getValue()));
         }
 
         return option;

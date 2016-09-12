@@ -15,6 +15,7 @@
  */
 package jp.co.opentone.bsol.linkbinder.dto;
 
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import org.hibernate.validator.constraints.Length;
 
 import jp.co.opentone.bsol.framework.core.dao.LegacyEntity;
@@ -84,6 +85,14 @@ public class Project extends AbstractDto implements LegacyEntity {
      */
     @Length(max = 40)
     private String nameJ;
+
+    /**
+     * For Learning.
+     * <p>
+     * [v_project.for_learning]
+     * </p>
+     */
+    private ForLearning forLearning;
 
     /**
      * Use approved flg.
@@ -229,6 +238,23 @@ public class Project extends AbstractDto implements LegacyEntity {
         this.nameJ = nameJ;
     }
 
+    /**
+     * forLearning の値を返す.
+     * <p>
+     * [v_project.for_learning]
+     * </p>
+     * @return forLearning forLearning
+     */
+    public ForLearning getForLearning() { return this.forLearning; }
+
+    /**
+     * forLearning の値を設定する.
+     * <p>
+     * [v_project.for_learning]
+     * </p>
+     * @param forLearning forLearning
+     */
+    public void setForLearning(ForLearning forLearning) { this.forLearning = forLearning; }
 
     /**
      * useApprovedFlg の値を返す.

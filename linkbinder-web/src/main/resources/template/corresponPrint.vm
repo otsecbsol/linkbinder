@@ -788,8 +788,8 @@ div#tos {
         </td>
       </tr>
       <tr>
-          <td class="label" style="vertical-align:top;">ラベル</td>
-          <td class="label" style="vertical-align:top;">:</td>
+        <td class="label" style="vertical-align:top;">ラベル</td>
+        <td class="label" style="vertical-align:top;">:</td>
 #set($row = true)
         <td>
           <table border="0" class="inner" cellspacing="0" cellpadding="0">
@@ -804,8 +804,8 @@ div#tos {
         </td>
       </tr>
       <tr>
-          <td class="label" style="vertical-align:top;">タグ</td>
-          <td class="label" style="vertical-align:top;">:</td>
+        <td class="label" style="vertical-align:top;">タグ</td>
+        <td class="label" style="vertical-align:top;">:</td>
 #set($row = true)
         <td>
           <table border="0" class="inner" cellspacing="0" cellpadding="0">

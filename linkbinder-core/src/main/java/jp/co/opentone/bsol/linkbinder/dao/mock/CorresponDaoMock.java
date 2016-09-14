@@ -15,13 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.dao.mock;
 
-import java.util.ArrayList;
-import java.util.GregorianCalendar;
-import java.util.List;
-
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.stereotype.Repository;
-
 import jp.co.opentone.bsol.framework.core.dao.KeyDuplicateException;
 import jp.co.opentone.bsol.framework.core.dao.RecordNotFoundException;
 import jp.co.opentone.bsol.framework.core.dao.StaleRecordException;
@@ -41,6 +34,12 @@ import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowStatus;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchCorresponCondition;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchCorresponUserSummaryCondition;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchRSSCorresponCondition;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
+import java.util.List;
 
 @Repository
 public class CorresponDaoMock extends AbstractDao<Correspon> implements CorresponDao {
@@ -343,7 +342,4 @@ public class CorresponDaoMock extends AbstractDao<Correspon> implements Correspo
     public List<Long> findIdInPage(SearchCorresponCondition condition) {
         return null;
     }
-
-    @Override
-    public Long insertLearningCorrespon(Correspon correspon) { return null; }
 }

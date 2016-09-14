@@ -208,6 +208,8 @@ public class Correspon extends AbstractDto implements VersioningEntity {
      */
     private ForLearning forLearning;
 
+    private Long forLearningSrcId;
+
     /**
      * Custom field1.
      * <p>
@@ -2635,5 +2637,13 @@ public class Correspon extends AbstractDto implements VersioningEntity {
 
     public void setLearningTag(List<LearningTag> learningTag) {
         this.learningTag = learningTag;
+    }
+
+    public Long getForLearningSrcId() {
+        return forLearningSrcId;
+    }
+
+    public void setForLearningSrcId(Long forLearningSrcId) {
+        this.forLearningSrcId = forLearningSrcId;
     }
 }

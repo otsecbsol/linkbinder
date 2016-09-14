@@ -15,8 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.dao;
 
-import java.util.List;
-
 import jp.co.opentone.bsol.framework.core.dao.GenericDao;
 import jp.co.opentone.bsol.framework.core.dao.RecordNotFoundException;
 import jp.co.opentone.bsol.linkbinder.dto.Correspon;
@@ -28,6 +26,8 @@ import jp.co.opentone.bsol.linkbinder.dto.RSSCorrespon;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchCorresponCondition;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchCorresponUserSummaryCondition;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchRSSCorresponCondition;
+
+import java.util.List;
 
 /**
  * コレポン文書を操作するDao.
@@ -156,9 +156,4 @@ public interface CorresponDao extends GenericDao<Correspon> {
      * @author opentone
      */
     List<Long> findIdInPage(SearchCorresponCondition condition);
-
-    /**
-     * 学習用文書を学習用プロジェクトへ登録する。
-     */
-    Long insertLearningCorrespon(Correspon correspon);
 }

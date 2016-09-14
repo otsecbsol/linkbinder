@@ -276,6 +276,11 @@ public class SearchCorresponCondition extends AbstractCondition {
     private String customFieldValue;
 
     /**
+     * 学習用文書の元文書ID.
+     */
+    private Long forLearningSrcId;
+
+    /**
      * プロジェクトID.
      */
     private String projectId;
@@ -346,6 +351,14 @@ public class SearchCorresponCondition extends AbstractCondition {
      */
     public void setIdList(List<Ids> idList) {
         this.idList = idList;
+    }
+
+    public Long getForLearningSrcId() {
+        return forLearningSrcId;
+    }
+
+    public void setForLearningSrcId(Long forLearningSrcId) {
+        this.forLearningSrcId = forLearningSrcId;
     }
 
     /**

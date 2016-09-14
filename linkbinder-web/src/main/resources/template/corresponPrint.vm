@@ -788,6 +788,38 @@ div#tos {
         </td>
       </tr>
       <tr>
+          <td class="label" style="vertical-align:top;">ラベル</td>
+          <td class="label" style="vertical-align:top;">:</td>
+#set($row = true)
+        <td>
+          <table border="0" class="inner" cellspacing="0" cellpadding="0">
+#foreach($learningLabel in $data.learningLabel)
+            <tr>
+              <td>
+                <span id="learningLabel">$learningLabel.name</span>
+              </td>
+            </tr>
+#end
+          </table>
+        </td>
+      </tr>
+      <tr>
+          <td class="label" style="vertical-align:top;">タグ</td>
+          <td class="label" style="vertical-align:top;">:</td>
+#set($row = true)
+        <td>
+          <table border="0" class="inner" cellspacing="0" cellpadding="0">
+#foreach($learningTag in $data.learningTag)
+            <tr>
+              <td>
+                <span id="learningTag">$learningTag.name</span>
+              </td>
+            </tr>
+#end
+          </table>
+        </td>
+      </tr>
+      <tr>
         <td><span class="label">宛先</span></td>
         <td><span class="label">:</span></td>
         <td colspan="4"></td>

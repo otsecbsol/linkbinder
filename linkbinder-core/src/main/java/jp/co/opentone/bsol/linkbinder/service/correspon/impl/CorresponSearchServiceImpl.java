@@ -36,7 +36,6 @@ import jp.co.opentone.bsol.linkbinder.dto.SearchCorresponResult;
 import jp.co.opentone.bsol.linkbinder.dto.User;
 import jp.co.opentone.bsol.linkbinder.dto.Workflow;
 import jp.co.opentone.bsol.linkbinder.dto.code.CorresponStatus;
-import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import jp.co.opentone.bsol.linkbinder.dto.code.FullTextSearchMode;
 import jp.co.opentone.bsol.linkbinder.dto.code.ReadStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowProcessStatus;
@@ -400,13 +399,13 @@ public class CorresponSearchServiceImpl extends AbstractService implements Corre
      * @see jp.co.opentone.bsol.linkbinder.service.correspon.CorresponSearchService#
      *                              deleteCorrespons(java.util.List)
      */
-    public void deleteCorrespons(List<Correspon> correspons) throws ServiceAbortException {
+    public void deleteCorrespons(List<Correspon> correspons, boolean learning) throws ServiceAbortException {
         ArgumentValidator.validateNotNull(correspons);
         // コレポン文書が未選択の場合はエラー
         checkRowSelected(correspons);
         for (Correspon correspon : correspons) {
             // 権限チェック
-            checkDeletePermission(correspon);
+            checkDeletePermission(correspon, learning);
             // 更新
             serviceHelper.deleteCorrespon(serviceHelper.setupCorresponForDelete(correspon));
         }
@@ -719,11 +718,12 @@ public class CorresponSearchServiceImpl extends AbstractService implements Corre
 
     /**
      * コレポン文書を削除する権限をチェックする.
-     * @param correspon コレポン文書
+     * @param correspon [コレポン文書]
+     * @param learning 学習用プロジェクトであるか否か
      * @throws ServiceAbortException 権限エラー
      */
-    private void checkDeletePermission(Correspon correspon) throws ServiceAbortException {
-        if (!WorkflowStatus.DRAFT.equals(correspon.getWorkflowStatus()) && !correspon.getForLearning().equals(ForLearning.LEARNING)) {
+    private void checkDeletePermission(Correspon correspon, boolean learning) throws ServiceAbortException {
+        if (!WorkflowStatus.DRAFT.equals(correspon.getWorkflowStatus()) && !learning) {
             throw new ServiceAbortException(
                 ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_STATUS_INVALID);
         } else if (!isSystemAdmin(getCurrentUser())

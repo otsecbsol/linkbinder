@@ -111,7 +111,7 @@ public interface CorresponSearchService extends IService {
      * @param correspons コレポン文書リスト
      * @throws ServiceAbortException 削除に失敗
      */
-    void deleteCorrespons(List<Correspon> correspons) throws ServiceAbortException;
+    void deleteCorrespons(List<Correspon> correspons, boolean learning) throws ServiceAbortException;
 
     /**
      * 指定された条件に該当するコレポン文書ID一覧を取得する. ①一覧情報を条件に合わせてSortし返す.

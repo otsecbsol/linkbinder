@@ -4942,7 +4942,7 @@ public class CorresponIndexPage extends AbstractPage {
          */
         public void execute() throws ServiceAbortException {
             List<Correspon> selected = getSelectedCorresponList();
-            page.corresponSearchService.deleteCorrespons(selected);
+            page.corresponSearchService.deleteCorrespons(selected, page.isLearningProject());
 
 
             page.afterAction = true;

@@ -156,7 +156,8 @@ public abstract class AbstractService implements ApplicationContextAware, IServi
      */
     public boolean isLearningProject() {
         Project project = getCurrentProject();
-        if (project.getForLearning() == ForLearning.LEARNING) {
+        ForLearning forLearning = project.getForLearning();
+        if (null != forLearning && forLearning == ForLearning.LEARNING) {
             return true;
         } else {
             return false;

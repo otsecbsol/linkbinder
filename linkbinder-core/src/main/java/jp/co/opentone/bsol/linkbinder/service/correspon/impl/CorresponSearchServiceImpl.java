@@ -718,7 +718,7 @@ public class CorresponSearchServiceImpl extends AbstractService implements Corre
 
     /**
      * コレポン文書を削除する権限をチェックする.
-     * @param correspon [コレポン文書]
+     * @param correspon コレポン文書
      * @throws ServiceAbortException 権限エラー
      */
     private void checkDeletePermission(Correspon correspon) throws ServiceAbortException {

@@ -20,4 +20,6 @@
   <include file="db/changelog-prod/v1.1.00-104-modify_for_learning.sql"/>
   <include file="db/changelog-prod/v1.1.00-105-modify_trigger_for_learning.sql"/>
   <include file="db/changelog-prod/v1.1.00-106-insert_learning_project.sql"/>
+  <include file="db/changelog-prod/v1.1.00-107-add_column_for_learning.sql"/>
+  <include file="db/changelog-prod/v1.1.00-108-modify_trigger_for_add_column_for_learning.sql"/>
 </databaseChangeLog>

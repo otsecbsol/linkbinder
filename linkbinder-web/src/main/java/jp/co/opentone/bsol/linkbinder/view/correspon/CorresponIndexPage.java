@@ -3092,10 +3092,10 @@ public class CorresponIndexPage extends AbstractPage {
             condition.setForLearnings(getSelectForLearning());
             break;
         case SIMPLESEARCH_SELECTED_LEARNINGLABEL:
-            condition.setLearningLabels(getSelectedLearningLabels());
+            condition.setLearningLabels(getSelectLearningLabel());
             break;
         case SIMPLESEARCH_SELECTED_LEARNINGTAG:
-            condition.setLearningTags(getSelectedLearningTags());
+            condition.setLearningTags(getSelectLearningTag());
             break;
         case SIMPLESEARCH_SELECTED_NONE:
         default:
@@ -3103,8 +3103,8 @@ public class CorresponIndexPage extends AbstractPage {
             condition.setWorkflowStatuses(getSelectWorkflow());
             condition.setReadStatuses(getSelectReadStatus());
             condition.setForLearnings(getSelectForLearning());
-            condition.setLearningLabels(getSelectedLearningLabels());
-            condition.setLearningTags(getSelectedLearningTags());
+            condition.setLearningLabels(getSelectLearningLabel());
+            condition.setLearningTags(getSelectLearningTag());
         }
 
         if (isLearningProject()) {
@@ -3202,6 +3202,54 @@ public class CorresponIndexPage extends AbstractPage {
             }
         }
 
+        return selected;
+    }
+
+    /**
+     * シンプルな検索：選択されたラベルの条件を取得する.
+     * @return ラベルの検索条件
+     */
+    private LearningLabel[] getSelectLearningLabel() {
+        LearningLabel[] selected = null;
+        if (learningLabel == null) {
+            learningLabel = ALL_LEARNING_LABEL;
+        }
+        if (learningLabelList == null) {
+            return selected;
+        }
+        if (!learningLabel.equals(ALL_LEARNING_LABEL)) {
+            for (LearningLabel label : learningLabelList) {
+                if (label.getId().equals(learningLabel)) {
+                    selected = new LearningLabel[1];
+                    selected[0] = label;
+                    break;
+                }
+            }
+        }
+        return selected;
+    }
+
+    /**
+     * シンプルな検索：選択されたタグの条件を取得する.
+     * @return タグの検索条件
+     */
+    private LearningTag[] getSelectLearningTag() {
+        LearningTag[] selected = null;
+        if (learningTag == null) {
+            learningTag = ALL_LEARNING_TAG;
+        }
+        if (learningTagList == null) {
+            return selected;
+        }
+        if (!learningTag.equals(ALL_LEARNING_TAG)) {
+            for (LearningTag tag : learningTagList) {
+                if (tag.getId().equals(learningTag)) {
+                    selected = new LearningTag[1];
+                    selected[0] = tag;
+                    break;
+                }
+            }
+        }
         return selected;
     }
 

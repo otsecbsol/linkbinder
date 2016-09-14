@@ -350,7 +350,10 @@
         for (var i = 0; i < hideColumns.length; i++) {
           table.tHead.rows[0].cells[hideColumns[i]].style.display = 'none';
           for (var j = 0; j <= (table.tBodies[0].rows.length - 1); j++) {
-            table.tBodies[0].rows[j].cells[hideColumns[i]].style.display = 'none';
+            var col = table.tBodies[0].rows[j].cells[hideColumns[i]];
+            if (col) {
+              col.style.display = 'none';
+            }
           }
         }
       }
@@ -931,7 +934,7 @@
                   </h:panelGroup>
 
                   <h:panelGroup styleClass="label" rendered="#{corresponIndexPage.learningProject}">
-                    <h:outputText value="ラベル" />
+                    <h:outputText value="タグ" />
                   </h:panelGroup>
                   <h:panelGroup styleClass="label" rendered="#{corresponIndexPage.learningProject}">
                     <h:outputText value=":" />

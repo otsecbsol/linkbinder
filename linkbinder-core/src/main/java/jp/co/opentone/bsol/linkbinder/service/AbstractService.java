@@ -33,6 +33,7 @@ import jp.co.opentone.bsol.linkbinder.dto.CorresponGroupUser;
 import jp.co.opentone.bsol.linkbinder.dto.Project;
 import jp.co.opentone.bsol.linkbinder.dto.ProjectUser;
 import jp.co.opentone.bsol.linkbinder.dto.User;
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchUserCondition;
 import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
 import org.apache.commons.lang.StringUtils;
@@ -147,6 +148,19 @@ public abstract class AbstractService implements ApplicationContextAware, IServi
 
         Map<String, Object> values = container.getValue(SystemConfig.KEY_ACTION_VALUES);
         return (Project) values.get(Constants.KEY_PROJECT);
+    }
+
+    /**
+     * 現在のプロジェクトが学習用プロジェクトか否かを返す.
+     * @return 学習用プロジェクトであればtrue.
+     */
+    public boolean isLearningProject() {
+        Project project = getCurrentProject();
+        if (project.getForLearning() == ForLearning.LEARNING) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /*

@@ -36,7 +36,6 @@ import jp.co.opentone.bsol.linkbinder.dto.SearchCorresponResult;
 import jp.co.opentone.bsol.linkbinder.dto.User;
 import jp.co.opentone.bsol.linkbinder.dto.Workflow;
 import jp.co.opentone.bsol.linkbinder.dto.code.CorresponStatus;
-import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import jp.co.opentone.bsol.linkbinder.dto.code.FullTextSearchMode;
 import jp.co.opentone.bsol.linkbinder.dto.code.ReadStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowProcessStatus;
@@ -406,11 +405,7 @@ public class CorresponSearchServiceImpl extends AbstractService implements Corre
         checkRowSelected(correspons);
         for (Correspon correspon : correspons) {
             // 権限チェック
-            boolean isLearning = false;
-            if(getCurrentProject().getForLearning() == ForLearning.LEARNING) {
-                isLearning = true;
-            }
-            checkDeletePermission(correspon, isLearning);
+            checkDeletePermission(correspon);
             // 更新
             serviceHelper.deleteCorrespon(serviceHelper.setupCorresponForDelete(correspon));
         }
@@ -724,11 +719,10 @@ public class CorresponSearchServiceImpl extends AbstractService implements Corre
     /**
      * コレポン文書を削除する権限をチェックする.
      * @param correspon [コレポン文書]
-     * @param learning 学習用プロジェクトであるか否か
      * @throws ServiceAbortException 権限エラー
      */
-    private void checkDeletePermission(Correspon correspon, boolean learning) throws ServiceAbortException {
-        if (!WorkflowStatus.DRAFT.equals(correspon.getWorkflowStatus()) && !learning) {
+    private void checkDeletePermission(Correspon correspon) throws ServiceAbortException {
+        if (!WorkflowStatus.DRAFT.equals(correspon.getWorkflowStatus()) && !isLearningProject()) {
             throw new ServiceAbortException(
                 ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_STATUS_INVALID);
         } else if (!isSystemAdmin(getCurrentUser())

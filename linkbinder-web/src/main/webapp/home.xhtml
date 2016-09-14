@@ -28,7 +28,10 @@
       $('#learning').tree({
         dataUrl:  '#{request.contextPath}/api/learningCorresponList.jsf',
         autoOpen: true,
-        saveState: true
+        closedIcon: '+',
+        openedIcon: '-',
+        useContextMenu: false,
+        selectable: false
       });
       $('#learning').bind(
         'tree.click',

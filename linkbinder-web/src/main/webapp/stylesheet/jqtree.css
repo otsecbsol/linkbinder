@@ -17,14 +17,14 @@ ul.jqtree-tree {
     list-style-type: none; }
   ul.jqtree-tree .jqtree-toggler {
     border-bottom: none;
-    color: #333;
+    color: #222;
     text-decoration: none;
     vertical-align: middle; }
     ul.jqtree-tree .jqtree-toggler:hover {
       color: #000;
       text-decoration: none; }
     ul.jqtree-tree .jqtree-toggler.jqtree-closed {
-      background-position: 0 0; }
+      background-position: 0 0;}
     ul.jqtree-tree .jqtree-toggler.jqtree-toggler-left {
       margin-right: 0.5em; }
     ul.jqtree-tree .jqtree-toggler.jqtree-toggler-right {
@@ -32,12 +32,22 @@ ul.jqtree-tree {
   ul.jqtree-tree .jqtree-element {
     cursor: pointer;
     position: relative; }
+  /*ul.jqtree-tree .jqtree-title:before {*/
+    /*content: "\f016";*/
+    /*font-family: FontAwesome;*/
+    /*margin-right: 0.5em;*/
+  /*}*/
   ul.jqtree-tree .jqtree-title {
-    color: #1C4257;
+    color: #222;
     vertical-align: middle;
     margin-left: 1.5em; }
     ul.jqtree-tree .jqtree-title.jqtree-title-folder {
       margin-left: 0; }
+    /*ul.jqtree-tree .jqtree-title.jqtree-title-folder:before {*/
+    /*content: "\f114";*/
+    /*font-family: FontAwesome;*/
+    /*margin-right: 0.5em;*/
+  /*}*/
   ul.jqtree-tree li.jqtree-folder {
     margin-bottom: 4px; }
     ul.jqtree-tree li.jqtree-folder.jqtree-closed {
@@ -82,15 +92,15 @@ ul.jqtree-tree {
     margin: 0;
     box-sizing: content-box; }
   ul.jqtree-tree li.jqtree-selected > .jqtree-element,
-  ul.jqtree-tree li.jqtree-selected > .jqtree-element:hover {
-    background-color: #97BDD6;
-    background: -webkit-gradient(linear, left top, left bottom, from(#BEE0F5), to(#89AFCA));
-    background: -moz-linear-gradient(top, #BEE0F5, #89AFCA);
-    background: -ms-linear-gradient(top, #BEE0F5, #89AFCA);
-    background: -o-linear-gradient(top, #BEE0F5, #89AFCA);
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7); }
-  ul.jqtree-tree .jqtree-moving > .jqtree-element .jqtree-title {
-    outline: dashed 1px #0000ff; }
+  /*ul.jqtree-tree li.jqtree-selected > .jqtree-element:hover {*/
+    /*background-color: #97BDD6;*/
+    /*background: -webkit-gradient(linear, left top, left bottom, from(#BEE0F5), to(#89AFCA));*/
+    /*background: -moz-linear-gradient(top, #BEE0F5, #89AFCA);*/
+    /*background: -ms-linear-gradient(top, #BEE0F5, #89AFCA);*/
+    /*background: -o-linear-gradient(top, #BEE0F5, #89AFCA);*/
+    /*text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7); }*/
+  /*ul.jqtree-tree .jqtree-moving > .jqtree-element .jqtree-title {*/
+    /*outline: dashed 1px #0000ff; }*/
 
 ul.jqtree-tree.jqtree-rtl {
   direction: rtl; }

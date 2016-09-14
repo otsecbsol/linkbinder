@@ -315,6 +315,9 @@ public class CorresponServiceHelper implements Serializable, ApplicationContextA
         try {
             CorresponDao dao = getDao(CorresponDao.class);
             dao.delete(correspon);
+
+            learningLabelService.clearAllLearningLabels(correspon);
+            learningTagService.clearAllLearningTags(correspon);
         } catch (StaleRecordException e) {
             throw new ServiceAbortException(
                     ApplicationMessageCode.CANNOT_PERFORM_BECAUSE_CORRESPON_ALREADY_UPDATED);

@@ -28,6 +28,7 @@ import jp.co.opentone.bsol.linkbinder.dao.WorkflowDao;
 import jp.co.opentone.bsol.linkbinder.dao.WorkflowTemplateDao;
 import jp.co.opentone.bsol.linkbinder.dao.WorkflowTemplateUserDao;
 import jp.co.opentone.bsol.linkbinder.dto.Correspon;
+import jp.co.opentone.bsol.linkbinder.dto.IssueToLearningProjectsResult;
 import jp.co.opentone.bsol.linkbinder.dto.ProjectUser;
 import jp.co.opentone.bsol.linkbinder.dto.User;
 import jp.co.opentone.bsol.linkbinder.dto.Workflow;
@@ -444,7 +445,7 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
      * @see jp.co.opentone.bsol.linkbinder.service.correspon.CorresponWorkflowService#approve(
      * jp.co.opentone.bsol.linkbinder.dto.Correspon, jp.co.opentone.bsol.linkbinder.dto.Workflow)
      */
-    public void approve(Correspon correspon, Workflow workflow) throws ServiceAbortException {
+    public IssueToLearningProjectsResult approve(Correspon correspon, Workflow workflow) throws ServiceAbortException {
         // 引数のnullチェック
         ArgumentValidator.validateNotNull(correspon);
         ArgumentValidator.validateNotNull(workflow);
@@ -465,7 +466,9 @@ public class CorresponWorkflowServiceImpl extends AbstractService implements
 
         // 学習用プロジェクトへ文書をコピーする
         if(correspon.isLearningContents()) {
-            corresponService.issueToLearningProjects(correspon.getId());
+            return corresponService.issueToLearningProjects(correspon.getId());
+        } else {
+            return IssueToLearningProjectsResult.EMPTY;
         }
     }
 

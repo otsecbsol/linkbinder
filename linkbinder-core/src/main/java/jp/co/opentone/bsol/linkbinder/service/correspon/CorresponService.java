@@ -21,6 +21,7 @@ import jp.co.opentone.bsol.linkbinder.dto.AddressUser;
 import jp.co.opentone.bsol.linkbinder.dto.Attachment;
 import jp.co.opentone.bsol.linkbinder.dto.Correspon;
 import jp.co.opentone.bsol.linkbinder.dto.CorresponResponseHistory;
+import jp.co.opentone.bsol.linkbinder.dto.IssueToLearningProjectsResult;
 import jp.co.opentone.bsol.linkbinder.dto.PersonInCharge;
 import jp.co.opentone.bsol.linkbinder.dto.code.CorresponStatus;
 import jp.co.opentone.bsol.linkbinder.util.view.correspon.CorresponResponseHistoryModel;
@@ -105,9 +106,10 @@ public interface CorresponService extends IService {
     /**
      * 指定されたコレポン文書を発行する.
      * @param correspon コレポン文書
+     * @result 学習用文書への発行結果
      * @throws ServiceAbortException コレポン文書の発行に失敗
      */
-    void issue(Correspon correspon) throws ServiceAbortException;
+    IssueToLearningProjectsResult issue(Correspon correspon) throws ServiceAbortException;
 
     /**
      * 宛先-ユーザー及び任命したPerson in Chargeが返信したコレポン文書を取得する.
@@ -175,8 +177,8 @@ public interface CorresponService extends IService {
     /**
      * 指定された文書を学習用プロジェクトへ公開する.
      * @param id 文書ID
-     * @return 作成した文書IDリスト
+     * @return 結果
      * @throws ServiceAbortException 保存に失敗
      */
-    List<Long> issueToLearningProjects(Long id) throws ServiceAbortException;
+    IssueToLearningProjectsResult issueToLearningProjects(Long id) throws ServiceAbortException;
 }

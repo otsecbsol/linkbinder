@@ -15,28 +15,28 @@
  */
 package jp.co.opentone.bsol.linkbinder.view.correspon.module;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
 import jp.co.opentone.bsol.framework.core.message.MessageCode;
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
 import jp.co.opentone.bsol.linkbinder.action.AbstractAction;
+import jp.co.opentone.bsol.linkbinder.dto.IssueToLearningProjectsResult;
 import jp.co.opentone.bsol.linkbinder.dto.Workflow;
 import jp.co.opentone.bsol.linkbinder.dto.WorkflowIndex;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowProcessStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowStatus;
+import jp.co.opentone.bsol.linkbinder.event.CorresponDeleted;
 import jp.co.opentone.bsol.linkbinder.event.CorresponIssued;
 import jp.co.opentone.bsol.linkbinder.event.CorresponWorkflowStatusChanged;
 import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
 import jp.co.opentone.bsol.linkbinder.service.UserRoleHelper;
 import jp.co.opentone.bsol.linkbinder.service.correspon.CorresponWorkflowService;
 import jp.co.opentone.bsol.linkbinder.view.correspon.CorresponPage;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * コレポン文書表示画面／承認・検証ダイアログ用モジュールクラス.
@@ -444,7 +444,7 @@ public class VerificationModule extends DefaultModule {
          */
         public void execute() throws ServiceAbortException {
             Workflow workflow = page.getWorkflow().get(page.getCurrentDataModel().getRowIndex());
-            module.corresponWorkflowService.approve(page.getCorrespon(), workflow);
+            IssueToLearningProjectsResult result = module.corresponWorkflowService.approve(page.getCorrespon(), workflow);
 
             page.setNextPageMessage(ApplicationMessageCode.CORRESPON_APPROVED);
 
@@ -452,6 +452,18 @@ public class VerificationModule extends DefaultModule {
             page.getEventBus().raiseEvent(
                     new CorresponIssued(page.getCorrespon().getId(),
                                         page.getCorrespon().getProjectId()));
+
+            // 学習用文書
+            result.getIssuedCorresponList().forEach(c -> {
+                page.getEventBus().raiseEvent(
+                        new CorresponIssued(c.getId(), c.getProjectId())
+                );
+            });
+            result.getDeletedCorresponList().forEach(c -> {
+                page.getEventBus().raiseEvent(
+                        new CorresponDeleted(c.getId(), c.getProjectId())
+                );
+            });
         }
     }
 

@@ -15,13 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.dao.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.stereotype.Repository;
-
 import jp.co.opentone.bsol.framework.core.dao.RecordNotFoundException;
 import jp.co.opentone.bsol.linkbinder.dao.AbstractDao;
 import jp.co.opentone.bsol.linkbinder.dao.CorresponDao;
@@ -38,6 +31,12 @@ import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowStatus;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchCorresponCondition;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchCorresponUserSummaryCondition;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchRSSCorresponCondition;
+import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * コレポン文書を操作するDao.
@@ -124,12 +123,6 @@ public class CorresponDaoImpl extends AbstractDao<Correspon> implements Correspo
      */
     private static final String SQL_FIND_ID =
             "findId";
-
-    /**
-     * 学習用プロジェクトへ学習用文書を登録する.
-     */
-    private static final String SQL_INSERT_LEARNING =
-            "copyToLearningProject";
 
     /**
      * 前方一致検索を行うフィールド名.
@@ -347,11 +340,6 @@ public class CorresponDaoImpl extends AbstractDao<Correspon> implements Correspo
             likeCondition,
             skipResults,
             maxResults);
-    }
-
-    @Override
-    public Long insertLearningCorrespon(Correspon correspon) {
-        return (Long) getSqlMapClientTemplate().insert(getSqlId(SQL_INSERT_LEARNING), correspon);
     }
 
     /**

@@ -27,6 +27,7 @@ import jp.co.opentone.bsol.linkbinder.dto.Correspon;
 import jp.co.opentone.bsol.linkbinder.dto.CorresponGroup;
 import jp.co.opentone.bsol.linkbinder.dto.CorresponGroupUserMapping;
 import jp.co.opentone.bsol.linkbinder.dto.CorresponResponseHistory;
+import jp.co.opentone.bsol.linkbinder.dto.IssueToLearningProjectsResult;
 import jp.co.opentone.bsol.linkbinder.dto.PersonInCharge;
 import jp.co.opentone.bsol.linkbinder.dto.ProjectUser;
 import jp.co.opentone.bsol.linkbinder.dto.User;
@@ -1313,13 +1314,25 @@ public class DefaultModule implements Serializable {
          * @see jp.co.opentone.bsol.framework.action.Action#execute()
          */
         public void execute() throws ServiceAbortException {
-            module.corresponService.issue(page.getCorrespon());
+            IssueToLearningProjectsResult result = module.corresponService.issue(page.getCorrespon());
             page.setNextPageMessage(ApplicationMessageCode.CORRESPON_ISSUED);
 
             //イベント発火
             page.getEventBus().raiseEvent(
                     new CorresponIssued(page.getCorrespon().getId(),
                             page.getCorrespon().getProjectId()));
+
+            // 学習用文書
+            result.getIssuedCorresponList().forEach(c -> {
+                page.getEventBus().raiseEvent(
+                        new CorresponIssued(c.getId(), c.getProjectId())
+                );
+            });
+            result.getDeletedCorresponList().forEach(c -> {
+                page.getEventBus().raiseEvent(
+                        new CorresponDeleted(c.getId(), c.getProjectId())
+                );
+            });
         }
     }
 

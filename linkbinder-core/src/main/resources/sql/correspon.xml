@@ -51,6 +51,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     <result property="requestedApprovalAt"                      column="requested_approval_at" />
     <result property="workflowStatus"                           column="workflow_status" />
     <result property="forLearning"                              column="for_learning" />
+    <result property="forLearningSrcId"                         column="for_learning_src_id" />
     <result property="customField1Id"                           column="custom_field1_id" />
     <result property="customField1Label"                        column="custom_field1_label" />
     <result property="customField1Value"                        column="custom_field1_value" />
@@ -214,6 +215,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     <result property="deadlineForReply"                        column="deadline_for_reply" />
     <result property="workflowStatus"                          column="workflow_status" />
     <result property="forLearning"                             column="for_learning" />
+    <result property="forLearningSrcId"                         column="for_learning_src_id" />
     <result property="customField1Id"                          column="custom_field1_id" />
     <result property="customField1Label"                       column="custom_field1_label" />
     <result property="customField1Value"                       column="custom_field1_value" />
@@ -374,6 +376,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       requested_approval_at,
       workflow_status,
       for_learning,
+      for_learning_src_id,
       custom_field1_id,
       custom_field1_label,
       custom_field1_value,
@@ -486,6 +489,9 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       <dynamic>
         <isNotNull prepend="AND" property="sequenceNo">
           c.id = #sequenceNo#
+        </isNotNull>
+        <isNotNull prepend="AND" property="forLearningSrcId">
+          c.for_learning_src_id = #forLearningSrcId#
         </isNotNull>
         <isNotNull prepend="AND" property="fromId">
           <![CDATA[c.id >= #fromId#]]>
@@ -909,6 +915,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       deadline_for_reply,
       workflow_status,
       for_learning,
+      for_learning_src_id,
       custom_field1_id,
       custom_field1_label,
       custom_field1_value,
@@ -1071,6 +1078,8 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       from_correspon_group_id,
       previous_rev_correspon_id,
       project_correspon_type_id,
+      for_learning,
+      for_learning_src_id,
       subject,
       body,
       issued_by,
@@ -1080,8 +1089,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       deadline_for_reply,
       workflow_status,
       created_by,
-      updated_by,
-      for_learning
+      updated_by
     ) VALUES (
       #id#,
       #corresponNo#,
@@ -1089,6 +1097,8 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       #fromCorresponGroup.id#,
       #previousRevCorresponId#,
       #corresponType.projectCorresponTypeId#,
+      #forLearning#,
+      #forLearningSrcId#,
       #subject#,
       #body#,
       #issuedBy.empNo#,
@@ -1098,67 +1108,9 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       #deadlineForReply#,
       #workflowStatus#,
       #createdBy.empNo#,
-      #updatedBy.empNo#,
-      #forLearning#
+      #updatedBy.empNo#
     )
   </insert>
-
-  <insert id="copyToLearningProject">
-  <selectKey resultClass="long" keyProperty="id">
-    SELECT s_correspon_id.NEXTVAL AS id FROM dual
-  </selectKey>
-  INSERT INTO correspon (
-    id,
-    correspon_no,
-    project_id,
-    from_correspon_group_id,
-    previous_rev_correspon_id,
-    project_correspon_type_id,
-    subject,
-    body,
-    issued_by,
-    issued_at,
-    correspon_status,
-    reply_required,
-    deadline_for_reply,
-    requested_approval_at,
-    workflow_status,
-    created_by,
-    created_at,
-    updated_by,
-    updated_at,
-    version_no,
-    delete_no,
-    for_learning
-  )
-  SELECT
-    #id#,
-    correspon_no,
-    #learningProjectId# AS project_id,
-    from_correspon_group_id,
-    previous_rev_correspon_id,
-    project_correspon_type_id,
-    subject,
-    body,
-    issued_by,
-    issued_at,
-    correspon_status,
-    reply_required,
-    deadline_for_reply,
-    requested_approval_at,
-    workflow_status,
-    created_by,
-    created_at,
-    updated_by,
-    updated_at,
-    version_no,
-    delete_no,
-    for_learning
-  FROM correspon
-  WHERE
-    delete_no = 0 AND
-    id = #id#
-</insert>
 
   <update id="delete">
     UPDATE correspon

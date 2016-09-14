@@ -40,6 +40,7 @@ import jp.co.opentone.bsol.linkbinder.dto.AddressUser;
 import jp.co.opentone.bsol.linkbinder.dto.Attachment;
 import jp.co.opentone.bsol.linkbinder.dto.Correspon;
 import jp.co.opentone.bsol.linkbinder.dto.CorresponResponseHistory;
+import jp.co.opentone.bsol.linkbinder.dto.IssueToLearningProjectsResult;
 import jp.co.opentone.bsol.linkbinder.dto.PersonInCharge;
 import jp.co.opentone.bsol.linkbinder.dto.Project;
 import jp.co.opentone.bsol.linkbinder.dto.UpdateMode;
@@ -66,6 +67,7 @@ import jp.co.opentone.bsol.linkbinder.service.notice.EmailNoticeService;
 import jp.co.opentone.bsol.linkbinder.util.AttachmentUtil;
 import jp.co.opentone.bsol.linkbinder.util.view.correspon.CorresponPageFormatter;
 import jp.co.opentone.bsol.linkbinder.util.view.correspon.CorresponResponseHistoryModel;
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -650,7 +652,7 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
      * @see jp.co.opentone.bsol.linkbinder.service.correspon.CorresponService#issue(
      * jp.co.opentone.bsol.linkbinder.dto.Correspon)
      */
-    public void issue(Correspon correspon) throws ServiceAbortException {
+    public IssueToLearningProjectsResult issue(Correspon correspon) throws ServiceAbortException {
         ArgumentValidator.validateNotNull(correspon);
 
         // TODO;CorresponWorkflowServiceImpl.javaに同処理のコードあり.共通化を考える
@@ -671,7 +673,9 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
 
         // 学習用コンテンツの場合、文書を学習用プロジェクトへコピー.
         if (correspon.isLearningContents()) {
-            issueToLearningProjects(correspon.getId());
+            return issueToLearningProjects(correspon.getId());
+        } else {
+            return IssueToLearningProjectsResult.EMPTY;
         }
     }
 
@@ -692,22 +696,24 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
      * 学習用プロジェクトから、同じ文書番号の文書を削除する.
      * @param correspon 削除したい文書の元文書
      * @param learningProjectId 対象の学習用プロジェクト
+     * @return 削除した文書
      */
-    private void deleteExistLearningCorrespon(Correspon correspon, String learningProjectId)
+    private List<Correspon> deleteExistLearningCorrespon(Correspon correspon, String learningProjectId)
                     throws KeyDuplicateException, StaleRecordException{
         // 検索条件を作成
         SearchCorresponCondition condition = new SearchCorresponCondition();
         condition.setProjectId(learningProjectId);
-        condition.setCorresponNo(correspon.getCorresponNo());
+        condition.setForLearningSrcId(correspon.getId());
 
         CorresponDao dao = getDao(CorresponDao.class);
         List<Correspon> resultList = dao.find(condition);
-
-        if (resultList != null && !resultList.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(resultList)) {
             for (Correspon resultCorrespon : resultList) {
                 dao.delete(resultCorrespon);
             }
         }
+
+        return resultList;
     }
 
     /*
@@ -1092,6 +1098,8 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
     }
 
     private void setupForLearningProject(Correspon c) throws ServiceAbortException {
+        c.setForLearningSrcId(c.getId());
+
         // 添付ファイルコピーのための設定
         List<Attachment> attachments = findAttachments(c.getId());
         attachments.forEach(a -> {
@@ -1103,15 +1111,16 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
     }
 
     @Override
-    public List<Long> issueToLearningProjects(Long id) throws ServiceAbortException {
+    public IssueToLearningProjectsResult issueToLearningProjects(Long id) throws ServiceAbortException {
         try {
             Correspon c = serviceHelper.findCorrespon(id);
             serviceHelper.loadLearningLabelAndTag(c);
             setupForLearningProject(c);
 
-            List<Long> result = new ArrayList<>();
+            CorresponDao dao = getDao(CorresponDao.class);
+            IssueToLearningProjectsResult result = new IssueToLearningProjectsResult();
             for (Project p : findLearningProject()) {
-                deleteExistLearningCorrespon(c, p.getProjectId());
+                result.addDeletedCorresponList(deleteExistLearningCorrespon(c, p.getProjectId()));
 
                 c.setProjectId(p.getProjectId());
                 Long newId = serviceHelper.createCorrespon(c);
@@ -1122,7 +1131,7 @@ public class CorresponServiceImpl extends AbstractService implements CorresponSe
                 serviceHelper.saveLearningLabel(c);
                 serviceHelper.saveLearningTag(c);
 
-                result.add(newId);
+                result.addIssuedCorrespon(dao.findById(newId));
             }
 
             return result;

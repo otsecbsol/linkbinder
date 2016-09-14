@@ -944,7 +944,7 @@
                     <h:commandLink value=" すべて "
                                    action="#{corresponIndexPage.search}"
                                    rendered="#{corresponIndexPage.learningTag != corresponIndexPage.learningTagAll}"
-                                   onclick="setSearchValue('form:learningTagValue', #{corresponIndexPage.learningTagAll});setSearchValue('form:simpleSearchSelectedItem', 5);preProcess(event);">
+                                   onclick="setSearchValue('form:learningTagValue', #{corresponIndexPage.learningTagAll});setSearchValue('form:simpleSearchSelectedItem', 6);preProcess(event);">
                       <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
                     </h:commandLink>
                     <h:outputText value=" すべて " styleClass="select"
@@ -954,7 +954,7 @@
                       <h:commandLink value="  #{simpleLearningTag.name}  "
                                      action="#{corresponIndexPage.search}"
                                      rendered="#{simpleLearningTag.id != corresponIndexPage.learningTag}"
-                                     onclick="setSearchValue('form:learningTagValue', '#{simpleLearningTag.id}');setSearchValue('form:simpleSearchSelectedItem', 5);preProcess(event);">
+                                     onclick="setSearchValue('form:learningTagValue', '#{simpleLearningTag.id}');setSearchValue('form:simpleSearchSelectedItem', 6);preProcess(event);">
                         <f:ajax render=":messagePanel :form:simplePanel :form:advancedSearchPanel :form:conditionPanel :form:indexPanel :form:pagePanel :form:pagePanel_bottom" execute="@all" onevent="oncompletePostProcess" />
                       </h:commandLink>
                       <h:outputText value=" #{simpleLearningTag.name} " styleClass="select"

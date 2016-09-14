@@ -36,6 +36,7 @@ import jp.co.opentone.bsol.linkbinder.dto.SearchCorresponResult;
 import jp.co.opentone.bsol.linkbinder.dto.User;
 import jp.co.opentone.bsol.linkbinder.dto.Workflow;
 import jp.co.opentone.bsol.linkbinder.dto.code.CorresponStatus;
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import jp.co.opentone.bsol.linkbinder.dto.code.FullTextSearchMode;
 import jp.co.opentone.bsol.linkbinder.dto.code.ReadStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowProcessStatus;
@@ -399,13 +400,17 @@ public class CorresponSearchServiceImpl extends AbstractService implements Corre
      * @see jp.co.opentone.bsol.linkbinder.service.correspon.CorresponSearchService#
      *                              deleteCorrespons(java.util.List)
      */
-    public void deleteCorrespons(List<Correspon> correspons, boolean learning) throws ServiceAbortException {
+    public void deleteCorrespons(List<Correspon> correspons) throws ServiceAbortException {
         ArgumentValidator.validateNotNull(correspons);
         // コレポン文書が未選択の場合はエラー
         checkRowSelected(correspons);
         for (Correspon correspon : correspons) {
             // 権限チェック
-            checkDeletePermission(correspon, learning);
+            boolean isLearning = false;
+            if(getCurrentProject().getForLearning() == ForLearning.LEARNING) {
+                isLearning = true;
+            }
+            checkDeletePermission(correspon, isLearning);
             // 更新
             serviceHelper.deleteCorrespon(serviceHelper.setupCorresponForDelete(correspon));
         }

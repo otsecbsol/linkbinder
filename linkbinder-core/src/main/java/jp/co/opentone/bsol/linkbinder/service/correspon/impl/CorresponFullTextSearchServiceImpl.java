@@ -39,6 +39,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.http.impl.cookie.DateParseException;
+import org.apache.http.impl.cookie.DateUtils;
 import org.elasticsearch.index.IndexNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -187,8 +189,13 @@ public class CorresponFullTextSearchServiceImpl extends AbstractService implemen
         // この場合、 document.titleやdocument.attachments.name が検索対象となる
         switch (condition.getFullTextSearchMode()) {
         case ALL:
-            option.addSearchFields("title", "body", "lastModified");
-            option.addHighlightFields("title", "body", "lastModified");
+            if (isAcceptableDateString(condition.getKeyword())) {
+                option.addSearchFields("title", "body", "lastModified");
+                option.addHighlightFields("title", "body", "lastModified");
+            } else {
+                option.addSearchFields("title", "body");
+                option.addHighlightFields("title", "body");
+            }
             if (condition.isIncludeNonImage()) {
                 option.addSearchFields("attachments.name", "attachments.content.content");
                 option.addHighlightFields("attachments.name", "attachments.content.content");
@@ -222,6 +229,24 @@ public class CorresponFullTextSearchServiceImpl extends AbstractService implemen
         }
 
         return option;
+    }
+
+    protected boolean isAcceptableDateString(String keyword) {
+        final String[] acceptableFormats = {
+                "yyyy-MM-dd",
+                "yyyyMMdd"
+        };
+
+        return Stream.of(StringUtils.split(keyword, ' '))
+                .allMatch(s -> {
+                    String str = StringUtils.trim(s);
+                    try {
+                        DateUtils.parseDate(str, acceptableFormats);
+                        return true;
+                    } catch (DateParseException e) {
+                        return false;
+                    }
+                });
     }
 
     private Long idToLong(String id) {

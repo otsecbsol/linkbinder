@@ -39,8 +39,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
-import org.apache.http.impl.cookie.DateParseException;
-import org.apache.http.impl.cookie.DateUtils;
 import org.elasticsearch.index.IndexNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +46,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -232,20 +233,24 @@ public class CorresponFullTextSearchServiceImpl extends AbstractService implemen
     }
 
     protected boolean isAcceptableDateString(String keyword) {
-        final String[] acceptableFormats = {
-                "yyyy-MM-dd",
-                "yyyyMMdd"
+        final DateTimeFormatter acceptableFormats[] = {
+                DateTimeFormatter.ofPattern("yyyy-MM-dd"),
+                DateTimeFormatter.ofPattern("yyyyMMdd")
         };
 
         return Stream.of(StringUtils.split(keyword, ' '))
                 .allMatch(s -> {
                     String str = StringUtils.trim(s);
-                    try {
-                        DateUtils.parseDate(str, acceptableFormats);
-                        return true;
-                    } catch (DateParseException e) {
-                        return false;
+                    boolean parsed = false;
+                    for (DateTimeFormatter f : acceptableFormats) {
+                        try {
+                            LocalDate.parse(str, f);
+                            parsed = true;
+                            break;
+                        } catch (DateTimeParseException ignore) {
+                        }
                     }
+                    return parsed;
                 });
     }
 

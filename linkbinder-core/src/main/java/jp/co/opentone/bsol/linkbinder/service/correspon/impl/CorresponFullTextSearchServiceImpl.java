@@ -189,7 +189,7 @@ public class CorresponFullTextSearchServiceImpl extends AbstractService implemen
         // この場合、 document.titleやdocument.attachments.name が検索対象となる
         switch (condition.getFullTextSearchMode()) {
         case ALL:
-            if (isValidDateString(condition.getKeyword())) {
+            if (isAcceptableDateString(condition.getKeyword())) {
                 option.addSearchFields("title", "body", "lastModified");
                 option.addHighlightFields("title", "body", "lastModified");
             } else {
@@ -231,11 +231,10 @@ public class CorresponFullTextSearchServiceImpl extends AbstractService implemen
         return option;
     }
 
-    protected boolean isValidDateString(String keyword) {
+    protected boolean isAcceptableDateString(String keyword) {
         final String[] acceptableFormats = {
                 "yyyy-MM-dd",
-                "yyyy/MM/dd",
-                "yy-MM-dd"
+                "yyyyMMdd"
         };
 
         return Stream.of(StringUtils.split(keyword, ' '))

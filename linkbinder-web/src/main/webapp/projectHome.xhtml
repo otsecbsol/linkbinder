@@ -204,7 +204,8 @@
                         <h:outputText value=")" />
                       </li>
                     </ui:repeat>
-                    <h:commandLink action="#{projectHomePage.goCorresponIndexLearningContents}" value="#{projectHomePage.learningContentsTitleLabel}" onclick="setActionName(event);" />
+                    <h:commandLink action="#{projectHomePage.goCorresponIndexLearningContents}" rendered="#{projectHomePage.projectUseLearning}"
+                                   value="#{projectHomePage.learningContentsTitleLabel}" onclick="setActionName(event);" />
                   </ul>
                 </div>
                 <div id="groupSummaryDisplay"

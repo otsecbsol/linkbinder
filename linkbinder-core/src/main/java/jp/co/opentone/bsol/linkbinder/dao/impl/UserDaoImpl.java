@@ -15,16 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.dao.impl;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.stereotype.Repository;
-
 import jp.co.opentone.bsol.framework.core.SuppressTrace;
 import jp.co.opentone.bsol.framework.core.auth.AuthUser;
 import jp.co.opentone.bsol.framework.core.auth.AuthenticateException;
@@ -40,6 +30,15 @@ import jp.co.opentone.bsol.linkbinder.dto.SysUsers;
 import jp.co.opentone.bsol.linkbinder.dto.User;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchUserCondition;
 import jp.co.opentone.bsol.linkbinder.util.ValueFormatter;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Repository;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * ユーザー情報を操作するDao.
@@ -103,12 +102,17 @@ public class UserDaoImpl extends AbstractLegacyDao<User> implements UserDao {
     /**
      * SQLID: ユーザーを登録する.
      */
-    private static final String SQL_CREATED_USER = "createUsers";
+    private static final String SQL_CREATE_USER = "createUsers";
+
+    /**
+     * SQLID: ユーザーを登録する.
+     */
+    private static final String SQL_CREATE_PJ_USER = "createPjUsers";
 
     /**
      * SQLID: システム管理者ユーザーを登録する.
      */
-    private static final String SQL_CREATED_SYSUSER = "createSysUser";
+    private static final String SQL_CREATE_SYSUSER = "createSysUser";
     /**
      * SQLID: ユーザー情報を更新する.
      */
@@ -182,7 +186,7 @@ public class UserDaoImpl extends AbstractLegacyDao<User> implements UserDao {
     public User findByEmpNo(String empNo) throws RecordNotFoundException {
         User record =
                 (User) getSqlMapClientTemplate()
-                    .queryForObject(getSqlId(SQL_FIND_BY_EMP_NO), empNo);
+                        .queryForObject(getSqlId(SQL_FIND_BY_EMP_NO), empNo);
         if (record == null) {
             throw new RecordNotFoundException(empNo);
         }
@@ -344,32 +348,36 @@ public class UserDaoImpl extends AbstractLegacyDao<User> implements UserDao {
     @Override
     public void updateUser(SysUsers user)
             throws KeyDuplicateException, StaleRecordException, RecordNotFoundException {
-        int result = 0;
-        if (0 < getSqlMapClientTemplate().update(getSqlId(SQL_UPDATE_USER),
-                user)) {
-            result = getSqlMapClientTemplate().update(getSqlId(SQL_UPDATE_PJ_USER),
-                    user);
-        } else {
-            throw new KeyDuplicateException();
+        int result = getSqlMapClientTemplate().update(getSqlId(SQL_UPDATE_USER), user);
+        if (result != 1) {
+            throw new StaleRecordException();
         }
-
-        if (result == 0) {
-            throw new KeyDuplicateException();
-        }
-
     }
 
     @Override
-    public void creteUser(SysUsers user) throws KeyDuplicateException {
-        getSqlMapClientTemplate()
-                .insert(getSqlId(SQL_CREATED_USER), user);
+    public void updatePjUser(SysUsers user) throws KeyDuplicateException, StaleRecordException, RecordNotFoundException {
+        int result = getSqlMapClientTemplate().update(getSqlId(SQL_UPDATE_PJ_USER), user);
+        if (result != 1) {
+            throw new StaleRecordException();
+        }
+    }
 
+    @Override
+    public void createUser(SysUsers user) throws KeyDuplicateException {
+        getSqlMapClientTemplate()
+                .insert(getSqlId(SQL_CREATE_USER), user);
+    }
+
+    @Override
+    public void createPjUser(SysUsers user) throws KeyDuplicateException {
+        getSqlMapClientTemplate()
+                .insert(getSqlId(SQL_CREATE_PJ_USER), user);
     }
 
     @Override
     public void create(SysUsers user) throws KeyDuplicateException {
         getSqlMapClientTemplate()
-                .insert(getSqlId(SQL_CREATED_SYSUSER), user);
+                .insert(getSqlId(SQL_CREATE_SYSUSER), user);
 
     }
 

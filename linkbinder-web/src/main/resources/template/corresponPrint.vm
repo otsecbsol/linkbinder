@@ -671,6 +671,40 @@ div#tos {
   width: 99%;
 }
 
+.learning-label {
+  font-size: 1em;
+  padding: 2px 2px 2px 3px;
+  position: relative;
+  border: 1px solid #666;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+}
+
+.learning-tag {
+  font-size: 1em;
+  padding: 2px 2px 2px 20px;
+  position: relative;
+  border: 1px solid #666;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+}
+
+.learning-tag:before {
+  background: #666;
+  margin-top :-5px;
+  height: 10px;
+  width: 8px;
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 7px;
+  border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+}
+
     //-->
     </style>
     <div id="content">
@@ -787,6 +821,28 @@ div#tos {
           <span id="previousRevision">$util.encode($data.previousRevCorresponNo)</span>
         </td>
       </tr>
+#if($data.isLearningContents())
+      <tr>
+        <td class="label" style="vertical-align:top;">ラベル</td>
+        <td class="label" style="vertical-align:top;">:</td>
+#set($row = true)
+        <td>
+#foreach($learningLabel in $data.learningLabel)
+          <span class="learning-label">$learningLabel.name</span>
+#end
+        </td>
+      </tr>
+      <tr>
+        <td class="label" style="vertical-align:top;">タグ</td>
+        <td class="label" style="vertical-align:top;">:</td>
+#set($row = true)
+        <td>
+#foreach($learningTag in $data.learningTag)
+          <span class="learning-tag">$learningTag.name</span>
+#end
+        </td>
+      </tr>
+#end
       <tr>
         <td><span class="label">宛先</span></td>
         <td><span class="label">:</span></td>

@@ -15,17 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.service.admin.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import jp.co.opentone.bsol.framework.core.config.SystemConfig;
 import jp.co.opentone.bsol.framework.core.dao.KeyDuplicateException;
 import jp.co.opentone.bsol.framework.core.dao.RecordNotFoundException;
@@ -61,6 +50,16 @@ import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
 import jp.co.opentone.bsol.linkbinder.service.AbstractService;
 import jp.co.opentone.bsol.linkbinder.service.admin.UserService;
 import jp.co.opentone.bsol.linkbinder.util.ValueFormatter;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * このサービスではユーザー情報に関する処理を提供する.
@@ -678,25 +677,24 @@ public class UserServiceImpl extends AbstractService implements UserService {
     }
     /**
      * 新規登録か更新か判定する.
-     * @param site
-     *            拠点情報
+     * @param empNo ユーザーID
      * @return 登録ならtrue / 更新ならfalse
      * @throws ServiceAbortException
      */
-    private boolean isNew(String empId) throws ServiceAbortException {
-        return  findSysUser(empId) == null ;
+    private boolean isNew(String empNo) throws ServiceAbortException {
+        return  findSysUser(empNo) == null ;
 
     }
 
     /* (non-Javadoc)
      * @see jp.co.opentone.bsol.linkbinder.service.admin.ProjectService#find(java.lang.Long)
      */
-    public String findSysUser(String empId) throws ServiceAbortException {
-        if (StringUtils.isEmpty(empId)) {
+    public String findSysUser(String empNo) throws ServiceAbortException {
+        if (StringUtils.isEmpty(empNo)) {
             return null;
         }
         SysUsers user = new SysUsers();
-        user.setEmpNo(empId);
+        user.setEmpNo(empNo);
         UserDao dao = getDao(UserDao.class);
         try {
             return dao.findBySysUserId(user);
@@ -820,7 +818,8 @@ public class UserServiceImpl extends AbstractService implements UserService {
                     dao.create(user);
 
                 } else {
-                    dao.creteUser(user);
+                    dao.createUser(user);
+                    dao.createPjUser(user);
                 }
 
                 user.setImportResultStatus(MasterDataImportResultStatus.CREATED);
@@ -841,6 +840,13 @@ public class UserServiceImpl extends AbstractService implements UserService {
                 }
 
                 dao.updateUser(user);
+                if (StringUtils.isNotEmpty(user.getPjId())) {
+                    if (existsAsPjUser(user)) {
+                        dao.updatePjUser(user);
+                    } else {
+                        dao.createPjUser(user);
+                    }
+                }
                 user.setImportResultStatus(MasterDataImportResultStatus.UPDATED);
             } catch (RecordNotFoundException e) {
                 throw new ServiceAbortException("ユーザーが存在しません",
@@ -852,6 +858,15 @@ public class UserServiceImpl extends AbstractService implements UserService {
                         user.getEmpNo());
             }
         }
+    }
+
+    private boolean existsAsPjUser(SysUsers user) {
+        UserDao dao = getDao(UserDao.class);
+        SearchUserCondition condition = new SearchUserCondition();
+        condition.setProjectId(user.getPjId());
+        condition.setEmpNo(user.getEmpNo());
+
+        return !dao.findProjectUser(condition).isEmpty();
     }
 
     /**

@@ -787,6 +787,7 @@ div#tos {
           <span id="previousRevision">$util.encode($data.previousRevCorresponNo)</span>
         </td>
       </tr>
+#if($data.isLearningContents())
       <tr>
         <td class="label" style="vertical-align:top;">ラベル</td>
         <td class="label" style="vertical-align:top;">:</td>
@@ -819,6 +820,7 @@ div#tos {
           </table>
         </td>
       </tr>
+#end
       <tr>
         <td><span class="label">宛先</span></td>
         <td><span class="label">:</span></td>

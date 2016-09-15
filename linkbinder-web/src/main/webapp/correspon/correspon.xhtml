@@ -360,12 +360,23 @@
         </h:panelGroup>
       </div>
     </div>
+
     <ui:fragment rendered="#{(corresponPage.projectUseLearning and corresponPage.correspon.learningContents) or corresponPage.learningProject}">
+      <ui:fragment rendered="#{not corresponPage.learningProject}">
+        <div class="row">
+          <h:commandButton id="recreate" value="#{corresponPage.learningCorresponTitleLabel}公開"
+                           action="#{corresponPage.issueToLearningProjects}"
+                           styleClass="learning-button"
+                           onclick="setActionName(event); return confirmButton('現在の文書の内容で#{corresponPage.learningCorresponTitleLabel}を公開します。よろしいですか？');"
+                           disabled="#{!corresponPage.learningContents}"
+                           rendered="#{corresponPage.elemControl.recreateLearningContentsButton}"/>
+        </div>
+      </ui:fragment>
       <div class="row">
         <div class="twelve colums">
           <h:outputLabel>ラベル</h:outputLabel>
           <ui:repeat value="#{corresponPage.correspon.learningLabel}" var="e" varStatus="loop">
-            <h:outputText value="#{e.name}" styleClass="learning-label"/>#{loop.last ? '' : ','}
+            <h:outputText value="#{e.name}" styleClass="learning-label"/>
           </ui:repeat>
         </div>
       </div>
@@ -373,20 +384,10 @@
         <div class="twelve colums">
           <h:outputLabel>タグ</h:outputLabel>
           <ui:repeat value="#{corresponPage.correspon.learningTag}" var="e" varStatus="loop">
-            <h:outputText value="#{e.name}" styleClass="learning-tag"/>#{loop.last ? '' : ','}
+            <h:outputText value="#{e.name}" styleClass="learning-tag"/>
           </ui:repeat>
         </div>
       </div>
-      <ui:fragment rendered="#{not corresponPage.learningProject}">
-        <div class="row">
-          <h:commandButton id="recreate" value="#{corresponPage.learningCorresponTitleLabel}公開"
-                           action="#{corresponPage.issueToLearningProjects}"
-                           styleClass="button-primary"
-                           onclick="setActionName(event); return confirmButton('現在の文書の内容で#{corresponPage.learningCorresponTitleLabel}を公開します。よろしいですか？');"
-                           disabled="#{!corresponPage.learningContents}"
-                           rendered="#{corresponPage.elemControl.recreateLearningContentsButton}"/>
-        </div>
-      </ui:fragment>
     </ui:fragment>
 
     <hr/>

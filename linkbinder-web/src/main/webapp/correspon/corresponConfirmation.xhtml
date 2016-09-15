@@ -135,7 +135,7 @@
               <div class="twelve columns">
                 <h:outputLabel>ラベル</h:outputLabel>
                 <ui:repeat value="#{corresponConfirmationPage.correspon.learningLabel}" var="e" varStatus="loop">
-                  <h:outputText value="#{e.name}" styleClass="learning-label"/>#{loop.last ? '' : ','}
+                  <h:outputText value="#{e.name}" styleClass="learning-label"/>
                 </ui:repeat>
               </div>
             </div>
@@ -143,7 +143,7 @@
               <div class="twelve columns">
                 <h:outputLabel>タグ</h:outputLabel>
                 <ui:repeat value="#{corresponConfirmationPage.correspon.learningTag}" var="e" varStatus="loop">
-                  <h:outputText value="#{e.name}" styleClass="learning-tag"/>#{loop.last ? '' : ','}
+                  <h:outputText value="#{e.name}" styleClass="learning-tag"/>
                 </ui:repeat>
               </div>
             </div>

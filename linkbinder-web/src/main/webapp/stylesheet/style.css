@@ -227,6 +227,54 @@ hr {
     padding-left: 1rem;
 }
 
+.learning-label {
+  font-size: 1em;
+  padding: 0px 5px 0px 5px;
+  position: relative;
+  border: 1px solid #666;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  margin: 0px 5px 5px 0px;
+  background-color: #E4E4E4;
+}
+
+.learning-tag {
+  font-size: 1em;
+  padding: 0px 5px 0px 20px;
+  margin: 0px 5px 5px 0px;
+  position: relative;
+  border: 1px solid #666;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  background-color: #E4E4E4;
+}
+
+.learning-tag:before {
+  background: #FFF;
+  margin-top :-6px;
+  height: 12px;
+  width: 8px;
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 7px;
+  border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+}
+
+.learning-button {
+  height: 25px !important;
+  padding: 0 5px !important;
+  background-color: #33C3F0 !important;
+  color: #FFFFFF !important;
+  line-height: 25px !important;
+  margin-bottom: 3px !important;
+  border: 0 !important;
+}
+
 
 .top ul {
   margin: 0;

@@ -20,7 +20,7 @@
 pre {
   color:#484848;
   white-space: -moz-pre-wrap;
-  white-space: -pre-wrap;
+  /*white-space: -pre-wrap;*/
   white-space: -o-pre-wrap;
   white-space: pre-wrap;
   word-wrap:  break-word;
@@ -81,7 +81,6 @@ select {
 input:focus {
   border: solid 1px #EEA34A;
 }
-*/
 
 hr {
   border: 0;
@@ -713,7 +712,7 @@ table.inner td {
   float:left;
   list-style-type: none;
   margin: 0 2px 0 0;
-  padding 0 0 0 0;
+  padding: 0 0 0 0;
   white-space: nowrap;
 }
 .correspon-command-panel li a {

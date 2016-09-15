@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.JedisPubSub;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -37,6 +38,8 @@ public class EventBus implements Serializable {
 
     private JedisPool pool;
 
+    public static final String CHANNEL = "LINKBINDER";
+
     @PostConstruct
     public void setup() {
         pool = new JedisPool(new JedisPoolConfig(), SystemConfig.getValue(Constants.KEY_REDIS_HOST));
@@ -49,13 +52,13 @@ public class EventBus implements Serializable {
         }
     }
 
-    public void addEventListener(DomainEventListener l) {
+    public <T extends JedisPubSub> void addEventListener(T l) {
         try (Jedis jedis = pool.getResource()) {
-            jedis.subscribe(l, l.getMyEvents());
+            jedis.subscribe(l, CHANNEL);
         }
     }
 
-    public void removeEventListener(DomainEventListener l) {
+    public <T extends JedisPubSub> void removeEventListener(T l) {
 //        try (Jedis jedis = pool.getResource()) {
 //            jedis.subscribe(l, l.getMyChannels());
 //        }
@@ -70,7 +73,8 @@ public class EventBus implements Serializable {
             ObjectMapper m = new ObjectMapper();
             String jsonMessage = m.writeValueAsString(event);
 
-            jedis.publish(event.getEventName(), jsonMessage);
+            jedis.publish(CHANNEL, jsonMessage);
+//            jedis.publish(event.getEventName(), jsonMessage);
         } catch (JsonProcessingException e) {
             throw new ApplicationFatalRuntimeException(e);
         }

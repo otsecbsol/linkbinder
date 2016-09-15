@@ -671,6 +671,40 @@ div#tos {
   width: 99%;
 }
 
+.learning-label {
+  font-size: 1em;
+  padding: 2px 2px 2px 3px;
+  position: relative;
+  border: 1px solid #666;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+}
+
+.learning-tag {
+  font-size: 1em;
+  padding: 2px 2px 2px 20px;
+  position: relative;
+  border: 1px solid #666;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+}
+
+.learning-tag:before {
+  background: #666;
+  margin-top :-5px;
+  height: 10px;
+  width: 8px;
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 7px;
+  border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+}
+
     //-->
     </style>
     <div id="content">
@@ -793,15 +827,9 @@ div#tos {
         <td class="label" style="vertical-align:top;">:</td>
 #set($row = true)
         <td>
-          <table border="0" class="inner" cellspacing="0" cellpadding="0">
 #foreach($learningLabel in $data.learningLabel)
-            <tr>
-              <td>
-                <span id="learningLabel">$learningLabel.name</span>
-              </td>
-            </tr>
+          <span class="learning-label">$learningLabel.name</span>
 #end
-          </table>
         </td>
       </tr>
       <tr>
@@ -809,15 +837,9 @@ div#tos {
         <td class="label" style="vertical-align:top;">:</td>
 #set($row = true)
         <td>
-          <table border="0" class="inner" cellspacing="0" cellpadding="0">
 #foreach($learningTag in $data.learningTag)
-            <tr>
-              <td>
-                <span id="learningTag">$learningTag.name</span>
-              </td>
-            </tr>
+          <span class="learning-tag">$learningTag.name</span>
 #end
-          </table>
         </td>
       </tr>
 #end

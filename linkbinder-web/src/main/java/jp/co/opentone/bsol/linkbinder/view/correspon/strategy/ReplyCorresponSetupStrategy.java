@@ -154,7 +154,7 @@ public class ReplyCorresponSetupStrategy extends CorresponSetupStrategy {
     }
 
     /**
-     * 返信文書のToに設定する、依頼文書の送信元活動単位および作成者、検討者、承認者を返す.
+     * 返信文書のToに設定する、依頼文書の送信元活動単位および作成者、検証者、承認者を返す.
      * @param request 依頼文書
      * @param reply 返信文書
      * @return 返信文書のTo

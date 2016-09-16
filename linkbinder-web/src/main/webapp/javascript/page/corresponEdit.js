@@ -370,6 +370,8 @@ function setupLearningTaggingElement(option) {
     var selectedId = '#' + $.escape(option.selectedId);
     var triggerId = '#' + $.escape(option.triggerId);
 
+    if ($(id).size() === 0) return;
+
     $(id).select2({
         tags: true,
         data: JSON.parse($(candidateId).val())

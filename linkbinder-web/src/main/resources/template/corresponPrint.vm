@@ -673,28 +673,32 @@ div#tos {
 
 .learning-label {
   font-size: 1em;
-  padding: 2px 2px 2px 3px;
+  padding: 0px 5px 0px 5px;
   position: relative;
   border: 1px solid #666;
   border-radius: 5px;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
+  margin: 0px 5px 5px 0px;
+  background-color: #E4E4E4;
 }
 
 .learning-tag {
   font-size: 1em;
-  padding: 2px 2px 2px 20px;
+  padding: 0px 5px 0px 20px;
+  margin: 0px 5px 5px 0px;
   position: relative;
   border: 1px solid #666;
   border-radius: 5px;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
+  background-color: #E4E4E4;
 }
 
 .learning-tag:before {
-  background: #666;
-  margin-top :-5px;
-  height: 10px;
+  background: #FFF;
+  margin-top :-6px;
+  height: 12px;
   width: 8px;
   content: "";
   position: absolute;

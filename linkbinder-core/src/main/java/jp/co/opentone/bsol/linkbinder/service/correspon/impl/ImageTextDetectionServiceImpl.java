@@ -59,7 +59,7 @@ public class ImageTextDetectionServiceImpl extends AbstractService implements
 
     private GoogleVisionApiClient newApiClient() {
         GoogleVisionApiConfiguration config = GoogleVisionApiConfiguration.builder()
-                .use(BooleanUtils.toBoolean(SystemConfig.getValue(Constants.KEY_GOOGLE_VISION_USE)))
+                .use(canUse())
                 .accountFilePath(SystemConfig.getValue(Constants.KEY_GOOGLE_VISION_SERVICE_ACCOUNT_FILE))
                 .applicationName(SystemConfig.getValue(Constants.KEY_GOOGLE_VISION_APPLICATION_NAME))
                 .maxResult(NumberUtils.toInt(SystemConfig.getValue(Constants.KEY_GOOGLE_VISION_API_RESULT_COUNT), 0))
@@ -74,6 +74,8 @@ public class ImageTextDetectionServiceImpl extends AbstractService implements
     @Override
     @Transactional(readOnly = false)
     public void detectTextAndFill(List<Attachment> attachments) throws ServiceAbortException {
+        if (!canUse()) return;
+
         ArgumentValidator.validateNotNull(attachments);
 
         List<Attachment> attachmentsToDetect = Lists.newArrayList();
@@ -107,5 +109,14 @@ public class ImageTextDetectionServiceImpl extends AbstractService implements
                 }
             }
         }
+    }
+
+    @Override
+    public boolean canUse() {
+        boolean result = BooleanUtils.toBoolean(SystemConfig.getValue(Constants.KEY_GOOGLE_VISION_USE));
+        if (!result) {
+            log.warn("画像抽出機能は利用できません。設定を確認してください");
+        }
+        return result;
     }
 }

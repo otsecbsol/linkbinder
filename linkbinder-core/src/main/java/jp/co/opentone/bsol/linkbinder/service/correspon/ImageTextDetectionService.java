@@ -33,4 +33,10 @@ public interface ImageTextDetectionService extends IService {
      * @throws ServiceAbortException 抽出に失敗した場合
      */
     void detectTextAndFill(List<Attachment> attachments) throws ServiceAbortException;
+
+    /**
+     * テキスト抽出を利用できる場合はtrueを返す.
+     * @return 利用可能な場合はtrue
+     */
+    boolean canUse();
 }

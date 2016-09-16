@@ -462,6 +462,11 @@ table.group {
   margin-right: 15px;
 }
 
+/* ラベル・タグ選択欄のborderを上書き */
+.select2-container--default .select2-selection--multiple {
+border: 1px solid #ccc !important;
+}
+
 /* --- 一覧表示部分 --- */
 table.list {
   padding: 4px;

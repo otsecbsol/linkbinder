@@ -77,24 +77,7 @@ public enum Environment {
      * @return 現在の実行環境
      */
     public static Environment getEnvironment() {
-        Environment env = null;
-        String userId = getUserId();
-        log.info("userId = {}", userId);
-
-        if (isProductionUser(userId)) {
-            env = PRODUCTION;
-        } else if (isDemoUser(userId)) {
-            env = DEMO;
-        } else if (isTestUser(userId)) {
-            env = TEST;
-        } else {
-            //  ユーザーIDが未設定の場合以外に、ここに到達することは無い
-            throw new ApplicationFatalRuntimeException(
-                    String.format("Environment was not selected. userId = %s", userId));
-        }
-
-        log.info("environment: [{}]", env.toString());
-        return env;
+        return PRODUCTION;
     }
 
     /**
@@ -128,26 +111,5 @@ public enum Environment {
             return null;
         }
         return userId;
-    }
-
-    private static boolean isProductionUser(String userId) {
-        if (StringUtils.isEmpty(userId)) {
-            return false;
-        }
-        return !isTestUser(userId) && !isDemoUser(userId);
-    }
-
-    private static boolean isDemoUser(String userId) {
-        if (StringUtils.isEmpty(userId) || userId.length() < PREFIX_LENGTH) {
-            return false;
-        }
-        return userId.startsWith(PREFIX_DEMO);
-    }
-
-    private static boolean isTestUser(String userId) {
-        if (StringUtils.isEmpty(userId) || userId.length() < PREFIX_LENGTH) {
-            return false;
-        }
-        return userId.startsWith(PREFIX_TEST);
     }
 }

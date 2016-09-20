@@ -27,6 +27,9 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     <result property="corresponId"     column="correspon_id" />
     <result property="fileId"          column="file_id" />
     <result property="fileName"        column="file_name" />
+    <result property="fileType"        column="file_type" />
+    <result property="orgExtractedText" column="org_extracted_text" />
+    <result property="extractedText"   column="extracted_text" />
     <result property="createdBy.empNo" column="created_by" />
     <result property="createdAt"       column="created_at" />
     <result property="updatedBy.empNo" column="updated_by" />
@@ -41,6 +44,9 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       correspon_id,
       file_id,
       file_name,
+      file_type,
+      org_extracted_text,
+      extracted_text,
       created_by,
       created_at,
       updated_by,
@@ -61,6 +67,9 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       correspon_id,
       file_id,
       file_name,
+      file_type,
+      org_extracted_text,
+      extracted_text,
       created_by,
       updated_by
     ) VALUES (
@@ -68,10 +77,39 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       #corresponId#,
       #fileId#,
       #fileName#,
+      #fileType#,
+      #orgExtractedText#,
+      #extractedText#,
       #createdBy.empNo#,
       #updatedBy.empNo#
     )
   </insert>
+
+  <update id="update">
+    UPDATE attachment
+    SET
+    updated_by = #updatedBy.empNo#,
+    updated_at = SYSTIMESTAMP
+    <dynamic>
+      <isNotNull prepend="," property="fileId">
+        file_id = #fileId#
+      </isNotNull>
+      <isNotNull prepend="," property="fileName">
+        file_name = #fileName#
+      </isNotNull>
+      <isNotNull prepend="," property="fileType">
+        file_type = #fileType#
+      </isNotNull>
+      <isNotNull prepend="," property="orgExtractedText">
+        org_extracted_text = #orgExtractedText#
+      </isNotNull>
+      <isNotNull prepend="," property="extractedText">
+        extracted_text = #extractedText#
+      </isNotNull>
+    </dynamic>
+    WHERE
+    id = #id#
+  </update>
 
   <update id="delete">
     UPDATE attachment
@@ -90,6 +128,9 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       correspon_id,
       file_id,
       file_name,
+      file_type,
+      org_extracted_text,
+      extracted_text,
       created_by,
       created_at,
       updated_by,

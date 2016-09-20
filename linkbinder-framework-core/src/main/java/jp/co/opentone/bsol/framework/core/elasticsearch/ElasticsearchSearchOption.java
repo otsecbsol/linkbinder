@@ -18,7 +18,9 @@ package jp.co.opentone.bsol.framework.core.elasticsearch;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 検索時に指定する各種オプション.
@@ -33,6 +35,8 @@ public class ElasticsearchSearchOption implements Serializable {
     private String searchTypeName;
     /** 検索キーワード. */
     private String keyword;
+    /** 検索演算子. */
+    private Operator operator = Operator.OR;
     /** 検索対象フィールド. */
     private List<String> searchFields = new ArrayList<>();
     /** 検索結果をハイライトするフィールド. */
@@ -43,6 +47,15 @@ public class ElasticsearchSearchOption implements Serializable {
     /** 検索件数. */
     private int size;
 
+    private Map<String, String> optionalSearchConditions = new HashMap<>();
+
+    public void addOptionalSearchCondition(String field, String value) {
+        optionalSearchConditions.put(field, value);
+    }
+
+    public Map<String, String> getOptionalSearchConditions() {
+        return optionalSearchConditions;
+    }
 
     public String getKeyword() {
         return keyword;
@@ -87,5 +100,21 @@ public class ElasticsearchSearchOption implements Serializable {
     }
     public void setSearchTypeName(String searchTypeName) {
         this.searchTypeName = searchTypeName;
+    }
+
+    public Operator getOperator() {
+        return operator;
+    }
+
+    public void setOperator(Operator operator) {
+        this.operator = operator;
+    }
+
+    /**
+     * 演算子.
+     */
+    public static enum Operator {
+        AND,
+        OR
     }
 }

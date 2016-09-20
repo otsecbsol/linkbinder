@@ -15,19 +15,18 @@
  */
 package jp.co.opentone.bsol.framework.core.filestore;
 
+import jp.co.opentone.bsol.framework.core.config.SystemConfig;
+import jp.co.opentone.bsol.framework.core.util.ArgumentValidator;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.UUID;
-
-import jp.co.opentone.bsol.framework.core.config.SystemConfig;
-import jp.co.opentone.bsol.framework.core.util.ArgumentValidator;
-
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
@@ -67,7 +66,7 @@ public class FileStoreClient implements Serializable {
      * @param id ファイルID
      * @return ファイル
      */
-    protected File getFile(String id) {
+    public File getFile(String id) {
         return new File(SystemConfig.getValue(KEY_ATTACHMENT_DIR), id);
     }
 
@@ -86,7 +85,7 @@ public class FileStoreClient implements Serializable {
      * ファイルは呼び出し側で削除処理を行う事.
      *
      * @param fileId ファイルID
-     * @param filePathファイルパス
+     * @param filePath ファイルパス
      * @return ファイルのバイナリデータ
      * @throws FileStoreException ファイル情報の取得に失敗
      */

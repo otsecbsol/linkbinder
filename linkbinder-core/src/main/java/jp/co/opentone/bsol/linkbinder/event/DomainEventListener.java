@@ -15,16 +15,8 @@
  */
 package jp.co.opentone.bsol.linkbinder.event;
 
-import redis.clients.jedis.JedisPubSub;
-
 /**
  * @author opentone
  */
-public abstract class DomainEventListener extends JedisPubSub {
-
-    /**
-     * このオブジェクトが対象とするイベント名の一覧を返す.
-     * @return イベント名の一覧
-     */
-    public abstract String[] getMyEvents();
+public interface DomainEventListener {
 }

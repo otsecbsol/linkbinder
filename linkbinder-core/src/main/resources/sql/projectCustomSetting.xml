@@ -26,13 +26,14 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
   <result property="projectId"                 column="project_id"/>
   <result property="defaultStatus"             column="default_status"/>
   <result property="usePersonInCharge"         column="use_person_in_charge"/>
+  <result property="useCorresponAccessControl" column="use_correspon_access_control"/>
+  <result property="useLearning"               column="use_learning"/>
   <result property="createdBy.empNo"           column="created_by"/>
   <result property="createdAt"                 column="created_at"/>
   <result property="updatedBy.empNo"           column="updated_by"/>
   <result property="updatedAt"                 column="updated_at"/>
   <result property="versionNo"                 column="version_no"/>
   <result property="deleteNo"                  column="delete_no"/>
-  <result property="useCorresponAccessControl" column="use_correspon_access_control"/>
 </resultMap>
 <resultMap id="resultForUpdate" class="jp.co.opentone.bsol.linkbinder.dto.ProjectCustomSetting">
   <result property="versionNo"                 column="version_no"/>
@@ -44,13 +45,14 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       project_id,
       default_status,
       use_person_in_charge,
+      use_correspon_access_control,
+      use_learning,
       created_by,
       created_at,
       updated_by,
       updated_at,
       version_no,
-      delete_no,
-      use_correspon_access_control
+      delete_no
     FROM
       project_custom_setting
     WHERE
@@ -64,10 +66,11 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     SET
       default_status = #defaultStatus#,
       use_person_in_charge = #usePersonInCharge#,
+      use_correspon_access_control = #useCorresponAccessControl#,
+      use_learning = #useLearning#,
       updated_by = #updatedBy.empNo#,
       updated_at = SYSTIMESTAMP,
-      version_no = (version_no + 1),
-      use_correspon_access_control = #useCorresponAccessControl#
+      version_no = (version_no + 1)
     WHERE
       id = #id#
   </update>
@@ -81,17 +84,19 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
       project_id,
       default_status,
       use_person_in_charge,
+      use_correspon_access_control,
+      use_learning,
       created_by,
-      updated_by,
-      use_correspon_access_control
+      updated_by
     ) VALUES (
       #id#,
       #projectId#,
       #defaultStatus#,
       #usePersonInCharge#,
+      #useCorresponAccessControl#,
+      #useLearning#,
       #createdBy.empNo#,
-      #updatedBy.empNo#,
-      #useCorresponAccessControl#
+      #updatedBy.empNo#
     )
   </insert>
 

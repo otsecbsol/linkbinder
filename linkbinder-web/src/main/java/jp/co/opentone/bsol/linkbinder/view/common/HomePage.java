@@ -15,17 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.view.common;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.ManagedBean;
-import javax.annotation.Resource;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.context.annotation.Scope;
-
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
 import jp.co.opentone.bsol.framework.web.extension.jsf.annotation.Initialize;
 import jp.co.opentone.bsol.framework.web.extension.jsf.annotation.Transfer;
@@ -37,6 +26,15 @@ import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowStatus;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchCorresponCondition;
 import jp.co.opentone.bsol.linkbinder.service.common.HomeService;
 import jp.co.opentone.bsol.linkbinder.view.AbstractPage;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.context.annotation.Scope;
+
+import javax.annotation.ManagedBean;
+import javax.annotation.Resource;
+import javax.faces.model.DataModel;
+import javax.faces.model.ListDataModel;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 当システムにログイン後、最初に表示されるホーム画面.
@@ -69,6 +67,11 @@ public class HomePage extends AbstractPage {
     private DataModel<?> dataModel = null;
 
     /**
+     * 学習用文書のDataModel.
+     */
+    private DataModel<?> learningDataModel = null;
+
+    /**
      * コレポン文書一覧検索条件：Attention.
      */
     @Transfer
@@ -85,6 +88,12 @@ public class HomePage extends AbstractPage {
      */
     @Transfer
     private boolean ccSearch;
+
+    /**
+     * 学習用コンテンツの表示用ラベル
+     */
+    @Transfer
+    private String learningContentsTitleLabel = this.getLearningContentsLabel();
 
     /**
      * 空のインスタンスを生成する.
@@ -185,6 +194,19 @@ public class HomePage extends AbstractPage {
         this.ccSearch = ccSearch;
     }
 
+    /**
+     * 学習用コンテンツの表示用ラベルを返す.
+     */
+    public String getLearningContentsTitleLabel() {
+        return this.learningContentsTitleLabel;
+    }
+
+    /**
+     * 学習用コンテンツの表示用ラベルを設定する.
+     */
+    public void setLearningContentsTitleLabel(String learningContentsTitle) {
+        this.learningContentsTitleLabel = learningContentsTitle;
+    }
 
     /**
      * 画面を初期化する.
@@ -216,6 +238,7 @@ public class HomePage extends AbstractPage {
         return toUrl(
                 String.format("correspon/corresponIndex?projectId=%s", getSeletedProjectId()));
     }
+
 
     /**
      * 選択された行のプロジェクトIDを取得する.

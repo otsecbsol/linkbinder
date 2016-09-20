@@ -46,6 +46,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
     <result property="userProfileVersionNo" column="user_profile_version_no" />
     <result property="remarks"              column="remarks" />
     <result property="empCreatedAt"         column="emp_created_at" />
+    <result property="useLearning"          column="use_learning" />
   </resultMap>
   <resultMap id="projectUser" class="jp.co.opentone.bsol.linkbinder.dto.ProjectUser">
     <result property="projectId"                                   column="project_id" />
@@ -157,7 +158,8 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
      last_logged_in_at,
      user_profile_version_no,
      '' AS remarks,
-     TO_CHAR(emp_created_at, 'YYYY-MM-DD HH24:MI:SS') as emp_created_at
+     TO_CHAR(emp_created_at, 'YYYY-MM-DD HH24:MI:SS') as emp_created_at,
+     use_learning
     FROM
       v_user
     WHERE
@@ -260,12 +262,10 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
 
   <select id="findBySysUserId" resultClass="String">
     SELECT
-      us.emp_no
-    FROM sys_users us
-    LEFT JOIN sys_pj_users pus
-      ON us.emp_no = pus.emp_no
+      emp_no
+    FROM sys_users
     WHERE
-       us.emp_no = #empNo#
+       emp_no = #empNo#
   </select>
 
   <select id="findBySysUserAll" resultMap="systemUser">
@@ -299,8 +299,7 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
   </select>
 
   <insert id="createUsers">
-    INSERT ALL
-     INTO SYS_USERS (
+    INSERT INTO sys_users (
         emp_no,
         emp_last_nm,
         emp_nm_e,
@@ -338,18 +337,19 @@ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
             </isNotNull>
         </dynamic>
      )
-
-     INTO sys_pj_users (
-        pj_id,
-        emp_no,
-        pj_adm_flg
-     ) VALUES (
-        #pjId#,
-        #empNo#,
-        #pjAdmFlg#
-     )
-     SELECT * FROM dual
    </insert>
+
+  <insert id="createPjUsers">
+    INSERT INTO sys_pj_users (
+      pj_id,
+      emp_no,
+      pj_adm_flg
+    ) VALUES (
+      #pjId#,
+      #empNo#,
+      #pjAdmFlg#
+    )
+  </insert>
 
    <update id="updateUsers">
     UPDATE sys_users

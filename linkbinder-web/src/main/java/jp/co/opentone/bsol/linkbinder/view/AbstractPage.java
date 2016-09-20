@@ -15,23 +15,8 @@
  */
 package jp.co.opentone.bsol.linkbinder.view;
 
-import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang.StringUtils;
-
 import jp.co.opentone.bsol.framework.core.ProcessContext;
+import jp.co.opentone.bsol.framework.core.config.SystemConfig;
 import jp.co.opentone.bsol.framework.core.exception.ReflectionRuntimeException;
 import jp.co.opentone.bsol.framework.core.message.Message;
 import jp.co.opentone.bsol.framework.core.message.Messages;
@@ -53,6 +38,7 @@ import jp.co.opentone.bsol.linkbinder.dto.ProjectUser;
 import jp.co.opentone.bsol.linkbinder.dto.User;
 import jp.co.opentone.bsol.linkbinder.dto.Workflow;
 import jp.co.opentone.bsol.linkbinder.dto.code.CorresponStatus;
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
 import jp.co.opentone.bsol.linkbinder.dto.condition.AbstractCondition;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchCorresponCondition;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchFullTextSearchCorresponCondition;
@@ -64,6 +50,20 @@ import jp.co.opentone.bsol.linkbinder.service.UserRoleHelper;
 import jp.co.opentone.bsol.linkbinder.service.WorkflowHelper;
 import jp.co.opentone.bsol.linkbinder.service.admin.ProjectCustomSettingService;
 import jp.co.opentone.bsol.linkbinder.service.admin.UserService;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.StringUtils;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Pageの親クラス.
@@ -90,6 +90,21 @@ public abstract class AbstractPage implements LinkBinderPage, Serializable {
      * 一覧表示用：「次へ」のリンク表示.
      */
     public static final String NEXT = ">>";
+
+    /**
+     * "学習用コンテンツ"のタイトルを取得して返す.
+     * @return "学習用コンテンツ"タイトル
+     */
+    public String getLearningContentsLabel() {
+        return SystemConfig.getValue(Constants.KEY_LEARNING_CONTENTS_LABEL);
+    }
+    /**
+     * "学習用文書"のタイトルを取得して返す.
+     * @return "学習用文書"タイトル
+     */
+    public String getLearningCorresponLabel() {
+        return SystemConfig.getValue(Constants.KEY_LEARNING_CORRESPON_LABEL);
+    }
 
     /**
      * ログイン情報を保持するManagedBean.
@@ -497,6 +512,37 @@ public abstract class AbstractPage implements LinkBinderPage, Serializable {
             }
         }
         return ProjectCustomSetting.DEFAULT_CORRESPON_STATUS;
+    }
+
+    public boolean isLearningProject() {
+        Project project = getCurrentProject();
+        if(project != null) {
+            if (ForLearning.LEARNING.equals(project.getForLearning())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * ログインユーザーが学習用文書を利用できる場合はtrueを返す.
+     * @return 利用可の場合はtrue
+     */
+    public boolean isUseLearning() {
+        return getCurrentUser().isUseLearning();
+    }
+
+    /**
+     * 現在のプロジェクトが学習用文書機能を利用できる場合はtrueを返す.
+     * @return
+     */
+    public boolean isProjectUseLearning() {
+        Project p = getCurrentProject();
+        if (p != null && p.getProjectCustomSetting() != null) {
+            return p.getProjectCustomSetting().isUseLearning();
+        }
+
+        return false;
     }
 
     /**

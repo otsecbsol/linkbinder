@@ -75,8 +75,8 @@ public class DisciplineServiceImpl extends AbstractService implements Discipline
     static {
         HEADER = new ArrayList<String>();
         HEADER.add("ID");
-        HEADER.add("Code");
-        HEADER.add("Name");
+        HEADER.add("部門コード");
+        HEADER.add("部門名");
     }
 
     /**

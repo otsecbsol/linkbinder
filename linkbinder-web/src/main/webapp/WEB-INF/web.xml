@@ -88,6 +88,11 @@
     <param-value>/WEB-INF/fileupload_taglib.xml</param-value>
   </context-param>
 
+  <context-param>
+    <param-name>org.eclipse.jetty.servlet.SessionIdPathParameterName</param-name>
+    <param-value>none</param-value>
+  </context-param>
+
   <!-- Page infomation for Filter -->
   <context-param>
     <param-name>ignorePages</param-name>

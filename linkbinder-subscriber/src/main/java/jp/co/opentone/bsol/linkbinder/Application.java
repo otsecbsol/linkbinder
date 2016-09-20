@@ -16,8 +16,12 @@
 package jp.co.opentone.bsol.linkbinder;
 
 
-import java.util.Map;
-
+import jp.co.opentone.bsol.framework.core.ProcessContext;
+import jp.co.opentone.bsol.framework.core.config.SystemConfig;
+import jp.co.opentone.bsol.framework.core.log.LogbackConfigurationLoader;
+import jp.co.opentone.bsol.linkbinder.dto.User;
+import jp.co.opentone.bsol.linkbinder.subscriber.RedisSubscriber;
+import jp.co.opentone.bsol.linkbinder.subscriber.Subscriber;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.ExampleMode;
@@ -25,11 +29,8 @@ import org.kohsuke.args4j.Option;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import jp.co.opentone.bsol.framework.core.ProcessContext;
-import jp.co.opentone.bsol.framework.core.config.SystemConfig;
-import jp.co.opentone.bsol.framework.core.log.LogbackConfigurationLoader;
-import jp.co.opentone.bsol.linkbinder.dto.User;
-import jp.co.opentone.bsol.linkbinder.subscriber.Subscriber;
+import java.util.HashSet;
+import java.util.Map;
 
 /**
  * アプリケーションのエントリーポイント.
@@ -39,6 +40,8 @@ public class Application implements AutoCloseable, Runnable {
 
     /** アプリケーションコンテキスト. */
     private ApplicationContext context;
+    /** Redis subscriber. */
+    private RedisSubscriber redisSubscriber;
     /** メイン処理を行うオブジェクト. */
     private Map<String, Subscriber> subscribers;
 
@@ -91,7 +94,10 @@ public class Application implements AutoCloseable, Runnable {
 
         context = createApplicationContext();
         setupProcessContext();
+
+        redisSubscriber = context.getBean(RedisSubscriber.class);
         subscribers = context.getBeansOfType(Subscriber.class);
+        redisSubscriber.setSubscribers(new HashSet<>(subscribers.values()));
     }
 
     private ApplicationContext createApplicationContext() {
@@ -119,9 +125,12 @@ public class Application implements AutoCloseable, Runnable {
      */
     @Override
     public void close() throws Exception {
-        if (subscribers != null) {
-            subscribers.values().parallelStream().forEach(s -> s.stop());
+        if (redisSubscriber != null) {
+            redisSubscriber.stop();
         }
+//        if (subscribers != null) {
+//            subscribers.values().parallelStream().forEach(s -> s.stop());
+//        }
     }
 
     /**
@@ -129,7 +138,8 @@ public class Application implements AutoCloseable, Runnable {
      */
     @Override
     public void run() {
-        subscribers.values().parallelStream().forEach(s -> s.start());
+        redisSubscriber.start();
+//        subscribers.values().parallelStream().forEach(s -> s.start());
     }
 
     /**

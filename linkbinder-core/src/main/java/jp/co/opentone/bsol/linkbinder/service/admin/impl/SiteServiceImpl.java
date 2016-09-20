@@ -15,13 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.service.admin.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import jp.co.opentone.bsol.framework.core.config.SystemConfig;
 import jp.co.opentone.bsol.framework.core.dao.KeyDuplicateException;
 import jp.co.opentone.bsol.framework.core.dao.RecordNotFoundException;
@@ -41,6 +34,12 @@ import jp.co.opentone.bsol.linkbinder.dto.condition.SearchSiteCondition;
 import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
 import jp.co.opentone.bsol.linkbinder.service.AbstractService;
 import jp.co.opentone.bsol.linkbinder.service.admin.SiteService;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * このサービスでは拠点情報に関する処理を提供する.
@@ -77,8 +76,8 @@ public class SiteServiceImpl extends AbstractService implements SiteService {
     static {
         HEADER = new ArrayList<String>();
         HEADER.add("ID");
-        HEADER.add("Code");
-        HEADER.add("Name");
+        HEADER.add("拠点コード");
+        HEADER.add("拠点名");
     }
 
     /**

@@ -46,6 +46,7 @@
               </h:outputText>
             </div>
           </div>
+
           <f:validateBean validationGroups="#{userSettingsPage.emailAddressValidationGroups}">
           <ui:fragment rendered="#{userSettingsPage.editingProject}">
             <div class="row">
@@ -101,6 +102,14 @@
               </h:selectOneMenu>
               <h:message for="defaultProjectId" infoClass="info" errorClass="error" warnClass="warn" fatalClass="fatal" />
               <h:outputText id="lastLogin" value="Unknown" rendered="#{!userSettingsPage.editingProject}" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="twelve columns">
+              <label>
+                <h:selectBooleanCheckbox value="#{userSettingsPage.editUseLearning}"/>
+                <span class="label-body">学習用文書を閲覧する</span>
+              </label>
             </div>
           </div>
         </div>

@@ -15,22 +15,20 @@
  */
 package jp.co.opentone.bsol.linkbinder.event;
 
-import java.io.Serializable;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
-import org.springframework.stereotype.Component;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import jp.co.opentone.bsol.framework.core.config.SystemConfig;
 import jp.co.opentone.bsol.framework.core.exception.ApplicationFatalRuntimeException;
 import jp.co.opentone.bsol.linkbinder.Constants;
+import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.JedisPubSub;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import java.io.Serializable;
 
 /**
  * @author opentone
@@ -39,6 +37,8 @@ import redis.clients.jedis.JedisPoolConfig;
 public class EventBus implements Serializable {
 
     private JedisPool pool;
+
+    public static final String CHANNEL = "LINKBINDER";
 
     @PostConstruct
     public void setup() {
@@ -52,13 +52,13 @@ public class EventBus implements Serializable {
         }
     }
 
-    public void addEventListener(DomainEventListener l) {
+    public <T extends JedisPubSub> void addEventListener(T l) {
         try (Jedis jedis = pool.getResource()) {
-            jedis.subscribe(l, l.getMyEvents());
+            jedis.subscribe(l, CHANNEL);
         }
     }
 
-    public void removeEventListener(DomainEventListener l) {
+    public <T extends JedisPubSub> void removeEventListener(T l) {
 //        try (Jedis jedis = pool.getResource()) {
 //            jedis.subscribe(l, l.getMyChannels());
 //        }
@@ -73,7 +73,8 @@ public class EventBus implements Serializable {
             ObjectMapper m = new ObjectMapper();
             String jsonMessage = m.writeValueAsString(event);
 
-            jedis.publish(event.getEventName(), jsonMessage);
+            jedis.publish(CHANNEL, jsonMessage);
+//            jedis.publish(event.getEventName(), jsonMessage);
         } catch (JsonProcessingException e) {
             throw new ApplicationFatalRuntimeException(e);
         }

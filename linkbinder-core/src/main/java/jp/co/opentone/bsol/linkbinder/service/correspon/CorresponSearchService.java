@@ -15,14 +15,14 @@
  */
 package jp.co.opentone.bsol.linkbinder.service.correspon;
 
-import java.util.List;
-
 import jp.co.opentone.bsol.framework.core.service.IService;
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
 import jp.co.opentone.bsol.linkbinder.dto.Correspon;
 import jp.co.opentone.bsol.linkbinder.dto.CorresponIndexHeader;
 import jp.co.opentone.bsol.linkbinder.dto.SearchCorresponResult;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchCorresponCondition;
+
+import java.util.List;
 
 /**
  * このサービスではコレポン文書一覧に関する処理を提供する.
@@ -129,7 +129,6 @@ public interface CorresponSearchService extends IService {
      * @param condition 指定された条件情報
      * @return コレポン文書ID一覧
      * @throws ServiceAbortException 対象のコレポン文書の取得に失敗した場合
-     * @author opentone
      */
      List<Long> searchIdInPage(SearchCorresponCondition condition) throws ServiceAbortException;
 }

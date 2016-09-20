@@ -15,13 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.view.action.control;
 
-import java.io.Serializable;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jp.co.opentone.bsol.framework.core.config.SystemConfig;
 import jp.co.opentone.bsol.framework.core.util.ArgumentValidator;
 import jp.co.opentone.bsol.linkbinder.dto.AddressCorresponGroup;
@@ -35,6 +28,12 @@ import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowProcessStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowStatus;
 import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowType;
 import jp.co.opentone.bsol.linkbinder.view.correspon.CorresponPage;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * コレポン文書表示画面のリンク/ボタン制御クラス.
@@ -72,6 +71,10 @@ public class CorresponPageElementControl implements Serializable {
      * Copyリンクの表示/非表示.
      */
     private boolean copyLink;
+    /**
+     * 学習用文書再登録の表示/非表示.
+     */
+    private boolean recreateLearningContents;
     /**
      * Printリンクの表示/非表示.
      */
@@ -142,6 +145,12 @@ public class CorresponPageElementControl implements Serializable {
      */
     public void setCopyLink(boolean copyLink) {
         this.copyLink = copyLink;
+    }
+    /**
+     *
+     */
+    public boolean isRecreateLearningContentsButton() {
+        return isRecreateLearningContents();
     }
     /**
      * @return the copyLink
@@ -1539,5 +1548,15 @@ public class CorresponPageElementControl implements Serializable {
      */
     public boolean isIssued(Correspon c) {
         return ((c != null) && c.isIssued());
+    }
+
+    /**
+     * ログインユーザが学習用コンテンツ再作成可能であればtrueを返す.
+     */
+    public boolean isRecreateLearningContents() {
+        if (page == null) {
+            return false;
+        }
+        return isRepliableCorrespon(page.getCorrespon());
     }
 }

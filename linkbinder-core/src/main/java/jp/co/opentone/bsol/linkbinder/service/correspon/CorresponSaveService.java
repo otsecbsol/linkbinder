@@ -17,6 +17,7 @@ package jp.co.opentone.bsol.linkbinder.service.correspon;
 
 import jp.co.opentone.bsol.framework.core.service.IService;
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
+import jp.co.opentone.bsol.linkbinder.dto.Attachment;
 import jp.co.opentone.bsol.linkbinder.dto.Correspon;
 
 /**
@@ -31,4 +32,12 @@ public interface CorresponSaveService extends IService {
      * @throws ServiceAbortException コレポン文書の保存に失敗
      */
     Long save(Correspon correspon) throws ServiceAbortException;
+
+    /**
+     * 指定された添付ファイル情報を保存する.
+     * @param correspon コレポン文書
+     * @param attachment 添付ファイル情報
+     * @throws ServiceAbortException 添付ファイル情報保存に失敗
+     */
+    void saveAttachmentInfo(Correspon correspon, Attachment attachment) throws ServiceAbortException;
 }

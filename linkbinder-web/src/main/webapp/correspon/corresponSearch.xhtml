@@ -67,17 +67,50 @@
                          warnClass="warn"
                          fatalClass="fatal"
                          for="keyword" />
+              <h:selectOneRadio id="operator"
+                                styleClass="select-group"
+                                layout="pageDirection" value="#{corresponSearchPage.operator}">
+                <f:selectItems value="#{corresponSearchPage.operatorSelectList}" styleClass="label-body"/>
+              </h:selectOneRadio>
+            </div>
+            <div class="five columns">
+              <h:outputText value="#{corresponSearchPage.helpContent}"
+                            escape="false"/>
             </div>
           </div>
           <div class="row">
-            <div class="four columns">
-              <h:outputLabel for="fullTextSearchMode" value="検索対象"/>
-              <h:selectOneMenu id="fullTextSearchMode"
-                            value="#{corresponSearchPage.fullTextSearchMode}"
-                            styleClass="u-full-width"
-                            rendered="#{corresponSearchPage.fullTextSearchModeSelectList != null}">
-                <f:selectItems value="#{corresponSearchPage.fullTextSearchModeSelectList}" />
-              </h:selectOneMenu>
+            <div class="five columns">
+              <div class="row">
+                <div class="six columns">
+                  <h:outputLabel for="fullTextSearchMode" value="検索対象"/>
+                </div>
+              </div>
+              <div class="row">
+                <div class="#{corresponSearchPage.projectUseLearning ? 'six' : 'twelve'} columns">
+                  <h:selectOneMenu id="fullTextSearchMode"
+                                   value="#{corresponSearchPage.fullTextSearchMode}"
+                                   styleClass="u-full-width"
+                                   rendered="#{corresponSearchPage.fullTextSearchModeSelectList != null}">
+                    <f:selectItems value="#{corresponSearchPage.fullTextSearchModeSelectList}" />
+                  </h:selectOneMenu>
+                </div>
+                <ui:fragment rendered="#{corresponSearchPage.projectUseLearning}">
+                  <div class="six columns">
+                    <label>
+                      <h:selectBooleanCheckbox id="onlylearningCorrespon" value="#{corresponSearchPage.onlyLearningCorrespon}"/>
+                      <span class="label-body">学習用文書のみ</span>
+                    </label>
+                  </div>
+                </ui:fragment>
+              </div>
+              <label>
+                <h:selectBooleanCheckbox id="includeImage" value="#{corresponSearchPage.includeImage}"/>
+                <span class="label-body">画像ファイル</span>
+              </label>
+              <label>
+                  <h:selectBooleanCheckbox id="includeNonImage" value="#{corresponSearchPage.includeNonImage}"/>
+                  <span class="label-body">画像ファイル以外</span>
+              </label>
             </div>
           </div>
           <div class="row">

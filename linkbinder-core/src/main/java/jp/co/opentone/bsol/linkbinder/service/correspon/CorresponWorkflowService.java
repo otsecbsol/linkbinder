@@ -15,14 +15,15 @@
  */
 package jp.co.opentone.bsol.linkbinder.service.correspon;
 
-import java.util.List;
-
 import jp.co.opentone.bsol.framework.core.service.IService;
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
 import jp.co.opentone.bsol.linkbinder.dto.Correspon;
+import jp.co.opentone.bsol.linkbinder.dto.IssueToLearningProjectsResult;
 import jp.co.opentone.bsol.linkbinder.dto.Workflow;
 import jp.co.opentone.bsol.linkbinder.dto.WorkflowTemplate;
 import jp.co.opentone.bsol.linkbinder.dto.WorkflowTemplateUser;
+
+import java.util.List;
 
 /**
  * このサービスでは承認フローに関する処理を提供する.
@@ -50,9 +51,10 @@ public interface CorresponWorkflowService extends IService {
      * ログインユーザーが、指定されたコレポン文書を承認する.
      * @param correspon コレポン文書
      * @param workflow ワークフロー
+     * @result 結果
      * @throws ServiceAbortException 承認に失敗したときエラー
      */
-    void approve(Correspon correspon, Workflow workflow) throws ServiceAbortException;
+    IssueToLearningProjectsResult approve(Correspon correspon, Workflow workflow) throws ServiceAbortException;
 
     /**
      * ログインユーザーが、指定されたコレポン文書を否認する.

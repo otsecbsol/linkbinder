@@ -60,9 +60,7 @@ public class CopiedAttachmentInfo extends AttachmentInfo {
      * @param service コレポン文書サービス
      */
     public CopiedAttachmentInfo(Attachment attachment, CorresponService service) {
-        setFileName(attachment.getFileName());
-        setFileId(attachment.getId());
-
+        populate(attachment);
         this.attachment = attachment;
         this.service = service;
     }

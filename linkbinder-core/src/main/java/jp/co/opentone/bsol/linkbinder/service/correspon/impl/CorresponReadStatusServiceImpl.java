@@ -158,7 +158,7 @@ public class CorresponReadStatusServiceImpl extends AbstractService implements
      * @param readStatus
      *            既読・未読状態
      * @return 登録対象既読・未読ID
-     * @throws ServiceAbortException
+     * @throws ServiceAbortException 作成に失敗
      */
     private Long create(CorresponReadStatus readStatus) throws ServiceAbortException {
         CorresponReadStatusDao dao = getDao(CorresponReadStatusDao.class);
@@ -174,16 +174,13 @@ public class CorresponReadStatusServiceImpl extends AbstractService implements
      * @param readStatus
      *            既読・未読状態
      * @return 更新件数
-     * @throws ServiceAbortException
+     * @throws ServiceAbortException 更新に失敗
      */
     private Integer update(CorresponReadStatus readStatus) throws ServiceAbortException {
         CorresponReadStatusDao dao = getDao(CorresponReadStatusDao.class);
         try {
             return dao.update(readStatus);
-        } catch (KeyDuplicateException e) {
-            throw new ServiceAbortException(e);
-        } catch (StaleRecordException e) {
-            // 排他エラーは設定しない（排他エラーをチェックしない）
+        } catch (KeyDuplicateException | StaleRecordException e) {
             throw new ServiceAbortException(e);
         }
     }
@@ -193,7 +190,7 @@ public class CorresponReadStatusServiceImpl extends AbstractService implements
      * @param readStatus
      *            既読・未読状態
      * @return 更新件数
-     * @throws ServiceAbortException
+     * @throws ServiceAbortException 更新に失敗
      */
     private Integer updateByCorresponId(CorresponReadStatus readStatus)
                                                 throws ServiceAbortException {

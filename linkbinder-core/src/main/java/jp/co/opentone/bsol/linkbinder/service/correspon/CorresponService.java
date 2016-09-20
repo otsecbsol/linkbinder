@@ -15,17 +15,18 @@
  */
 package jp.co.opentone.bsol.linkbinder.service.correspon;
 
-import java.util.List;
-
 import jp.co.opentone.bsol.framework.core.service.IService;
 import jp.co.opentone.bsol.framework.core.service.ServiceAbortException;
 import jp.co.opentone.bsol.linkbinder.dto.AddressUser;
 import jp.co.opentone.bsol.linkbinder.dto.Attachment;
 import jp.co.opentone.bsol.linkbinder.dto.Correspon;
 import jp.co.opentone.bsol.linkbinder.dto.CorresponResponseHistory;
+import jp.co.opentone.bsol.linkbinder.dto.IssueToLearningProjectsResult;
 import jp.co.opentone.bsol.linkbinder.dto.PersonInCharge;
 import jp.co.opentone.bsol.linkbinder.dto.code.CorresponStatus;
 import jp.co.opentone.bsol.linkbinder.util.view.correspon.CorresponResponseHistoryModel;
+
+import java.util.List;
 
 /**
  * このサービスではコレポン文書に関する処理を提供する.
@@ -105,9 +106,10 @@ public interface CorresponService extends IService {
     /**
      * 指定されたコレポン文書を発行する.
      * @param correspon コレポン文書
+     * @result 学習用文書への発行結果
      * @throws ServiceAbortException コレポン文書の発行に失敗
      */
-    void issue(Correspon correspon) throws ServiceAbortException;
+    IssueToLearningProjectsResult issue(Correspon correspon) throws ServiceAbortException;
 
     /**
      * 宛先-ユーザー及び任命したPerson in Chargeが返信したコレポン文書を取得する.
@@ -171,4 +173,12 @@ public interface CorresponService extends IService {
      */
     byte[] generateZip(Correspon correspons, boolean usePersonInCharge)
             throws ServiceAbortException;
+
+    /**
+     * 指定された文書を学習用プロジェクトへ公開する.
+     * @param id 文書ID
+     * @return 結果
+     * @throws ServiceAbortException 保存に失敗
+     */
+    IssueToLearningProjectsResult issueToLearningProjects(Long id) throws ServiceAbortException;
 }

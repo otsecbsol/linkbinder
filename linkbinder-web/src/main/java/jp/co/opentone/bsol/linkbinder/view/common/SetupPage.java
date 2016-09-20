@@ -998,8 +998,8 @@ public class SetupPage extends AbstractPage implements MasterDataImportablePage 
                     case PROJECT:
                         //プロジェクト情報
                         fileName +=  "_Project.csv";
-
-                        List<Project> list = page.projectService.findAll();
+                        SearchProjectCondition empty = new SearchProjectCondition();
+                        List<Project> list = page.projectService.findForCsvDownload(empty);
                         data = page.projectService.generateCSV(list);
                         break;
                     case USER:

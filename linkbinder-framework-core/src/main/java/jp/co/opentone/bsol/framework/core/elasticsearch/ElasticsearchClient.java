@@ -15,12 +15,9 @@
  */
 package jp.co.opentone.bsol.framework.core.elasticsearch;
 
-import static org.elasticsearch.index.query.QueryBuilders.*;
-
-import java.io.Serializable;
-import java.util.Map;
-import java.util.function.Consumer;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jp.co.opentone.bsol.framework.core.elasticsearch.response.ElasticsearchSearchResponse;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
@@ -34,11 +31,16 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MatchQueryBuilder;
+import org.elasticsearch.index.query.MultiMatchQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.Serializable;
+import java.util.Map;
+import java.util.function.Consumer;
 
-import jp.co.opentone.bsol.framework.core.elasticsearch.response.ElasticsearchSearchResponse;
+import static org.elasticsearch.index.query.QueryBuilders.*;
 
 /**
  * Elasticsearch Clientのラッパークラス.
@@ -105,9 +107,7 @@ public class ElasticsearchClient implements Serializable, AutoCloseable {
         SearchRequestBuilder request = client.prepareSearch(formatIndex(config.getIndex()))
                 .setTypes(option.getSearchTypeName())
                 .setSearchType(SearchType.QUERY_THEN_FETCH)
-                .setQuery(multiMatchQuery(
-                        option.getKeyword(),
-                        option.getSearchFields().stream().toArray(String[]::new)));
+                .setQuery(buildQueryBuilder(option));
         option.getHighlightFields().stream().forEach(request::addHighlightedField);
 
         if (option.getFrom() >= 0) {
@@ -116,6 +116,25 @@ public class ElasticsearchClient implements Serializable, AutoCloseable {
         //TODO scroll
 
         c.accept(new ElasticsearchSearchResponse(request.execute().actionGet()));
+    }
+
+    private QueryBuilder buildQueryBuilder(ElasticsearchSearchOption option) {
+        ElasticsearchSearchOption.Operator op = option.getOperator();
+        MultiMatchQueryBuilder query = multiMatchQuery(
+                option.getKeyword(),
+                option.getSearchFields().stream().toArray(String[]::new));
+        if (op != null && ElasticsearchSearchOption.Operator.AND == op) {
+            query = query.operator(MatchQueryBuilder.Operator.AND);
+        }
+        if (option.getOptionalSearchConditions().isEmpty()) {
+            return query;
+        } else {
+            BoolQueryBuilder q = boolQuery().must(query);
+            option.getOptionalSearchConditions().forEach((k, v) -> {
+                q.must(matchQuery(k, v));
+            });
+            return q;
+        }
     }
 
     public void createIndexIfNotExists(String index, String settingJson, Map<String, String> mappingJson) {

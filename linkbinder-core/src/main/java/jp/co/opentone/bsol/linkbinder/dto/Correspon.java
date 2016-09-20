@@ -15,19 +15,21 @@
  */
 package jp.co.opentone.bsol.linkbinder.dto;
 
+import jp.co.opentone.bsol.framework.core.dao.VersioningEntity;
+import jp.co.opentone.bsol.framework.core.util.CloneUtil;
+import jp.co.opentone.bsol.linkbinder.dto.code.AddressType;
+import jp.co.opentone.bsol.linkbinder.dto.code.AttachmentFileType;
+import jp.co.opentone.bsol.linkbinder.dto.code.CorresponStatus;
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
+import jp.co.opentone.bsol.linkbinder.dto.code.ReplyRequired;
+import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowStatus;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import jp.co.opentone.bsol.framework.core.dao.VersioningEntity;
-import jp.co.opentone.bsol.framework.core.util.CloneUtil;
-import jp.co.opentone.bsol.linkbinder.dto.code.AddressType;
-import jp.co.opentone.bsol.linkbinder.dto.code.CorresponStatus;
-import jp.co.opentone.bsol.linkbinder.dto.code.ReplyRequired;
-import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowStatus;
 
 /**
  * テーブル [v_correspon] の1レコードを表すDto.
@@ -197,6 +199,16 @@ public class Correspon extends AbstractDto implements VersioningEntity {
      * </p>
      */
     private WorkflowStatus workflowStatus;
+
+    /**
+     * For Learning.
+     * <p>
+     * [v_correspon.for_learning]
+     * </p>
+     */
+    private ForLearning forLearning;
+
+    private Long forLearningSrcId;
 
     /**
      * Custom field1.
@@ -462,6 +474,10 @@ public class Correspon extends AbstractDto implements VersioningEntity {
      */
     private String file1FileName;
 
+    private AttachmentFileType file1FileType;
+    private String file1OrgExtractedText;
+    private String file1ExtractedText;
+
     /**
      * File2.
      * <p>
@@ -486,6 +502,10 @@ public class Correspon extends AbstractDto implements VersioningEntity {
      */
     private String file2FileName;
 
+
+    private AttachmentFileType file2FileType;
+    private String file2OrgExtractedText;
+    private String file2ExtractedText;
     /**
      * File3.
      * <p>
@@ -509,6 +529,10 @@ public class Correspon extends AbstractDto implements VersioningEntity {
      * </p>
      */
     private String file3FileName;
+
+    private AttachmentFileType file3FileType;
+    private String file3OrgExtractedText;
+    private String file3ExtractedText;
 
     /**
      * File4.
@@ -534,6 +558,10 @@ public class Correspon extends AbstractDto implements VersioningEntity {
      */
     private String file4FileName;
 
+    private AttachmentFileType file4FileType;
+    private String file4OrgExtractedText;
+    private String file4ExtractedText;
+
     /**
      * File5.
      * <p>
@@ -557,6 +585,10 @@ public class Correspon extends AbstractDto implements VersioningEntity {
      * </p>
      */
     private String file5FileName;
+
+    private AttachmentFileType file5FileType;
+    private String file5OrgExtractedText;
+    private String file5ExtractedText;
 
     /**
      * Created by.
@@ -645,6 +677,21 @@ public class Correspon extends AbstractDto implements VersioningEntity {
     private List<Attachment> updateAttachments;
 
     /**
+     * 学習用プロジェクトID.
+     */
+    private String learningProjectId;
+
+    /**
+     * 文書に登録されている学習用ラベル一覧.
+     */
+    private List<LearningLabel> learningLabel;
+
+    /**
+     * 文書に登録されている学習用タグ一覧.
+     */
+    private List<LearningTag> learningTag;
+
+    /**
      * 空のインスタンスを生成する.
      */
     public Correspon() {
@@ -657,6 +704,14 @@ public class Correspon extends AbstractDto implements VersioningEntity {
     public boolean isToStringIgnoreField(String fieldName) {
         return super.isToStringIgnoreField(fieldName)
                 || TO_STRING_IGNORE_FIELDS.contains(fieldName);
+    }
+
+    /**
+     * 学習用文書であればtrueを返す.
+     * @return 判定結果
+     */
+    public boolean isLearningContents() {
+        return forLearning != null && ForLearning.LEARNING == forLearning;
     }
 
     /**
@@ -961,6 +1016,24 @@ public class Correspon extends AbstractDto implements VersioningEntity {
     public void setWorkflowStatus(WorkflowStatus workflowStatus) {
         this.workflowStatus = workflowStatus;
     }
+
+    /**
+     * forLearning の値を返す.
+     * <p>
+     * [v_correspon.for_learning]
+     * </p>
+     * @return forLearning
+     */
+    public ForLearning getForLearning() { return forLearning; }
+
+    /**
+     * forLearning の値を設定する.
+     * <p>
+     * [v_correspon.for_learning]
+     * </p>
+     *
+     */
+    public void setForLearning(ForLearning forLearning) { this.forLearning = forLearning; }
 
     /**
      * customField1Id の値を返す.
@@ -2297,42 +2370,73 @@ public class Correspon extends AbstractDto implements VersioningEntity {
     }
 
     /**
+     * このオブジェクトが保持するカスタムフィールド情報をリストに変換して返す.
+     * @return 変換後のリスト
+     */
+    public List<CorresponCustomField> getCustomFields() {
+        List<CorresponCustomField> result = new ArrayList<>();
+
+        addCustomField(result, customField1Id, customField1Label, customField1Value);
+        addCustomField(result, customField2Id, customField2Label, customField2Value);
+        addCustomField(result, customField3Id, customField3Label, customField3Value);
+        addCustomField(result, customField4Id, customField4Label, customField4Value);
+        addCustomField(result, customField5Id, customField5Label, customField5Value);
+        addCustomField(result, customField6Id, customField6Label, customField6Value);
+        addCustomField(result, customField7Id, customField7Label, customField7Value);
+        addCustomField(result, customField8Id, customField8Label, customField8Value);
+        addCustomField(result, customField9Id, customField9Label, customField9Value);
+        addCustomField(result, customField10Id, customField10Label, customField10Value);
+
+        return result;
+    }
+
+    private void addCustomField(List<CorresponCustomField> list, Long id, String label, String value) {
+        if (id != null) {
+            CorresponCustomField f = new CorresponCustomField();
+            f.setProjectCustomFieldId(id);
+            f.setLabel(label);
+            f.setLabel(label);
+            list.add(f);
+        }
+    }
+
+    /**
      * このオブジェクトが保持する添付ファイル情報を、Attachmentオブジェクトのリストに変換して返す.
      * @return 添付ファイル情報のリスト
      */
     public List<Attachment> getAttachments() {
         List<Attachment> result = new ArrayList<Attachment>();
-        if (getFile1Id() != null) {
-            addAttachmentTo(result, getFile1Id(), getFile1FileId(), getFile1FileName());
-        }
-        if (getFile2Id() != null) {
-            addAttachmentTo(result, getFile2Id(), getFile2FileId(), getFile2FileName());
-        }
-        if (getFile3Id() != null) {
-            addAttachmentTo(result, getFile3Id(), getFile3FileId(), getFile3FileName());
-        }
-        if (getFile4Id() != null) {
-            addAttachmentTo(result, getFile4Id(), getFile4FileId(), getFile4FileName());
-        }
-        if (getFile5Id() != null) {
-            addAttachmentTo(result, getFile5Id(), getFile5FileId(), getFile5FileName());
-        }
+
+        addAttachmentTo(result, getFile1Id(), getFile1FileId(), getFile1FileName(), getFile1FileType(), getFile1OrgExtractedText(), getFile1ExtractedText());
+        addAttachmentTo(result, getFile2Id(), getFile2FileId(), getFile2FileName(), getFile2FileType(), getFile2OrgExtractedText(), getFile2ExtractedText());
+        addAttachmentTo(result, getFile3Id(), getFile3FileId(), getFile3FileName(), getFile3FileType(), getFile3OrgExtractedText(), getFile3ExtractedText());
+        addAttachmentTo(result, getFile4Id(), getFile4FileId(), getFile4FileName(), getFile4FileType(), getFile4OrgExtractedText(), getFile4ExtractedText());
+        addAttachmentTo(result, getFile5Id(), getFile5FileId(), getFile5FileName(), getFile5FileType(), getFile5OrgExtractedText(), getFile5ExtractedText());
+
         return result;
     }
 
     private void addAttachmentTo(List<Attachment> attachments,
-                                //CHECKSTYLE:OFF フィールドと同名の警告が出るが、この名前が最も適切
-                                Long id,
-                                //CHECKSTYLE:ON
-                                String fileId,
-                                String fileName) {
-        Attachment a = new Attachment();
-        a.setId(id);
-        a.setCorresponId(getId());
-        a.setFileId(fileId);
-        a.setFileName(fileName);
+                                 //CHECKSTYLE:OFF フィールドと同名の警告が出るが、この名前が最も適切
+                                 Long id,
+                                 //CHECKSTYLE:ON
+                                 String fileId,
+                                 String fileName,
+                                 AttachmentFileType fileType,
+                                 String orgExtractedText,
+                                 String extractedText) {
+        if (id != null) {
+            Attachment a = new Attachment();
+            a.setId(id);
+            a.setCorresponId(getId());
+            a.setFileId(fileId);
+            a.setFileName(fileName);
+            a.setFileType(fileType);
+            a.setOrgExtractedText(orgExtractedText);
+            a.setExtractedText(extractedText);
 
-        attachments.add(a);
+            attachments.add(a);
+        }
     }
 
     /**
@@ -2381,5 +2485,165 @@ public class Correspon extends AbstractDto implements VersioningEntity {
      */
     public boolean isIssued() {
         return (WorkflowStatus.ISSUED == getWorkflowStatus());
+    }
+
+    public String getFile1OrgExtractedText() {
+        return file1OrgExtractedText;
+    }
+
+    public void setFile1OrgExtractedText(String file1OrgExtractedText) {
+        this.file1OrgExtractedText = file1OrgExtractedText;
+    }
+
+    public String getFile1ExtractedText() {
+        return file1ExtractedText;
+    }
+
+    public void setFile1ExtractedText(String file1ExtractedText) {
+        this.file1ExtractedText = file1ExtractedText;
+    }
+
+    public String getFile2OrgExtractedText() {
+        return file2OrgExtractedText;
+    }
+
+    public void setFile2OrgExtractedText(String file2OrgExtractedText) {
+        this.file2OrgExtractedText = file2OrgExtractedText;
+    }
+
+    public String getFile2ExtractedText() {
+        return file2ExtractedText;
+    }
+
+    public void setFile2ExtractedText(String file2ExtractedText) {
+        this.file2ExtractedText = file2ExtractedText;
+    }
+
+    public String getFile3OrgExtractedText() {
+        return file3OrgExtractedText;
+    }
+
+    public void setFile3OrgExtractedText(String file3OrgExtractedText) {
+        this.file3OrgExtractedText = file3OrgExtractedText;
+    }
+
+    public String getFile3ExtractedText() {
+        return file3ExtractedText;
+    }
+
+    public void setFile3ExtractedText(String file3ExtractedText) {
+        this.file3ExtractedText = file3ExtractedText;
+    }
+
+    public String getFile4OrgExtractedText() {
+        return file4OrgExtractedText;
+    }
+
+    public void setFile4OrgExtractedText(String file4OrgExtractedText) {
+        this.file4OrgExtractedText = file4OrgExtractedText;
+    }
+
+    public String getFile4ExtractedText() {
+        return file4ExtractedText;
+    }
+
+    public void setFile4ExtractedText(String file4ExtractedText) {
+        this.file4ExtractedText = file4ExtractedText;
+    }
+
+    public String getFile5OrgExtractedText() {
+        return file5OrgExtractedText;
+    }
+
+    public void setFile5OrgExtractedText(String file5OrgExtractedText) {
+        this.file5OrgExtractedText = file5OrgExtractedText;
+    }
+
+    public String getFile5ExtractedText() {
+        return file5ExtractedText;
+    }
+
+    public void setFile5ExtractedText(String file5ExtractedText) {
+        this.file5ExtractedText = file5ExtractedText;
+    }
+
+    public AttachmentFileType getFile1FileType() {
+        return file1FileType;
+    }
+
+    public void setFile1FileType(AttachmentFileType file1FileType) {
+        this.file1FileType = file1FileType;
+    }
+
+    public AttachmentFileType getFile2FileType() {
+        return file2FileType;
+    }
+
+    public void setFile2FileType(AttachmentFileType file2FileType) {
+        this.file2FileType = file2FileType;
+    }
+
+    public AttachmentFileType getFile3FileType() {
+        return file3FileType;
+    }
+
+    public void setFile3FileType(AttachmentFileType file3FileType) {
+        this.file3FileType = file3FileType;
+    }
+
+    public AttachmentFileType getFile4FileType() {
+        return file4FileType;
+    }
+
+    public void setFile4FileType(AttachmentFileType file4FileType) {
+        this.file4FileType = file4FileType;
+    }
+
+    public AttachmentFileType getFile5FileType() {
+        return file5FileType;
+    }
+
+    public void setFile5FileType(AttachmentFileType file5FileType) {
+        this.file5FileType = file5FileType;
+    }
+
+    public String getLearningProjectId() {
+        return this.learningProjectId;
+    }
+
+    public void setLearningProjectId(String learningProjectId) {
+        this.learningProjectId = learningProjectId;
+    }
+
+    public List<LearningLabel> getLearningLabel() {
+        if (learningLabel == null) {
+            return new ArrayList<>();
+        }
+
+        return this.learningLabel;
+    }
+
+    public void setLearningLabel(List<LearningLabel> labelList) {
+        this.learningLabel = labelList;
+    }
+
+    public List<LearningTag> getLearningTag() {
+        if (learningTag == null) {
+            return new ArrayList<>();
+        }
+
+        return learningTag;
+    }
+
+    public void setLearningTag(List<LearningTag> learningTag) {
+        this.learningTag = learningTag;
+    }
+
+    public Long getForLearningSrcId() {
+        return forLearningSrcId;
+    }
+
+    public void setForLearningSrcId(Long forLearningSrcId) {
+        this.forLearningSrcId = forLearningSrcId;
     }
 }

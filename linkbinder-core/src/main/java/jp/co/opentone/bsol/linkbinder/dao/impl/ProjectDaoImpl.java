@@ -59,6 +59,12 @@ public class ProjectDaoImpl extends AbstractLegacyDao<Project> implements Projec
     private static final String SQL_FIND = "find";
 
     /**
+     * SQLID: 検索条件を指定して学習用プロジェクトを取得する.
+     *
+     */
+    private static final String SQL_FIND_LEARNING = "findLearningPj";
+
+    /**
      * SQLID: 従業員番号を指定してプロジェクトサマリを取得する.
      */
     private static final String SQL_FIND_PROJECT_SUMMARY = "findProjectSummary";
@@ -136,16 +142,29 @@ public class ProjectDaoImpl extends AbstractLegacyDao<Project> implements Projec
                                                           skipResults,
                                                           maxResults);
     }
+
     /*
-     * (non-Javadoc)
-     * @seejp.co.opentone.bsol.linkbinder.dao.ProjectDao#find(jp.co.opentone.bsol.linkbinder.dto.
-     * SearchProjectCondition)
-     */
+ * (non-Javadoc)
+ * @seejp.co.opentone.bsol.linkbinder.dao.ProjectDao#find(jp.co.opentone.bsol.linkbinder.dto.
+ * SearchProjectCondition)
+ */
     @SuppressWarnings("unchecked")
-    public List<Project> findAll() {
+    public List<Project> findLearningPj(SearchProjectCondition condition) {
         // 前方一致検索を行う
-         return (List<Project>) getSqlMapClientTemplate()
-                                            .queryForList(getSqlId(SQL_FIND_ALL));
+        SearchProjectCondition likeCondition = getLikeSearchCondition(condition, FIELDS);
+        int skipResults = condition.getSkipNum();
+        int maxResults = condition.getPageRowNum();
+        return (List<Project>) getSqlMapClientTemplate()
+                .queryForList(getSqlId(SQL_FIND_LEARNING),
+                        likeCondition,
+                        skipResults,
+                        maxResults);
+    }
+
+    public List<Project> findForCsvDownload(SearchProjectCondition condition) {
+        // 前方一致検索を行う
+        return (List<Project>) getSqlMapClientTemplate()
+                                            .queryForList(getSqlId(SQL_FIND_ALL), condition);
     }
 
     /*

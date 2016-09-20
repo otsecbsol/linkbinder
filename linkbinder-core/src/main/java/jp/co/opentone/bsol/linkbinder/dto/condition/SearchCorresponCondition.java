@@ -15,6 +15,28 @@
  */
 package jp.co.opentone.bsol.linkbinder.dto.condition;
 
+import jp.co.opentone.bsol.framework.core.config.SystemConfig;
+import jp.co.opentone.bsol.framework.core.util.CloneUtil;
+import jp.co.opentone.bsol.framework.core.util.SQLConvertUtil;
+import jp.co.opentone.bsol.linkbinder.dto.CorresponGroup;
+import jp.co.opentone.bsol.linkbinder.dto.CorresponGroupUser;
+import jp.co.opentone.bsol.linkbinder.dto.CorresponType;
+import jp.co.opentone.bsol.linkbinder.dto.LearningLabel;
+import jp.co.opentone.bsol.linkbinder.dto.LearningTag;
+import jp.co.opentone.bsol.linkbinder.dto.User;
+import jp.co.opentone.bsol.linkbinder.dto.code.AddressType;
+import jp.co.opentone.bsol.linkbinder.dto.code.AddressUserType;
+import jp.co.opentone.bsol.linkbinder.dto.code.AllowApproverToBrowse;
+import jp.co.opentone.bsol.linkbinder.dto.code.CorresponStatus;
+import jp.co.opentone.bsol.linkbinder.dto.code.ForLearning;
+import jp.co.opentone.bsol.linkbinder.dto.code.FullTextSearchMode;
+import jp.co.opentone.bsol.linkbinder.dto.code.ReadStatus;
+import jp.co.opentone.bsol.linkbinder.dto.code.ReplyRequired;
+import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowProcessStatus;
+import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowStatus;
+import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowType;
+import org.apache.commons.lang.time.DateUtils;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -22,26 +44,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.lang.time.DateUtils;
-
-import jp.co.opentone.bsol.framework.core.config.SystemConfig;
-import jp.co.opentone.bsol.framework.core.util.CloneUtil;
-import jp.co.opentone.bsol.framework.core.util.SQLConvertUtil;
-import jp.co.opentone.bsol.linkbinder.dto.CorresponGroup;
-import jp.co.opentone.bsol.linkbinder.dto.CorresponGroupUser;
-import jp.co.opentone.bsol.linkbinder.dto.CorresponType;
-import jp.co.opentone.bsol.linkbinder.dto.User;
-import jp.co.opentone.bsol.linkbinder.dto.code.AddressType;
-import jp.co.opentone.bsol.linkbinder.dto.code.AddressUserType;
-import jp.co.opentone.bsol.linkbinder.dto.code.AllowApproverToBrowse;
-import jp.co.opentone.bsol.linkbinder.dto.code.CorresponStatus;
-import jp.co.opentone.bsol.linkbinder.dto.code.FullTextSearchMode;
-import jp.co.opentone.bsol.linkbinder.dto.code.ReadStatus;
-import jp.co.opentone.bsol.linkbinder.dto.code.ReplyRequired;
-import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowProcessStatus;
-import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowStatus;
-import jp.co.opentone.bsol.linkbinder.dto.code.WorkflowType;
 
 /**
  * テーブル [v_correspon] の検索条件を表すDto.
@@ -114,6 +116,16 @@ public class SearchCorresponCondition extends AbstractCondition {
     private CorresponType[] corresponTypes;
 
     /**
+     * 学習用ラベル.
+     */
+    private LearningLabel[] learningLabels;
+
+    /**
+     * 学習用タグ.
+     */
+    private LearningTag[] learningTags;
+
+    /**
      * 承認状態.
      */
     private WorkflowStatus[] workflowStatuses;
@@ -122,6 +134,11 @@ public class SearchCorresponCondition extends AbstractCondition {
      * 未読／既読状態.
      */
     private ReadStatus[] readStatuses;
+
+    /**
+     * 学習用文書であるか否か.
+     */
+    private ForLearning[] forLearnings;
 
     /**
      * 文書状態.
@@ -259,6 +276,11 @@ public class SearchCorresponCondition extends AbstractCondition {
     private String customFieldValue;
 
     /**
+     * 学習用文書の元文書ID.
+     */
+    private Long forLearningSrcId;
+
+    /**
      * プロジェクトID.
      */
     private String projectId;
@@ -329,6 +351,14 @@ public class SearchCorresponCondition extends AbstractCondition {
      */
     public void setIdList(List<Ids> idList) {
         this.idList = idList;
+    }
+
+    public Long getForLearningSrcId() {
+        return forLearningSrcId;
+    }
+
+    public void setForLearningSrcId(Long forLearningSrcId) {
+        this.forLearningSrcId = forLearningSrcId;
     }
 
     /**
@@ -461,6 +491,38 @@ public class SearchCorresponCondition extends AbstractCondition {
     }
 
     /**
+     * learningLabelsを取得します.
+     * @return the learningLabels
+     */
+    public LearningLabel[] getLearningLabels() {
+        return CloneUtil.cloneArray(LearningLabel.class, learningLabels);
+    }
+
+    /**
+     * learingLabelsを設定します.
+     * @param learningLabels the learningLabels to set
+     */
+    public void setLearningLabels(LearningLabel[] learningLabels) {
+        this.learningLabels = CloneUtil.cloneArray(LearningLabel.class, learningLabels);
+    }
+
+    /**
+     * learningTagsを取得します.
+     * @return the learningTags
+     */
+    public LearningTag[] getLearningTags() {
+        return CloneUtil.cloneArray(LearningTag.class, learningTags);
+    }
+
+    /**
+     * learingTagsを設定します.
+     * @param learningTags the learningTags to set
+     */
+    public void setLearningTags(LearningTag[] learningTags) {
+        this.learningTags = CloneUtil.cloneArray(LearningTag.class, learningTags);
+    }
+
+    /**
      * workflowStatusesを取得します.
      * @return the workflowStatuses
      */
@@ -490,6 +552,22 @@ public class SearchCorresponCondition extends AbstractCondition {
      */
     public void setReadStatuses(ReadStatus[] readStatuses) {
         this.readStatuses = CloneUtil.cloneArray(ReadStatus.class, readStatuses);
+    }
+
+    /**
+     * forLearningsを取得します.
+     * @return the forLearnings
+     */
+    public ForLearning[] getForLearnings() {
+        return CloneUtil.cloneArray(ForLearning.class, forLearnings);
+    }
+
+    /**
+     * forLearningssを設定します.
+     * @param forLearnings the forLearnings to set
+     */
+    public void setForLearnings(ForLearning[] forLearnings) {
+        this.forLearnings = CloneUtil.cloneArray(ForLearning.class, forLearnings);
     }
 
     /**

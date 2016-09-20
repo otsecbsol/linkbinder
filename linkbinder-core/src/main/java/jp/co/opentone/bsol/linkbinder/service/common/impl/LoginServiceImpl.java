@@ -15,12 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.service.common.impl;
 
-import javax.annotation.Resource;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import jp.co.opentone.bsol.framework.core.ProcessContext;
 import jp.co.opentone.bsol.framework.core.SuppressTrace;
 import jp.co.opentone.bsol.framework.core.auth.AuthUser;
@@ -41,6 +35,11 @@ import jp.co.opentone.bsol.linkbinder.dto.UserProfile;
 import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
 import jp.co.opentone.bsol.linkbinder.service.AbstractService;
 import jp.co.opentone.bsol.linkbinder.service.common.LoginService;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
 
 /**
  *
@@ -233,7 +232,15 @@ public class LoginServiceImpl extends AbstractService implements LoginService {
 
     private UserProfile createUserProfileInstance(User user)
         throws ServiceAbortException {
+
         UserProfile p = new UserProfile();
+        if (user.getUserProfileId() != null) {
+            UserProfileDao dao = getDao(UserProfileDao.class);
+            try {
+                p = dao.findById(user.getUserProfileId());
+            } catch (RecordNotFoundException e) {
+            }
+        }
 
         p.setId(user.getUserProfileId());
         p.setUser(user);

@@ -22,7 +22,7 @@
     <style type="text/css">
     <!--
 body {
-  font-family: Verdana, "游ゴシック", YuGothic, "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, sans-serif;
+  font-family: "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, arial, helvetica, sans-serif;
   font-size: 14px;
   color:#484848;
   margin: 0;
@@ -34,7 +34,7 @@ table {
   font-size: 12px;
 }
 pre {
-  font-family: Verdana, "游ゴシック", YuGothic, "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, sans-serif;
+  font-family: "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, arial, helvetica, sans-serif;
   color:#484848;
   white-space: -moz-pre-wrap;
   white-space: -pre-wrap;
@@ -54,7 +54,7 @@ hr {
   font-weight: bold;
 }
 textarea {
-  font-family: Verdana, "游ゴシック", YuGothic, "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, sans-serif;
+  font-family: "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, arial, helvetica, sans-serif;
 
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
@@ -528,7 +528,7 @@ option,
 label,
 .label
 {
-  font-family: Verdana, "游ゴシック", YuGothic, "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, sans-serif;
+  font-family: "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, arial, helvetica, sans-serif;
   font-size: 14px;
 }
 
@@ -537,7 +537,7 @@ input[type="password"],
 input[type="radio"],
 input[type="checkbox"],
 select {
-  font-family: Verdana, "游ゴシック", YuGothic, "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, sans-serif;
+  font-family: "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, arial, helvetica, sans-serif;
   font-size: 14px;
 
   border: solid 1px #ccc;
@@ -671,6 +671,44 @@ div#tos {
   width: 99%;
 }
 
+.learning-label {
+  font-size: 1em;
+  padding: 0px 5px 0px 5px;
+  position: relative;
+  border: 1px solid #666;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  margin: 0px 5px 5px 0px;
+  background-color: #E4E4E4;
+}
+
+.learning-tag {
+  font-size: 1em;
+  padding: 0px 5px 0px 20px;
+  margin: 0px 5px 5px 0px;
+  position: relative;
+  border: 1px solid #666;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  background-color: #E4E4E4;
+}
+
+.learning-tag:before {
+  background: #FFF;
+  margin-top :-6px;
+  height: 12px;
+  width: 8px;
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 7px;
+  border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+}
+
     //-->
     </style>
     <div id="content">
@@ -787,6 +825,28 @@ div#tos {
           <span id="previousRevision">$util.encode($data.previousRevCorresponNo)</span>
         </td>
       </tr>
+#if($data.isLearningContents())
+      <tr>
+        <td class="label" style="vertical-align:top;">ラベル</td>
+        <td class="label" style="vertical-align:top;">:</td>
+#set($row = true)
+        <td>
+#foreach($learningLabel in $data.learningLabel)
+          <span class="learning-label">$learningLabel.name</span>
+#end
+        </td>
+      </tr>
+      <tr>
+        <td class="label" style="vertical-align:top;">タグ</td>
+        <td class="label" style="vertical-align:top;">:</td>
+#set($row = true)
+        <td>
+#foreach($learningTag in $data.learningTag)
+          <span class="learning-tag">$learningTag.name</span>
+#end
+        </td>
+      </tr>
+#end
       <tr>
         <td><span class="label">宛先</span></td>
         <td><span class="label">:</span></td>

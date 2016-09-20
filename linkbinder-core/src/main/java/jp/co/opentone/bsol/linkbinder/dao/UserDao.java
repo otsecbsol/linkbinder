@@ -101,13 +101,30 @@ public interface UserDao extends LegacyGenericDao<User>, Authenticator {
     void updateUser(SysUsers user) throws KeyDuplicateException, StaleRecordException, RecordNotFoundException;
 
     /**
+     * 指定されたレコードを更新する.
+     * @param user
+     * @return
+     * @throws KeyDuplicateException, StaleRecordException
+     */
+    void updatePjUser(SysUsers user) throws KeyDuplicateException, StaleRecordException, RecordNotFoundException;
+
+    /**
      * レコードを追加する.
      * @param user
      * @return
      * @throws KeyDuplicateException
      * @throws StaleRecordException
      */
-    void creteUser(SysUsers user) throws KeyDuplicateException;
+    void createUser(SysUsers user) throws KeyDuplicateException;
+
+    /**
+     * レコードを追加する.
+     * @param user
+     * @return
+     * @throws KeyDuplicateException
+     * @throws StaleRecordException
+     */
+    void createPjUser(SysUsers user) throws KeyDuplicateException;
     /**
      * システム管理者レコードを追加する.
      * @param user

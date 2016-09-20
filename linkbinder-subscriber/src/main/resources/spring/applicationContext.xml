@@ -84,11 +84,10 @@
   <bean id="systemConfigSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
     <property name="basenames">
       <list>
-        <value>classpath:config/framework-config</value>
-        <value>classpath:config/linkbinder-config</value>
-        <!-- override -->
         <value>file:${LB_RESOURCE_DIR}/framework-config</value>
         <value>file:${LB_RESOURCE_DIR}/linkbinder-config</value>
+        <value>classpath:config/framework-config</value>
+        <value>classpath:config/linkbinder-config</value>
       </list>
     </property>
   </bean>
@@ -98,15 +97,14 @@
   <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
     <property name="basenames">
       <list>
-        <value>classpath:message/framework-messages</value>
-        <value>classpath:message/validation_messages</value>
-        <value>classpath:message/messages</value>
-        <value>classpath:message/errors</value>
-        <!-- override -->
         <value>file:${LB_RESOURCE_DIR}/framework-messages</value>
         <value>file:${LB_RESOURCE_DIR}/validation_messages</value>
         <value>file:${LB_RESOURCE_DIR}/messages</value>
         <value>file:${LB_RESOURCE_DIR}/errors</value>
+        <value>classpath:message/framework-messages</value>
+        <value>classpath:message/validation_messages</value>
+        <value>classpath:message/messages</value>
+        <value>classpath:message/errors</value>
       </list>
     </property>
   </bean>

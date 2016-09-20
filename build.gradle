@@ -70,6 +70,7 @@ subprojects {
     configurations {
         all*.exclude group: "commons-logging", module: "commons-logging"
         all*.exclude group: "log4j", module: "log4j"
+        all*.exclude group: "com.google.guava", module:"guava-jdk5"
     }
 
     tasks.withType(JavaCompile) {

@@ -241,6 +241,15 @@ public class Constants {
     /** Redisホスト名取得キー. */
     public static final String KEY_REDIS_HOST = "redis.host";
 
+    /** Google Cloud Vision API 利用可否取得キー. */
+    public static final String KEY_GOOGLE_VISION_USE = "googlevision.use";
+    /** Google Cloud Vision API 認証情報ファイル取得キー. */
+    public static final String KEY_GOOGLE_VISION_SERVICE_ACCOUNT_FILE = "googlevision.service.account.file";
+    /** Google Cloud Vision API アプリケーション名取得キー. */
+    public static final String KEY_GOOGLE_VISION_APPLICATION_NAME = "googlevision.application.name";
+    /** Google Cloud Vision API 結果最大件数取得キー. */
+    public static final String KEY_GOOGLE_VISION_API_RESULT_COUNT = "googlevision.api.result.count";
+
     /**
      * sessionに格納されたコレポン文書IDリストのKEY.
      * @author opentone
@@ -252,6 +261,20 @@ public class Constants {
      * @author opentone
      */
     public static final String KEY_CORRESPON_DATA_COUNT = PREFIX + "corresponDataCount";
+
+    /**
+     * 学習用コンテンツ項目名取得キー.
+     */
+    public static final String KEY_LEARNING_CONTENTS_LABEL = "learning.title.contents";
+    /**
+     * 学習用文書項目名取得キー.
+     */
+    public static final String KEY_LEARNING_CORRESPON_LABEL = "learning.title.correspon";
+    /**
+     * 学習用ラベル区切り文字取得キー.
+     */
+    public static final String KEY_LEARNING_LABEL_DELIMITER = "learning.label.delimiter";
+
     /**
      * 空のインスタンスを生成する.
      * 外部からのインスタンス化禁止.

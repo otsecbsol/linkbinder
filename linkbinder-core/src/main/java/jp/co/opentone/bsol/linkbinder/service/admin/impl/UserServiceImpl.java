@@ -15,17 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.service.admin.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import jp.co.opentone.bsol.framework.core.config.SystemConfig;
 import jp.co.opentone.bsol.framework.core.dao.KeyDuplicateException;
 import jp.co.opentone.bsol.framework.core.dao.RecordNotFoundException;
@@ -61,6 +50,16 @@ import jp.co.opentone.bsol.linkbinder.message.ApplicationMessageCode;
 import jp.co.opentone.bsol.linkbinder.service.AbstractService;
 import jp.co.opentone.bsol.linkbinder.service.admin.UserService;
 import jp.co.opentone.bsol.linkbinder.util.ValueFormatter;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * このサービスではユーザー情報に関する処理を提供する.
@@ -96,13 +95,13 @@ public class UserServiceImpl extends AbstractService implements UserService {
     private static final List<String> HEADER;
     static {
         HEADER = new ArrayList<String>();
-        HEADER.add("ID");
-        HEADER.add("Name");
-        HEADER.add("Role");
-        HEADER.add("Company");
-        HEADER.add("Group");
-        HEADER.add("PA");
-        HEADER.add("GA");
+        HEADER.add("ユーザーID");
+        HEADER.add("ユーザー名");
+        HEADER.add("役割");
+        HEADER.add("会社");
+        HEADER.add("グループ");
+        HEADER.add("プロジェクト管理者");
+        HEADER.add("グループ管理者");
     }
 
     /**
@@ -429,10 +428,12 @@ public class UserServiceImpl extends AbstractService implements UserService {
         UserProfile p = findUserProfile(settings.getUser().getEmpNo());
         if (p == null) {
             User u = findUser(settings.getUser().getEmpNo());
+            u.setUseLearning(settings.getUser().isUseLearning());
             createUserProfile(u, settings.getDefaultProjectId());
         } else {
             //  更新前のバージョンNoを再設定して更新
             p.setVersionNo(settings.getUserProfileVersionNo());
+            p.setUseLearning(settings.getUser().isUseLearning());
             updateUserProfile(p, settings.getDefaultProjectId());
         }
     }
@@ -446,6 +447,7 @@ public class UserServiceImpl extends AbstractService implements UserService {
         UserProfile profile = new UserProfile();
         profile.setUser(user);
         profile.setDefaultProjectId(projectId);
+        profile.setUseLearning(user.isUseLearning());
         profile.setCreatedBy(getCurrentUser());
         profile.setUpdatedBy(getCurrentUser());
 
@@ -463,6 +465,7 @@ public class UserServiceImpl extends AbstractService implements UserService {
         profile.setId(old.getId());
         profile.setVersionNo(old.getVersionNo());
         profile.setDefaultProjectId(projectId);
+        profile.setUseLearning(old.isUseLearning());
         profile.setUpdatedBy(getCurrentUser());
 
         UserProfileDao dao = getDao(UserProfileDao.class);
@@ -674,25 +677,24 @@ public class UserServiceImpl extends AbstractService implements UserService {
     }
     /**
      * 新規登録か更新か判定する.
-     * @param site
-     *            拠点情報
+     * @param empNo ユーザーID
      * @return 登録ならtrue / 更新ならfalse
      * @throws ServiceAbortException
      */
-    private boolean isNew(String empId) throws ServiceAbortException {
-        return  findSysUser(empId) == null ;
+    private boolean isNew(String empNo) throws ServiceAbortException {
+        return  findSysUser(empNo) == null ;
 
     }
 
     /* (non-Javadoc)
      * @see jp.co.opentone.bsol.linkbinder.service.admin.ProjectService#find(java.lang.Long)
      */
-    public String findSysUser(String empId) throws ServiceAbortException {
-        if (StringUtils.isEmpty(empId)) {
+    public String findSysUser(String empNo) throws ServiceAbortException {
+        if (StringUtils.isEmpty(empNo)) {
             return null;
         }
         SysUsers user = new SysUsers();
-        user.setEmpNo(empId);
+        user.setEmpNo(empNo);
         UserDao dao = getDao(UserDao.class);
         try {
             return dao.findBySysUserId(user);
@@ -816,7 +818,8 @@ public class UserServiceImpl extends AbstractService implements UserService {
                     dao.create(user);
 
                 } else {
-                    dao.creteUser(user);
+                    dao.createUser(user);
+                    dao.createPjUser(user);
                 }
 
                 user.setImportResultStatus(MasterDataImportResultStatus.CREATED);
@@ -837,6 +840,13 @@ public class UserServiceImpl extends AbstractService implements UserService {
                 }
 
                 dao.updateUser(user);
+                if (StringUtils.isNotEmpty(user.getPjId())) {
+                    if (existsAsPjUser(user)) {
+                        dao.updatePjUser(user);
+                    } else {
+                        dao.createPjUser(user);
+                    }
+                }
                 user.setImportResultStatus(MasterDataImportResultStatus.UPDATED);
             } catch (RecordNotFoundException e) {
                 throw new ServiceAbortException("ユーザーが存在しません",
@@ -848,6 +858,15 @@ public class UserServiceImpl extends AbstractService implements UserService {
                         user.getEmpNo());
             }
         }
+    }
+
+    private boolean existsAsPjUser(SysUsers user) {
+        UserDao dao = getDao(UserDao.class);
+        SearchUserCondition condition = new SearchUserCondition();
+        condition.setProjectId(user.getPjId());
+        condition.setEmpNo(user.getEmpNo());
+
+        return !dao.findProjectUser(condition).isEmpty();
     }
 
     /**

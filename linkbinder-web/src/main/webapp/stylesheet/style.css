@@ -20,7 +20,7 @@
 pre {
   color:#484848;
   white-space: -moz-pre-wrap;
-  white-space: -pre-wrap;
+  /*white-space: -pre-wrap;*/
   white-space: -o-pre-wrap;
   white-space: pre-wrap;
   word-wrap:  break-word;
@@ -68,7 +68,7 @@ input[type="password"],
 input[type="radio"],
 input[type="checkbox"],
 select {
-  font-family: Verdana, "游ゴシック", YuGothic, "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, sans-serif;
+  font-family: "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, arial, helvetica, sans-serif;
   font-size: 14px;
 
   border: solid 1px #ccc;
@@ -81,7 +81,6 @@ select {
 input:focus {
   border: solid 1px #EEA34A;
 }
-*/
 
 hr {
   border: 0;
@@ -188,6 +187,7 @@ hr {
 /* --- コンテンツ部分 --- */
 #content {
   background-color: #fff;
+  padding: 0px 15px 0px 15px;
   /* z-index: 10; */
 }
 #content h3 {
@@ -203,7 +203,7 @@ hr {
   margin: 0px 1px 15px 0px;
   padding: 0;
 }
-#title {
+#title, #learn {
   position: relative;
   top: 0px;
   left:6px;
@@ -212,13 +212,66 @@ hr {
   font-size: 2rem;
 }
 
-#title:before {
+#title:before, #learn:before {
   content: "\f0c1\0020\0020\0020\0020";
   font-family: FontAwesome;
 }
-.title {
+.title,.learn {
   border-bottom: dashed 1px #d7d7d7;
   margin-bottom: 1rem;
+}
+
+#learning {
+    padding-top: 1rem;
+    padding-left: 1rem;
+}
+
+.learning-label {
+  font-size: 1em;
+  padding: 0px 5px 0px 5px;
+  position: relative;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  margin: 0px 5px 5px 0px;
+  background-color: #E4E4E4;
+}
+
+.learning-tag {
+  font-size: 1em;
+  padding: 0px 5px 0px 20px;
+  margin: 0px 5px 5px 0px;
+  position: relative;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  background-color: #E4E4E4;
+}
+
+.learning-tag:before {
+  background: #FFF;
+  margin-top :-6px;
+  height: 12px;
+  width: 8px;
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 7px;
+  border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+}
+
+.learning-button {
+  height: 25px !important;
+  padding: 0 5px !important;
+  background-color: #33C3F0 !important;
+  color: #FFFFFF !important;
+  line-height: 25px !important;
+  margin-bottom: 3px !important;
+  border: 0 !important;
 }
 
 
@@ -406,6 +459,11 @@ table.group {
   font-weight: normal;
   display: inline;
   margin-right: 15px;
+}
+
+/* ラベル・タグ選択欄のborderを上書き */
+.select2-container--default .select2-selection--multiple {
+border: 1px solid #ccc !important;
 }
 
 /* --- 一覧表示部分 --- */
@@ -707,7 +765,7 @@ table.inner td {
   float:left;
   list-style-type: none;
   margin: 0 2px 0 0;
-  padding 0 0 0 0;
+  padding: 0 0 0 0;
   white-space: nowrap;
 }
 .correspon-command-panel li a {

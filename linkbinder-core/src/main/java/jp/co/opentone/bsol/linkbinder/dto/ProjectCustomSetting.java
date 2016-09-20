@@ -15,10 +15,10 @@
  */
 package jp.co.opentone.bsol.linkbinder.dto;
 
-import java.util.Date;
-
 import jp.co.opentone.bsol.framework.core.dao.VersioningEntity;
 import jp.co.opentone.bsol.linkbinder.dto.code.CorresponStatus;
+
+import java.util.Date;
 
 /**
  * テーブル [project_custom_setting] の1レコードを表すDto.
@@ -82,6 +82,8 @@ public class ProjectCustomSetting extends AbstractDto implements VersioningEntit
      * </p>
      */
     private boolean useCorresponAccessControl;
+
+    private boolean useLearning;
 
     /**
      * Created by.
@@ -297,5 +299,13 @@ public class ProjectCustomSetting extends AbstractDto implements VersioningEntit
      */
     public boolean isNew() {
         return getId() == null || getId() == 0;
+    }
+
+    public boolean isUseLearning() {
+        return useLearning;
+    }
+
+    public void setUseLearning(boolean useLearning) {
+        this.useLearning = useLearning;
     }
 }

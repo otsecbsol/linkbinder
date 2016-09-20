@@ -15,11 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.dao.mock;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.stereotype.Repository;
-
 import jp.co.opentone.bsol.framework.core.auth.AuthUser;
 import jp.co.opentone.bsol.framework.core.auth.AuthenticateException;
 import jp.co.opentone.bsol.framework.core.auth.ExpiredPasswordException;
@@ -34,6 +29,10 @@ import jp.co.opentone.bsol.linkbinder.dto.SysUsers;
 import jp.co.opentone.bsol.linkbinder.dto.User;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchAvailableSystemCondition;
 import jp.co.opentone.bsol.linkbinder.dto.condition.SearchUserCondition;
+import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class UserDaoMock extends AbstractLegacyDao<User> implements UserDao {
@@ -212,8 +211,18 @@ public class UserDaoMock extends AbstractLegacyDao<User> implements UserDao {
     }
 
     @Override
-    public void creteUser(SysUsers user) throws KeyDuplicateException {
+    public void updatePjUser(SysUsers user) throws KeyDuplicateException, StaleRecordException, RecordNotFoundException {
+
+    }
+
+    @Override
+    public void createUser(SysUsers user) throws KeyDuplicateException {
         // TODO 自動生成されたメソッド・スタブ
+
+    }
+
+    @Override
+    public void createPjUser(SysUsers user) throws KeyDuplicateException {
 
     }
 

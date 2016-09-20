@@ -69,22 +69,34 @@ public interface ProjectDao extends LegacyGenericDao<Project> {
     List<Project> findByEmpNo(String empNo);
 
     /**
-     * 指定された条件に該当するプロジェクトを検索する.
+     * 指定された条件に該当する通常プロジェクトを検索する.
      * @param condition
      *            検索条件
      * @return 検索結果
      */
     List<Project> find(SearchProjectCondition condition);
+
     /**
-     * 全プロジェクトを検索する.
+     * 指定された条件に該当する学習用プロジェクトを検索する.
+     * @param condition
+     *            検索条件
      * @return 検索結果
      */
-    List<Project> findAll();
+    List<Project> findLearningPj(SearchProjectCondition condition);
+
+    /**
+     * 検索条件に一致するプロジェクトを検索する.
+     *
+     * 2016/09/01現在、CsvDownloadでのみ利用。
+     * apl_sys_aprv_flgの値が○☓で返される。
+     * @param condition 検索条件
+     * @return 検索結果
+     */
+    List<Project> findForCsvDownload(SearchProjectCondition condition);
 
     /**
      * 指定された条件に該当する件数を取得する.
-     * @param condition
-     *            検索条件
+     * @param condition 検索条件
      * @return 件数
      */
     int count(SearchProjectCondition condition);

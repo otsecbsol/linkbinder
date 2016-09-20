@@ -15,12 +15,6 @@
  */
 package jp.co.opentone.bsol.linkbinder.service.correspon.impl;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.List;
-
 import jp.co.opentone.bsol.framework.core.config.SystemConfig;
 import jp.co.opentone.bsol.framework.core.util.DateUtil;
 import jp.co.opentone.bsol.framework.core.util.HTMLConvertUtil;
@@ -30,6 +24,12 @@ import jp.co.opentone.bsol.linkbinder.dto.CorresponResponseHistory;
 import jp.co.opentone.bsol.linkbinder.dto.code.CorresponStatus;
 import jp.co.opentone.bsol.linkbinder.util.view.correspon.CorresponPageFormatter;
 import jp.co.opentone.bsol.linkbinder.util.view.correspon.CorresponResponseHistoryModel;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.List;
 
 /**
  * @author opentone
